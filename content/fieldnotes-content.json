@@ -1,0 +1,1408 @@
+{
+  "extractedAt": "2026-09-28T20:55:55.833Z",
+  "source": "https://fieldnotes-insurance-concepts.prashanthv-aiesec.chatgpt.site/",
+  "editions": {
+    "micromutual": {
+      "title": "Micromutual/Edition 01",
+      "pages": [
+        {
+          "option": "1 of 8 · The promise",
+          "value": "0",
+          "classes": [
+            "micromutual",
+            "cover"
+          ],
+          "images": [
+            "http://localhost:8765/images/neighborhood.jpg"
+          ],
+          "lines": [
+            "micromutual",
+            "A new way to protect home",
+            "Safer homes. Stronger neighborhoods. Together.",
+            "What if the best way to protect your home started with the people next door?",
+            "Micromutual",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · A neighborhood pool",
+          "value": "1",
+          "classes": [
+            "micromutual",
+            "photo"
+          ],
+          "images": [
+            "http://localhost:8765/images/neighbors.jpg"
+          ],
+          "lines": [
+            "micromutual",
+            "01 / A neighborhood pool",
+            "Pool resources. Do more together.",
+            "You and nearby households could fund prevention and share agreed types of smaller losses through a neighborhood pool.",
+            "Micromutual",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · Policy + pool",
+          "value": "2",
+          "classes": [
+            "micromutual",
+            "layers"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "02 / Alongside your policy",
+            "Alongside your insurance.",
+            "The pool would supplement your home insurance, not replace it.",
+            "Your household",
+            "Existing policy",
+            "You keep it.",
+            "Its own terms apply.",
+            "Proposed pool",
+            "Shared prevention.",
+            "Defined smaller losses.",
+            "The same loss would not be paid twice.",
+            "Micromutual",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · A shared project",
+          "value": "3",
+          "classes": [
+            "micromutual",
+            "shared-project"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "03 / One project, together",
+            "The branches don’t stop at your fence.",
+            "Imagine branches overhanging several properties. Work on one yard leaves the rest untouched.",
+            "Three properties. One coordinated plan.",
+            "01",
+            "Arrange one coordinated visit",
+            "With each owner’s permission, neighbors could fund one qualified arborist to assess and treat the shared area.",
+            "02",
+            "Close the gaps between homes",
+            "Together, you could address hazards across boundaries that one household cannot tackle alone.",
+            "Micromutual",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · Your contribution",
+          "value": "4",
+          "classes": [
+            "micromutual",
+            "number"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "04 / A say in the plan",
+            "Help choose what your pool makes possible.",
+            "Before contributing, you would see the proposed plan for prevention, claims support and running costs.",
+            "01",
+            "See the choices",
+            "A shared project now, money held for smaller losses, or a mix of both.",
+            "02",
+            "Agree how to decide",
+            "Members could vote on a budget under rules set before joining.",
+            "03",
+            "Follow the money",
+            "See what was spent, what was done and what remains.",
+            "Micromutual",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · A fence repair",
+          "value": "5",
+          "classes": [
+            "micromutual",
+            "claims"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "05 / A fence repair",
+            "A fallen branch. A damaged fence.",
+            "Imagine a $5,000 storm-damaged fence repair that your policy doesn’t cover, but your pool includes.",
+            "$500",
+            "Your share: $500",
+            "You pay the first $500 toward the repair.",
+            "$4,500",
+            "Pool share: $4,500",
+            "The pool could pay the rest after checking eligibility and its payment limit.",
+            "?",
+            "If the pool falls short",
+            "Your insurer would not automatically cover a pool shortfall.",
+            "Micromutual",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · Clear rules",
+          "value": "6",
+          "classes": [
+            "micromutual",
+            "trust"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "06 / Trust, by design",
+            "Shared trust. Clear boundaries.",
+            "Before joining, compare the contributions, claims process and exit terms.",
+            "What you contribute",
+            "Check the regular payment and whether you could be asked to contribute more.",
+            "Who decides a claim",
+            "Claims could receive professional assessment under written rules, with a way to appeal.",
+            "What happens when you leave",
+            "Check how leaving affects your balance and personal information.",
+            "Micromutual",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · The larger idea",
+          "value": "7",
+          "classes": [
+            "micromutual",
+            "closing"
+          ],
+          "images": [],
+          "lines": [
+            "micromutual",
+            "Micromutual",
+            "Safer homes. Built together.",
+            "Your contribution and your say could help neighbors tackle risks beyond any one property.",
+            "Micromutual",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    },
+    "emberwatch": {
+      "title": "Emberwatch/Edition 02",
+      "pages": [
+        {
+          "option": "1 of 8 · The promise",
+          "value": "0",
+          "classes": [
+            "emberwatch",
+            "cover"
+          ],
+          "images": [
+            "http://localhost:8765/images/emberwatch-cover.png"
+          ],
+          "lines": [
+            "emberwatch",
+            "An idea for wildfire support",
+            "Your family. Your pets. A lifetime of memories.",
+            "What if you had support to act on official wildfire guidance for your family and pets, with the home you treasure in mind?",
+            "See how it works",
+            "Emberwatch",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · Choose your support",
+          "value": "1",
+          "classes": [
+            "emberwatch",
+            "prepare"
+          ],
+          "images": [],
+          "lines": [
+            "emberwatch",
+            "BEFORE / Your choices",
+            "Set up support before you need it.",
+            "Imagine Emberwatch as support from your insurer. If you opt in, you choose how they contact you, who else to reach and which services you allow.",
+            "01",
+            "Choose your contact plan",
+            "Confirm numbers and an emergency contact.",
+            "02",
+            "Agree what is allowed",
+            "Choose what home information to share. Authorize drone checks and sprinkler settings separately.",
+            "03",
+            "Prepare together",
+            "Review official evacuation advice and plan for your family and pets.",
+            "Emberwatch",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · Conditions change",
+          "value": "2",
+          "classes": [
+            "emberwatch",
+            "risk-portrait"
+          ],
+          "images": [],
+          "lines": [
+            "emberwatch",
+            "WATCH / Conditions change",
+            "What changes around your home?",
+            "Weather, wind and fire-activity signals describe conditions around you. Your insurer could combine them with terrain, vegetation and home information you choose to share.",
+            "Your home",
+            "Weather",
+            "Fire activity",
+            "Terrain",
+            "Vegetation",
+            "Wind",
+            "Emberwatch",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · Check the concern",
+          "value": "3",
+          "classes": [
+            "emberwatch",
+            "drone"
+          ],
+          "images": [
+            "http://localhost:8765/images/emberwatch-drone.png"
+          ],
+          "lines": [
+            "emberwatch",
+            "CHECK / When appropriate",
+            "A drone could take a closer look.",
+            "If you opt in, a drone could check nearby conditions on a safe, permitted flight. Your insurer could contact you without waiting for the check. Always follow official evacuation instructions.",
+            "A closer look at conditions near your home.",
+            "Emberwatch",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · Optional mitigation",
+          "value": "4",
+          "classes": [
+            "emberwatch",
+            "sprinklers"
+          ],
+          "images": [
+            "http://localhost:8765/images/emberwatch-sprinklers.png"
+          ],
+          "lines": [
+            "emberwatch",
+            "ACT / Around your home",
+            "Water around your home.",
+            "Sprinklers you choose to install and enable could wet nearby trees under settings you approve. They need suitable water and power. Never delay evacuation.",
+            "Emberwatch",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · A useful check-in",
+          "value": "5",
+          "classes": [
+            "emberwatch",
+            "care-call"
+          ],
+          "images": [],
+          "lines": [
+            "emberwatch",
+            "ACT / Human support",
+            "A call could help with your next step.",
+            "Imagine a call from your insurer, following the contact plan you chose, to help you understand official guidance and check that your household is ready to act.",
+            "YOUR CONTACT PLAN",
+            "Insurer",
+            "“Have you seen the evacuation update from local authorities?”",
+            "You",
+            "“Yes. We’re gathering the children and our dog.”",
+            "Insurer",
+            "“Follow their instructions. Let’s check that your emergency contact knows your plan.”",
+            "Emberwatch",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · Follow official guidance",
+          "value": "6",
+          "classes": [
+            "emberwatch",
+            "escape"
+          ],
+          "images": [],
+          "lines": [
+            "emberwatch",
+            "LEAVE / Follow local authorities",
+            "Your family’s next step comes first.",
+            "Imagine using route guidance to follow official updates and reported road closures with your family and pets in mind. Always follow local authorities’ evacuation instructions.",
+            "Fire activity",
+            "↓",
+            "→",
+            "Your home",
+            "Evacuation destination",
+            "× Road closed",
+            "FOLLOW OFFICIAL UPDATES",
+            "People and pets first. Belongings never come before leaving safely.",
+            "Emberwatch",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · What matters",
+          "value": "7",
+          "classes": [
+            "emberwatch",
+            "closing"
+          ],
+          "images": [],
+          "lines": [
+            "emberwatch",
+            "Emberwatch",
+            "A claim can replace things. It can’t replace everything.",
+            "Support from your insurer could help you act on official guidance for your family and pets, with the home you treasure in mind.",
+            "Emberwatch",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    },
+    "employment": {
+      "title": "Employment Insurance/Edition 03",
+      "pages": [
+        {
+          "option": "1 of 8 · The promise",
+          "value": "0",
+          "classes": [
+            "employment",
+            "cover",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/employment-cover.jpg"
+          ],
+          "lines": [
+            "employment insurance",
+            "An idea for working life",
+            "Room to find what comes next.",
+            "Your work may change. What if your household had more room to make the transition?",
+            "Employment Insurance",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · A change ahead",
+          "value": "1",
+          "classes": [
+            "employment",
+            "photo",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/employment-story.jpg"
+          ],
+          "lines": [
+            "employment insurance",
+            "01 / A life built around work",
+            "Life keeps its rhythm. Work can change.",
+            "Imagine Maya, a nurse and parent. Two incomes cover the mortgage and childcare. A reorganization makes her want to prepare for a possible change.",
+            "Employment Insurance",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · Planning before payment",
+          "value": "2",
+          "classes": [
+            "employment",
+            "editorial",
+            "art-edition",
+            "art-plan"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "02 / Two kinds of support",
+            "One plan. Through a change.",
+            "Like Maya, you could choose roles to explore and preparation steps with a coach.",
+            "Before a change",
+            "If job loss qualifies",
+            "Maya’s plan",
+            "Explore a new role",
+            "with a coach.",
+            "Keep working",
+            "on the same plan.",
+            "After eligibility review",
+            "Limited income support",
+            "Help with household bills.",
+            "Employment Insurance",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · An everyday decision",
+          "value": "3",
+          "classes": [
+            "employment",
+            "editorial",
+            "art-edition",
+            "art-steps"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "03 / A manageable next step",
+            "A new direction can start small.",
+            "Maya considers a community-health role. A coach could help her take a first step while she keeps her job.",
+            "0",
+            "1",
+            "Explore",
+            "Talk to someone doing the role.",
+            "0",
+            "2",
+            "Prepare",
+            "Consider an evening course and how to pay for it.",
+            "0",
+            "3",
+            "Decide",
+            "Keep working while she considers a move.",
+            "Employment Insurance",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · Your level of support",
+          "value": "4",
+          "classes": [
+            "employment",
+            "editorial",
+            "art-edition",
+            "art-consent"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "04 / You stay in control",
+            "Support should fit your decisions.",
+            "Maya wants a coach, not automatic applications. You would also choose the help you use and the information you share.",
+            "Maya decides",
+            "Planning, when she asks",
+            "A conversation with a coach.",
+            "Her permission comes first",
+            "No employer contact",
+            "without permission.",
+            "No applications",
+            "sent on her behalf.",
+            "Employment Insurance",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · Support after disruption",
+          "value": "5",
+          "classes": [
+            "employment",
+            "editorial",
+            "art-edition",
+            "art-support-paths"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "05 / When income stops",
+            "Room for the next move.",
+            "With her permission, coaching could help Maya adapt her plan and pursue a new role after involuntary job loss.",
+            "Confirm the event.",
+            "Review eligibility.",
+            "Maya’s plan continues",
+            "The next move",
+            "Coaching and search within agreed requirements.",
+            "Limited payments",
+            "The household",
+            "Help with bills while she works toward what’s next.",
+            "Employment Insurance",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · Clear boundaries",
+          "value": "6",
+          "classes": [
+            "employment",
+            "trust",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "06 / Know what you are choosing",
+            "A bridge. Not a promise of a job.",
+            "Before joining, compare the price, payment limits and participation requirements.",
+            "A qualifying job loss",
+            "Payments would follow an eligibility review after job loss, not a warning that work may change.",
+            "A defined benefit",
+            "Payments would have limits. They would not replace every lost dollar.",
+            "Your other support",
+            "Review government benefits and employer support alongside this protection.",
+            "Employment Insurance",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · The larger idea",
+          "value": "7",
+          "classes": [
+            "employment",
+            "closing",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "employment insurance",
+            "Employment Insurance",
+            "A working life has more than one chapter.",
+            "A plan you shape, coaching through a transition and limited support after qualifying job loss could give you room to find your next role.",
+            "Employment Insurance",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    },
+    "agent-liability": {
+      "title": "Agent Error Protection/Edition 04",
+      "pages": [
+        {
+          "option": "1 of 8 · The promise",
+          "value": "0",
+          "classes": [
+            "agent-liability",
+            "cover",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/agent-liability-cover.jpg"
+          ],
+          "lines": [
+            "agent error protection",
+            "An idea for life with agents",
+            "Confidence to delegate.",
+            "What if letting an AI agent help with everyday life came with a clearer way to respond when it got something wrong?",
+            "Agent Error Protection",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · An everyday delegation",
+          "value": "1",
+          "classes": [
+            "agent-liability",
+            "photo",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/agent-liability-story.jpg"
+          ],
+          "lines": [
+            "agent error protection",
+            "01 / One less thing to arrange",
+            "A family trip. One clear rule.",
+            "Imagine Alex, a parent planning a family trip. He lets an agent book within a budget, but every reservation must be refundable.",
+            "Agent Error Protection",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · The permission",
+          "value": "2",
+          "classes": [
+            "agent-liability",
+            "editorial",
+            "art-edition",
+            "art-instruction"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "02 / Authority with a boundary",
+            "Be clear about what you allow.",
+            "Like Alex, you would set the limits. The service could keep your instructions beside the agent’s actions so you can check what went wrong.",
+            "Alex’s instructions",
+            "“Every reservation",
+            "must be",
+            "refundable.",
+            "”",
+            "Book the agreed trip",
+            "within the budget.",
+            "Otherwise, ask Alex",
+            "before proceeding.",
+            "Agent Error Protection",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · The costly mistake",
+          "value": "3",
+          "classes": [
+            "agent-liability",
+            "editorial",
+            "art-edition",
+            "art-mismatch"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "03 / Something goes wrong",
+            "One wrong booking. An unwanted cost.",
+            "The agent books a non-refundable fare. When the refund request is declined, Alex may have to pay again to change the trip.",
+            "The booking",
+            "Alex authorized",
+            "Refundable",
+            "reservations only.",
+            "The agent booked",
+            "Family trip / Fare condition",
+            "Non-",
+            "refundable",
+            "Refund requested.",
+            "Request declined.",
+            "Agent Error Protection",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · Help after the mistake",
+          "value": "4",
+          "classes": [
+            "agent-liability",
+            "editorial",
+            "art-edition",
+            "art-response"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "04 / Help after a mistake",
+            "Help finding a way forward.",
+            "Like Alex, you could get help seeking a remedy after an agent’s mistake.",
+            "What happened?",
+            "Trace your instructions and the agent’s actions.",
+            "Can it be corrected?",
+            "Help you seek a refund or correction.",
+            "Is the loss covered?",
+            "Review your loss against eligibility and limits.",
+            "Agent Error Protection",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · Before the next booking",
+          "value": "5",
+          "classes": [
+            "agent-liability",
+            "editorial",
+            "art-edition",
+            "art-permission-fork"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "05 / Your choice of control",
+            "Delegate the task. Choose the limits.",
+            "For your next trip, you could allow action within limits or approve each purchase.",
+            "Book the next trip",
+            "Act within my rules",
+            "Less checking, with more authority delegated.",
+            "Ask before paying",
+            "More checking, with a pause before purchase.",
+            "Agent Error Protection",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · Who bears the loss?",
+          "value": "6",
+          "classes": [
+            "agent-liability",
+            "trust",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "06 / Before you choose",
+            "Know what you’re choosing.",
+            "Compare the price and coverage with the tasks you want to delegate.",
+            "Whose responsibility?",
+            "You, the agent platform and the booking provider may disagree.",
+            "Which losses count?",
+            "Check the covered actions, exclusions, payment limits and your share.",
+            "Which records can help?",
+            "Keep booking confirmations and messages alongside your instructions.",
+            "Agent Error Protection",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · The larger idea",
+          "value": "7",
+          "classes": [
+            "agent-liability",
+            "closing",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "agent error protection",
+            "Agent Error Protection",
+            "Delegate with clearer limits. Respond with support.",
+            "If your agent gets a task wrong, you could have help tracing the mistake, seeking correction and understanding possible coverage.",
+            "Agent Error Protection",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    },
+    "longevity": {
+      "title": "Understanding Longevity/Edition 05",
+      "pages": [
+        {
+          "option": "1 of 8 · More room to live",
+          "value": "0",
+          "classes": [
+            "longevity",
+            "cover",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/longevity-cover.jpg"
+          ],
+          "lines": [
+            "understanding longevity",
+            "Understanding existing retirement income",
+            "Understand your retirement income.",
+            "A proposed comparison service for existing retirement-income contracts. See how their terms fit alongside your savings.",
+            "Understanding Longevity",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · Robert’s plan",
+          "value": "1",
+          "classes": [
+            "longevity",
+            "photo",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/longevity-story.jpg"
+          ],
+          "lines": [
+            "understanding longevity",
+            "01 / A life after work",
+            "Robert is 61. His plans are still growing.",
+            "Imagine Robert, 61, hoping to retire at 65 with time for family and travel. He wants to understand how his resources fit.",
+            "Understanding Longevity",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · A longer horizon",
+          "value": "2",
+          "classes": [
+            "longevity",
+            "editorial",
+            "art-edition",
+            "art-horizon"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "02 / The years beyond the plan",
+            "Know what’s within reach.",
+            "Like Robert, you could see which money stays accessible and which payments depend on a pension or annuity contract.",
+            "Retirement begins",
+            "Later years",
+            "Accessible savings",
+            "A balance to draw on.",
+            "Pension or annuity",
+            "Payments under their own terms.",
+            "Everyday expenses continue along the way.",
+            "Understanding Longevity",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · A late-life floor",
+          "value": "3",
+          "classes": [
+            "longevity",
+            "editorial",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "03 / Your retirement choices",
+            "A clearer way to choose a floor.",
+            "Like Robert, you could compare actual contracts: when payments start, what they provide and what stays accessible.",
+            "Compare the commitments",
+            "Accessible savings",
+            "Later-life annuity",
+            "Start",
+            "When you draw on it.",
+            "At the agreed age.",
+            "Income",
+            "Until the balance is used.",
+            "For life, under its terms.",
+            "Access",
+            "The remaining balance.",
+            "Depends on the contract.",
+            "Understanding Longevity",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · What to protect",
+          "value": "4",
+          "classes": [
+            "longevity",
+            "editorial",
+            "art-edition",
+            "art-timing"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "04 / Robert’s choice",
+            "Earlier payments. Or a longer gap.",
+            "Robert can compare start dates and see the gap other resources must cover. You would need actual prices and access terms before choosing.",
+            "Earlier",
+            "Later",
+            "Start payments earlier",
+            "Start payments later",
+            "Other resources bridge the gap",
+            "Contract payments begin",
+            "Understanding Longevity",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · An ordinary month",
+          "value": "5",
+          "classes": [
+            "longevity",
+            "editorial",
+            "art-edition",
+            "art-month"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "05 / Support in everyday life",
+            "One ordinary month.",
+            "Robert could distinguish contract income from accessible savings—and see how each fits an ordinary month.",
+            "Pension & savings",
+            "His other resources.",
+            "Chosen annuity",
+            "Payments under",
+            "its own contract.",
+            "Robert’s",
+            "ordinary",
+            "month",
+            "Understand what fits together.",
+            "Understanding Longevity",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · Clear boundaries",
+          "value": "6",
+          "classes": [
+            "longevity",
+            "trust",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "06 / Know what the floor means",
+            "Income for longer. Not every cost.",
+            "Check what the contract leaves for you to plan around.",
+            "Care and health",
+            "An income floor does not specifically cover care bills or medical expenses.",
+            "Rising prices",
+            "Check whether the actual contract increases payments for inflation, and how.",
+            "Changing circumstances",
+            "Check the contract’s access rules, death benefits and provider obligations.",
+            "Understanding Longevity",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · The larger possibility",
+          "value": "7",
+          "classes": [
+            "longevity",
+            "closing",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "understanding longevity",
+            "Understanding Longevity",
+            "A longer life. Room to keep living it.",
+            "A clearer view of income, accessible savings and contract limits could help you plan for the life you want after work.",
+            "Understanding Longevity",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    },
+    "price-certainty": {
+      "title": "Price Certainty/Edition 06",
+      "pages": [
+        {
+          "option": "1 of 8 · A steadier cost",
+          "value": "0",
+          "classes": [
+            "price-certainty",
+            "cover",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/price-certainty-cover.jpg"
+          ],
+          "lines": [
+            "price certainty",
+            "A possibility for everyday costs",
+            "A steadier cost for everyday life.",
+            "What if you could agree an annual net cost for a defined part of your home’s energy use?",
+            "Price Certainty",
+            "01",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "2 of 8 · One uncertain expense",
+          "value": "1",
+          "classes": [
+            "price-certainty",
+            "photo",
+            "art-edition"
+          ],
+          "images": [
+            "http://localhost:8765/images/price-certainty-story.jpg"
+          ],
+          "lines": [
+            "price certainty",
+            "01 / Planning the year",
+            "Keep your supplier. Steady one cost?",
+            "Imagine agreeing an annual net cost for part of your energy use, while keeping your supplier and variable tariff.",
+            "Price Certainty",
+            "02",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "3 of 8 · Possible costs",
+          "value": "2",
+          "classes": [
+            "price-certainty",
+            "editorial",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "02 / See the uncertainty",
+            "See the range. Weigh the target.",
+            "Imagine these costs for the same energy quantity and year. Your agent could help compare them with an agreed annual net cost.",
+            "Same energy. Same year.",
+            "Possible variable cost",
+            "$2,400",
+            "$4,100",
+            "Assumed expected cost",
+            "$2,800",
+            "Proposed net-cost target",
+            "$3,050",
+            "Price Certainty",
+            "03",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "4 of 8 · How settlement works",
+          "value": "3",
+          "classes": [
+            "price-certainty",
+            "editorial",
+            "art-edition",
+            "art-settlement"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "03 / Your choice",
+            "One annual target. Settlement both ways.",
+            "With a $3,050 annual target, you would pay your supplier’s bills, then receive or pay the difference at settlement.",
+            "Annual net-cost target",
+            "$3,050",
+            "No separate fee.",
+            "Supplier cost above",
+            "You receive",
+            "the difference.",
+            "Supplier cost below",
+            "You pay",
+            "the difference.",
+            "You accept $250 more in expected spending",
+            "than the assumed $2,800.",
+            "That difference is not an extra fee.",
+            "Price Certainty",
+            "04",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "5 of 8 · What is fixed",
+          "value": "4",
+          "classes": [
+            "price-certainty",
+            "trust",
+            "art-edition",
+            "art-scope"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "04 / Draw the boundary",
+            "One agreed scope. Not your whole bill.",
+            "You would agree how much energy is included and which part of its unit price is covered. The agreement would not cover your whole bill.",
+            "Inside the agreement",
+            "Agreed usage.",
+            "Part of the rate.",
+            "One year.",
+            "Defined before you commit.",
+            "Renewal is a separate choice.",
+            "Outside it",
+            "Extra usage · Taxes",
+            "Other excluded charges",
+            "Price Certainty",
+            "05",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "6 of 8 · When prices rise",
+          "value": "5",
+          "classes": [
+            "price-certainty",
+            "editorial",
+            "art-edition",
+            "art-cash-flow"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "05 / When prices rise",
+            "Your bill may arrive first.",
+            "Imagine a $4,100 supplier bill. You would pay it first, then receive the settlement refund. You would need enough money to cover the bill while you wait.",
+            "Pay the bill first",
+            "You pay the supplier",
+            "$4,100",
+            "After the year ends",
+            "You pay the provider",
+            "$0",
+            "You receive from the provider",
+            "$1,050",
+            "Your net cost",
+            "$3,050",
+            "Price Certainty",
+            "06",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "7 of 8 · The trade-off",
+          "value": "6",
+          "classes": [
+            "price-certainty",
+            "editorial",
+            "art-edition",
+            "art-cash-flow"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "06 / Know the trade-off",
+            "When prices fall, you could pay more.",
+            "If that bill were $2,400, you would pay the provider $650 at settlement. Your annual net cost would still be $3,050.",
+            "Pay the bill first",
+            "You pay the supplier",
+            "$2,400",
+            "After the year ends",
+            "You pay the provider",
+            "$650",
+            "You receive from the provider",
+            "$0",
+            "Your net cost",
+            "$3,050",
+            "Price Certainty",
+            "07",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "8 of 8 · The larger possibility",
+          "value": "7",
+          "classes": [
+            "price-certainty",
+            "closing",
+            "art-edition"
+          ],
+          "images": [],
+          "lines": [
+            "price certainty",
+            "Price Certainty",
+            "One annual cost you could plan around.",
+            "An agreed net cost could make part of your energy spending more predictable over the year. You would still pay supplier bills before settlement.",
+            "Price Certainty",
+            "08",
+            "/",
+            "08"
+          ]
+        },
+        {
+          "option": "Discussion",
+          "value": "8",
+          "classes": [],
+          "images": [],
+          "lines": [
+            "(no article.paper rendered)"
+          ]
+        }
+      ]
+    }
+  },
+  "home": [
+    "fieldnotes",
+    ".",
+    "Ideas for a more resilient tomorrow",
+    "Concept collection",
+    "THE INSURANCE EDITIONS",
+    "New ways to care.",
+    "Six possible futures for insurance. Stories about the lives we build, the choices we delegate and the uncertainties we share.",
+    "06 / Available editions",
+    "FOR REVIEWERS",
+    "The reasoning behind these possible futures.",
+    "Explore the causal map",
+    "Work in progress",
+    "micromutual",
+    "Safer homes.",
+    "Stronger",
+    "neighborhoods.",
+    "Together.",
+    "Micromutual",
+    "01 / 08",
+    "Community-led",
+    "Open pamphlet",
+    "01 / COMMUNITY-LED PROTECTION",
+    "Micromutual",
+    "A neighborhood pool for shared prevention and defined smaller losses.",
+    "View thesis",
+    "Explore causal map",
+    "emberwatch",
+    "Your family.",
+    "Your pets.",
+    "A lifetime of",
+    "memories.",
+    "Emberwatch",
+    "01 / 08",
+    "Continuous",
+    "Open pamphlet",
+    "02 / CONTINUOUS PROTECTION",
+    "Emberwatch",
+    "Monitoring and personal support that could help your household act before a wildfire loss.",
+    "View thesis",
+    "Explore causal map",
+    "employment insurance",
+    "Room to find",
+    "what comes next.",
+    "Employment Insurance",
+    "01 / 08",
+    "Continuity",
+    "Open pamphlet",
+    "03 / EARNING-POWER PROTECTION",
+    "Employment Insurance",
+    "One transition plan, with coaching and limited income support after eligible job loss.",
+    "View thesis",
+    "Explore causal map",
+    "agent error protection",
+    "Confidence",
+    "to delegate.",
+    "Agent Error Protection",
+    "01 / 08",
+    "Agency",
+    "Open pamphlet",
+    "04 / DELEGATED-ACTION ERRORS",
+    "Agent Error Protection",
+    "Help tracing and responding to costly mistakes made by your AI agent.",
+    "View thesis",
+    "Explore causal map",
+    "understanding longevity",
+    "Understand",
+    "your retirement",
+    "income.",
+    "Understanding Longevity",
+    "01 / 08",
+    "Longevity",
+    "Open pamphlet",
+    "05 / LATER-LIFE INCOME",
+    "Understanding Longevity",
+    "A proposed service to compare existing retirement-income contracts alongside your savings.",
+    "View thesis",
+    "Explore causal map",
+    "price certainty",
+    "A steadier cost",
+    "for everyday life.",
+    "Price Certainty",
+    "01 / 08",
+    "Certainty",
+    "Open pamphlet",
+    "06 / HOUSEHOLD COST STABILITY",
+    "Price Certainty",
+    "An idea for steadying an agreed energy cost without changing supplier.",
+    "View thesis",
+    "Explore causal map",
+    "Explorations in protection, prevention & belonging.",
+    "Independent concepts · For discussion"
+  ]
+}
