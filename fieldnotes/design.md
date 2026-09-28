@@ -314,7 +314,144 @@ And these are worth reconsidering:
 
 ---
 
-## 9. What is not in here
+## 9. The Emberwatch prototype
+
+Emberwatch is the one edition with a working prototype behind it: a 17-step
+replay of the January 2025 Pacific Palisades wildfire, with live maps, a
+portfolio dashboard and about a hundred controls. It is published as its own
+Claude Artifact and linked from the closing page.
+
+It is printed on this system's paper — emberwatch stock `#F9F5EC`, ink
+`#42382C`, Georgia against Arial, the 35px/−0.03em headline and the
+15px/22.5px body, and the grain. What follows is only what a running,
+interactive thing needed that eight composed pages did not. Everything the
+pamphlets already settle, it inherits unchanged, and nothing below replaces
+a section above.
+
+### Interactive state on paper
+
+The pamphlets have no controls, so the system had nothing to say about any of
+this.
+
+- **The primary action is the ink, not the accent.** Paper on the amber accent
+  measures 4.6:1 and an amber pill shouts on this stock. An ink pill with
+  paper type is 10.5:1 and is the quietest confident control available. The
+  accent stays what it is everywhere else — annotation, never a ground for
+  type.
+- **Hover goes down into the wash, not up toward white.** `#EFE8D9` — the same
+  value the four later editions expose as `--edition-wash` for diagram fills.
+  Pressed goes one step further, to `#E7DECB`.
+- **Focus is a 2px ink ring on a 2px paper offset**, on every interactive
+  element from one rule. The pamphlets' own `.reviewer-links a:focus-visible`
+  is the same idea at reader scale.
+- **Radius halves.** The reader shell's `0.65rem` is generous for a page that
+  has no controls on it; a prototype needs a control to look like a control
+  without looking like a web app, so the scale runs 3 / 5 / 8px.
+- **Elevation is a hairline first.** On paper a card lifts with
+  `inset 0 0 0 1px rgba(66,56,44,.1)` and a very soft warm shadow. A dark halo
+  on cream reads as dirt.
+
+### Signal colour on a light ground
+
+Four risk postures (Normal / Watch / Prepare / Act) and four data-provenance
+classes (observed / derived / modelled / illustrative) have to be legible as
+text and as marks, on paper, without becoming a traffic light. Each is the
+same hue family the dark build used, driven down in lightness until it clears
+AA on `#F9F5EC`. Measured, on the paper:
+
+| Role | Value | Ratio |
+|---|---|---|
+| Normal / stable | `#4A6B55` | 5.47 |
+| Watch | `#8A6A22` | 4.63 |
+| Prepare | `#B4551A` | 4.54 |
+| Act / intervention | `#B02B1B` | 6.02 |
+| Observed | `#356B8C` | 5.31 |
+| Derived | `#7A6640` | 5.08 |
+| Accent (annotation) | `#8C6413` | 4.89 |
+
+Two rules travel with them. **Colour is never the only carrier**: every state
+also has a word and a glyph, so the four postures survive a greyscale print
+and a colour-blind reader. And **soft fills are 12–13% alpha of the same
+value**, not a separate tint — one number per hue, not two.
+
+### Maps
+
+A tile base map is the one thing here the pamphlets have no equivalent for.
+
+- **The grade holds the source at paper lightness and takes the colour out of
+  it**, rather than driving it to a dark ground:
+  `grayscale(.5) sepia(.38) saturate(.58) brightness(1.08) contrast(.92)
+  hue-rotate(-8deg)` for OpenTopoMap. The geometry and labels are untouched
+  real OSM data; only the grade changes. The result reads as a topographic
+  sheet printed in the edition's warm brown.
+- **A map ends by running out of ink, not by going black.** The vignette fades
+  to `#F9F5EC` at the edges — 74% at the top band where headlines sit, 52% at
+  the foot, 46% in the corners — so type over a map is type on paper.
+- **A label stuck on a map is opaque.** Chips over terrain take a 94% raised-
+  paper ground and a hairline, because on a pale grade a translucent chip
+  stops separating from the contour lines beneath it.
+- **The grade lives on the tile pane, not the overlay pane**, so a still
+  captured from a running map is already the colour it will be drawn back at.
+  This matters: the artifact runs where tile requests do not complete, so
+  eight georeferenced stills are captured and redrawn as image overlays.
+  **Change the grade and the stills must be re-captured** — a dark-graded
+  still under a light-graded page is immediately, obviously wrong.
+
+### Figures
+
+The pamphlets set money in composed diagrams. A prototype has both figures to
+read and figures to compare, and they are set differently:
+
+- **A hero figure is set, in Georgia**, at 36px/−0.025em, with the face's own
+  old-style numerals. `$2.0M` reads as a printed amount.
+- **A tabulated figure stays in Arial** with `font-variant-numeric:
+  tabular-nums`, because a column of old-style figures does not align.
+
+That split is the whole convention. There is no chart library and no shared
+chart palette: as with the pamphlets' diagrams, each visual is drawn for one
+argument on one screen.
+
+### One dark island
+
+The customer's phone is the single thing in the prototype that is not printed
+on the paper. It is an object *depicted* on the page, not a surface of the
+publication, and a lock screen rendered in cream does not read as a lock
+screen. Its subtree re-declares only the surface and text tokens against a
+charcoal stock; risk, provenance and accent colours are **not** re-declared,
+so a screen showing ACT shows the same ACT as the page around it. A soft warm
+shadow sits it on the paper.
+
+The rule this generalises: **a photograph is printed, not redrawn.** The
+full-bleed photographic screens use the covers' own device — a gradient to the
+paper colour with the type in the faded band (§2, Cover treatment) — extended
+to fade at the foot and the left as well, wherever type lands.
+
+### What the prototype did not need
+
+Stated so nobody goes looking. The spacing scale, the motion timings, the
+measures and the icon set are the prototype's own and have no pamphlet
+counterpart worth reconciling. It introduced no new layout type and no new
+page component, and it changed nothing in `content/` or in the other five
+editions. The grain is the pamphlets' grain at 0.05 rather than 0.07, hung on
+the application shell rather than the page, because it lies under live maps
+and tabulated figures rather than a single composed page.
+
+### Where it departs from this document
+
+Three deviations, all deliberate:
+
+1. **The page reflows.** §8's first inherited decision is a fixed 490×650
+   paper. A 17-step replay with live maps and a dashboard cannot be composed
+   to a fixed page; it is laid out responsively and verified at 1440×900 and
+   390×844.
+2. **The eyebrow is 10–11px, not 9px.** The pamphlet sets one 9px eyebrow per
+   page. The prototype sets about a hundred, and they carry evidence labels
+   rather than a page number. The tracking (+0.14em) and the case are the
+   pamphlet's; only the size moves.
+3. **No dark theme.** The prototype commits to the edition's single visual
+   world and paints its own ground explicitly, as a printed thing does.
+
+## 10. What is not in here
 
 This describes the **built** artefact. It cannot tell you the component
 boundaries the original author drew, their prop shapes, their naming intent, or
