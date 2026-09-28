@@ -14,7 +14,22 @@ work alive and editable outside that platform.
 |---|---|
 | `snapshot/` | A byte-faithful mirror of the deployed site. Runs offline. |
 | `content/` | Every pamphlet's text, extracted page by page, as Markdown and JSON. |
+| `design.md` | The design system, measured from the built site. |
 | `serve.sh` | Serves `snapshot/` on <http://localhost:8765>. |
+
+## Hosted
+
+Live on Vercel at <https://fieldnotes-khaki-three.vercel.app>, deployed from
+`vercel.json` at the repository root with no build step.
+
+Parity with the original ChatGPT deployment was verified by walking both sites
+through all six editions and all 54 pages: page text, layout classes and
+accessible strings match everywhere, and all 22 assets are byte-identical by
+SHA-256 (`index.html` differs only by the Cloudflare script removed at
+capture). Fourteen interactive capabilities were exercised on the Vercel site —
+library, card entry, Next/Previous, arrow keys, deep links, the page picker,
+the Discussion panel, the reviewer view, and mobile at 390×844 — with no errors
+and no failed requests.
 
 ## Run it
 
