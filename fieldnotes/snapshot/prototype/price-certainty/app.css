@@ -1,0 +1,811 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Price Certainty 2036 — prototype stylesheet
+
+   Printed on the Fieldnotes price-certainty stock: paper #FBF9F1, ink
+   #3D605D, wash #E0E9E5 (design.md §2). Georgia headlines against Arial
+   eyebrows, body 15px/22.5px, no webfonts. Control conventions inherited
+   from design.md §9: ink pill as the primary action, hover goes down into
+   the wash, 2px ink focus ring on a 2px paper offset, radii 3/5/8,
+   elevation as a hairline first, grain on the shell at 0.05.
+
+   Every colour used for text or for a mark that carries meaning was
+   measured against the paper; ratios are in comments beside each token.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --paper:        #FBF9F1;
+  --ink:          #3D605D;   /* on paper: 6.58:1 */
+  --ink-quiet:    #4C6A65;   /* on paper 5.60:1, on the wash 4.77:1 — the
+                                quiet text colour has to clear AA on BOTH
+                                grounds, because most small labels sit on wash */
+  --wash:         #E0E9E5;   /* fill only, never a lone boundary */
+  --wash-deep:    #D3E0DB;   /* pressed */
+  --rule:         #7E938F;   /* on paper: 3.08:1 — axes, meaningful edges */
+  --hairline:     rgba(61, 96, 93, .16);
+
+  /* Signal hues. Each was driven down in lightness until it cleared AA as
+     text on the paper AND on the wash, because a figure caption can sit on
+     either. Ratios: paper / wash. */
+  --market:       #9B4E26;   /* 5.67 / 4.83 — volatile, money leaving  */
+  --smooth:       #56636E;   /* 5.85 / 4.98 — budget billing           */
+  --gain:         #3F6B4E;   /* 5.81 / 4.95 — settlement in your favour*/
+  --accent:       #7A6231;   /* 5.51 / 4.63 — annotation               */
+
+  --market-fill:  rgba(155, 78, 38, .16);
+  --gain-fill:    rgba(63, 107, 78, .16);
+  --ink-fill:     rgba(61, 96, 93, .14);
+
+  --r-sm: 3px;
+  --r-md: 5px;
+  --r-lg: 8px;
+
+  --head-h: 56px;
+  --foot-h: 60px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/22.5px Arial, Helvetica, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Grain hangs on the shell, under everything, as in the Emberwatch
+   prototype: 0.05 rather than the pamphlet's 0.07 because it lies under
+   tabulated figures rather than one composed page. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .05;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── Type roles ───────────────────────────────────────────────────────── */
+
+.eyebrow {
+  margin: 0;
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+}
+
+h2 {
+  margin: 10px 0 14px;
+  font: 400 35px/37.8px Georgia, "Times New Roman", serif;
+  letter-spacing: -.03em;
+  color: var(--ink);
+  max-width: 17em;
+}
+
+.body-copy { margin: 0 0 18px; max-width: 34em; }
+
+.caption {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--ink-quiet);
+}
+
+.framing {
+  margin: 0 0 22px;
+  padding: 12px 14px;
+  max-width: 34em;
+  border-left: 3px solid var(--accent);
+  background: var(--wash);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--ink);
+}
+
+.hero-figure {
+  margin: 4px 0 0;
+  font: 400 36px/1.05 Georgia, "Times New Roman", serif;
+  letter-spacing: -.025em;
+  color: var(--ink);
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+.inl { white-space: nowrap; font-weight: bold; }
+
+/* ── Shell ────────────────────────────────────────────────────────────── */
+
+.shell-head, .shell-foot {
+  position: fixed;
+  left: 0; right: 0;
+  z-index: 3;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+}
+
+.shell-head {
+  top: 0;
+  height: var(--head-h);
+  border-bottom: 1px solid var(--hairline);
+  justify-content: space-between;
+}
+
+.shell-foot {
+  bottom: 0;
+  height: var(--foot-h);
+  border-top: 1px solid var(--hairline);
+  justify-content: space-between;
+}
+
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+.brand-mark {
+  font: 600 12px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: -.3px;
+  text-transform: lowercase;
+  color: var(--ink);
+}
+
+.brand-sub {
+  font: 400 11px/1.3 Arial, Helvetica, sans-serif;
+  color: var(--ink-quiet);
+}
+
+.head-right { display: flex; align-items: center; gap: 16px; }
+
+.household-chip { display: flex; align-items: center; gap: 8px; }
+/* A CSS display beats the hidden attribute, so say it explicitly. */
+.household-chip[hidden] { display: none; }
+
+.position {
+  margin: 0;
+  font: 600 11px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .12em;
+  color: var(--ink-quiet);
+  font-variant-numeric: tabular-nums;
+}
+
+/* design.md §3: every page carries a footer disclaimer, 48 of 48. It lives
+   on the page, not in the chrome, so it travels with the content. */
+.paper-footer {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ink-quiet);
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ink-quiet);
+}
+.hint[hidden] { display: none; }
+
+.nav { display: flex; align-items: center; gap: 8px; }
+
+/* ── Controls ─────────────────────────────────────────────────────────── */
+
+button, select, input[type="range"] { font-family: inherit; }
+
+:is(button, select, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--r-lg);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .15s cubic-bezier(.4,0,.2,1), color .15s cubic-bezier(.4,0,.2,1);
+}
+
+.pill-ink {
+  background: var(--ink);
+  color: var(--paper);          /* 6.58:1 */
+  border: 1px solid var(--ink);
+}
+.pill-ink:hover  { background: #35544F; }
+.pill-ink:active { background: #2C4744; }
+
+.pill-quiet {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+.pill-quiet:hover  { background: var(--wash); }
+.pill-quiet:active { background: var(--wash-deep); }
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.icon-button:hover  { background: var(--wash); }
+.icon-button:active { background: var(--wash-deep); }
+.icon-button[disabled] { color: var(--ink-quiet); border-color: var(--hairline); cursor: default; background: transparent; }
+
+.ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+select {
+  min-height: 36px;
+  max-width: 62vw;
+  padding: 0 8px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+.picker select { max-width: min(44vw, 320px); }
+
+/* Segmented sets (scenario, settlement mode, structure) */
+.scenario-set, .toggle-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+
+.seg {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.seg:hover  { background: var(--wash); }
+.seg:active { background: var(--wash-deep); }
+.seg[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.slider-block { margin: 4px 0 0; max-width: 34em; }
+.slider-block .eyebrow { display: block; margin-bottom: 10px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;              /* Chromium's default 2px pushes the track out of
+                             its own container and shows as a 4px overflow */
+  width: 100%;
+  max-width: 420px;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px; background: var(--rule);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px; border-radius: 2px; background: var(--rule);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px; margin-top: -9px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.slider-value { margin: 4px 0 0; font-size: 14px; line-height: 21px; }
+.slider-value strong { font-weight: bold; }
+
+.note-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.note-row .caption { margin: 0; }
+
+/* ── Page frame ───────────────────────────────────────────────────────── */
+
+.stage {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: var(--head-h) 0 var(--foot-h);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.page {
+  display: none;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 24px 48px;
+  align-items: start;
+}
+.page.is-current { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; }
+
+.page-body { min-width: 0; overflow-wrap: break-word; }
+.page-visual { min-width: 0; }
+
+/* Plate: the composed surface a diagram sits on. Elevation is a hairline
+   first (design.md §9); a dark halo on this stock reads as dirt. */
+.plate {
+  padding: 20px;
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .12), 0 6px 20px -14px rgba(61, 96, 93, .45);
+}
+
+.plate-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.plate-rule {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+
+/* ── Cover ────────────────────────────────────────────────────────────── */
+
+.page-cover.is-current { grid-template-columns: minmax(320px, 520px) 1fr; }
+
+/* Two pages are the comparison itself, so the cards get the whole measure
+   and the text sits above them rather than beside them. */
+.page-wide.is-current { grid-template-columns: 1fr; gap: 28px; }
+.page-wide .page-body { max-width: 780px; }
+
+.cover-title {
+  margin: 14px 0 18px;
+  font-size: 54px;
+  line-height: 54px;
+  letter-spacing: -.035em;
+}
+.cover-title span { display: block; }
+
+.cover-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.cover-visual { align-self: stretch; }
+
+/* A printed plate, not a photograph: twelve months of a volatile market
+   resolving into one level line. Drawn in CSS, so it needs no image. */
+.cover-plate {
+  position: relative;
+  min-height: 340px;
+  height: 100%;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(251,249,241,.92) 0%, rgba(251,249,241,0) 42%),
+    var(--wash);
+  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .12);
+}
+
+.cp-inner { position: absolute; inset: 0 0 56px 0; }
+
+.cp-bar {
+  position: absolute;
+  bottom: 0;
+  width: 4.2%;
+  border-radius: 2px 2px 0 0;
+  background: var(--market);
+}
+
+.cp-line {
+  position: absolute;
+  left: 4%; right: 4%;
+  height: 0;
+  border-top: 2px solid var(--ink);
+}
+
+ /* Sits over the shoulder-season months, where the bars are shortest, so
+    it never lands on one. */
+.cp-tag {
+  position: absolute;
+  left: 36%;
+  transform: translateY(calc(-100% - 7px));
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cp-cap {
+  position: absolute;
+  left: 20px; right: 20px; bottom: 12px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--ink);
+}
+
+/* ── Charts (HTML/CSS bars; no SVG, so type never scales) ─────────────── */
+
+.chart {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 3px;
+  height: 190px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.chart.signed { border-bottom: 0; }
+
+.col {
+  position: relative;
+  height: 100%;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+}
+
+.col .bar {
+  position: absolute;
+  left: 0; right: 0;
+  border-radius: 2px;
+}
+
+.col .bar.pos { background: var(--market); }
+.col .bar.neg { background: var(--gain); }
+.col .bar.soft { background: var(--market-fill); box-shadow: inset 0 0 0 1px var(--market); }
+.col .bar.softgain { background: var(--gain-fill); box-shadow: inset 0 0 0 1px var(--gain); }
+.col .bar.smooth { background: var(--smooth); }
+.col .bar.inkbar { background: var(--ink); }
+
+.col .mlabel {
+  position: absolute;
+  left: 0; right: 0; bottom: -19px;
+  text-align: center;
+  font: 600 9px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+}
+
+.chart .zero, .chart .target {
+  position: absolute;
+  left: 0; right: 0;
+  height: 0;
+  border-top: 1px dashed var(--ink);
+  pointer-events: none;
+}
+.chart .zero { border-top-style: solid; border-color: var(--ink-quiet); }
+
+.chart .target-tag {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  padding: 2px 6px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--ink);
+  border-radius: var(--r-sm);
+  font: 600 10px/1.3 Arial, Helvetica, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 2px; }
+.legend span { display: flex; align-items: flex-start; gap: 7px; font-size: 13px; line-height: 19px; color: var(--ink); }
+.legend i { width: 12px; height: 12px; margin-top: 4px; border-radius: 2px; flex: none; }
+
+/* ── Figure rows ──────────────────────────────────────────────────────── */
+
+.figure-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.fig {
+  flex: 1 1 130px;
+  min-width: 130px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--wash);
+}
+.fig.mark-market { box-shadow: inset 3px 0 0 var(--market); }
+.fig.mark-smooth { box-shadow: inset 3px 0 0 var(--smooth); }
+.fig.mark-ink    { box-shadow: inset 3px 0 0 var(--ink); }
+.fig.mark-gain   { box-shadow: inset 3px 0 0 var(--gain); }
+
+.fig .k { display: block; font: 600 10px/1.4 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.fig .v { display: block; margin-top: 4px; font: 400 24px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.02em; color: var(--ink); }
+.fig .v.sm { font-size: 19px; }
+.fig .n { display: block; margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+
+/* ── Choice cards (household) ─────────────────────────────────────────── */
+
+.choice-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.choice:hover  { background: var(--wash); }
+.choice:active { background: var(--wash-deep); }
+.choice[aria-checked="true"] {
+  background: var(--wash);
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.choice h3 { margin: 6px 0 8px; font: 400 21px/25px Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.choice p { margin: 0 0 10px; font-size: 13px; line-height: 19px; color: var(--ink); }
+.choice dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12px; line-height: 17px; }
+.choice dt { color: var(--ink-quiet); }
+.choice dd { margin: 0; font-variant-numeric: tabular-nums; }
+.choice .chosen { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font: 600 10px/1 Arial; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.choice:not([aria-checked="true"]) .chosen { visibility: hidden; }
+
+/* ── Lists: bounds, gives, conditions ─────────────────────────────────── */
+
+.bounds, .gives, .conditions { margin: 12px 0 0; padding: 0; list-style: none; }
+
+.bounds li, .gives li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 20px;
+}
+.bounds li:first-child, .gives li:first-child { border-top: 0; }
+
+.gives li .mk, .bounds li .mk {
+  font: 600 10px/20px Arial;
+  letter-spacing: .06em;
+  color: var(--ink-quiet);
+  font-variant-numeric: tabular-nums;
+}
+.gives li.on { color: var(--ink); }
+.gives li.on .mk { color: var(--market); }
+.gives li.off { color: var(--ink-quiet); }
+.gives li b { font-weight: bold; }
+
+.conditions { counter-reset: c; }
+.conditions li {
+  counter-increment: c;
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 20px;
+}
+.conditions li:first-child { border-top: 0; }
+.conditions li::before {
+  content: counter(c);
+  font: 400 18px/20px Georgia, serif;
+  color: var(--accent);
+}
+
+/* ── Agent tape ───────────────────────────────────────────────────────── */
+
+.tape { margin: 12px 0 0; padding: 0; list-style: none; min-height: 190px; }
+
+.tape li {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-top: 1px solid var(--hairline);
+  font-size: 13px;
+  line-height: 19px;
+}
+.tape li:first-child { border-top: 0; }
+.tape .t { font-variant-numeric: tabular-nums; color: var(--ink-quiet); font-size: 12px; }
+.tape .m { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: bold; }
+.tape .m.in  { color: var(--gain); }
+.tape .m.out { color: var(--market); }
+.tape li.fresh { background: var(--wash); border-radius: var(--r-sm); }
+
+/* ── Ledger (the arithmetic of the target) ────────────────────────────── */
+
+.ledger { margin-top: 18px; border-top: 1px solid var(--hairline); }
+
+.ledger .row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 20px;
+}
+.ledger .row > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ledger .row.total { font-weight: bold; border-bottom: 0; }
+.ledger .row .why { display: block; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.ledger .row.credit > :last-child { color: var(--gain); }
+.ledger .row.charge > :last-child { color: var(--market); }
+
+/* ── Triptych (page 7) ────────────────────────────────────────────────── */
+
+.triptych { display: grid; gap: 18px; margin-top: 16px; }
+
+.trip {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--wash);
+}
+.trip .who { min-width: 0; }
+.trip h3 { margin: 4px 0 2px; font: 400 19px/23px Georgia, serif; letter-spacing: -.02em; }
+.trip .tot { font: 400 26px/1.1 Georgia, serif; letter-spacing: -.025em; }
+.trip .sub { font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.trip .mini { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; height: 62px; align-items: end; }
+.trip .mini i { display: block; border-radius: 1px; }
+.trip .mini i.trueup { margin-left: 8px; }
+
+/* ── Tower (page 8) ───────────────────────────────────────────────────── */
+
+.tower { display: grid; gap: 8px; }
+
+.layer {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--wash);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.layer .lh { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.layer .ln { font: 600 11px/1.4 Arial; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-quiet); }
+.layer .lv { font-size: 13px; font-variant-numeric: tabular-nums; }
+.layer .meter { position: relative; height: 10px; margin-top: 8px; border-radius: 5px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink-quiet); overflow: hidden; }
+.layer .meter i { position: absolute; inset: 0 auto 0 0; background: var(--market); border-radius: 5px; }
+.layer.exhausted { box-shadow: inset 0 0 0 2px var(--market); }
+.layer.exhausted .ln { color: var(--market); }
+.layer .note { margin-top: 6px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+
+.breakevens { display: grid; gap: 8px; margin-top: 12px; }
+.be { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: baseline; font-size: 13px; line-height: 19px; padding: 7px 0; border-top: 1px solid var(--hairline); }
+.be:first-child { border-top: 0; }
+.be b { font-variant-numeric: tabular-nums; }
+.be.hit b { color: var(--market); }
+.be .who { color: var(--ink); }
+.be .who em { font-style: normal; color: var(--ink-quiet); }
+
+/* ── Legal (page 10) ──────────────────────────────────────────────────── */
+
+.chain { display: grid; gap: 6px; margin: 14px 0 0; }
+.chain .node {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--wash);
+  font-size: 14px;
+  line-height: 20px;
+}
+.chain .node .r { display: block; font: 600 10px/1.4 Arial; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.chain .arr { text-align: center; color: var(--rule); line-height: 1; font-size: 14px; }
+
+.legal-grid { display: grid; gap: 0; margin-top: 18px; }
+.legal-grid div {
+  display: grid;
+  grid-template-columns: minmax(110px, 150px) 1fr;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 20px;
+}
+.legal-grid dt { font: 600 10px/20px Arial; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); margin: 0; }
+.legal-grid dd { margin: 0; }
+.legal-grid .warn dd { color: var(--market); }
+
+/* ── Verdicts (page 11) ───────────────────────────────────────────────── */
+
+.verdicts { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.verdict {
+  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.verdict.sel { background: var(--wash); box-shadow: inset 0 0 0 1px var(--ink); }
+.verdict h3 { margin: 6px 0 10px; font: 400 20px/24px Georgia, serif; letter-spacing: -.02em; }
+ /* Ground stays paper: a signal hue is annotation, never a field for type
+    (design.md §9). On its own 16% fill a 10px label measures 4.0:1; on the
+    paper it is 4.9–5.8:1. */
+.verdict .who-wins { display: inline-block; margin-bottom: 10px; padding: 3px 8px; border-radius: var(--r-sm); font: 600 10px/1.6 Arial; letter-spacing: .12em; text-transform: uppercase; box-shadow: inset 0 0 0 1px currentColor; }
+.verdict .who-wins.hardware  { color: var(--gain); }
+.verdict .who-wins.financial { color: var(--ink); }
+.verdict .who-wins.neither   { color: var(--market); }
+.verdict p { margin: 0 0 10px; font-size: 14px; line-height: 20px; }
+.verdict p:last-child { margin-bottom: 0; }
+.verdict .why { color: var(--ink-quiet); font-size: 13px; line-height: 19px; }
+
+/* ── Narrow ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .page.is-current,
+  .page-cover.is-current { grid-template-columns: 1fr; gap: 28px; }
+  .choice-grid, .verdicts { grid-template-columns: 1fr; }
+  .page { padding: 24px 16px 40px; }
+  h2 { font-size: 29px; line-height: 32px; }
+  .cover-title { font-size: 38px; line-height: 39px; }
+  .shell-head, .shell-foot { padding: 0 14px; gap: 10px; }
+  .brand-sub { display: none; }
+  .brand-mark { white-space: nowrap; }
+  .hint { display: none; }
+  .head-right { gap: 10px; min-width: 0; }
+  /* The word HOUSEHOLD is redundant beside a household name, and the header
+     has no room for it; the select keeps its accessible name. */
+  .household-chip > .eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .household-chip select { max-width: 47vw; font-size: 12px; }
+  .position { font-size: 10px; letter-spacing: .08em; }
+  .plate { padding: 16px; }
+  .trip { grid-template-columns: 1fr; gap: 10px; }
+  .legal-grid div { grid-template-columns: 1fr; gap: 2px; }
+  .legal-grid dt { line-height: 1.4; }
+  .chart { height: 160px; }
+  .cover-plate { min-height: 280px; }
+  .cp-inner { inset: 0 0 66px 0; }
+  .tape { min-height: 0; }
+  .tape li { grid-template-columns: 46px 1fr; }
+  .tape .m { grid-column: 2; }
+}
+
+@media (max-width: 420px) {
+  .fig { min-width: 100%; }
+  .chart { gap: 2px; }
+  .col .mlabel { font-size: 8px; letter-spacing: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

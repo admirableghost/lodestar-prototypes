@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Error Protection — 2036</title>
+<meta name="description" content="A 2036 projection of consumer agent error cover, built around the instruction-versus-action record, the liability waterfall, and the small residual left for a policy. Invented figures." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FBF9F1'/%3E%3Crect x='6' y='7' width='20' height='3' fill='%2350506B'/%3E%3Crect x='6' y='14' width='20' height='3' fill='%2350506B'/%3E%3Crect x='6' y='21' width='11' height='3' fill='%23A3302B'/%3E%3C/svg%3E" />
+<!-- NO WEBFONTS, by design. The Fieldnotes typographic idea is a tight,
+     negatively-tracked Georgia headline against a small, widely-tracked Arial
+     eyebrow — two families already on the machine. Nothing here is fetched. -->
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="reader-header">
+  <a class="text-button" href="../../index.html#agent-liability">Back to the edition</a>
+  <p class="reader-edition-title"><span>Agent Error Protection</span><span class="sep" aria-hidden="true">/</span><span class="dim">Prototype</span></p>
+  <p class="reader-meta">2036 projection</p>
+</header>
+
+<main class="stage" id="stage" tabindex="-1">
+
+<!-- ═══════════════ 1 · COVER ═══════════════ -->
+<article class="paper cover" data-page="1" aria-label="Page 1 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="cover-photo" aria-hidden="true"><div class="cover-fade"></div></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">Prototype / 2036</p>
+    <h2 class="page-copy cover-copy"><span>The record</span><span>is the product.</span></h2>
+    <p class="body-copy wide">By 2036 a household delegates continuously — money, deliveries, short contracts, and machines that move on their own — and every act leaves a signed trace of what was instructed and what was done. This walks one wrong instruction through that trace, past everyone who pays before an insurer does, and into the small residual left over.</p>
+    <p class="framing wide"><span class="eyebrow">What this is</span>Everything here is a projection: the year is 2036, the household and its loss are invented, the figures are illustrative rather than measured, and no real merchant, platform, insurer or payment network is shown as a participant.</p>
+    <p class="cover-go"><button class="pill" type="button" data-goto="2">Begin<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></p>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 2 · THE STREAM ═══════════════ -->
+<article class="paper" data-page="2" hidden aria-label="Page 2 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">01 / Delegation at household scale</p>
+    <h2 class="page-copy">Delegation became continuous.</h2>
+    <p class="body-copy">A household now runs a standing fleet of agents that pay, book, sign and dispatch a few hundred times a week, nearly all of it unremarkable. What changed for an underwriter is not the volume but the mandate attached to every act, which makes delegation observable for the first time.</p>
+
+    <div class="story-visual">
+      <div class="visual-head">
+        <p class="eyebrow">Okonjo household · Tuesday 10 March 2036 · live log</p>
+        <div class="controls">
+          <button class="pill sm ghost" type="button" id="streamPlay" aria-live="off">Pause</button>
+          <div class="chips" role="group" aria-label="Filter the log by kind of act">
+            <button class="chip on" type="button" data-cat="money" aria-pressed="true">Money</button>
+            <button class="chip on" type="button" data-cat="logistics" aria-pressed="true">Logistics</button>
+            <button class="chip on" type="button" data-cat="machines" aria-pressed="true">Machines</button>
+          </div>
+        </div>
+      </div>
+      <div class="stream-frame">
+        <!-- aria-live is off deliberately: a row a second would flood a screen
+             reader. The week's tally below is the accessible summary. -->
+        <ol class="stream" id="stream" aria-live="off" aria-label="Sample of the household's delegated acts"></ol>
+      </div>
+      <div class="tally" id="tally">
+        <div class="tally-item"><span class="fig-t">214</span><span class="eyebrow">acts this week</span></div>
+        <div class="tally-item"><span class="fig-t ok">196</span><span class="eyebrow">within mandate</span></div>
+        <div class="tally-item"><span class="fig-t note">16</span><span class="eyebrow">paused to ask</span></div>
+        <div class="tally-item"><span class="fig-t">1</span><span class="eyebrow">refused by Ada</span></div>
+        <div class="tally-item"><span class="fig-t alert">1</span><span class="eyebrow">out of scope</span></div>
+      </div>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 3 · THE MANDATE ═══════════════ -->
+<article class="paper" data-page="3" hidden aria-label="Page 3 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">02 / The mandate</p>
+    <h2 class="page-copy">Authority, written down and signed.</h2>
+    <p class="body-copy">Before anything is delegated the household signs a mandate: scope, ceilings, forbidden acts, and how far an agent may go before it has to ask. It is the half of the record insurers have never had.</p>
+
+    <div class="story-visual split">
+      <div class="doc">
+        <div class="doc-head">
+          <p class="eyebrow">Okonjo household · standing mandate · version 7</p>
+          <p class="doc-sub">Select a clause</p>
+        </div>
+        <ul class="clauses" id="clauseList"></ul>
+      </div>
+      <div class="prov" id="prov" aria-live="polite"></div>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 4 · THE LEDGER ═══════════════ -->
+<article class="paper wide-paper" data-page="4" hidden aria-label="Page 4 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">03 / Instruction against action</p>
+    <h2 class="page-copy">One act with no authority behind it.</h2>
+    <p class="body-copy">On a Thursday in March the maintenance agent runs nine acts; eight match a clause and one does not.</p>
+
+    <div class="story-visual">
+      <div class="visual-head">
+        <p class="eyebrow">Maintenance agent · Thursday 12 March 2036 · instruction against action</p>
+        <div class="controls">
+          <button class="pill sm ghost" type="button" id="actPrev" aria-label="Previous act">&#9664;</button>
+          <span class="step-index" id="actIndex">Act 1 of 9</span>
+          <button class="pill sm ghost" type="button" id="actNext" aria-label="Next act">&#9654;</button>
+          <button class="pill sm" type="button" id="actJump">Jump to the divergence</button>
+        </div>
+      </div>
+
+      <div class="ledger">
+        <div class="ledger-detail" id="ledgerDetail" aria-live="polite"></div>
+        <ol class="acts" id="acts"></ol>
+      </div>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 5 · THE WATERFALL ═══════════════ -->
+<article class="paper wide-paper" data-page="5" hidden aria-label="Page 5 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">04 / Who pays, and in what order</p>
+    <h2 class="page-copy">Insurance is the fourth call.</h2>
+    <p class="body-copy">The same record is routed to whoever owes the loss first — the provider's own reversal, then the payment network's agent-error protection, then the platform's dispatch guarantee — and a policy answers only for what is left. Change the case and watch how often that is nothing.</p>
+
+    <div class="story-visual">
+      <div class="visual-head">
+        <p class="eyebrow">Choose a notified loss</p>
+        <div class="controls">
+          <div class="chips" id="caseChips" role="group" aria-label="Choose a notified loss"></div>
+          <button class="pill sm" type="button" id="fallStep">Next layer</button>
+          <button class="pill sm ghost" type="button" id="fallAll">Settle it</button>
+        </div>
+      </div>
+
+      <div class="fall-total">
+        <div><span class="eyebrow">Notified loss</span><span class="fig-h" id="fallTotal">$1,720</span></div>
+        <div class="fall-bar" id="fallBar" role="img" aria-label="Share of the loss absorbed by each layer"></div>
+      </div>
+      <p class="fall-key" id="fallKey"></p>
+
+      <div class="layers" id="layers"></div>
+      <p class="fall-verdict" id="fallVerdict"></p>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 6 · THE BOOK ═══════════════ -->
+<article class="paper wide-paper" data-page="6" hidden aria-label="Page 6 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">05 / The size of the residual</p>
+    <h2 class="page-copy">Most of it never reaches the policy.</h2>
+    <p class="body-copy">Across a projected year of a thousand reported agent errors, 939 close at a provider, a network or a platform, and 61 reach the policy. The residual is small and its severity is long-tailed, which is the only shape in which this is insurance at all.</p>
+
+    <div class="story-visual">
+      <div class="visual-head">
+        <p class="eyebrow">1,000 notified losses · 40,000 households · one projected year</p>
+      </div>
+      <div class="book">
+        <div class="waffle" id="waffle" role="img" aria-label="One thousand dots, one per notified loss, coloured by the layer that closed it: 612 provider reversal, 197 network protection, 106 platform guarantee, 61 policy paid, 24 nothing owed."></div>
+        <ul class="book-legend" id="bookLegend"></ul>
+      </div>
+      <div class="book-foot">
+        <div class="stat"><span class="fig-h">$1,180</span><span class="eyebrow">mean paid claim</span></div>
+        <div class="stat"><span class="fig-h">$21,400</span><span class="eyebrow">largest paid claim</span></div>
+        <div class="stat"><span class="fig-h">$18</span><span class="eyebrow">to settle from the record</span></div>
+        <div class="stat"><span class="fig-h alert">$140</span><span class="eyebrow">to reconstruct without it</span></div>
+      </div>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 7 · THE PREMIUM ═══════════════ -->
+<article class="paper wide-paper" data-page="7" hidden aria-label="Page 7 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">06 / What the premium buys</p>
+    <h2 class="page-copy">The indemnity is the thin slice.</h2>
+    <p class="body-copy">Set the household's mandate and the price, the limit and the share all move, because a confirmation step and a boundary rule are the two things that actually change the loss.</p>
+
+    <div class="story-visual split-wide">
+      <div class="dials" id="dials"></div>
+      <div class="quote">
+        <div class="quote-head">
+          <p class="eyebrow">Invented rating sketch · no filed rates exist for this anywhere</p>
+        </div>
+        <div class="quote-figs">
+          <div class="stat"><span class="fig-h" id="qPrice">$2.40</span><span class="eyebrow">per month</span></div>
+          <div class="stat"><span class="fig-h" id="qLimit">$10,000</span><span class="eyebrow">per event</span></div>
+          <div class="stat"><span class="fig-h" id="qShare">$100</span><span class="eyebrow">household share</span></div>
+        </div>
+        <p class="eyebrow tight">Where the annual premium goes</p>
+        <div class="decomp" id="decomp" role="img" aria-label="Breakdown of the annual premium"></div>
+        <ul class="decomp-key" id="decompKey"></ul>
+        <p class="quote-why" id="qWhy"></p>
+      </div>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 8 · TRUST ═══════════════ -->
+<article class="paper" data-page="8" hidden aria-label="Page 8 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">07 / Before you underwrite this</p>
+    <h2 class="page-copy">Three things we cannot answer.</h2>
+
+    <div class="story-visual">
+      <ul class="boundaries" id="boundaries"></ul>
+    </div>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+<!-- ═══════════════ 9 · CLOSING ═══════════════ -->
+<article class="paper closing" data-page="9" hidden aria-label="Page 9 of 9">
+  <div class="spine" aria-hidden="true"></div>
+  <div class="paper-content">
+    <p class="paper-brand"><span class="brand-mark">agent error protection</span></p>
+    <p class="eyebrow">A concept for tomorrow</p>
+    <h2 class="page-copy closing-copy">Delegation you can prove.</h2>
+    <p class="body-copy wide">If the record is trustworthy the claim becomes arithmetic, the residual stays small, and the thing worth building first is not the policy.</p>
+    <nav class="closing-links" aria-label="Go back into the prototype">
+      <button class="pill" type="button" data-goto="4">The record<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+      <button class="pill ghost" type="button" data-goto="5">The waterfall<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+      <button class="pill ghost" type="button" data-goto="1">Start again<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+    </nav>
+  </div>
+  <footer class="paper-footer">Agent Error Protection · a concept for tomorrow · 2036 projection, invented figures</footer>
+</article>
+
+</main>
+
+<footer class="reader-footer">
+  <nav class="reader-navigation" aria-label="Pages">
+    <button class="icon-button" type="button" id="prev" aria-label="Previous page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <label class="page-picker">
+      <span class="sr-only">Jump to a page</span>
+      <select id="picker">
+        <option value="1">1 of 9 · The record is the product</option>
+        <option value="2">2 of 9 · Delegation at household scale</option>
+        <option value="3">3 of 9 · The mandate</option>
+        <option value="4">4 of 9 · Instruction against action</option>
+        <option value="5">5 of 9 · Who pays, and in what order</option>
+        <option value="6">6 of 9 · The size of the residual</option>
+        <option value="7">7 of 9 · What the premium buys</option>
+        <option value="8">8 of 9 · Before you underwrite this</option>
+        <option value="9">9 of 9 · Delegation you can prove</option>
+      </select>
+    </label>
+    <button class="icon-button" type="button" id="next" aria-label="Next page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </nav>
+  <p class="sr-only" id="announce" aria-live="polite"></p>
+</footer>
+
+<script src="./app.js"></script>
+</body>
+</html>
