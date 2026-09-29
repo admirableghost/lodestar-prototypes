@@ -1,0 +1,170 @@
+[
+  {
+    "atUtc": "2025-01-07T12:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "NORMAL",
+    "toValue": "MONITOR",
+    "label": "Recommended posture changed: NORMAL to MONITOR"
+  },
+  {
+    "atUtc": "2025-01-07T20:00:00Z",
+    "kind": "fireDetected",
+    "fromValue": null,
+    "toValue": "0.35",
+    "label": "First active fire detection within range (0.35 km)"
+  },
+  {
+    "atUtc": "2025-01-07T20:00:00Z",
+    "kind": "immediateExposureChange",
+    "fromValue": "LOW",
+    "toValue": "CRITICAL",
+    "label": "Immediate exposure changed: LOW to CRITICAL"
+  },
+  {
+    "atUtc": "2025-01-07T20:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "MONITOR",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: MONITOR to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-07T20:00:00Z",
+    "kind": "upwindShift",
+    "fromValue": "false",
+    "toValue": "true",
+    "label": "Fire mass shifted upwind of the property"
+  },
+  {
+    "atUtc": "2025-01-09T00:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "ACT",
+    "label": "Recommended posture changed: PREPARE to ACT"
+  },
+  {
+    "atUtc": "2025-01-09T01:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "ACT",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: ACT to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-09T03:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "ACT",
+    "label": "Recommended posture changed: PREPARE to ACT"
+  },
+  {
+    "atUtc": "2025-01-09T08:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "ACT",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: ACT to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-09T10:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "ACT",
+    "label": "Recommended posture changed: PREPARE to ACT"
+  },
+  {
+    "atUtc": "2025-01-09T14:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "ACT",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: ACT to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-09T15:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "ACT",
+    "label": "Recommended posture changed: PREPARE to ACT"
+  },
+  {
+    "atUtc": "2025-01-09T17:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "ACT",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: ACT to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-09T22:00:00Z",
+    "kind": "immediateExposureChange",
+    "fromValue": "CRITICAL",
+    "toValue": "HIGH",
+    "label": "Immediate exposure changed: CRITICAL to HIGH"
+  },
+  {
+    "atUtc": "2025-01-09T22:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "MONITOR",
+    "label": "Recommended posture changed: PREPARE to MONITOR"
+  },
+  {
+    "atUtc": "2025-01-10T02:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "MONITOR",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: MONITOR to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-10T02:00:00Z",
+    "kind": "upwindShift",
+    "fromValue": "false",
+    "toValue": "true",
+    "label": "Fire mass shifted upwind of the property"
+  },
+  {
+    "atUtc": "2025-01-10T09:00:00Z",
+    "kind": "immediateExposureChange",
+    "fromValue": "HIGH",
+    "toValue": "LOW",
+    "label": "Immediate exposure changed: HIGH to LOW"
+  },
+  {
+    "atUtc": "2025-01-10T09:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "MONITOR",
+    "label": "Recommended posture changed: PREPARE to MONITOR"
+  },
+  {
+    "atUtc": "2025-01-10T10:00:00Z",
+    "kind": "fireDetected",
+    "fromValue": null,
+    "toValue": "4.78",
+    "label": "First active fire detection within range (4.78 km)"
+  },
+  {
+    "atUtc": "2025-01-10T10:00:00Z",
+    "kind": "immediateExposureChange",
+    "fromValue": "LOW",
+    "toValue": "HIGH",
+    "label": "Immediate exposure changed: LOW to HIGH"
+  },
+  {
+    "atUtc": "2025-01-10T10:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "MONITOR",
+    "toValue": "PREPARE",
+    "label": "Recommended posture changed: MONITOR to PREPARE"
+  },
+  {
+    "atUtc": "2025-01-10T10:00:00Z",
+    "kind": "upwindShift",
+    "fromValue": "false",
+    "toValue": "true",
+    "label": "Fire mass shifted upwind of the property"
+  },
+  {
+    "atUtc": "2025-01-10T20:00:00Z",
+    "kind": "interventionUrgencyChange",
+    "fromValue": "PREPARE",
+    "toValue": "MONITOR",
+    "label": "Recommended posture changed: PREPARE to MONITOR"
+  }
+]

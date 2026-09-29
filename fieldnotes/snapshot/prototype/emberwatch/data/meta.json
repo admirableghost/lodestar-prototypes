@@ -1,0 +1,16 @@
+{
+  "generatedAtUtc": "2026-09-19T22:20:24.433Z",
+  "hourCount": 96,
+  "firstHourUtc": "2025-01-07T00:00:00Z",
+  "lastHourUtc": "2025-01-10T23:00:00Z",
+  "primaryProvider": "jev",
+  "comparisonProvider": "laya",
+  "sourceFiles": [
+    "data/normalized/risk-state-hourly.json",
+    "data/decisions/jev-batched.json",
+    "data/decisions/laya-batched.json",
+    "data/normalized/fire-detections.json"
+  ],
+  "activeFireWindowHours": 12,
+  "detectionSearchRadiusKm": 25
+}
