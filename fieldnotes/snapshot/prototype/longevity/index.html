@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Understanding Longevity — 2036</title>
-<meta name="description" content="An invented 2036 projection of a retirement-income comparison service: the terms that decide the outcome, shown ahead of the rate. Guidance, not advice.">
+<meta name="description" content="An invented 2036 projection: Robert and Ada convert £150,000 into an income for life, and the terms that decide the outcome are shown ahead of the rate. Guidance, not advice.">
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <!-- NO WEBFONTS. Georgia against Arial, as the rest of the collection is set,
      so this renders identically offline and makes no external request. -->
@@ -14,208 +14,221 @@
 
 <div class="grain" aria-hidden="true"></div>
 
-<header class="shell-head">
-  <span class="brand-mark">Understanding Longevity</span>
-  <span class="head-mid">A Fieldnotes prototype &middot; set in 2036</span>
-  <span class="head-count" id="headCount">01 / 08</span>
-</header>
-
 <main class="stage" id="stage" tabindex="-1">
 
-<!-- ============================================================ 1 cover -->
-<section class="page page-cover" id="page-1" data-title="The frame" aria-labelledby="h1-1">
-  <div class="cover-photo" role="img" aria-label="A couple in their seventies sitting together in a garden in late afternoon light.">
+<!-- ==================================================== 1 · the afternoon -->
+<section class="scene sc-cover" id="page-1" data-title="Robert and Ada" data-cta="See what we already know" aria-labelledby="h-1">
+  <div class="ground g-cover" role="img" aria-label="Robert and Ada in their seventies, sitting together in the garden in late afternoon light."></div>
+  <div class="scrim sc-cover-scrim" aria-hidden="true"></div>
+  <div class="layer sc-cover-in">
+
+    <aside class="plate card-household">
+      <p class="eyebrow">The household</p>
+      <dl class="who">
+        <div><dt>Robert</dt><dd>71, thirty years on the water board</dd></div>
+        <div><dt>Ada</dt><dd>68, three years behind him</dd></div>
+        <div><dt>Together</dt><dd>41 years, same house since 1994</dd></div>
+        <div><dt>Thursday</dt><dd>£150,000 of £520,000, converted for life</dd></div>
+      </dl>
+    </aside>
+
     <div class="cover-type">
       <p class="eyebrow">Understanding Longevity &middot; 2036</p>
-      <h1 class="display" id="h1-1">A lifetime of savings,<br>and one afternoon<br>you cannot take back.</h1>
+      <h1 class="display" id="h-1">This is Robert.<br>This is Ada.</h1>
+      <p class="lede">His scheme wrote to him in March: convert the pot or leave it where it is. What he actually wants to know is what happens to Ada.</p>
     </div>
-  </div>
 
-  <div class="cover-grid">
-    <div>
-      <p class="lede">In 2036 the same £150,000 can go into three contracts and produce three different lives, and the thing that decides which is not the rate.</p>
-      <p style="margin-top:18px"><button class="pill" data-go="2">Begin<span aria-hidden="true">→</span></button></p>
-    </div>
-    <div class="frame">
-      <p class="eyebrow">Read this once</p>
-      <p>This is an invented projection of 2036, ten years after a carrier ships the service; every figure, contract and household on these screens is made up, nothing is measured, and no real product is quoted. It compares and explains, which is guidance and not financial advice, and it promises no return to anyone.</p>
-    </div>
+    <p class="plate note-plate cover-note">Everything here is invented &mdash; the household, the contracts and every figure &mdash; nothing is measured, no real product is quoted, and this compares and explains rather than advising or promising any return.</p>
+
   </div>
 </section>
 
-<!-- ========================================================== 2 position -->
-<section class="page" id="page-2" data-title="What is already known" aria-labelledby="h1-2" hidden>
-  <div class="photo-band" role="img" aria-label="Robert at his kitchen table with papers and photographs."></div>
-  <div class="pos-grid">
-    <div>
-      <p class="eyebrow">01 / The position</p>
-      <h2 class="head" id="h1-2">Nothing here was typed in.</h2>
-      <p class="body-copy">Robert is 71 and Ada is 68, and the household agent has held their real position continuously since the year this service shipped, so the comparison starts from what is true rather than from what someone remembered on a form. Their floor — the part of a month that is not optional — is measured from what they actually spend, not estimated from a bracket.</p>
-      <p><button class="ghost" id="srcToggle" aria-pressed="false">Show where each figure comes from</button></p>
-      <p class="note" id="srcNote" hidden>Each figure names its source and the moment it was last reconciled, and any one of them can be challenged and corrected by the household.</p>
+<!-- ====================================================== 2 · the position -->
+<section class="scene sc-pos" id="page-2" data-title="The kitchen table" data-cta="Read the terms" aria-labelledby="h-2" hidden>
+  <div class="ground g-robert" role="img" aria-label="Robert at the kitchen table with papers and old photographs spread in front of him."></div>
+  <div class="scrim sc-pos-scrim" aria-hidden="true"></div>
+  <div class="layer sc-pos-in">
+
+    <div class="plate pos-type">
+      <p class="eyebrow">01 &middot; The position</p>
+      <h2 class="head" id="h-2">Nothing here was typed in.</h2>
+      <p class="body-copy">The household agent has held their position since the service shipped, so this starts from what is true rather than from what Robert remembered on a form.</p>
+      <p><button class="ghost" id="srcToggle" aria-pressed="false">Where each figure comes from</button></p>
     </div>
-    <div class="fig-list" id="figGrid"></div>
+
+    <div class="plate fig-list" id="figGrid"></div>
+
   </div>
 </section>
 
-<!-- ============================================================= 3 terms -->
-<section class="page" id="page-3" data-title="The terms that decide it" aria-labelledby="h1-3" hidden>
-  <p class="eyebrow">02 / The terms</p>
-  <h2 class="head" id="h1-3">The rate is the last row.</h2>
-  <p class="body-copy">Four terms decide how this ends — what happens to inflation, what happens to access, what happens to Ada, and who stands behind the promise — and the headline income is none of them. Open any cell to read what that contract actually says.</p>
-
-  <div class="terms" id="termsTable"></div>
-  <div id="termOut"></div>
-
-  <p style="margin-top:14px"><button class="ghost" id="rateToggle" aria-pressed="false">Show the headline rate</button></p>
+<!-- ========================================================= 3 · the terms -->
+<section class="scene sc-terms" id="page-3" data-title="The terms" data-cta="Run a life" aria-labelledby="h-3" hidden>
+  <div class="layer sc-terms-in">
+    <div class="terms" id="termsTable"></div>
+    <div id="termOut"></div>
+  </div>
 </section>
 
-<!-- ============================================================= 4 lives -->
-<section class="page" id="page-4" data-title="Four lives" aria-labelledby="h1-4" hidden>
-  <p class="eyebrow">03 / Consequences</p>
-  <h2 class="head" id="h1-4">Run a life, not a quote.</h2>
-  <p class="body-copy">The same £150,000 goes into each contract, and every candidate is run against a whole life rather than priced at a moment. Choose a life: the order changes, and the contract with the highest first payment is not the one that carries the household furthest.</p>
+<!-- ======================================================== 4 · four lives -->
+<section class="scene sc-lives" id="page-4" data-title="Four lives" data-cta="See what waiting costs" aria-labelledby="h-4" hidden>
+  <div class="layer sc-lives-in">
 
-  <div class="choices" id="lifePicker" role="group" aria-label="Choose a life to run"></div>
-  <div class="tracks" id="tracks"></div>
-  <div class="axis" aria-hidden="true"><div></div><div class="axis-scale"><span>71</span><span>80</span><span>90</span><span>100</span></div><div></div></div>
-  <div class="legend" id="legend"></div>
-  <p class="note" id="lifeNote" style="margin-top:12px"></p>
-</section>
-
-<!-- ============================================================ 5 bridge -->
-<section class="page" id="page-5" data-title="The bridge" aria-labelledby="h1-5" hidden>
-  <p class="eyebrow">04 / The bridge</p>
-  <h2 class="head" id="h1-5">Waiting is not free.</h2>
-  <p class="body-copy">A deferred contract pays nothing at all until it starts, so accessible savings carry the whole household across the gap alone. Drag the start date: every year of waiting buys a larger payment and leaves a longer, thinner bridge to cross before it arrives.</p>
-
-  <div class="bridge-grid">
-    <div>
-      <div class="slider-wrap">
-        <p class="lbl"><label for="startSlider">First payment at age <span id="startVal">80</span></label></p>
-        <input type="range" id="startSlider" min="78" max="88" step="1" value="80"
-               aria-valuetext="Age 80">
-        <div class="slider-scale" aria-hidden="true"><span>78</span><span>83</span><span>88</span></div>
+    <div class="lives-top">
+      <div class="lives-type">
+        <p class="eyebrow">03 &middot; Consequences</p>
+        <h2 class="head tight" id="h-4">Run a life, not a quote.</h2>
       </div>
-      <div class="readouts" id="bridgeReadouts"></div>
-      <div class="choices" id="stressPicker" role="group" aria-label="Choose a stress to test the bridge against"></div>
-      <p class="note" id="bridgeVerdict"></p>
+      <div class="choices" id="lifePicker" role="group" aria-label="Choose a life to run"></div>
     </div>
-    <div class="chart-card">
-      <div id="bridgeChart"></div>
+
+    <div class="spans" id="spans"></div>
+    <div class="tracks" id="tracks"></div>
+    <div class="track-axis" id="trackAxis" aria-hidden="true"></div>
+
+    <div class="lives-foot">
+      <p class="note" id="lifeNote"></p>
+      <div class="legend" id="legend"></div>
     </div>
+
+    <div class="plate verdict-plate" id="lifeVerdict" hidden></div>
   </div>
 </section>
 
-<!-- =========================================================== 6 undoing -->
-<section class="page" id="page-6" data-title="What cannot be undone" aria-labelledby="h1-6" hidden>
-  <p class="eyebrow">05 / Irreversibility</p>
-  <h2 class="head" id="h1-6">What you cannot undo.</h2>
-  <p class="body-copy">Thirty days after the money moves, almost nothing about this decision can be reversed at any price, and that fact is nowhere on a rate table. Move the marker to a date and read what is still open on it.</p>
+<!-- ======================================================== 5 · the bridge -->
+<section class="scene sc-bridge" id="page-5" data-title="The bridge" data-cta="See what cannot be undone" aria-labelledby="h-5" hidden>
+  <div class="ground g-bridge" id="bridgeChart"></div>
+  <div class="layer sc-bridge-in">
 
-  <div class="tl">
-    <div class="tl-side">
-      <p class="lbl"><label for="timeSlider">Marker at</label></p>
-      <p class="tl-now" id="timeVal">18 months</p>
+    <div class="plate bridge-type">
+      <p class="eyebrow">04 &middot; The bridge</p>
+      <h2 class="head tight" id="h-5">Waiting is not free.</h2>
+      <p class="body-copy">A deferred contract pays nothing until it starts, so their savings carry the household across the gap alone.</p>
     </div>
-    <div class="tl-main">
+
+    <div class="readouts plate" id="bridgeReadouts"></div>
+
+    <div class="plate bridge-verdict"><p class="note" id="bridgeVerdict"></p></div>
+
+    <div class="plate bridge-controls">
+      <div class="choices tight" id="stressPicker" role="group" aria-label="Choose a life to test the bridge against"></div>
+      <p class="lbl"><label for="startSlider">First payment at age <span id="startVal">80</span></label></p>
+      <input type="range" id="startSlider" min="78" max="88" step="1" value="80" aria-valuetext="Age 80">
+      <div class="slider-scale" aria-hidden="true"><span>78</span><span>83</span><span>88</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== 6 · what cannot be undone -->
+<section class="scene sc-undo" id="page-6" data-title="Irreversibility" data-cta="Where this stops" aria-labelledby="h-6" hidden>
+  <div class="layer sc-undo-in">
+
+    <div class="undo-top">
+      <div class="undo-type">
+        <p class="eyebrow">05 &middot; Irreversibility</p>
+        <h2 class="head tight" id="h-6">Thirty days of green, then a wall.</h2>
+      </div>
+      <div class="undo-now">
+        <p class="lbl"><label for="timeSlider">Marker at</label></p>
+        <p class="tl-now" id="timeVal">18 months</p>
+      </div>
+    </div>
+
+    <div class="tl-bars" id="tlBars"></div>
+    <div class="tl-axis">
       <input type="range" id="timeSlider" min="0" max="1000" step="1" value="300" aria-valuetext="18 months after the money moves">
       <div class="tl-ticks" id="tlTicks" aria-hidden="true"></div>
     </div>
-    <div class="tl-names" id="tlNames"></div>
-    <div class="tl-bars" id="tlBars"></div>
-  </div>
 
-  <div class="legend" id="undoLegend" style="margin-bottom:16px"></div>
-  <div class="undo-grid" id="undoGrid"></div>
-</section>
-
-<!-- ============================================================ 7 bounds -->
-<section class="page" id="page-7" data-title="Where we stop" aria-labelledby="h1-7" hidden>
-  <p class="eyebrow">06 / The boundary</p>
-  <h2 class="head" id="h1-7">Where this stops.</h2>
-
-  <div class="bound-grid">
-    <div class="bound">
-      <h3>No recommendation</h3>
-      <p>It narrows, compares and explains, and it never ranks the three, names a best one or tells Robert which to sign.</p>
-    </div>
-    <div class="bound">
-      <h3>Targeted support, UK</h3>
-      <p>The FCA regime live since April 2026 permits suggestions to groups of consumers who share characteristics, which is the whole of what runs here, and it stops deliberately short of a personal recommendation.</p>
-    </div>
-    <div class="bound">
-      <h3>A licensed producer, US</h3>
-      <p>The same screens are a producer's comparison rather than a proposal, and the moment any of it became a recommendation the best-interest standard would attach to it.</p>
-    </div>
-  </div>
-
-  <div class="handover">
-    <div>
-      <p class="eyebrow">The handover</p>
-      <p class="body-copy">Press hand over and a regulated human receives the whole file, not a lead.</p>
-      <p style="margin-top:14px"><button class="pill" id="handToggle" aria-pressed="false" aria-controls="handList">Hand over to a regulated adviser</button></p>
-    </div>
-    <ul id="handList" hidden>
-      <li>The position, with every source and reconciliation time</li>
-      <li>Every term opened, and when it was opened</li>
-      <li>The four lives run, and the assumptions behind each</li>
-      <li>The start age chosen, and the bridge it implies</li>
-      <li>What was never asked: tax, estate, property, health</li>
-      <li>A record that no recommendation was made here</li>
-    </ul>
+    <div class="legend" id="undoLegend"></div>
   </div>
 </section>
 
-<!-- =========================================================== 8 closing -->
-<section class="page" id="page-8" data-title="The tenth year" aria-labelledby="h1-8" hidden>
-  <p class="eyebrow">Understanding Longevity</p>
-  <h2 class="head" id="h1-8">Ten years in.</h2>
-  <p class="body-copy">Rate comparison was solved, well funded and busy long before this shipped, and on the evidence it was never the thing standing between a household and a decision. On 2025 ABI figures roughly four in five UK annuity buyers took an income that never rises, which remains the strongest argument there is for putting escalation, access and survivorship ahead of the headline.</p>
+<!-- ====================================================== 7 · the boundary -->
+<section class="scene sc-bounds" id="page-7" data-title="Where this stops" data-cta="Ten years in" aria-labelledby="h-7" hidden>
+  <div class="layer sc-bounds-in">
 
-  <div class="close-grid">
-    <div class="close-card">
-      <p class="lbl">What 2036 changed</p>
-      <ul>
-        <li>Continuous household finances, so no intake</li>
-        <li>Cheap compute, so a life instead of a quote</li>
-        <li>Household machines, so a cheap long middle of care and an acute end that still is not</li>
-      </ul>
+    <div class="bound-grid">
+      <div class="bound">
+        <p class="eyebrow">06 &middot; The boundary</p>
+        <h2 class="head tight" id="h-7">Where this stops.</h2>
+      </div>
+      <div class="bound">
+        <h3>No recommendation</h3>
+        <p>It narrows, compares and explains. It never ranks the three or tells Robert which to sign.</p>
+      </div>
+      <div class="bound">
+        <h3>Targeted support, UK</h3>
+        <p>The FCA regime live since April 2026 permits suggestions to groups who share characteristics, short of a personal recommendation.</p>
+      </div>
+      <div class="bound">
+        <h3>A licensed producer, US</h3>
+        <p>The same screens are a comparison, not a proposal. Had they become a recommendation, the best-interest standard would attach.</p>
+      </div>
     </div>
-    <div class="close-card">
-      <p class="lbl">What it did not change</p>
-      <ul>
-        <li>Annuity capacity, never scarce</li>
-        <li>Rate transparency, already everywhere</li>
-        <li>The irreversibility, exactly as irreversible</li>
-      </ul>
-    </div>
-    <div class="close-card">
-      <p class="lbl">What a carrier gets</p>
-      <ul>
-        <li>Not a better quote engine</li>
-        <li>A household that understood what it bought</li>
-        <li>A file that shows it did, and a boundary drawn on screen</li>
+
+    <div class="handover">
+      <div class="handover-ask">
+        <p class="eyebrow">The handover</p>
+        <p class="body-copy" id="handWord">Robert presses this and a regulated human receives the whole file, not a lead.</p>
+        <p><button class="pill" id="handToggle" aria-pressed="false">Hand over to an adviser</button></p>
+      </div>
+      <ul id="handList">
+        <li>The position, with its sources</li>
+        <li>Every term and life run</li>
+        <li>Never asked: tax, estate, property, health</li>
+        <li>A record that no recommendation was made</li>
       </ul>
     </div>
   </div>
+</section>
 
-  <p class="wordmark">Understanding Longevity</p>
-  <p class="note" style="max-width:52ch">A Fieldnotes concept for 2036 &mdash; invented figures, invented contracts, no real provider, guidance rather than advice.</p>
-  <p style="margin-top:18px"><button class="ghost" data-go="1">Start again</button></p>
+<!-- ======================================================== 8 · ten years in -->
+<section class="scene sc-close" id="page-8" data-title="Ten years in" data-cta="Start again" aria-labelledby="h-8" hidden>
+  <div class="ground g-close" aria-hidden="true"></div>
+  <div class="scrim sc-close-scrim" aria-hidden="true"></div>
+  <div class="layer sc-close-in">
+
+    <div class="close-type">
+      <p class="eyebrow">Understanding Longevity</p>
+      <h2 class="head" id="h-8">Ten years in.</h2>
+      <p class="lede">Robert and Ada left this screen without a contract and with an appointment, which is the only outcome it was built to produce.</p>
+      <p class="body-copy">Rate comparison was solved long before this shipped, and on 2025 ABI figures roughly four in five UK annuity buyers still took an income that never rises.</p>
+    </div>
+
+    <div class="close-grid">
+      <div class="plate close-card">
+        <p class="lbl">2036 changed</p>
+        <ul><li>Continuous finances, so no intake</li><li>Cheap compute, so a life not a quote</li></ul>
+      </div>
+      <div class="plate close-card">
+        <p class="lbl">It did not change</p>
+        <ul><li>Annuity capacity, never scarce</li><li>Irreversibility, exactly as final</li></ul>
+      </div>
+      <div class="plate close-card">
+        <p class="lbl">A carrier gets</p>
+        <ul><li>Not a better quote engine</li><li>A household that understood it</li></ul>
+      </div>
+    </div>
+
+    <p class="wordmark">Understanding Longevity</p>
+  </div>
 </section>
 
 </main>
 
-<footer class="shell-foot">
-  <p class="foot-note">2036 projection &middot; invented figures and contracts &middot; guidance, not advice</p>
-  <nav class="foot-nav" aria-label="Pages">
-    <button class="icon-btn" id="prevBtn" aria-label="Previous page">&#8249;</button>
-    <label class="sr-only" for="pagePicker">Go to page</label>
-    <select class="picker" id="pagePicker"></select>
-    <button class="icon-btn" id="nextBtn" aria-label="Next page">&#8250;</button>
-  </nav>
-</footer>
+<!-- ============================================================== chrome -->
+<button class="chrome-back" id="prevBtn" aria-label="Previous screen"><span aria-hidden="true">&#8249;</span></button>
+
+<div class="chrome-meter plate">
+  <span class="head-count" id="headCount">01 / 08</span>
+  <label class="sr-only" for="pagePicker">Go to screen</label>
+  <select class="picker" id="pagePicker"></select>
+</div>
+
+<p class="chrome-foot">2036 projection &middot; invented figures and contracts &middot; guidance, not advice</p>
+
+<button class="chrome-next pill" id="nextBtn"><span id="nextLabel">Begin</span><span aria-hidden="true">&#8594;</span></button>
 
 <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
 

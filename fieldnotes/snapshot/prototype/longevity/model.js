@@ -58,14 +58,14 @@
       escalationLabel: "None",
       escalation: { kind: "none" },
       accessLabel: "None after 30 days",
-      survivorLabel: "Nothing",
+      survivorLabel: "Nothing to her",
       backingLabel: "One insurer",
       terms: {
-        escalation: "£2,425 a month for life, so the figure at 95 is the figure at 80, and on the assumed 2.6% inflation it buys what £1,310 buys today.",
-        access: "Cancellable in full for thirty days from the start date, and after that no withdrawal, transfer or surrender is permitted at any price.",
-        survivor: "Payments stop on death with no guarantee period, no value protection and nothing to Ada or the estate, including death before 80.",
-        backing: "A single insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
-        income: "£2,425 a month from the eightieth birthday, the highest first payment of the three."
+        escalation: "£2,425 a month for life. The figure at 95 is the figure at 80, and on the assumed 2.6% inflation it buys what £1,310 buys today.",
+        access: "Cancellable in full for thirty days. After that no withdrawal, transfer or surrender is permitted, at any price.",
+        survivor: "Payments stop on his death. Nothing to Ada, nothing to the estate, and nothing at all if he dies before 80.",
+        backing: "One insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
+        income: "£2,425 a month from his eightieth birthday — the highest first payment of the three."
       }
     },
     {
@@ -81,11 +81,11 @@
       backingLabel: "One insurer",
       guaranteeYears: 10,
       terms: {
-        escalation: "Payments rise by 3% of the previous year's figure every year for life whatever prices actually do, which on the assumed 2.6% inflation gains slowly in real terms.",
-        access: "Cancellable in full for thirty days from the start date, and after that no withdrawal, transfer or surrender is permitted at any price.",
-        survivor: "If death falls after payments start, the remainder of ten years of payments continues to Ada or the estate; if death falls before 82, nothing is ever paid.",
-        backing: "A single insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
-        income: "£2,200 a month from the eighty-second birthday, reaching about £3,230 by 95."
+        escalation: "Payments rise 3% a year for life whatever prices actually do, which on the assumed 2.6% inflation gains slowly in real terms.",
+        access: "Cancellable in full for thirty days. After that no withdrawal, transfer or surrender is permitted, at any price.",
+        survivor: "If he dies after payments start, the rest of ten years continues to Ada. If he dies before 82, nothing is ever paid.",
+        backing: "One insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
+        income: "£2,200 a month from his eighty-second birthday, reaching about £3,230 by 95."
       }
     },
     {
@@ -96,7 +96,7 @@
       base: 1225,
       escalationLabel: "Published index, capped 5%",
       escalation: { kind: "index", cap: 0.05, floor: 0 },
-      accessLabel: "Up to 40% back in years 1–3",
+      accessLabel: "Up to 40% back, years 1–3",
       survivorLabel: "60% to Ada, for her life",
       backingLabel: "One insurer",
       survivorShare: 0.6,
@@ -106,11 +106,11 @@
         { untilYear: 3, charge: 0.03 }
       ],
       terms: {
-        escalation: "Payments move each year with a published price index, capped at 5% and never falling, so the real value holds while inflation stays under the cap.",
-        access: "Cancellable in full for thirty days, and up to 40% of the premium may be taken back during the first three years against a charge of 9%, 6% then 3% of the amount withdrawn.",
-        survivor: "60% of the payment continues to Ada for the rest of her life, and it continues even if Robert dies before payments begin.",
-        backing: "A single insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
-        income: "£1,225 a month from the seventy-eighth birthday, the lowest first payment of the three by a wide margin."
+        escalation: "Payments track a published price index each year, capped at 5% and never falling, so the real value holds while inflation stays under the cap.",
+        access: "Cancellable in full for thirty days, and up to 40% of the premium may be taken back in the first three years against a 9%, 6% then 3% charge.",
+        survivor: "60% of the payment continues to Ada for the rest of her life, and it continues even if he dies before payments begin.",
+        backing: "One insurer's balance sheet, with the statutory compensation scheme behind it up to the scheme's own limits.",
+        income: "£1,225 a month from his seventy-eighth birthday — the lowest first payment by a wide margin."
       }
     }
   ];
@@ -125,28 +125,28 @@
       label: "A long life",
       sub: "Robert to 96, Ada to 99",
       robertDeath: 96, adaDeath: 99, careFrom: null,
-      note: "Twenty-five more years is the case every rate table is built for, and it is the only one of these four in which the highest first payment also carries the household furthest."
+      note: "The case every rate table is built for, and the only one of the four where the biggest first payment also carries them furthest."
     },
     {
       id: "short",
       label: "A short life",
       sub: "Robert to 79, Ada to 94",
       robertDeath: 79, adaDeath: 94, careFrom: null,
-      note: "Robert dies before either deferred contract has paid a penny, and only the one that started earliest and continues to Ada returns anything at all."
+      note: "He dies before either deferred contract pays a penny. Only the one that started earliest, and continues to Ada, returns anything."
     },
     {
       id: "survivor",
       label: "Ada outlives him",
       sub: "Robert to 83, Ada to 97",
       robertDeath: 83, adaDeath: 97, careFrom: null,
-      note: "Ada lives fourteen years past Robert, which is the ordinary case for a couple three years apart, and it is decided entirely by the survivor column."
+      note: "Ada lives fourteen years past him, ordinary for a couple three years apart, and the survivor column decides all of it."
     },
     {
       id: "care",
       label: "Care from 84",
       sub: "Robert to 91, Ada to 95",
       robertDeath: 91, adaDeath: 95, careFrom: 84,
-      note: "Household machines make the long middle of frailty cheap by 2036 and the acute end is still people, so care shows up as a low ledge and then a wall."
+      note: "Machines make frailty's long middle cheap by 2036. The acute end is still people: a ledge, then a wall."
     }
   ];
 
@@ -276,9 +276,10 @@
     };
   }
 
-  /* Payout on £120,000 for a single-life level contract starting at `age`.
-     Anchored on contract A's £1,940 at 80; mortality credits compound at
-     roughly 14% per year of deferral at these ages. Invented, monotonic. */
+  /* Payout on the £150,000 premium for a single-life level contract starting
+     at `age`. Anchored on contract A's £2,425 at 80; mortality credits
+     compound at roughly 14% per year of deferral at these ages. Invented,
+     monotonic, and the only place the deferral curve is defined. */
   function deferredBase(age) {
     return Math.round(2425 * Math.pow(1.14, age - 80) / 10) * 10;
   }

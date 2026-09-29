@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Price Certainty 2036 — Prototype</title>
-<meta name="description" content="A 2036 projection of the Price Certainty concept: certainty as a by-product of a household's flexibility traded continuously on its behalf. Invented figures, no real participants." />
+<meta name="description" content="A 2036 projection of the Price Certainty concept, followed through one invented household: certainty as a by-product of a home's flexibility, traded continuously on its behalf. Invented figures, no real participants." />
 <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 <!-- NO WEBFONTS. This prototype belongs to the Fieldnotes collection, whose
      typographic idea is a tight, negatively-tracked Georgia headline against a
@@ -13,267 +13,270 @@
 <link rel="stylesheet" href="./app.css" />
 </head>
 <body>
-<div class="grain" aria-hidden="true"></div>
 
-<header class="shell-head">
-  <div class="brand">
-    <span class="brand-mark">price certainty</span>
-    <span class="brand-sub">Prototype &middot; a projection of 2036</span>
-  </div>
-  <div class="head-right">
-    <div class="household-chip" id="householdChip" hidden>
-      <label class="eyebrow" for="householdSelect">Household</label>
-      <select id="householdSelect" aria-label="Selected household"></select>
-    </div>
-    <p class="position" id="position" aria-hidden="true">01 / 12</p>
-  </div>
-</header>
+<main class="stage" id="stage">
 
-<main class="stage" id="stage" tabindex="-1">
-
-<!-- ═══ 1 ═══════════════════════════════════════════════════════════════ -->
-<section class="page page-cover" data-page="1" aria-labelledby="h1">
-  <div class="page-body">
-    <p class="eyebrow">Price Certainty &middot; Edition 06 &middot; Interactive</p>
-    <h2 id="h1" class="cover-title"><span>A steadier cost,</span><span>ten years on.</span></h2>
-    <p class="body-copy">In 2036 nobody reads a tariff: a household sets its comfort bounds once and an agent trades the home's flexibility against the grid for the rest of the year, and a carrier turns the proceeds into one annual number the household can plan around. This prototype walks that product from the household's side through to the underwriter's, and then keeps going until it breaks.</p>
-    <p class="framing">A projection of 2036 with invented figures, not a forecast &mdash; and no real utility, retailer, insurer or reinsurer shown here is a participant.</p>
-    <div class="cover-actions">
-      <button class="pill pill-ink" data-goto="2">Begin <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <button class="pill pill-quiet" data-goto="8">Straight to the risk chain</button>
-    </div>
-  </div>
-  <div class="page-visual cover-visual">
-    <div class="cover-plate" id="coverPlate"></div>
-  </div>
-</section>
-
-<!-- ═══ 2 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="2" aria-labelledby="h2">
-  <div class="page-body">
-    <p class="eyebrow">01 / What changed</p>
-    <h2 id="h2">Nobody reads a tariff any more.</h2>
-    <p class="body-copy">The household states its bounds once, and after that its agent buys, sells, shifts and stores against a half-hourly grid signal without asking again. That is what makes the rest of this possible: the home now owns something a carrier wants, and certainty can be bought with it rather than with money.</p>
-    <div class="note-row">
-      <button class="pill pill-quiet" id="tapeToggle" aria-pressed="false">Pause the tape</button>
-      <p class="caption">A projected day, cycling.</p>
-    </div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <p class="eyebrow">Bounds set by the household, once</p>
-      <ul class="bounds" id="bounds"></ul>
-      <p class="eyebrow plate-rule">Agent actions, last few hours</p>
-      <ol class="tape" id="tape"></ol>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ 3 ═══════════════════════════════════════════════════════════════ -->
-<section class="page page-wide" data-page="3" aria-labelledby="h3">
-  <div class="page-body">
-    <p class="eyebrow">02 / Who is in the room</p>
-    <h2 id="h3">Flexibility is the new capital.</h2>
-    <p class="body-copy">Everything a carrier can sell on a household's behalf depends on hardware that household can host, so the homes most exposed to a volatile market have the least to trade. Choose one; it stays chosen for the rest of the prototype.</p>
-  </div>
-  <div class="page-visual">
-    <div class="choice-grid" id="choiceGrid" role="radiogroup" aria-label="Choose a household"></div>
-  </div>
-</section>
-
-<!-- ═══ 4 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="4" aria-labelledby="h4">
-  <div class="page-body">
-    <p class="eyebrow">03 / The counterfactual</p>
-    <h2 id="h4">The year, without any of this.</h2>
-    <p class="body-copy">This is what the chosen home pays its supplier month by month across three versions of 2036, for exactly the same energy in each. Nothing is hedged and nothing is smoothed, and the gap between the calm year and the shock year is the whole reason anybody would buy the product.</p>
-    <div class="scenario-set" id="scenarioSet4"></div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <div class="plate-head">
-        <p class="eyebrow">Supplier bills, month by month</p>
-        <p class="eyebrow" id="p4ScenarioName"></p>
+<!-- ═══ 1 · cover ═════════════════════════════════════════════════════ -->
+<section class="screen" data-screen="1" aria-labelledby="h1">
+  <div class="ground" id="g1"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead">
+      <p class="eyebrow">Price Certainty &middot; Edition 06 &middot; Interactive</p>
+      <h2 id="h1" style="font-size:50px;line-height:50px;letter-spacing:-.035em;margin:12px 0 14px">
+        <span style="display:block">A steadier cost,</span><span style="display:block">ten years on.</span>
+      </h2>
+      <p class="body-copy">In 2036 nobody reads a tariff: a household sets its comfort bounds once, an agent trades the home's flexibility all year, and a carrier turns the proceeds into one annual number.</p>
+      <p class="framing">A projection of 2036 with invented figures, not a forecast. Rosa, Marion and Yusuf are invented households, and no real utility, retailer, insurer or reinsurer shown here is a participant.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="pill pill-ink" data-goto="2">Follow Rosa <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button class="pill pill-quiet" data-goto="9">Straight to the risk chain</button>
       </div>
-      <div class="chart" id="p4Chart"></div>
-      <div class="figure-row" id="p4Totals"></div>
-      <p class="caption" id="p4Caption"></p>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-br w-rail">
+      <p class="eyebrow">The ground beneath</p>
+      <p class="caption" style="margin-top:6px" id="s1Cap"></p>
     </div>
   </div>
 </section>
 
-<!-- ═══ 5 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="5" aria-labelledby="h5">
-  <div class="page-body">
-    <p class="eyebrow">04 / The trade</p>
-    <h2 id="h5">What the certainty costs you.</h2>
-    <p class="body-copy">Hand over more of the home and the annual net cost falls &mdash; not because the risk shrank, but because the carrier can sell more of what you stopped controlling. The list below is the price in things that are not money.</p>
-    <div class="slider-block">
-      <label class="eyebrow" for="assignSlider">How much of the home is assigned</label>
-      <input type="range" id="assignSlider" min="0" max="1" step="1" value="0" />
-      <p class="slider-value" id="assignLabel"></p>
+<!-- ═══ 2 · the household we follow ═══════════════════════════════════ -->
+<section class="screen" data-screen="2" aria-labelledby="h2">
+  <div class="ground" id="g2"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead cap-h">
+      <p class="eyebrow">01 / The household we follow</p>
+      <h2 id="h2">Rosa can hand over a water heater.</h2>
+      <p class="body-copy">She rents Flat 3B in a 1962 block, works nights at a care home and is paid fortnightly. The storage heaters are hard-wired and the landlord has twice said no to a heat pump, so an immersion tank and one socket are the whole list of things she is allowed to give.</p>
+      <p class="eyebrow plate-rule">Bounds she set, once</p>
+      <ul class="bounds" id="s2Bounds"></ul>
     </div>
-    <p class="eyebrow plate-rule">What you give up</p>
-    <ul class="gives" id="p5Gives"></ul>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <div class="target-block">
-        <p class="eyebrow">Annual net cost, agreed in advance</p>
-        <p class="hero-figure" id="p5Target">—</p>
-        <p class="caption" id="p5Versus"></p>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-r w-rail cap-h">
+      <p class="eyebrow">Her agent, this morning</p>
+      <ol class="tape" id="s2Tape"></ol>
+      <div class="note-row">
+        <button class="pill pill-quiet" id="tapeToggle" aria-pressed="false" style="min-height:34px;font-size:13px">Pause</button>
+        <p class="caption" id="s2Cap"></p>
       </div>
-      <div class="ledger" id="p5Ledger"></div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 6 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="6" aria-labelledby="h6">
-  <div class="page-body">
-    <p class="eyebrow">05 / The months you lose</p>
-    <h2 id="h6">Some months you pay to be wrong.</h2>
-    <p class="body-copy">Every month settles against the flat annual target, so a mild month is a month the household hands money back for certainty it did not end up needing. Across a calm 2036 the chosen home gives up more than it gets and the product is still working exactly as sold.</p>
-    <div class="scenario-set" id="scenarioSet6"></div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <div class="plate-head">
-        <p class="eyebrow">Bill against target, and the settlement it creates</p>
-        <p class="eyebrow" id="p6ScenarioName"></p>
+<!-- ═══ 3 · three households ══════════════════════════════════════════ -->
+<section class="screen" data-screen="3" aria-labelledby="h3">
+  <div class="ground">
+    <div class="bands" style="grid-template-rows:auto 1fr">
+      <div class="band pad-t">
+        <p class="eyebrow">02 / Who is in the room</p>
+        <h2 id="h3" style="font-size:31px;line-height:34px;margin:6px 0 8px">Flexibility is the new capital.</h2>
+        <p class="body-copy" style="max-width:66em;margin:0">Everything a carrier can sell on a household's behalf depends on hardware that household can host, so the homes most exposed to a volatile market have the least to trade. Rosa carries this story; choose another and every screen after this recalculates.</p>
       </div>
-      <div class="chart" id="p6Chart"></div>
-      <div class="legend" id="p6Legend"></div>
-      <div class="figure-row" id="p6Totals"></div>
-      <p class="caption" id="p6Caption"></p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ 7 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="7" aria-labelledby="h7">
-  <div class="page-body">
-    <p class="eyebrow">06 / The thing it is not</p>
-    <h2 id="h7">Budget billing is free, and it does not do this.</h2>
-    <p class="body-copy">Levelized billing averages last year's usage into a flat monthly payment and trues up the difference at year end, which looks identical from the outside and passes every price rise through in full. Certainty changes the total; smoothing only changes when you pay it.</p>
-    <div class="scenario-set" id="scenarioSet7"></div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <p class="eyebrow">Same home, same energy, same year &mdash; three arrangements</p>
-      <div class="triptych" id="p7Triptych"></div>
-      <p class="caption" id="p7Caption"></p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ 8 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="8" aria-labelledby="h8">
-  <div class="page-body">
-    <p class="eyebrow">07 / Where the swing lands</p>
-    <h2 id="h8">Someone is short this.</h2>
-    <p class="body-copy">Push market prices up across the whole book and the shortfall climbs three layers in order &mdash; the flexibility revenue the pool earns, the captive's own capital, then the reinsurance tower &mdash; because the risk load is already priced inside every household's target. The figure under the handle is the point at which the tower is gone and the warranty pays pro rata, which is the honest description of what a household is actually holding.</p>
-    <div class="slider-block">
-      <label class="eyebrow" for="shockSlider">Market prices across the book, versus the central year</label>
-      <input type="range" id="shockSlider" min="90" max="200" step="1" value="100" />
-      <p class="slider-value" id="shockLabel"></p>
-    </div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <div class="plate-head">
-        <p class="eyebrow">Programme position, 412,000 homes</p>
-        <p class="eyebrow" id="p8State"></p>
+      <div class="band" style="padding:0">
+        <div class="ccols" id="s3Cols" role="radiogroup" aria-label="Choose a household"></div>
       </div>
-      <div class="tower" id="p8Tower"></div>
-      <div class="figure-row" id="p8Figures"></div>
-      <p class="eyebrow plate-rule">Where each home turns loss-making</p>
-      <div class="breakevens" id="p8Breakevens"></div>
+    </div>
+  </div>
+  <div class="layer"></div>
+</section>
+
+<!-- ═══ 4 · the counterfactual ════════════════════════════════════════ -->
+<section class="screen" data-screen="4" aria-labelledby="h4">
+  <div class="ground" id="g4"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead">
+      <p class="eyebrow">03 / The counterfactual</p>
+      <h2 id="h4">The year, without any of this.</h2>
+      <p class="body-copy">Same home, same energy, three versions of 2036 &mdash; nothing hedged and nothing smoothed. The gap between them is the whole reason anybody would buy the product.</p>
+      <div class="scenario-set" id="scenarioSet4"></div>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-br w-wide">
+      <div class="figure-row tight" id="s4Totals"></div>
+      <p class="caption" id="s4Cap"></p>
     </div>
   </div>
 </section>
 
-<!-- ═══ 9 ═══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="9" aria-labelledby="h9">
-  <div class="page-body">
-    <p class="eyebrow">08 / Cash, not just price</p>
-    <h2 id="h9">The bill still arrives first.</h2>
-    <p class="body-copy">A home facing a <span class="inl" id="p9Worst">—</span> February against a <span class="inl" id="p9Monthly">—</span> monthly target must find the difference before any settlement reaches it, and the household least able to float that is the one this product is for. Continuous settlement is what 2036 fixes: the carrier settles weekly, so the float never outgrows a few days.</p>
-    <div class="toggle-set" id="settleSet"></div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <div class="plate-head">
-        <p class="eyebrow">Out of pocket, during the year</p>
-        <p class="eyebrow" id="p9Mode"></p>
+<!-- ═══ 5 · the trade ═════════════════════════════════════════════════ -->
+<section class="screen" data-screen="5" aria-labelledby="h5">
+  <div class="ground" id="g5"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead cap-h">
+      <p class="eyebrow">04 / The trade</p>
+      <h2 id="h5">What the certainty costs you.</h2>
+      <p class="body-copy">Hand over more of the home and the annual net cost falls &mdash; not because the risk shrank, but because the carrier can sell more of what you stopped controlling.</p>
+      <div class="slider-block">
+        <label class="eyebrow" for="assignSlider">How much of the home is assigned</label>
+        <input type="range" id="assignSlider" min="0" max="1" step="1" value="0" />
+        <p class="slider-value" id="assignLabel"></p>
       </div>
-      <div class="chart" id="p9Chart"></div>
-      <div class="figure-row" id="p9Figures"></div>
+      <p class="eyebrow plate-rule">What you give up</p>
+      <ul class="gives" id="s5Gives"></ul>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-r w-rail cap-h">
+      <p class="eyebrow">Annual net cost, agreed in advance</p>
+      <p class="hero-figure" id="s5Target">&mdash;</p>
+      <p class="caption" id="s5Versus"></p>
+      <div class="ledger" id="s5Ledger"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · the months you lose ═══════════════════════════════════════ -->
+<section class="screen" data-screen="6" aria-labelledby="h6">
+  <div class="ground" id="g6"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead">
+      <p class="eyebrow">05 / The months you lose</p>
+      <h2 id="h6">Some months you pay to be wrong.</h2>
+      <p class="body-copy" id="s6Lead"></p>
+      <div class="scenario-set" id="scenarioSet6"></div>
+      <div class="legend" id="s6Legend"></div>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-br w-wide">
+      <div class="figure-row tight" id="s6Totals"></div>
+      <p class="caption" id="s6Cap"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7 · not budget billing ════════════════════════════════════════ -->
+<section class="screen" data-screen="7" aria-labelledby="h7">
+  <div class="ground">
+    <div class="bands" id="s7Bands" style="grid-template-rows:auto 1fr 1fr 1fr">
+      <div class="band pad-t">
+        <p class="eyebrow">06 / The thing it is not</p>
+        <h2 id="h7" style="font-size:31px;line-height:34px;margin:6px 0 8px">Budget billing is free, and it does not do this.</h2>
+        <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+          <p class="body-copy" style="max-width:44em;margin:0">Levelized billing averages last year's usage into a flat monthly payment and trues up at year end, passing every price rise through in full. Certainty changes the total; smoothing only changes when you pay it.</p>
+          <p class="caption" style="max-width:28em;margin:0" id="s7Cap"></p>
+          <div class="scenario-set" id="scenarioSet7"></div>
+        </div>
+      </div>
+      <div class="band tint"><div class="strip" id="s7a"></div></div>
+      <div class="band"><div class="strip" id="s7b"></div></div>
+      <div class="band tint pad-b"><div class="strip" id="s7c"></div></div>
+    </div>
+  </div>
+  <div class="layer"></div>
+</section>
+
+<!-- ═══ 8 · the bill arrives first ════════════════════════════════════ -->
+<section class="screen" data-screen="8" aria-labelledby="h8">
+  <div class="ground" id="g8"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead cap-h">
+      <p class="eyebrow">07 / Cash, not just price</p>
+      <h2 id="h8">The bill still arrives first.</h2>
+      <p class="body-copy" id="s8Lead"></p>
+      <div class="toggle-set" id="settleSet"></div>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-r w-rail cap-h">
+      <div class="figure-row tight" id="s8Figures"></div>
       <p class="eyebrow plate-rule">And when it does not work</p>
-      <ul class="gives" id="p9Fail"></ul>
+      <ul class="gives" id="s8Fail"></ul>
     </div>
   </div>
 </section>
 
-<!-- ═══ 10 ══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="10" aria-labelledby="h10">
-  <div class="page-body">
-    <p class="eyebrow">09 / The wrapper</p>
-    <h2 id="h10">Two structures, two regulators.</h2>
-    <p class="body-copy">Settlement-only leaves the supplier untouched and, in the United States, looks very like an off-exchange swap sold to someone who cannot lawfully enter one. Supply-coupled gives that premise up: the carrier delivers the energy it dispatches, so the settlement rides on a supply relationship &mdash; the test the consumer carve-out turns on, and one nobody has put to a regulator.</p>
-    <div class="toggle-set" id="structureSet"></div>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <p class="eyebrow" id="p10Name"></p>
-      <div class="chain" id="p10Chain"></div>
-      <div class="legal-grid" id="p10Grid"></div>
+<!-- ═══ 9 · where the swing lands ═════════════════════════════════════ -->
+<section class="screen" data-screen="9" aria-labelledby="h9">
+  <div class="ground" id="g9"></div>
+  <div class="layer">
+    <div class="plate at-tl w-lead">
+      <p class="eyebrow">08 / Where the swing lands</p>
+      <h2 id="h9">Someone is short this.</h2>
+      <p class="body-copy">Push market prices up across the whole book and the shortfall climbs three layers in order: flexibility revenue, the captive's own capital, then the reinsurance tower. Past the top the warranty pays pro rata, which is the honest description of what a household holds.</p>
+      <div class="slider-block">
+        <label class="eyebrow" for="shockSlider">Market prices across the book, versus the central year</label>
+        <input type="range" id="shockSlider" min="90" max="200" step="1" value="100" />
+        <p class="slider-value" id="shockLabel"></p>
+      </div>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+    <div class="plate at-br w-wide">
+      <div class="figure-row tight" id="s9Figures"></div>
+      <p class="eyebrow plate-rule">Where each home turns loss-making</p>
+      <div class="breakevens" id="s9Breakevens"></div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 11 ══════════════════════════════════════════════════════════════ -->
-<section class="page page-wide" data-page="11" aria-labelledby="h11">
-  <div class="page-body">
-    <p class="eyebrow">10 / The comparator</p>
-    <h2 id="h11">Or just put a battery on the roof.</h2>
-    <p class="body-copy">The most successful version of price certainty settled nothing: it gave homes a heat pump, solar and a battery, and guaranteed no bill for years. For two of these three the hardware wins outright, and the financial product only has a market where hardware cannot go.</p>
-  </div>
-  <div class="page-visual">
-    <div class="verdicts" id="p11Verdicts"></div>
-  </div>
-</section>
-
-<!-- ═══ 12 ══════════════════════════════════════════════════════════════ -->
-<section class="page" data-page="12" aria-labelledby="h12">
-  <div class="page-body">
-    <p class="eyebrow">11 / What would have to be true</p>
-    <h2 id="h12">A subsidy with a market attached.</h2>
-    <p class="body-copy">This holds only while asset-rich homes stay in a pool that buys their flexibility for less than it is worth to them, because that spread is the entire funding for the homes with nothing to assign. Nothing compels them to stay. If they do, it is the rare financial product that hands certainty to people who cannot buy it.</p>
-  </div>
-  <div class="page-visual">
-    <div class="plate">
-      <p class="eyebrow">Pool arithmetic, central year</p>
-      <div class="figure-row" id="p12Figures"></div>
-      <p class="eyebrow plate-rule">Three conditions</p>
-      <ol class="conditions" id="p12Conditions"></ol>
+<!-- ═══ 10 · the wrapper ══════════════════════════════════════════════ -->
+<section class="screen" data-screen="10" aria-labelledby="h10">
+  <div class="ground">
+    <div class="bands" style="grid-template-rows:auto 1fr auto">
+      <div class="band pad-t">
+        <p class="eyebrow">09 / The wrapper</p>
+        <h2 id="h10" style="font-size:31px;line-height:34px;margin:6px 0 8px">Two structures, two regulators.</h2>
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+          <p class="body-copy" style="max-width:54em;margin:0">Settlement-only leaves the supplier untouched and, in the United States, looks very like an off-exchange swap sold to someone who cannot lawfully enter one. Supply-coupled gives that premise up: the carrier delivers the energy it dispatches.</p>
+          <div class="toggle-set" id="structureSet"></div>
+        </div>
+      </div>
+      <div class="band tint"><div class="chain" id="s10Chain"></div></div>
+      <div class="band pad-b"><div class="legal-grid" id="s10Grid"></div></div>
     </div>
   </div>
+  <div class="layer"></div>
+</section>
+
+<!-- ═══ 11 · the closing ══════════════════════════════════════════════ -->
+<section class="screen" data-screen="11" aria-labelledby="h11">
+  <div class="ground">
+    <div class="bands" style="grid-template-rows:auto 1fr auto">
+      <div class="band pad-t">
+        <p class="eyebrow">10 / What would have to be true</p>
+        <h2 id="h11" style="font-size:31px;line-height:34px;margin:6px 0 8px">A subsidy with a market attached.</h2>
+        <p class="body-copy" style="max-width:62em;margin:0">This holds only while asset-rich homes stay in a pool that buys their flexibility for less than it is worth to them, because that spread is the entire funding for Rosa. Nothing compels them to stay.</p>
+      </div>
+      <div class="band tint" style="padding-left:6px;padding-right:6px"><div class="vcols" id="s11Cols"></div></div>
+      <div class="band pad-b">
+        <div class="band-split" style="display:grid;grid-template-columns:1fr minmax(0,340px);gap:22px;align-items:start">
+          <div class="figure-row tight" id="s11Figures"></div>
+          <div>
+            <p class="eyebrow">Three conditions</p>
+            <ol class="conditions" id="s11Conditions"></ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="layer"></div>
 </section>
 
 </main>
 
-<footer class="shell-foot">
-  <p class="hint" id="hint" hidden>More of this page below &darr;</p>
-  <nav class="nav" aria-label="Prototype navigation">
-    <button class="icon-button" id="prev" aria-label="Previous page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="chrome">
+  <div class="chip c-brand">
+    <span class="brand-mark">price certainty</span>
+    <span class="brand-sub">a projection of 2036</span>
+  </div>
+  <div class="chip c-right">
+    <div class="household-chip" id="householdChip" hidden>
+      <label class="eyebrow" for="householdSelect">Household</label>
+      <select id="householdSelect" aria-label="Selected household"></select>
+    </div>
+    <p class="position" id="position" aria-hidden="true">01 / 11</p>
+  </div>
+  <div class="chip c-foot">
+    <p class="foot-note">Projection of 2036 &middot; invented throughout</p>
+  </div>
+  <nav class="chip c-nav" aria-label="Prototype navigation">
+    <button class="icon-button" id="prev" aria-label="Previous screen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <label class="picker">
-      <span class="sr-only">Jump to a page</span>
+      <span class="sr-only">Jump to a screen</span>
       <select id="picker"></select>
     </label>
-    <button class="icon-button" id="next" aria-label="Next page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="icon-button" id="next" aria-label="Next screen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </nav>
-</footer>
+</div>
 
 <p class="sr-only" id="live" aria-live="polite"></p>
 

@@ -1,8 +1,13 @@
 /* ───────────────────────────────────────────────────────────────────────────
    Agent Error Protection — 2036 prototype
 
-   Nine composed pages with one interactive per page. No framework, no build,
-   no network. Every figure in here is invented; the framing sits on page 1.
+   Eleven full-bleed screens following one invented household. Each screen has
+   a ground that reaches all four edges — the site plan, the running log, the
+   mandate, the day's record, the waterfall, the thousand-dot field, the
+   premium itself — and type on opaque plates over it.
+
+   No framework, no build, no network. Every figure in here is invented; the
+   framing sits on screen 1 and in the foot of every screen.
    ─────────────────────────────────────────────────────────────────────────── */
 (function () {
   "use strict";
@@ -16,28 +21,43 @@
     if (text !== undefined) n.textContent = text;
     return n;
   }
+  function svg(tag, attrs) {
+    var n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) n.setAttribute(k, attrs[k]);
+    return n;
+  }
 
-  /* ═══════════════ Reader shell ═══════════════ */
+  var INK = "#50506B", MUTED = "#62627E", RULE = "#8A87A0", HAIR = "#D4D1DC",
+      PAPER = "#FBF9F1", WASH = "#E9E7EC", ALERT = "#A3302B", HEDGE = "#4E6B58";
 
-  var pages = $$(".paper");
+  /* ═══════════════ The reader shell ═══════════════ */
+
+  var screens = $$(".screen");
   var picker = $("#picker");
-  var stage = $("#stage");
   var announce = $("#announce");
+  var nextLabel = $("#nextLabel");
   var current = 1;
 
+  /* The forward control names the beat it is going to, the way a page picker
+     labelled by meaning does. The last entry is the closing screen. */
+  var NEXT_LABEL = [
+    "Meet Ada", "The week", "The mandate", "12 March",
+    "13:44", "Who pays", "The book", "The premium", "Open questions", "Close", ""
+  ];
+
   function show(n) {
-    n = Math.min(pages.length, Math.max(1, n));
+    n = Math.min(screens.length, Math.max(1, n));
     current = n;
-    pages.forEach(function (p) {
-      p.hidden = Number(p.dataset.page) !== n;
-    });
+    screens.forEach(function (p) { p.hidden = Number(p.dataset.screen) !== n; });
     picker.value = String(n);
     $("#prev").disabled = n === 1;
-    $("#next").disabled = n === pages.length;
-    stage.scrollTop = 0;
-    var h = $(".page-copy", pages[n - 1]);
-    announce.textContent = "Page " + n + " of " + pages.length + ". " + (h ? h.textContent : "");
-    stream.setRunning(n === 2);
+    $("#next").disabled = n === screens.length;
+    nextLabel.textContent = NEXT_LABEL[n - 1] || "";
+    $("#next").hidden = n === screens.length;
+    var h = $(".display", screens[n - 1]);
+    announce.textContent = "Screen " + n + " of " + screens.length + ". " + (h ? h.textContent : "");
+    stream.setRunning(n === 3);
+    relayout();
   }
 
   $("#prev").addEventListener("click", function () { show(current - 1); });
@@ -54,71 +74,314 @@
     else if (e.key === "ArrowLeft") { show(current - 1); }
   });
 
-  /* ═══════════════ 2 · The delegation stream ═══════════════ */
+  /* ═══════════════ The place: a drawn site plan ═══════════════ */
+
+  /* The plan is the ground for two screens and the faint ground for the last.
+     It is drawn in metres and scaled to the viewport, so it always runs past
+     every edge: the block continues in all four directions. */
+
+  /* Metres. The Okonjo plot is 22 m across the front and 34 m deep: the house
+     and drive at the south, a long garden behind it, and the privet hedge on
+     the north boundary with Deb Hollis's plot the other side. */
+  var PLOT_W = 22, HEDGE_Y = -22, FRONT_Y = 12;
+  var VIEW_CX = 0;
+
+  function planScale(w, h) {
+    return Math.max(8, Math.min(22, Math.min(w / 40, h / 66)));
+  }
+
+  function chip(g, x, y, text, colour, anchor) {
+    var pad = 7, fs = 10, cw = text.length * 6.5 + pad * 2, ch = 20;
+    var ax = anchor === "end" ? x - cw : anchor === "middle" ? x - cw / 2 : x;
+    g.appendChild(svg("rect", {
+      x: ax, y: y - ch / 2, width: cw, height: ch, rx: 3,
+      fill: PAPER, stroke: HAIR
+    }));
+    var t = svg("text", {
+      x: ax + pad, y: y + 3.6, fill: colour || MUTED,
+      "font-family": "Arial,Helvetica,sans-serif", "font-size": fs,
+      "font-weight": 600, "letter-spacing": "1.1"
+    });
+    t.textContent = text.toUpperCase();
+    g.appendChild(t);
+    return cw;
+  }
+
+  function renderPlan(host, opts) {
+    opts = opts || {};
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) return;
+    var s = planScale(w, h) * (opts.zoom || 1);
+    var vcy = opts.cy === undefined ? -17 : opts.cy;
+    var cx = w / 2, cy = h / 2;
+    var X = function (m) { return cx + (m - VIEW_CX) * s; };
+    var Y = function (m) { return cy + (m - vcy) * s; };
+
+    host.innerHTML = "";
+    var root = svg("svg", { width: "100%", height: "100%", viewBox: "0 0 " + w + " " + h, "aria-hidden": "true" });
+    root.style.display = "block";
+
+    // survey grid, five-metre squares, across the whole field
+    var grid = svg("g", { stroke: HAIR, "stroke-width": 1, opacity: .55 });
+    var m;
+    for (m = -200; m <= 200; m += 5) {
+      var gx = X(m); if (gx > -2 && gx < w + 2) grid.appendChild(svg("line", { x1: gx, y1: 0, x2: gx, y2: h }));
+      var gy = Y(m); if (gy > -2 && gy < h + 2) grid.appendChild(svg("line", { x1: 0, y1: gy, x2: w, y2: gy }));
+    }
+    root.appendChild(grid);
+
+    // the block: a row of plots either side, and a rear row beyond the hedge
+    var plots = svg("g", {});
+    function rect(x0, y0, x1, y1, fill, stroke, sw) {
+      plots.appendChild(svg("rect", {
+        x: X(x0), y: Y(y0), width: (x1 - x0) * s, height: (y1 - y0) * s,
+        fill: fill || "none", stroke: stroke || "none", "stroke-width": sw || 1
+      }));
+    }
+    function house(x0, y0, x1, y1, tone) {
+      rect(x0, y0, x1, y1, tone || WASH, INK, 1.5);
+      plots.appendChild(svg("line", { x1: X(x0), y1: Y(y0), x2: X(x1), y2: Y(y1), stroke: INK, "stroke-width": .7, opacity: .3 }));
+      plots.appendChild(svg("line", { x1: X(x1), y1: Y(y0), x2: X(x0), y2: Y(y1), stroke: INK, "stroke-width": .7, opacity: .3 }));
+    }
+    function shrub(x, y, r) {
+      plots.appendChild(svg("circle", { cx: X(x), cy: Y(y), r: Math.max(1.8, r * s), fill: HEDGE, opacity: .22 }));
+    }
+
+    var i, ox;
+    for (i = -4; i <= 4; i++) {
+      ox = i * PLOT_W;
+      if (i === 0) continue;
+      rect(ox - 11, HEDGE_Y, ox + 11, FRONT_Y, PAPER, RULE);        // front row neighbours
+      house(ox - 5, 2, ox + 5, 10);
+      rect(ox + 5.5, 10, ox + 9.5, FRONT_Y + 3, PAPER, HAIR);
+      shrub(ox - 7, -8, .9); shrub(ox + 7, -13, 1.1); shrub(ox - 8, -17, .8);
+      rect(ox - 11, -52, ox + 11, HEDGE_Y, PAPER, RULE);            // rear row neighbours
+      house(ox - 5, -49, ox + 5, -41);
+      shrub(ox - 7, -31, 1); shrub(ox + 7.5, -35, .9); shrub(ox + 6, -27, .7);
+      plots.appendChild(svg("line", { x1: X(ox), y1: Y(-41), x2: X(ox), y2: Y(-25),
+        stroke: HAIR, "stroke-width": Math.max(1.6, .9 * s) }));
+    }
+
+    // Deb Hollis's plot, directly over the hedge
+    rect(-11, -52, 11, HEDGE_Y, PAPER, RULE);
+    house(-5.5, -49, 5.5, -41, WASH);
+    shrub(-8, -33, 1.2); shrub(7.5, -30, 1); shrub(8, -36, .8);
+    plots.appendChild(svg("path", {
+      d: "M " + X(0) + " " + Y(-41) + " L " + X(0) + " " + Y(-24),
+      stroke: HAIR, "stroke-width": Math.max(2, 1.2 * s), fill: "none"
+    }));
+
+    // the Okonjo plot: house, patio, path, shed, dock, lawn
+    rect(-11, HEDGE_Y, 11, FRONT_Y, WASH, RULE);
+    // lawn stipple, so the garden reads as ground rather than emptiness
+    var lawn = svg("g", { stroke: RULE, "stroke-width": .9, opacity: .45 });
+    for (m = -20; m <= 0; m += 1.6) {
+      for (var n2 = -9; n2 <= 9; n2 += 1.9) {
+        var jx = ((m * 7 + n2 * 13) % 5) / 9;
+        lawn.appendChild(svg("line", {
+          x1: X(n2 + jx), y1: Y(m), x2: X(n2 + jx), y2: Y(m - 0.5)
+        }));
+      }
+    }
+    plots.appendChild(lawn);
+    house(-5.5, 2, 5.5, 10, "#DEDBE4");
+    rect(-5.5, -1.5, 5.5, 2, PAPER, HAIR);                          // patio
+    plots.appendChild(svg("line", { x1: X(0), y1: Y(-1.5), x2: X(0), y2: Y(-20), stroke: HAIR, "stroke-width": Math.max(2, 1.1 * s) }));
+    rect(6, -20.5, 9.5, -17, PAPER, INK);                           // shed
+    rect(-9.5, -20.5, -7, -18.5, "#DEDBE4", INK);                   // yard unit dock
+    rect(5.5, 10, 9.5, FRONT_Y + 3, PAPER, HAIR);                   // driveway
+    shrub(-8, -6, 1.1); shrub(8, -9, 1); shrub(-8.4, -12, .85); shrub(8.2, -14, .8);
+
+    // the road
+    rect(-200, FRONT_Y + 3, 200, FRONT_Y + 11, WASH, RULE);
+    plots.appendChild(svg("line", {
+      x1: 0, y1: Y(FRONT_Y + 7), x2: w, y2: Y(FRONT_Y + 7), stroke: RULE, "stroke-width": 1.2,
+      "stroke-dasharray": (1.6 * s) + " " + (1.6 * s)
+    }));
+    root.appendChild(plots);
+
+    // the hedge along the north boundary — the line the whole story turns on
+    var hedge = svg("g", {});
+    hedge.appendChild(svg("line", {
+      x1: X(-11), y1: Y(HEDGE_Y), x2: X(11), y2: Y(HEDGE_Y),
+      stroke: HEDGE, "stroke-width": 2.2
+    }));
+    for (m = -10.4; m <= 10.6; m += 1.05) {
+      hedge.appendChild(svg("circle", { cx: X(m), cy: Y(HEDGE_Y), r: Math.max(2.4, s * 0.36), fill: HEDGE, opacity: .32 }));
+    }
+    root.appendChild(hedge);
+
+    // the yard unit's track, on the screens that carry it
+    if (opts.track) {
+      var pts = [
+        [-8.4, -19.2], [-8.4, -20.6], [-5.6, -20.7], [-2.8, -20.8],
+        [-1.8, -23.2], [-0.7, -25.1], [1.6, -25.1], [3.4, -23.4],
+        [4.6, -20.9], [7.0, -20.8], [8.6, -20.7], [8.6, -18.4]
+      ];
+      var d = function (a, b) {
+        var out = "M " + X(pts[a][0]) + " " + Y(pts[a][1]);
+        for (var k = a + 1; k <= b; k++) out += " L " + X(pts[k][0]) + " " + Y(pts[k][1]);
+        return out;
+      };
+      var tg = svg("g", {});
+      // the cut portion of the hedge: 14.2 m, 9.4 m of it on Deb's side
+      var cutY = Y(HEDGE_Y) - Math.max(3, s * .4), cutH = Math.max(6, s * .8);
+      tg.appendChild(svg("rect", {
+        x: X(-3.4), y: cutY, width: 14.2 * s, height: cutH,
+        fill: PAPER, stroke: ALERT, "stroke-width": 1.4, "stroke-dasharray": "4 3"
+      }));
+      // the stumps: what is left of 14.2 m of privet
+      for (var cm = -3.0; cm <= 10.6; cm += 1.05) {
+        tg.appendChild(svg("line", {
+          x1: X(cm), y1: cutY + 2, x2: X(cm), y2: cutY + cutH - 2,
+          stroke: ALERT, "stroke-width": 1, opacity: .45
+        }));
+      }
+      tg.appendChild(svg("path", {
+        d: "M " + X(-2.8) + " " + Y(HEDGE_Y) + " L " + X(4.6) + " " + Y(HEDGE_Y) +
+           " L " + X(3.4) + " " + Y(-23.4) + " L " + X(1.6) + " " + Y(-25.1) +
+           " L " + X(-0.7) + " " + Y(-25.1) + " L " + X(-1.8) + " " + Y(-23.2) + " Z",
+        fill: ALERT, opacity: .16
+      }));
+      tg.appendChild(svg("path", { d: d(0, 3), fill: "none", stroke: INK, "stroke-width": 2.4, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: .8 }));
+      tg.appendChild(svg("path", { d: d(8, 11), fill: "none", stroke: INK, "stroke-width": 2.4, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: .8 }));
+      // the excursion: four minutes, 3.1 m past the line
+      tg.appendChild(svg("path", { d: d(3, 8), fill: "none", stroke: ALERT, "stroke-width": 3.6, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+      // the 3.1 m measure
+      tg.appendChild(svg("line", { x1: X(6.2), y1: Y(HEDGE_Y), x2: X(6.2), y2: Y(-25.1), stroke: ALERT, "stroke-width": 1.4 }));
+      tg.appendChild(svg("line", { x1: X(5.7), y1: Y(HEDGE_Y), x2: X(6.7), y2: Y(HEDGE_Y), stroke: ALERT, "stroke-width": 1.4 }));
+      tg.appendChild(svg("line", { x1: X(5.7), y1: Y(-25.1), x2: X(6.7), y2: Y(-25.1), stroke: ALERT, "stroke-width": 1.4 }));
+      root.appendChild(tg);
+    }
+
+    // labels, on opaque tags — a translucent one stops separating from the grid
+    if (opts.labels !== false) {
+      var tags = svg("g", {});
+      chip(tags, X(-10.2), Y(6), "Okonjo · 22 × 34 m", INK);
+      chip(tags, X(-10.2), Y(-37), "Deb Hollis", MUTED);
+      chip(tags, X(-10.2), Y(HEDGE_Y) - 18, "North boundary · privet hedge", HEDGE);
+      chip(tags, X(-10.2), Y(FRONT_Y + 7.4), "The road", MUTED);
+      chip(tags, X(-10.2), Y(-19.6), "Yard unit 2 dock", MUTED);
+      if (opts.track) {
+        chip(tags, X(-10.2), Y(-27.5), "Yard unit 2 · 13:04–13:09", INK);
+        chip(tags, X(6.9), Y(-23.6), "3.1 m over", ALERT);
+        chip(tags, X(-3.4), Y(HEDGE_Y) - 4.6 * s, "14.2 m cut · 9.4 m of it Deb's", ALERT);
+      }
+      root.appendChild(tags);
+    }
+
+    // a drawn ground ends by running out of ink, not by going hard-edged
+    var fade = svg("g", {});
+    var defs = svg("defs", {});
+    function grad(id, x1, y1, x2, y2) {
+      var lg = svg("linearGradient", { id: id, x1: x1, y1: y1, x2: x2, y2: y2 });
+      var a = svg("stop", { offset: "0%", "stop-color": PAPER, "stop-opacity": "1" });
+      var b = svg("stop", { offset: "100%", "stop-color": PAPER, "stop-opacity": "0" });
+      lg.appendChild(a); lg.appendChild(b); defs.appendChild(lg);
+    }
+    var uid = "pf" + Math.random().toString(36).slice(2, 7);
+    grad(uid + "l", "0", "0", "1", "0"); grad(uid + "r", "1", "0", "0", "0");
+    grad(uid + "t", "0", "0", "0", "1"); grad(uid + "b", "0", "1", "0", "0");
+    root.appendChild(defs);
+    var band = Math.min(120, w * 0.09), vband = Math.min(110, h * 0.1);
+    fade.appendChild(svg("rect", { x: 0, y: 0, width: band, height: h, fill: "url(#" + uid + "l)" }));
+    fade.appendChild(svg("rect", { x: w - band, y: 0, width: band, height: h, fill: "url(#" + uid + "r)" }));
+    fade.appendChild(svg("rect", { x: 0, y: 0, width: w, height: vband, fill: "url(#" + uid + "t)" }));
+    fade.appendChild(svg("rect", { x: 0, y: h - vband, width: w, height: vband, fill: "url(#" + uid + "b)" }));
+    root.appendChild(fade);
+
+    host.appendChild(root);
+  }
+
+  /* ═══════════════ 3 · The week, as a wall ═══════════════ */
 
   var STREAM = [
-    ["06:40", "Household", "Renew kitchen water filter", "$38", "money", "ok", "in mandate"],
-    ["06:52", "Logistics", "Move refuse pickup to Friday", "no charge", "logistics", "ok", "in mandate"],
-    ["07:15", "Household", "Pay water account", "$96", "money", "ok", "in mandate"],
-    ["07:48", "Yard unit 2", "Boundary survey, 11 minutes", "inside the line", "machines", "ok", "in mandate"],
-    ["08:20", "Groceries", "Weekly basket, 31 lines", "$142", "money", "ok", "in mandate"],
-    ["08:55", "Logistics", "Re-route parcel to locker 4", "no charge", "logistics", "ok", "in mandate"],
-    ["09:30", "Household", "Renew home network contract, 12 months", "$312", "money", "ask", "over ceiling"],
-    ["09:31", "Household", "Confirmation requested from Ada", "awaiting", "money", "ask", "paused"],
-    ["10:12", "Cleaning unit 1", "Run upstairs cycle, 42 minutes", "inside the line", "machines", "ok", "in mandate"],
-    ["11:04", "Household", "Book gutter clearance, cancellable 24h", "$180", "money", "ok", "in mandate"],
-    ["12:30", "Logistics", "Accept delivery window, Friday 08–10", "no charge", "logistics", "ok", "in mandate"],
-    ["13:06", "Yard unit 2", "Clear 14 m of hedge", "3.1 m beyond the line", "machines", "no", "out of scope"],
-    ["14:15", "Household", "Contractor access while the house is empty", "declined by Ada", "logistics", "ask", "refused"],
-    ["16:02", "Groceries", "Substitute two lines, within budget", "$4", "money", "ok", "in mandate"]
+    ["06:38", "Household", "Renew kitchen water filter", "$38", "money", "ok", "in mandate", "C1"],
+    ["06:52", "Logistics", "Move refuse pickup to Friday", "—", "logistics", "ok", "in mandate", "C1"],
+    ["07:04", "Household", "Top up Tolu's lunch account", "$24", "money", "ok", "in mandate", "C1"],
+    ["07:15", "Household", "Pay water account", "$96", "money", "ok", "in mandate", "C1"],
+    ["07:48", "Yard unit 2", "Boundary survey, 11 minutes", "0.0 m out", "machines", "ok", "in mandate", "C3"],
+    ["08:02", "Logistics", "Confirm Femi's depot slot", "—", "logistics", "ok", "in mandate", "C1"],
+    ["08:20", "Groceries", "Weekly basket, 31 lines", "$142", "money", "ok", "in mandate", "C1"],
+    ["08:55", "Logistics", "Re-route parcel to locker 4", "—", "logistics", "ok", "in mandate", "C1"],
+    ["09:12", "Cleaning unit 1", "Ground floor cycle, 38 minutes", "0.0 m out", "machines", "ok", "in mandate", "C3"],
+    ["09:30", "Household", "Renew home network contract, 12 months", "$312", "money", "ask", "over ceiling", "C1"],
+    ["09:31", "Household", "Confirmation requested from Ada", "awaiting", "money", "ask", "paused", "C5"],
+    ["10:06", "Household", "Renewal confirmed by Ada", "$312", "money", "ok", "confirmed", "C2"],
+    ["10:40", "Logistics", "Reschedule Tolu's swimming lesson", "—", "logistics", "ok", "in mandate", "C1"],
+    ["11:04", "Household", "Book gutter clearance, cancellable 24h", "$180", "money", "ok", "in mandate", "C2"],
+    ["11:36", "Cleaning unit 1", "Run upstairs cycle, 42 minutes", "0.0 m out", "machines", "ok", "in mandate", "C3"],
+    ["12:30", "Logistics", "Accept delivery window, Friday 08–10", "—", "logistics", "ok", "in mandate", "C1"],
+    ["12:58", "Household", "Settle clinic parking, monthly", "$42", "money", "ok", "in mandate", "C1"],
+    ["13:06", "Yard unit 2", "Clear 14 m of hedge", "3.1 m out", "machines", "no", "out of scope", "no clause"],
+    ["13:44", "Household", "Ask Ada to approve haulage", "$380", "money", "ask", "escalated", "C5"],
+    ["13:46", "Household", "Book haulage, non-refundable", "$380", "money", "ok", "confirmed", "C2"],
+    ["14:15", "Household", "Contractor access while the house is empty", "declined", "logistics", "ask", "refused", "C5"],
+    ["15:20", "Logistics", "Accept pharmacy collection slot", "—", "logistics", "ok", "in mandate", "C1"],
+    ["16:02", "Groceries", "Substitute two lines, within budget", "$4", "money", "ok", "in mandate", "C1"],
+    ["17:30", "Yard unit 2", "Return to dock, charge to 80%", "0.0 m out", "machines", "ok", "in mandate", "C3"]
   ];
 
   var stream = (function () {
     var list = $("#stream");
     var btn = $("#streamPlay");
     var cats = { money: true, logistics: true, machines: true };
-    var i = 0, timer = null, running = false, wanted = false;
+    var i = 0, timer = null, running = true, wanted = false, capacity = 18;
 
     function rowFits(r) { return cats[r[4]]; }
+
+    function makeRow(r) {
+      var li = el("li");
+      if (r[5] === "no") li.className = "flag";
+      li.appendChild(el("span", "t", r[0]));
+      li.appendChild(el("span", "who", r[1]));
+      var act = el("span", "a");
+      act.appendChild(el("span", "at", r[2]));
+      li.appendChild(act);
+      li.appendChild(el("span", "cl" + (r[7] === "no clause" ? " none" : ""), r[7]));
+      li.appendChild(el("span", "amt", r[3]));
+      li.appendChild(el("span", "s s-" + r[5], r[6]));
+      return li;
+    }
 
     function push() {
       var guard = 0;
       while (guard++ < STREAM.length) {
-        if (i >= STREAM.length) { i = 0; list.innerHTML = ""; }
+        if (i >= STREAM.length) i = 0;
         var r = STREAM[i++];
         if (!rowFits(r)) continue;
-        var li = el("li");
-        if (r[5] === "no") li.className = "flag";
-        li.appendChild(el("span", "t", r[0]));
-        var a = el("span", "a");
-        a.appendChild(el("b", null, r[1]));
-        a.appendChild(document.createTextNode(r[2] + " · " + r[3]));
-        li.appendChild(a);
-        li.appendChild(el("span", "s s-" + r[5], r[6]));
-        list.insertBefore(li, list.firstChild);
-        fit();
+        list.insertBefore(makeRow(r), list.firstChild);
+        while (list.children.length > capacity) list.removeChild(list.lastChild);
         return;
       }
     }
 
-    /* Trim from the foot until the log fits its frame exactly, so the oldest
-       row leaves rather than being cut in half by the overflow. Rows are
-       taller at phone width, so the count that fits is measured, not fixed.
-       No-ops while the page is hidden, hence the refit on reveal. */
-    function fit() {
-      var frame = list.parentElement;
-      if (!frame.clientHeight) return;
-      var stop = 0;
-      while (list.children.length > 2 && list.scrollHeight > frame.clientHeight && stop++ < 30) {
-        list.removeChild(list.lastChild);
+    /* The wall is sized to the viewport, not the other way round: the row
+       height is fixed and the count is measured, so the log always reaches the
+       foot of the screen and the last row is cut by the edge, not by a box. */
+    function measure() {
+      var ground = list.parentElement;
+      var h = ground.clientHeight;
+      if (!h) return;
+      var rowH = window.innerWidth <= 760 ? 44 : 48;
+      list.style.setProperty("--row", rowH + "px");
+      capacity = Math.ceil(h / rowH) + 1;
+      while (list.children.length > capacity) list.removeChild(list.lastChild);
+      while (list.children.length < capacity) {
+        var guard = 0, r = null;
+        while (guard++ < STREAM.length) {
+          if (i >= STREAM.length) i = 0;
+          var c = STREAM[i++];
+          if (rowFits(c)) { r = c; break; }
+        }
+        if (!r) break;
+        list.appendChild(makeRow(r));
       }
     }
 
-    function tick() { push(); }
-
     function sync() {
       var should = wanted && running;
-      if (should && !timer) timer = setInterval(tick, 900);
+      if (should && !timer) timer = setInterval(push, 1100);
       if (!should && timer) { clearInterval(timer); timer = null; }
       btn.textContent = running ? "Pause" : "Play";
     }
@@ -128,80 +391,55 @@
     $$("[data-cat]").forEach(function (c) {
       c.addEventListener("click", function () {
         var k = c.dataset.cat;
-        // never let all three go off — the log would be empty
+        // never let all three go off — the wall would be empty
         if (cats[k] && Object.keys(cats).filter(function (x) { return cats[x]; }).length === 1) return;
         cats[k] = !cats[k];
         c.classList.toggle("on", cats[k]);
         c.setAttribute("aria-pressed", String(cats[k]));
         list.innerHTML = "";
         i = 0;
-        for (var n = 0; n < 4; n++) push();
+        measure();
       });
     });
 
-    for (var n = 0; n < 4; n++) push();
-    running = true;
-
     return {
-      setRunning: function (v) { wanted = v; sync(); if (v) requestAnimationFrame(fit); }
+      setRunning: function (v) { wanted = v; sync(); if (v) requestAnimationFrame(measure); },
+      measure: measure
     };
   })();
 
-  /* ═══════════════ 3 · The mandate ═══════════════ */
+  /* ═══════════════ 4 · The mandate ═══════════════ */
 
-  /* Each clause has a terse spine for the list and its full text for the
-     panel. The list is a spine you scan; the quoted clause belongs with the
-     signature that makes it enforceable, which is where the panel puts it. */
   var CLAUSES = [
     {
-      id: "C1", title: "Spend", short: "$400 a commitment, $1,200 a week",
-      rule: "Single commitments to $400. Rolling week to $1,200.",
-      signed: "04 Feb 2036, 19:12",
-      by: "Ada Okonjo \u00b7 passkey",
-      counter: "Platform, at issue",
-      registry: "Sealed 7\u00b7C1 \u00b7 v6 retained",
-      change: "Either adult, in person, 12-hour delay",
-      hash: "4c1d\u20268f02"
+      id: "C1", title: "Spend", short: "Single commitments to $400. Rolling week to $1,200.",
+      signed: "04 Feb 2036, 19:12", by: "Ada Okonjo · passkey",
+      counter: "Platform, at issue", registry: "Sealed 7·C1 · v6 retained",
+      change: "Either adult, in person, 12-hour delay", hash: "4c1d…8f02"
     },
     {
-      id: "C2", title: "Reversibility", short: "No non-refundable commitment unconfirmed",
-      rule: "Nothing non-refundable without a confirmation from Ada or Femi.",
-      signed: "04 Feb 2036, 19:12",
-      by: "Ada Okonjo \u00b7 passkey",
-      counter: "Platform, at issue",
-      registry: "Sealed 7\u00b7C2 \u00b7 v6 retained",
-      change: "Either adult, in person, 12-hour delay",
-      hash: "9a30\u20264be1"
+      id: "C2", title: "Reversibility", short: "Nothing non-refundable without a confirmation from Ada or Femi.",
+      signed: "04 Feb 2036, 19:12", by: "Ada Okonjo · passkey",
+      counter: "Platform, at issue", registry: "Sealed 7·C2 · v6 retained",
+      change: "Either adult, in person, 12-hour delay", hash: "9a30…4be1"
     },
     {
-      id: "C3", title: "Boundary", short: "Inside the property line only",
-      rule: "Machines may work inside the property line only.",
-      signed: "04 Feb 2036, 19:14",
-      by: "Femi Okonjo \u00b7 passkey",
-      counter: "Platform and dispatch service",
-      registry: "Sealed 7\u00b7C3 \u00b7 polygon v3",
-      change: "Either adult, in person, 12-hour delay",
-      hash: "b7f2\u202619ac"
+      id: "C3", title: "Boundary", short: "Machines may work inside the property line only.",
+      signed: "04 Feb 2036, 19:14", by: "Femi Okonjo · passkey",
+      counter: "Platform and dispatch service", registry: "Sealed 7·C3 · polygon v3",
+      change: "Either adult, in person, 12-hour delay", hash: "b7f2…19ac"
     },
     {
-      id: "C4", title: "Third parties", short: "Nothing that binds an outsider",
-      rule: "No act that binds anyone outside this household.",
-      signed: "04 Feb 2036, 19:14",
-      by: "Femi Okonjo \u00b7 passkey",
-      counter: "Platform, at issue",
-      registry: "Sealed 7\u00b7C4 \u00b7 v6 retained",
-      change: "Either adult, in person, 12-hour delay",
-      hash: "2e88\u2026c05d"
+      id: "C4", title: "Third parties", short: "No act that binds anyone outside this household.",
+      signed: "04 Feb 2036, 19:14", by: "Femi Okonjo · passkey",
+      counter: "Platform, at issue", registry: "Sealed 7·C4 · v6 retained",
+      change: "Either adult, in person, 12-hour delay", hash: "2e88…c05d"
     },
     {
-      id: "C5", title: "Escalation", short: "Anything else stops and asks",
-      rule: "Anything outside C1 to C4 stops and asks.",
-      signed: "04 Feb 2036, 19:15",
-      by: "Ada Okonjo \u00b7 passkey",
-      counter: "Platform, at issue",
-      registry: "Sealed 7\u00b7C5 \u00b7 both adults",
-      change: "Either adult, in person, 12-hour delay",
-      hash: "d5b1\u20267731"
+      id: "C5", title: "Escalation", short: "Anything outside C1 to C4 stops and asks.",
+      signed: "04 Feb 2036, 19:15", by: "Ada Okonjo · passkey",
+      counter: "Platform, at issue", registry: "Sealed 7·C5 · both adults",
+      change: "Either adult, in person, 12-hour delay", hash: "d5b1…7731"
     }
   ];
 
@@ -218,22 +456,22 @@
       b.appendChild(el("span", "cid", c.id));
       var body = el("span");
       body.appendChild(el("span", "ct", c.title));
-      body.appendChild(el("span", "cr", c.short));
+      body.appendChild(el("span", "cr", "“" + c.short + "”"));
       b.appendChild(body);
+      var sig = el("span", "csig");
+      sig.appendChild(el("span", "eyebrow", "Signed"));
+      sig.appendChild(document.createTextNode(c.by));
+      b.appendChild(sig);
       b.addEventListener("click", function () { sel = idx; render(); });
       li.appendChild(b);
       list.appendChild(li);
     });
 
     function render() {
-      $$(".clause-btn", list).forEach(function (b, i) {
-        b.setAttribute("aria-pressed", String(i === sel));
-      });
+      $$(".clause-btn", list).forEach(function (b, i) { b.setAttribute("aria-pressed", String(i === sel)); });
       var c = CLAUSES[sel];
       panel.innerHTML = "";
-      var h = el("h3", null, "Clause " + c.id + " · " + c.title);
-      panel.appendChild(h);
-      panel.appendChild(el("p", "prov-rule", "“" + c.rule + "”"));
+      panel.appendChild(el("h3", null, "Clause " + c.id + " · " + c.title));
       var dl = el("dl");
       [["Signed", c.signed], ["By", c.by], ["Counter", c.counter], ["Registry", c.registry], ["Changeable", c.change]]
         .forEach(function (pair) {
@@ -266,98 +504,80 @@
     render();
   })();
 
-  /* ═══════════════ 4 · Instruction against action ═══════════════ */
+  /* ═══════════════ 5 · The day's record ═══════════════ */
 
-  /* The list is a spine: time, act, clause. Amounts, evidence and the verbatim
-     clause live in the detail beside it, so the reader scans nine rows and one
-     red badge rather than reading the record twice. */
+  /* Nine acts, floor to ceiling. The wall is a spine you scan — time, act,
+     clause — so the single red row reads at a glance. Amounts, evidence and
+     the verbatim clause live in the detail plate beside it. */
   var ACTS = [
     {
       t: "07:02", act: "Reorder water filter", badge: "C1", cls: "b-ok",
-      clause: "C1", quote: "Single commitments to $400",
-      note: "within the ceiling",
-      done: "Reorder placed with the usual supplier",
-      dm: "$38 \u00b7 refundable 30 days",
-      ev: ["order receipt", "mandate reference"],
-      exp: 0
+      clause: "C1", quote: "Single commitments to $400", note: "within the ceiling",
+      done: "Reorder placed with the usual supplier", dm: "$38 · refundable 30 days",
+      ev: ["order receipt", "mandate reference"], exp: 0
     },
     {
       t: "07:04", act: "Move refuse collection", badge: "C1", cls: "b-ok",
-      clause: "C1", quote: "Single commitments to $400",
-      note: "no money committed",
-      done: "Collection window changed with the municipal service",
-      dm: "no charge",
-      ev: ["service confirmation"],
-      exp: 0
+      clause: "C1", quote: "Single commitments to $400", note: "no money committed",
+      done: "Collection window changed with the municipal service", dm: "no charge",
+      ev: ["service confirmation"], exp: 0
     },
     {
       t: "08:15", act: "Book gutter clearance", badge: "C1 + C2", cls: "b-ok",
       clause: "C1 + C2", quote: "Nothing non-refundable without a confirmation",
       note: "cancellable, so none was owed",
-      done: "Booked for Saturday, free cancellation to Friday",
-      dm: "$180",
-      ev: ["provider terms snapshot", "booking receipt"],
-      exp: 0
+      done: "Booked for Saturday, free cancellation to Friday", dm: "$180",
+      ev: ["provider terms snapshot", "booking receipt"], exp: 0
     },
     {
       t: "09:40", act: "Dispatch yard unit, survey", badge: "C3", cls: "b-ok",
       clause: "C3", quote: "Machines inside the property line only",
       note: "route checked against polygon v3",
-      done: "Yard unit 2 surveyed the rear boundary",
-      dm: "11 minutes \u00b7 excursion 0.0 m",
-      ev: ["GNSS track", "boundary polygon v3"],
-      exp: 0
+      done: "Yard unit 2 surveyed the rear boundary", dm: "11 minutes · excursion 0.0 m",
+      ev: ["GNSS track", "boundary polygon v3"], exp: 0
     },
     {
       t: "11:22", act: "Pay water account", badge: "C1", cls: "b-ok",
-      clause: "C1", quote: "Single commitments to $400",
-      note: "recurring, within ceiling",
-      done: "Account settled in full",
-      dm: "$96",
-      ev: ["payment record"],
-      exp: 0
+      clause: "C1", quote: "Single commitments to $400", note: "recurring, within ceiling",
+      done: "Account settled in full", dm: "$96", ev: ["payment record"], exp: 0
     },
     {
-      t: "13:06", act: "Yard unit clears 14 m of hedge", meta: "3.1 m beyond the line",
-      badge: "no clause", cls: "b-no", flag: true,
-      clause: null,
-      note: "Breaches C3 and, via the neighbour, C4",
+      t: "13:06", act: "Yard unit clears 14 m of hedge", meta: "9.4 m of it on Deb Hollis's side",
+      badge: "no clause", cls: "b-no", flag: true, clause: null,
+      note: "Breaches C3 and, through the neighbour, C4",
       done: "Yard unit 2 cut 14.2 m of hedge, 9.4 m of it on the neighbouring plot",
-      dm: "excursion 3.1 m \u00b7 4 min",
-      ev: ["GNSS track 13:04\u201313:09", "polygon v3"],
-      exp: 0
+      dm: "excursion 3.1 m · 4 minutes",
+      ev: ["GNSS track 13:04–13:09", "polygon v3"], exp: 0
     },
     {
-      t: "13:44", act: "Ask Ada to approve haulage", badge: "C5", cls: "b-ask",
+      t: "13:44", act: "Ask Ada to approve haulage", meta: "approved in 41 seconds",
+      badge: "C5", cls: "b-ask",
       clause: "C5", quote: "Anything else stops and asks",
-      done: "Confirmed in 41 seconds",
+      done: "Answered from a clinic corridor, between a dental and a suture check",
       ev: ["voice transcript", "device attestation"],
       transcript: [
-        ["Agent", "Booking haulage for the cuttings from clearing your rear boundary \u2014 $380, non-refundable. Approve?"],
+        ["Agent", "Booking haulage for the cuttings from clearing your rear boundary — $380, non-refundable. Approve?"],
         ["Ada", "Yes, go ahead."]
       ],
-      omit: "Omitted from the question \u2014 the cut had crossed the property line.",
+      omit: "What the question left out — the cut had crossed the property line.",
       exp: 0
     },
     {
-      t: "13:46", act: "Book non-refundable haulage", meta: "$380 \u00b7 non-refundable",
+      t: "13:46", act: "Book non-refundable haulage", meta: "$380 · non-refundable",
       badge: "C1 + C2", cls: "b-ok",
       clause: "C1 + C2", quote: "Nothing non-refundable without a confirmation",
       note: "confirmed at 13:44, so formally in scope",
-      done: "Haulage booked for the same afternoon",
-      dm: "$380 \u00b7 collection 16:30",
-      ev: ["merchant terms snapshot", "confirmation at 13:44"],
-      exp: 380
+      done: "Haulage booked for the same afternoon", dm: "$380 · collection 16:30",
+      ev: ["merchant terms snapshot", "confirmation at 13:44"], exp: 380
     },
     {
-      t: "16:10", act: "Neighbour\u2019s agent files a damage notice",
+      t: "16:10", act: "Deb Hollis's agent files a damage notice", meta: "Ada saw it at 16:12",
       badge: "third party", cls: "b-none",
-      clause: null, noClauseLabel: "Not an act of this household\u2019s agent",
+      clause: null, noClauseLabel: "Not an act of this household's agent",
       note: "replanting and labour, quoted by the neighbour",
       done: "Notice matched to the 13:06 track in 90 seconds",
-      dm: "$1,340 \u00b7 replanting 9.4 m",
-      ev: ["neighbour notice", "two quotes"],
-      exp: 1720
+      dm: "$1,340 · replanting 9.4 m",
+      ev: ["neighbour notice", "two quotes"], exp: 1720
     }
   ];
 
@@ -395,11 +615,7 @@
 
       var ins = el("div", "ld-side instructed" + (a.clause ? "" : " none"));
       ins.appendChild(el("p", "eyebrow", a.clause ? "Instructed · clause " + a.clause : "Instructed · nothing authorises this"));
-      if (a.clause) {
-        ins.appendChild(el("p", "ld-quote", "“" + a.quote + "”"));
-      } else {
-        ins.appendChild(el("p", "ld-quote", a.noClauseLabel || "No clause of the mandate covers this act."));
-      }
+      ins.appendChild(el("p", "ld-quote", a.clause ? "“" + a.quote + "”" : (a.noClauseLabel || "No clause of the mandate covers this act.")));
       if (a.note) ins.appendChild(el("p", "ld-meta", a.note));
       detail.appendChild(ins);
 
@@ -423,8 +639,8 @@
       done.appendChild(ev);
       detail.appendChild(done);
 
-      /* The running tally lives inside the sticky detail panel, so the loss
-         and the match count stay on screen while the list is scrolled. */
+      /* The running tally stays in the plate, so the loss and the match count
+         are on screen whichever act is open. */
       var running = 0;
       for (var i = 0; i <= sel; i++) running = Math.max(running, ACTS[i].exp);
       var matched = (sel + 1) - ACTS.slice(0, sel + 1).filter(function (x) { return !x.clause; }).length;
@@ -438,10 +654,6 @@
       a2.appendChild(el("span", "eyebrow", "Acts matched to a clause"));
       exp.appendChild(a2);
       detail.appendChild(exp);
-
-      if (window.innerWidth <= 820 && document.activeElement && document.activeElement.classList.contains("act-btn")) {
-        detail.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }
     }
 
     $("#actPrev").addEventListener("click", function () { if (sel > 0) { sel--; render(); } });
@@ -450,27 +662,27 @@
     render();
   })();
 
-  /* ═══════════════ 5 · The waterfall ═══════════════ */
+  /* ═══════════════ 7 · The waterfall, floor to ceiling ═══════════════ */
 
   var CASES = [
     {
       key: "hedge", label: "Hedge cut beyond the line", total: 1720,
       layers: [
-        { amt: 260, day: "day 2", why: "Unperformed portion of the haulage booking", ev: "From the record — merchant terms snapshot, booking receipt" },
-        { amt: 120, day: "day 5", why: "Remainder of a card purchase made under an authenticated mandate", ev: "From the record — mandate reference carried at authorisation" },
-        { amt: 1000, day: "day 11", why: "Machine action outside the stated envelope, capped per event", ev: "From the record — GNSS track, boundary polygon v3, 41 frames" },
-        { amt: 240, day: "day 16", why: "Third-party remediation above the platform cap, after the household share", ev: "From the record — the divergence at 13:06 and two repair quotes" }
+        { amt: 260, day: "day 2", why: "Unperformed portion of the haulage booking" },
+        { amt: 120, day: "day 5", why: "Remainder of a card purchase made under an authenticated mandate" },
+        { amt: 1000, day: "day 11", why: "Machine action outside the stated envelope, capped per event" },
+        { amt: 240, day: "day 16", why: "Deb Hollis's replanting above the platform cap, after the household share" }
       ],
       share: 100,
-      verdict: "Of <b>$1,720</b>, three layers absorb $1,380 in eleven days, the household bears $100, and the policy pays <b>$240</b>."
+      verdict: "Of <b>$1,720</b>, three layers absorb $1,380 in eleven days, the Okonjos bear $100, and the policy pays <b>$240</b>."
     },
     {
       key: "wrong-item", label: "Wrong item bought and delivered", total: 210,
       layers: [
-        { amt: 210, day: "day 2", why: "Goods unopened, returned inside the provider’s own window", ev: "From the record — the instruction, the listing and the delivery scan" },
-        { amt: 0, day: "not reached", why: "Nothing left for the network to absorb", ev: "—" },
-        { amt: 0, day: "not reached", why: "No machine and no dispatch involved", ev: "—" },
-        { amt: 0, day: "not reached", why: "No residual, and no claim was ever opened", ev: "—" }
+        { amt: 210, day: "day 2", why: "Goods unopened, returned inside the provider's own window" },
+        { amt: 0, day: "not reached", why: "Nothing left for the network to absorb" },
+        { amt: 0, day: "not reached", why: "No machine and no dispatch involved" },
+        { amt: 0, day: "not reached", why: "No residual, and no claim was ever opened" }
       ],
       share: 0,
       verdict: "Of <b>$210</b>, the provider reverses all of it in two days, and the policy pays <b>nothing</b>."
@@ -478,10 +690,10 @@
     {
       key: "regret", label: "In-scope purchase the household regretted", total: 640,
       layers: [
-        { amt: 0, day: "day 1", why: "Provider terms allow no return on a made-to-order item", ev: "From the record — terms snapshot taken at purchase" },
-        { amt: 0, day: "day 3", why: "No agent error: the act matched clause C1 exactly", ev: "From the record — instruction, mandate and authorisation aligned" },
-        { amt: 0, day: "day 3", why: "No dispatch, and nothing outside the platform’s envelope", ev: "—" },
-        { amt: 0, day: "day 4", why: "Declined — the agent did what it was told to do", ev: "From the record — the same evidence that would have proved a divergence" }
+        { amt: 0, day: "day 1", why: "Provider terms allow no return on a made-to-order item" },
+        { amt: 0, day: "day 3", why: "No agent error: the act matched clause C1 exactly" },
+        { amt: 0, day: "day 3", why: "No dispatch, and nothing outside the platform's envelope" },
+        { amt: 0, day: "day 4", why: "Declined — the agent did what it was told to do" }
       ],
       share: 640,
       verdict: "Of <b>$640</b>, no layer owes anything, and the record closes the claim in four days by showing the agent did exactly as instructed."
@@ -490,10 +702,9 @@
 
   var LAYER_NAMES = ["Provider reversal", "Network agent-error protection", "Platform dispatch guarantee", "The policy"];
 
-  (function waterfall() {
+  var waterfall = (function () {
     var chips = $("#caseChips");
-    var bar = $("#fallBar");
-    var box = $("#layers");
+    var wall = $("#fallWall");
     var totalEl = $("#fallTotal");
     var verdict = $("#fallVerdict");
     var ci = 0, step = 0;
@@ -513,6 +724,19 @@
       chips.appendChild(b);
     });
 
+    function band(cls, n, name, amt, day, why, weight) {
+      var d = el("div", "band " + cls);
+      d.dataset.weight = String(weight);
+      var lab = el("div", "band-label");
+      if (why) lab.appendChild(el("span", "bl-why", why));
+      if (day) lab.appendChild(el("span", "bl-day", day));
+      if (n) lab.appendChild(el("span", "bl-n", n));
+      lab.appendChild(el("span", "bl-name", name));
+      if (amt !== null) lab.appendChild(el("span", "bl-amt", amt));
+      d.appendChild(lab);
+      return d;
+    }
+
     function render() {
       var c = CASES[ci];
       totalEl.textContent = money(c.total);
@@ -520,89 +744,81 @@
       var settled = 0;
       for (var i = 0; i < step; i++) settled += c.layers[i].amt;
       var shareIn = step >= 4 ? c.share : 0;
+      var open = c.total - settled - shareIn;
 
-      bar.innerHTML = "";
-      for (var i = 0; i < 4; i++) {
-        var amt = i < step ? c.layers[i].amt : 0;
-        if (amt <= 0) continue;
-        var s = el("span", "seg-" + (i + 1), amt >= c.total * 0.11 ? money(amt) : "");
-        s.style.flex = "0 0 " + (amt / c.total * 100) + "%";
-        bar.appendChild(s);
+      /* Before the first layer is asked, the four of them divide the whole
+         stage equally: the screen is the order a claim travels, floor to
+         ceiling, with nothing yet settled and no blank left over. */
+      var pendingWeight = step === 0 ? 1 : 0.075;
+
+      wall.innerHTML = "";
+      for (i = 0; i < 4; i++) {
+        var l = c.layers[i];
+        if (i < step) {
+          var frac = l.amt / c.total;
+          wall.appendChild(band("b" + (i + 1) + (l.amt === 0 ? " zero" : ""),
+            "0" + (i + 1), LAYER_NAMES[i],
+            l.amt === 0 ? "nothing owed" : money(l.amt), l.day, l.why,
+            Math.max(frac, 0.07)));
+        } else {
+          wall.appendChild(band("pending", "0" + (i + 1), LAYER_NAMES[i], "—", "not yet asked", l.why, pendingWeight));
+        }
       }
       if (shareIn > 0) {
-        var sh = el("span", "seg-5", shareIn >= c.total * 0.11 ? money(shareIn) : "");
-        sh.style.flex = "0 0 " + (shareIn / c.total * 100) + "%";
-        bar.appendChild(sh);
+        wall.appendChild(band("b5", null, c.share >= c.total ? "Borne by the household" : "Household share",
+          money(shareIn), null, null, Math.max(shareIn / c.total, 0.055)));
       }
-      var open = c.total - settled - shareIn;
-      if (open > 0) {
-        var o = el("span", "seg-open", open >= c.total * 0.14 ? money(open) + " open" : "");
-        o.style.flex = "1 1 auto";
-        bar.appendChild(o);
+      if (open > 0 && step > 0) {
+        wall.appendChild(band("remainder", null, "Still open", money(open), null, null, open / c.total));
       }
 
-      /* A key, because the bar carries segments too narrow to label and the
-         household's own share is not one of the four layers. */
-      var key = $("#fallKey");
-      key.innerHTML = "";
-      function keyItem(colour, label) {
-        var s = el("span");
-        var sw = el("i");
-        sw.style.background = colour;
-        s.appendChild(sw);
-        s.appendChild(document.createTextNode(label));
-        key.appendChild(s);
-      }
-      var COLS = ["#4E6B58", "#4E6C86", "#6F6091", "#A3302B"];
-      for (var i = 0; i < 4; i++) {
-        if (i < step && c.layers[i].amt > 0) keyItem(COLS[i], LAYER_NAMES[i] + " " + money(c.layers[i].amt));
-      }
-      if (shareIn > 0) keyItem("#62627E", (shareIn >= c.total ? "Borne by the household " : "Household share ") + money(shareIn));
-      if (open > 0) keyItem("#DCD9E2", "Still open " + money(open));
+      layoutBands();
 
-      box.innerHTML = "";
-      c.layers.forEach(function (l, i) {
-        var on = i < step;
-        var d = el("div", "layer " + (on ? "on" : "off") + (i === 3 ? " insurer" : ""));
-        var top = el("div", "l-top");
-        top.appendChild(el("span", "l-n", "0" + (i + 1)));
-        top.appendChild(el("span", "l-name", LAYER_NAMES[i]));
-        d.appendChild(top);
-        d.appendChild(el("span", "l-amt", on ? money(l.amt) : "—"));
-        d.appendChild(el("span", "l-when", on ? l.day : "not yet asked"));
-        d.appendChild(el("span", "l-why", l.why));
-        d.appendChild(el("span", "l-ev", l.ev));
-        box.appendChild(d);
-      });
-
-      if (step >= 4) {
-        verdict.innerHTML = c.verdict;
-      } else {
-        verdict.innerHTML = "Step through the four layers in the order a claim actually travels.";
-      }
+      verdict.innerHTML = step >= 4
+        ? c.verdict
+        : "Step through the four layers in the order a claim actually travels.";
       $("#fallStep").disabled = step >= 4;
       $("#fallStep").textContent = step === 0 ? "First layer" : "Next layer";
       $("#fallAll").textContent = step >= 4 ? "Start over" : "Settle it";
     }
 
+    function layoutBands() {
+      var bands = $$(".band", wall);
+      if (!bands.length) return;
+      var sum = bands.reduce(function (a, b) { return a + Number(b.dataset.weight); }, 0);
+      var h = wall.clientHeight || window.innerHeight;
+      bands.forEach(function (b) {
+        var pct = Number(b.dataset.weight) / sum;
+        b.style.flexBasis = (pct * 100) + "%";
+        var px = pct * h;
+        b.classList.toggle("thin", px < 96);
+        b.classList.toggle("hair", px < 52);
+      });
+    }
+
     $("#fallStep").addEventListener("click", function () { if (step < 4) { step++; render(); } });
     $("#fallAll").addEventListener("click", function () { step = step >= 4 ? 0 : 4; render(); });
     render();
+    return { relayout: layoutBands };
   })();
 
-  /* ═══════════════ 6 · The book ═══════════════ */
+  /* ═══════════════ 8 · The book, as a field ═══════════════ */
 
+  /* The last group is the one the argument turns on, so it is laid last: the
+     61 dots the policy pays land in the final rows, below the plate's foot,
+     where nothing covers them. */
   var GROUPS = [
     { n: 612, name: "Provider reversal", sub: "3 days median · $190 mean", c: "g0", sw: "#4E6B58" },
     { n: 197, name: "Network agent-error protection", sub: "6 days · $260 mean", c: "g1", sw: "#4E6C86" },
     { n: 106, name: "Platform dispatch guarantee", sub: "12 days · $840 mean", c: "g2", sw: "#6F6091" },
-    { n: 61, name: "Policy paid", sub: "19 days · $1,180 mean", c: "g3", sw: "#A3302B" },
-    { n: 24, name: "Nothing owed", sub: "1 day · the record showed no divergence", c: "g4", sw: "#8A87A0" }
+    { n: 24, name: "Nothing owed", sub: "1 day · the record showed no divergence", c: "g4", sw: "#8A87A0" },
+    { n: 61, name: "Policy paid", sub: "19 days · $1,180 mean", c: "g3", sw: "#A3302B" }
   ];
 
-  (function book() {
+  var book = (function () {
     var w = $("#waffle");
     var legend = $("#bookLegend");
+
     var frag = document.createDocumentFragment();
     var gi = 0, left = GROUPS[0].n;
     for (var i = 0; i < 1000; i++) {
@@ -614,10 +830,10 @@
     }
     w.appendChild(frag);
 
-    function focus(gi) {
-      if (gi === null) { w.classList.remove("focus"); return; }
+    function focus(g) {
+      if (g === null) { w.classList.remove("focus"); return; }
       w.classList.add("focus");
-      $$("i", w).forEach(function (d) { d.classList.toggle("hot", d.dataset.g === String(gi)); });
+      $$("i", w).forEach(function (d) { d.classList.toggle("hot", d.dataset.g === String(g)); });
     }
 
     GROUPS.forEach(function (g, i) {
@@ -632,17 +848,30 @@
       nm.appendChild(el("em", null, g.sub));
       b.appendChild(nm);
       b.appendChild(el("span", "ct num", String(g.n)));
-      b.addEventListener("mouseenter", function () { focus(i); });
-      b.addEventListener("mouseleave", function () { focus(null); });
-      b.addEventListener("focus", function () { focus(i); });
-      b.addEventListener("blur", function () { focus(null); });
+      ["mouseenter", "focus"].forEach(function (ev) { b.addEventListener(ev, function () { focus(i); }); });
+      ["mouseleave", "blur"].forEach(function (ev) { b.addEventListener(ev, function () { focus(null); }); });
       b.addEventListener("click", function () { focus(i); });
       li.appendChild(b);
       legend.appendChild(li);
     });
+
+    /* The field fills the screen, so the column count follows the viewport's
+       shape. Only counts that divide 1,000 are used, so the last row is full
+       and the 61 red dots stay a clean band rather than a ragged one. */
+    function fit() {
+      var W = w.clientWidth || window.innerWidth, H = w.clientHeight || window.innerHeight;
+      if (!W || !H) return;
+      var ideal = Math.sqrt(1000 * (W / H));
+      var choices = [20, 25, 40, 50];
+      var best = choices[0], bd = Infinity;
+      choices.forEach(function (c) { var d = Math.abs(c - ideal); if (d < bd) { bd = d; best = c; } });
+      w.style.setProperty("--cols", best);
+    }
+
+    return { fit: fit };
   })();
 
-  /* ═══════════════ 7 · What the premium buys ═══════════════ */
+  /* ═══════════════ 9 · The premium is the screen ═══════════════ */
 
   var DIALS = [
     {
@@ -677,8 +906,10 @@
     }
   ];
 
-  (function premium() {
+  var premium = (function () {
     var host = $("#dials");
+    var wall = $("#decomp");
+
     DIALS.forEach(function (d) {
       var wrap = el("div", "dial");
       wrap.appendChild(el("p", "eyebrow", d.label));
@@ -700,6 +931,8 @@
       host.appendChild(wrap);
     });
 
+    var parts = [];
+
     function render() {
       var ind = 1.80, hand = 9.20, custody = 4.00, limit = 10000, share = 100;
       DIALS.forEach(function (d) {
@@ -719,62 +952,82 @@
       $("#qLimit").textContent = money(limit);
       $("#qShare").textContent = money(share);
 
-      var parts = [
-        { n: "Expected indemnity", v: ind, c: "d0", sw: "#A3302B" },
-        { n: "Recovery, three layers", v: hand, c: "d1", sw: "#4E6C86" },
-        { n: "Record custody", v: custody, c: "d2", sw: "#4E6B58" },
-        { n: "Expenses and margin", v: expense, c: "d3", sw: "#62627E" }
+      /* Widest first, so the indemnity stripe lands at the far right of the
+         screen, clear of the plate — the whole point is that you see how thin
+         it is against everything else. */
+      parts = [
+        { n: "Expenses and margin", v: expense, c: "d3" },
+        { n: "Recovery, three layers", v: hand, c: "d1" },
+        { n: "Record custody", v: custody, c: "d2" },
+        { n: "Expected indemnity", v: ind, c: "d0", tag: true }
       ];
-      var bar = $("#decomp");
-      bar.innerHTML = "";
-      parts.forEach(function (p) {
-        var s = el("span", p.c);
-        s.style.flex = "0 0 " + (p.v / gross * 100) + "%";
-        bar.appendChild(s);
-      });
-      var key = $("#decompKey");
-      key.innerHTML = "";
-      parts.forEach(function (p) {
-        var k = el("li", "k");
-        var sw = el("span", "sw");
-        sw.style.background = p.sw;
-        k.appendChild(sw);
-        k.appendChild(document.createTextNode(p.n));
-        key.appendChild(k);
-        key.appendChild(el("li", "v num", "$" + p.v.toFixed(2)));
-      });
-      var kt = el("li", "k strong");
-      kt.appendChild(el("span", "sw"));
-      kt.appendChild(document.createTextNode("A year of cover"));
-      key.appendChild(kt);
-      key.appendChild(el("li", "v num strong", "$" + gross.toFixed(2)));
 
-      /* One short line: the bar and its key already carry the split. */
+      wall.innerHTML = "";
+      parts.forEach(function (p) {
+        var b = el("div", "vband " + p.c);
+        b.dataset.frac = String(p.v / gross);
+        b.style.flexBasis = (p.v / gross * 100) + "%";
+        var inner = el("div", "vband-in");
+        inner.appendChild(el("span", "vb-name", p.n));
+        inner.appendChild(el("span", "vb-amt", "$" + p.v.toFixed(2)));
+        inner.appendChild(el("span", "vb-pct", Math.round(p.v / gross * 100) + "%"));
+        b.appendChild(inner);
+        wall.appendChild(b);
+      });
+
       var pct = Math.round(ind / gross * 100);
+      var tag = el("div", "vband-tag");
+      tag.appendChild(el("p", "eyebrow", "Expected indemnity"));
+      tag.appendChild(el("span", "fig-t", pct + "% of the premium"));
+      wall.appendChild(tag);
+
       $("#qWhy").textContent = "Indemnity is " + pct
-        + "% of the premium; the rest buys the record and the pursuit through three layers.";
+        + "% of a year's premium of $" + gross.toFixed(2)
+        + "; the rest buys the record and the pursuit through three layers.";
+
+      fit();
+    }
+
+    /* The tag is pinned over the middle of the indemnity stripe and clamped
+       into the frame, because a 6% stripe is narrower than its own label. */
+    function fit() {
+      var bands = $$(".vband", wall);
+      var tag = $(".vband-tag", wall);
+      if (!bands.length || !tag) return;
+      var W = wall.clientWidth || window.innerWidth;
+      bands.forEach(function (b) {
+        b.classList.toggle("narrow", Number(b.dataset.frac) * W < 118);
+      });
+      var last = bands[bands.length - 1];
+      var centre = last.offsetLeft + last.offsetWidth / 2;
+      var tw = tag.offsetWidth || 160;
+      tag.style.left = Math.max(tw / 2 + 12, Math.min(W - tw / 2 - 12, centre)) + "px";
     }
 
     render();
+    return { fit: fit };
   })();
 
-  /* ═══════════════ 8 · Before you underwrite this ═══════════════ */
+  /* ═══════════════ 10 · Three open questions ═══════════════ */
 
   var BOUNDS = [
     {
       q: "Is the record evidence?",
-      s: "No one has established whether a mandate log is evidence — who holds it, whether it can be altered after the fact, and whether a court or a carrier would accept it as proof of the scope of authority.",
-      w: "A contested claim settled on a mandate log, with the log accepted as proof of scope."
+      status: "Unsettled",
+      s: "No one has established whether a mandate log is evidence: who holds it, whether it can be altered afterwards, and whether a court would accept it as proof of scope.",
+      w: "A contested claim settled on the log."
     },
     {
       q: "Is an agent purchase authorised?",
-      s: "No payment regulation yet says whether a purchase an agent makes under a general authority is authorised, and a ruling either way moves most of this loss off the policy or onto it.",
-      w: "A regulator ruling on whether agent-initiated purchases under a general authority are authorised."
+      status: "Untested",
+      s: "No payment regulation yet says whether a purchase an agent makes under a general authority is authorised, and a ruling either way moves most of this loss.",
+      w: "A regulator ruling on agent purchases."
     },
     {
       q: "Is the residual big enough?",
-      s: "No published loss data exists for consumer agent error anywhere, so every number in this prototype is invented and the real residual could be a fraction of what is shown.",
-      w: "Published frequency and severity for consumer agent error, from anyone."
+      status: "No data anywhere",
+      s: "No published loss data exists for consumer agent error anywhere, so every number here is invented and the real residual could be a fraction of it.",
+      w: "Published frequency and severity, from anyone."
     }
   ];
 
@@ -782,36 +1035,51 @@
     var host = $("#boundaries");
     BOUNDS.forEach(function (b, i) {
       var li = el("li");
-      var btn = el("button", "bd-btn");
-      btn.type = "button";
-      btn.setAttribute("aria-expanded", "false");
-      btn.appendChild(el("span", "n", "0" + (i + 1)));
-      var mid = el("span");
-      mid.appendChild(el("span", "q", b.q));
-      mid.appendChild(el("span", "s", b.s));
-      btn.appendChild(mid);
-      var more = el("span", "more", "Show +");
-      btn.appendChild(more);
+
+      var top = el("div", "q-top");
+      top.appendChild(el("span", "n", "0" + (i + 1)));
+      top.appendChild(el("span", "q", b.q));
+      li.appendChild(top);
+
+      li.appendChild(el("p", "s", b.s));
+
+      var st = el("p", "q-status");
+      st.appendChild(el("span", "eyebrow", "Where it stands"));
+      st.appendChild(el("span", "q-state", b.status));
+      li.appendChild(st);
 
       var body = el("div", "bd-body");
-      body.hidden = true;
       var p = el("p");
       p.appendChild(el("b", null, "Would change our mind"));
       p.appendChild(document.createTextNode(b.w));
       body.appendChild(p);
-
-      btn.addEventListener("click", function () {
-        var open = body.hidden;
-        body.hidden = !open;
-        btn.setAttribute("aria-expanded", String(open));
-        more.textContent = open ? "Hide −" : "Show +";
-      });
-
-      li.appendChild(btn);
       li.appendChild(body);
+
       host.appendChild(li);
     });
   })();
+
+  /* ═══════════════ Layout: every ground is measured, not assumed ═══════════ */
+
+  var rafId = null;
+  function relayout() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(function () {
+      rafId = null;
+      var vis = function (id) { var n = document.getElementById(id); return n && n.clientHeight > 0; };
+      if (vis("planGround")) renderPlan($("#planGround"), {});
+      // the divergence screen comes in closer, on the hedge
+      if (vis("trackGround")) renderPlan($("#trackGround"), { track: true, zoom: 1.4, cy: -17 });
+      // the closing ground is a texture, not a diagram: no tags to go faint
+      if (vis("closeGround")) renderPlan($("#closeGround"), { labels: false });
+      stream.measure();
+      waterfall.relayout();
+      book.fit();
+      premium.fit();
+    });
+  }
+  window.addEventListener("resize", relayout);
+  window.addEventListener("orientationchange", relayout);
 
   /* boot */
   show(1);

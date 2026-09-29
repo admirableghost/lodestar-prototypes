@@ -2,456 +2,470 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Micromutual 2036 — Tramonto Ridge</title>
-<meta name="description" content="An interactive projection of a street-level prevention pool in 2036: who holds the money, what the shared machine does, and what happens when ten households claim at once.">
+<meta name="description" content="A street-level prevention pool in 2036, followed through four invented neighbours on Tramonto Ridge who do not all get along — and whose agents coordinate the shared work anyway.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<a class="skip" href="#page-body">Skip to the page</a>
+<a class="skip" href="#deck">Skip to the story</a>
 
-<header class="shell-header">
-  <p class="shell-mark">Fieldnotes</p>
-  <p class="shell-title">Micromutual&thinsp;/&thinsp;Prototype&nbsp;2036</p>
-  <p class="shell-meta">Tramonto&nbsp;Ridge · 38&nbsp;homes</p>
-</header>
+<!-- ═══════════════ THE GROUND ═══════════════
+     The 38-parcel plan of Tramonto Ridge. It is not an illustration inside
+     the page; it is the page. Inset past all four edges so it never shows a
+     border, with a per-screen camera that moves over it. -->
+<div class="world" id="world">
+  <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
+       aria-label="Plan of Tramonto Ridge: thirty-eight properties in two rows of nineteen either side of the road, with a canyon along the downslope edge."></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="pins" id="pins" aria-hidden="true"></div>
 
-<main class="stage" id="page-body">
-  <article class="paper" id="paper">
-    <div class="grain" aria-hidden="true"></div>
-    <div class="spine" aria-hidden="true"></div>
+<main class="deck" id="deck">
 
-    <!-- ══════════════════════ 1 · COVER ══════════════════════ -->
-    <section class="page page-cover is-current" data-page="1" data-label="The promise">
-      <div class="cover-photo" aria-hidden="true">
-        <img src="../../images/neighborhood.jpg" alt="" id="cover-img">
-        <div class="cover-fade"></div>
+<!-- ══════════════════ 1 · THE STREET ══════════════════ -->
+<section class="screen" data-screen="1" data-label="The street" data-cam="street" data-veil="soft">
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow">Micromutual · Tramonto Ridge · 2036</p>
+    <h1 class="display display--xl"><span>Thirty-eight homes.</span><span>One machine.</span><span>One ledger.</span></h1>
+    <p class="body">Ten years in, this is what a street-level pool looks like from inside one house.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate plate--scroll" style="grid-area:1/8/7/13">
+    <p class="eyebrow eyebrow--gold">The story follows</p>
+    <div class="who">
+      <span class="mark" aria-hidden="true">AR</span>
+      <div>
+        <p class="who-name">Alma R.</p>
+        <p class="who-sub">24 Tramonto Ridge Road</p>
+        <p class="who-sub">3 people · 1 dog · a shed out back</p>
       </div>
-      <div class="cover-type">
-        <p class="brand">Micromutual</p>
-        <p class="eyebrow">Prototype · 2036</p>
-        <h1 class="display">
-          <span>Thirty-eight homes.</span>
-          <span>One machine.</span>
-          <span>One ledger.</span>
-        </h1>
-        <p class="body-copy lede">Ten years after a carrier launched it, this is what a street-level pool
-          looks like from the inside.</p>
-        <div class="framing">
-          <p class="eyebrow">About this prototype</p>
-          <p class="body-copy">Everything here is a projection of 2036: the figures are invented,
-            internally consistent and not measured, and no real insurer operates this.</p>
-        </div>
-        <button class="pill" type="button" data-goto="2">Open the ledger <span aria-hidden="true">&rarr;</span></button>
+    </div>
+    <dl class="rows">
+      <dt>Member since</dt><dd>2033 · $86 a month</dd>
+      <dt>Her own policy</dt><dd>$6,900 a year · $10,000 wildfire deductible</dd>
+      <dt>The house</dt><dd>Single-storey, 1978, wood siding she keeps meaning to replace</dd>
+    </dl>
+    <p class="eyebrow">What she is afraid of</p>
+    <p class="body">The canyon is forty metres from the back fence, her mother is eighty-four, and there is one road out.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:8/1/9/6">
+    <p class="note">Invented households, invented figures. No real insurer operates this.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 2 · FOUR NEIGHBOURS ══════════════════ -->
+<section class="screen" data-screen="2" data-label="Four neighbours" data-cam="quad" data-veil="soft" hidden>
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow">01 / Four neighbours</p>
+    <h2 class="display">Alma likes Bo. Alma cannot stand Camille. Alma has never met&nbsp;Desmond.</h2>
+    <p class="body strong">Their agents coordinate anyway.</p>
+  </div>
+
+  <div class="plate plate--scroll" style="grid-area:4/1/7/6">
+    <p class="eyebrow">The four</p>
+    <div class="cast">
+      <div class="cast-row">
+        <span class="mark" aria-hidden="true">A</span>
+        <div><p class="cast-name">Alma R. · 24</p>
+          <p class="cast-line">The one we follow. Here since 2011.</p></div>
       </div>
-    </section>
-
-    <!-- ══════════════════════ 2 · AUTHORITY ══════════════════════ -->
-    <section class="page" data-page="2" data-label="Who holds the money" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">01 / Who holds the money</p>
-      <h2 class="display">Two of these are insurance. Neither is the&nbsp;pool.</h2>
-      <p class="body-copy measure">Each of 38 households pays $86 a month into accounts that cannot lend
-        to one another.</p>
-
-      <div class="accounts" role="list">
-
-        <div class="account acct-works" role="listitem">
-          <button class="acct-head" type="button" aria-expanded="true" aria-controls="acct-1-body">
-            <span class="acct-tag">Works</span>
-            <span class="acct-fig">$27,100<span class="acct-per"> / year</span></span>
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-          <div class="acct-body" id="acct-1-body">
-            <dl>
-              <dt>Held by</dt><dd>Tramonto Ridge Resilience Association, a California nonprofit
-                corporation. Restricted account, custodian bank.</dd>
-              <dt>Authority</dt><dd>None required. Buys work; promises no payment.</dd>
-              <dt>The one rule</dt><dd class="rule-line">Out to a vendor invoice, for approved work on an
-                enrolled parcel. Never to a member.</dd>
-            </dl>
-          </div>
-        </div>
-
-        <div class="account acct-hardship" role="listitem">
-          <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-2-body">
-            <span class="acct-tag">Hardship</span>
-            <span class="acct-fig">$18,300<span class="acct-per"> held</span></span>
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-          <div class="acct-body" id="acct-2-body" hidden>
-            <dl>
-              <dt>Held by</dt><dd>The same association, a separate restricted account. $6,100 a year in,
-                three years' accumulation held.</dd>
-              <dt>Authority</dt><dd>State registration as a restricted community resilience fund.
-                Examined and capped. Not insurance, and no enforceable promise to pay.</dd>
-              <dt>The one rule</dt><dd class="rule-line">$4,000 a household per event. Pro-rata when short.
-                Silent on declared events.</dd>
-            </dl>
-          </div>
-        </div>
-
-        <div class="account acct-contract" role="listitem">
-          <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-3-body">
-            <span class="acct-tag">Aggregate contract <b class="ins-chip">Insurance</b></span>
-            <span class="acct-fig">$21,700<span class="acct-per"> limit</span></span>
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-          <div class="acct-body" id="acct-3-body" hidden>
-            <dl>
-              <dt>Held by</dt><dd>A licensed carrier. Written to the association, not to a household.</dd>
-              <dt>Authority</dt><dd>An admitted carrier's filed form and rate. The insurance on this page.</dd>
-              <dt>The one rule</dt><dd class="rule-line">Attaching above $18,300. Annual aggregate. Premium $3,100.</dd>
-            </dl>
-          </div>
-        </div>
-
-        <div class="account acct-policy" role="listitem">
-          <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-4-body">
-            <span class="acct-tag">Your own policy <b class="ins-chip">Insurance</b></span>
-            <span class="acct-fig">Unchanged<span class="acct-per"> · your carrier</span></span>
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-          <div class="acct-body" id="acct-4-body" hidden>
-            <dl>
-              <dt>Held by</dt><dd>Your own insurer, on your own terms, at your own deductible.</dd>
-              <dt>Authority</dt><dd>A homeowners contract. Where every large loss goes.</dd>
-              <dt>The one rule</dt><dd class="rule-line">Presented first, always. Never the same loss twice.</dd>
-            </dl>
-          </div>
-        </div>
+      <div class="cast-row">
+        <span class="mark" aria-hidden="true">B</span>
+        <div><p class="cast-name">Bo K. · 22</p>
+          <p class="cast-line">Shares her hedge. They text about the raccoons.</p></div>
       </div>
-
-      <p class="body-copy measure">The pool never underwrites; the two enforceable promises on this page
-        both belong to licensed carriers.</p>
-
-      <aside class="premise">
-        <p class="eyebrow">The one invented rule</p>
-        <p class="body-copy">That state registration is this projection's single piece of invented
-          law &mdash; in 2026 no US state had authority for a fund that pays property losses without an
-          insurance licence.</p>
-        <p class="stamp">Not a mutual. Not an insurer.</p>
-      </aside>
-    </section>
-
-    <!-- ══════════════════════ 3 · SHARED WORK ══════════════════════ -->
-    <section class="page" data-page="3" data-label="Shared work" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">02 / Shared work</p>
-      <h2 class="display">The machine works the gaps between&nbsp;houses.</h2>
-      <p class="body-copy measure">A tracked fuel-reduction unit, leased by the street at $1,550 a month
-        and owned by nobody on it, spends the year on the strips no single household would hire a crew
-        for.</p>
-
-      <div class="season" role="group" aria-label="Season of work">
-        <div class="season-track" id="season-track"></div>
+      <div class="cast-row">
+        <span class="mark mark--red" aria-hidden="true">C</span>
+        <div><p class="cast-name">Camille H. · 26</p>
+          <p class="cast-line">A boundary tree, a lawyer, seven years of silence.</p></div>
       </div>
-
-      <figure class="plan">
-        <p class="plan-name">Tramonto Ridge Road &mdash; 19 lots each side, canyon at the foot</p>
-        <div class="plan-svg" id="plan-works"></div>
-        <figcaption class="plan-legend" id="legend-works"></figcaption>
-      </figure>
-
-      <div class="worklog" id="worklog"></div>
-
-      <p class="body-copy measure">It will not cross a property line without a live consent token, so the
-        geofence is the governance.</p>
-
-      <p class="figrow"><span>378 machine hours</span><span>36 boundary gaps</span><span>610 m of canyon
-        edge</span></p>
-    </section>
-
-    <!-- ══════════════════════ 4 · CONSENT ══════════════════════ -->
-    <section class="page" data-page="4" data-label="Consent" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">03 / Consent</p>
-      <h2 class="display">One refusal breaks two&nbsp;gaps.</h2>
-      <p class="body-copy measure">Tap a property to withhold its consent, and watch what leaves with
-        it.</p>
-
-      <figure class="plan">
-        <p class="plan-name">Tramonto Ridge Road &mdash; consent, property by property</p>
-        <div class="plan-svg" id="plan-consent"></div>
-        <figcaption class="plan-legend" id="legend-consent"></figcaption>
-      </figure>
-
-      <div class="consent-tools">
-        <button class="pill pill-quiet" type="button" data-consent="reset">All 38 enrolled</button>
-        <button class="pill pill-quiet" type="button" data-consent="one">Withhold one</button>
-        <button class="pill pill-quiet" type="button" data-consent="pair">Withhold an adjacent pair</button>
-        <button class="pill pill-quiet" type="button" data-consent="eight">Withhold eight</button>
+      <div class="cast-row">
+        <span class="mark mark--grey" aria-hidden="true">D</span>
+        <div><p class="cast-name">Desmond I. · 25</p>
+          <p class="cast-line">Across the road since last spring. Works nights.</p></div>
       </div>
+    </div>
+  </div>
 
-      <div class="readout" id="consent-readout"></div>
+  <div class="gw" aria-hidden="true"></div>
 
-      <p class="body-copy measure">Nobody is overruled; the refusal is simply visible, and it is
-        priced.</p>
-    </section>
+  <div class="plate" id="graph-legend" style="grid-area:8/1/9/6"></div>
 
-    <!-- ══════════════════════ 5 · TWO KINDS OF MONEY ══════════════════════ -->
-    <section class="page" data-page="5" data-label="Two kinds of money" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">04 / Two kinds of money</p>
-      <h2 class="display">Clearing it is work. Replacing it is a&nbsp;claim.</h2>
-      <p class="body-copy measure">An August windstorm drops a live oak limb across three properties and
-        flattens a shed.</p>
+  <div class="plate plate--works" style="grid-area:7/1/8/6">
+    <p class="body">The scheduler talks to four agents, not to four neighbours. Alma's boundary with Camille is cleared in the same pass as the rest.</p>
+  </div>
+</section>
 
-      <div class="twokinds">
-        <div class="kind kind-works">
-          <p class="eyebrow">Works account</p>
-          <p class="hero-fig">$3,850</p>
-          <ul class="frags">
-            <li>Clearing, three parcels.</li>
-            <li>Vendor invoice, not a claim.</li>
-            <li>No deductible. No assessment.</li>
-            <li>Paid in nine days.</li>
-          </ul>
-        </div>
+<!-- ══════════════════ 3 · WHO HOLDS THE MONEY ══════════════════ -->
+<section class="screen" data-screen="3" data-label="Who holds the money" data-cam="block" data-veil="hard" hidden>
+  <div class="plate" style="grid-area:1/1/3/8">
+    <p class="eyebrow">02 / Who holds the money</p>
+    <h2 class="display">Two of these are insurance. Neither is the&nbsp;pool.</h2>
+    <p class="body">Alma's $86 a month lands in four places that cannot lend to one another.</p>
+  </div>
 
-        <div class="kind kind-claim">
-          <p class="eyebrow">Hardship account</p>
-          <label class="slider-label" for="loss">The shed &mdash; <output id="loss-out">$6,400</output></label>
-          <input type="range" id="loss" min="1000" max="20000" step="100" value="6400"
-                 aria-describedby="loss-bands-desc">
-          <div class="bands" id="loss-bands"></div>
-          <p class="sr-only" id="loss-bands-desc">Bands showing your first $750, the pool's payment up to
-            its $4,000 cap, and any remainder left with you. Above the policy's $10,000 deductible the
-            policy responds and the pool pays nothing.</p>
-          <ul class="frags">
-            <li>Household policy: $10,000 deductible.</li>
-            <li>Past it, the pool steps back.</li>
-          </ul>
+  <div class="plate plate--scroll plate--fill" style="grid-area:3/1/9/8">
+    <div class="accounts" role="list">
+      <div class="account acct-works" role="listitem">
+        <button class="acct-head" type="button" aria-expanded="true" aria-controls="acct-1">
+          <span class="acct-tag">Works</span>
+          <span class="acct-fig">$27,100<span class="acct-per"> / year</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="acct-body" id="acct-1">
+          <dl class="rows">
+            <dt>Held by</dt><dd>Tramonto Ridge Resilience Association. Restricted account, custodian bank.</dd>
+            <dt>The one rule</dt><dd class="strong">Out to a vendor invoice, for approved work on an enrolled parcel. Never to a member.</dd>
+          </dl>
         </div>
       </div>
 
-      <p class="body-copy measure">The pool looks at a loss only after the policy has, and it never funds
-        any part of a deductible.</p>
-      <p class="body-copy measure">Below that line it is capped at $4,000, and above the cap the money is
-        yours &mdash; the pool does not make you whole, and it never says it will.</p>
-    </section>
-
-    <!-- ══════════════════════ 6 · TEN AT ONCE ══════════════════════ -->
-    <section class="page" data-page="6" data-label="Ten at once" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">05 / Ten at once</p>
-      <h2 class="display">Sized for&nbsp;ten.</h2>
-      <p class="body-copy measure">Drag the number of households claiming in the same year.</p>
-
-      <div class="modes" role="radiogroup" aria-label="Kind of year">
-        <button class="mode is-on" type="button" role="radio" aria-checked="true" data-mode="scattered">Scattered losses</button>
-        <button class="mode" type="button" role="radio" aria-checked="false" data-mode="event">One declared event</button>
-      </div>
-
-      <div id="corr-scattered">
-        <label class="slider-label" for="claimants">Households claiming &mdash;
-          <output id="claimants-out">10 of 38</output></label>
-        <input type="range" id="claimants" min="1" max="38" step="1" value="10">
-        <div class="stack" id="corr-stack"></div>
-        <div class="readout" id="corr-readout"></div>
-      </div>
-
-      <div id="corr-event" hidden>
-        <div class="eventpanel">
-          <div class="eventrow">
-            <p class="eyebrow">Hardship layer</p>
-            <p class="hero-fig fig-short">$0</p>
-            <ul class="frags"><li>By rule, not by shortfall.</li><li>A declared wildfire or windstorm &mdash;
-              excluded in writing.</li></ul>
-          </div>
-          <div class="eventrow">
-            <p class="eyebrow">Your own policy</p>
-            <p class="hero-fig fig-carrier">Responds</p>
-            <ul class="frags"><li>Its own limits. Its own deductible.</li><li>The only enforceable promise
-              on the street.</li></ul>
-          </div>
-          <div class="eventrow">
-            <p class="eyebrow">What the pool bought</p>
-            <p class="hero-fig fig-works">Prevention</p>
-            <ul class="frags"><li>378 machine hours. 36 boundary gaps.</li><li class="modelled">Modelled,
-              not observed: a treated street, one third the structure-to-structure ignitions.</li></ul>
-          </div>
+      <div class="account acct-hardship" role="listitem">
+        <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-2">
+          <span class="acct-tag">Hardship</span>
+          <span class="acct-fig">$18,300<span class="acct-per"> held</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="acct-body" id="acct-2" hidden>
+          <dl class="rows">
+            <dt>Held by</dt><dd>The same association, a separate restricted account. $6,100 a year in, three years' accumulation held.</dd>
+            <dt>Authority</dt><dd>State registration as a restricted community resilience fund. Not insurance, and no enforceable promise to pay.</dd>
+            <dt>The one rule</dt><dd class="strong">$4,000 a household per event. Pro-rata when short. Silent on declared events.</dd>
+          </dl>
         </div>
       </div>
 
-      <p class="body-copy measure">Ten households at the cap is exactly $40,000, which is the whole
-        stack &mdash; the eleventh is paid out of the same money, so everybody's payment falls.</p>
-      <p class="body-copy measure">A wildfire is not ten households, which is why the hardship layer is
-        silent on declared events and why most of the money sits in the works account instead.</p>
-    </section>
-
-    <!-- ══════════════════════ 7 · THE CARRIER'S SIDE ══════════════════════ -->
-    <section class="page" data-page="7" data-label="The carrier's side" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">06 / The carrier's side</p>
-      <h2 class="display">What a carrier gets that it cannot&nbsp;buy.</h2>
-
-      <div class="cards">
-        <div class="card">
-          <p class="eyebrow">Evidence</p>
-          <p class="card-fig">1,216</p>
-          <ul class="frags">
-            <li>Parcel passes, eight years.</li>
-            <li>Before-and-after lidar on each.</li>
-            <li>Collected by the street, at the street's cost.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <p class="eyebrow">A designation to rate on</p>
-          <p class="card-fig">Enhanced</p>
-          <ul class="frags">
-            <li>Wildfire Prepared Neighborhood.</li>
-            <li>Verified annually, parcel by parcel.</li>
-            <li>A community credit that is filed, not promised.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <p class="eyebrow">A layer to sell</p>
-          <p class="card-fig">14.3<span class="card-fig-unit">% rate on line</span></p>
-          <ul class="frags">
-            <li>$21,700 limit, attaching at $18,300.</li>
-            <li>Premium $3,100. Annual aggregate.</li>
-            <li>Capped, and capped in writing.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <p class="eyebrow">A street that renews</p>
-          <p class="card-fig">38</p>
-          <ul class="frags">
-            <li>Policies on one verified block.</li>
-            <li>No assessment power beneath them.</li>
-            <li>A retention story on a street that was being non-renewed.</li>
-          </ul>
+      <div class="account acct-contract" role="listitem">
+        <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-3">
+          <span class="acct-tag">Aggregate contract <b class="chip">Insurance</b></span>
+          <span class="acct-fig">$21,700<span class="acct-per"> limit</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="acct-body" id="acct-3" hidden>
+          <dl class="rows">
+            <dt>Held by</dt><dd>A licensed carrier. Written to the association, not to a household.</dd>
+            <dt>The one rule</dt><dd class="strong">Attaching above $18,300. Annual aggregate. Premium $3,100.</dd>
+          </dl>
         </div>
       </div>
 
-      <p class="body-copy measure">The association buys the aggregate contract because it has no power to
-        assess its members, so the shortfall is priced rather than argued about.</p>
-      <p class="body-copy measure">None of this promises a premium reduction &mdash; the community credit
-        is filed, and in 2026 filed credits for the same measure ran from a fraction of a percent to over
-        forty.</p>
-    </section>
-
-    <!-- ══════════════════════ 8 · BEFORE YOU JOIN ══════════════════════ -->
-    <section class="page" data-page="8" data-label="Before you join" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">07 / Before you join</p>
-      <h2 class="display">No assessments. No entitlement. No exit&nbsp;balance.</h2>
-      <p class="body-copy measure">Three things a member is told before the first payment, and none of them
-        sit in a footnote.</p>
-
-      <div class="boundaries">
-        <div class="bound">
-          <p class="bound-num">01</p>
-          <p class="eyebrow">No assessments</p>
-          <ul class="frags">
-            <li>No power to call for more money.</li>
-            <li>Short: less paid, never another invoice.</li>
-          </ul>
-        </div>
-        <div class="bound">
-          <p class="bound-num">02</p>
-          <p class="eyebrow">No enforceable promise</p>
-          <ul class="frags">
-            <li>Published rules. Independent assessment. An appeal.</li>
-            <li>And no contractual right to payment.</li>
-          </ul>
-        </div>
-        <div class="bound">
-          <p class="bound-num">03</p>
-          <p class="eyebrow">Nothing to withdraw</p>
-          <ul class="frags">
-            <li>Thirty days' notice, any time.</li>
-            <li>Contributions spent on work, not saved.</li>
-            <li>Your parcel record, yours to take.</li>
-          </ul>
+      <div class="account acct-policy" role="listitem">
+        <button class="acct-head" type="button" aria-expanded="false" aria-controls="acct-4">
+          <span class="acct-tag">Alma's own policy <b class="chip">Insurance</b></span>
+          <span class="acct-fig">$6,900<span class="acct-per"> / year</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="acct-body" id="acct-4" hidden>
+          <dl class="rows">
+            <dt>Held by</dt><dd>Her own insurer, on her own terms, at her own deductible.</dd>
+            <dt>The one rule</dt><dd class="strong">Presented first, always. Never the same loss twice.</dd>
+          </dl>
         </div>
       </div>
+    </div>
+  </div>
 
-      <p class="body-copy measure">The hardship layer works the way a Dutch bread fund works &mdash; it
-        forgoes enforceability on purpose, because that is what keeps it out of the insurance code.</p>
-    </section>
+  <div class="plate plate--wash" style="grid-area:1/9/5/13">
+    <p class="eyebrow">The one invented rule</p>
+    <p class="body">The hardship account's state registration is this projection's single piece of invented law; in 2026 no US state had authority for it.</p>
+    <p class="stamp">Not a mutual. Not an insurer.</p>
+  </div>
+</section>
 
-    <!-- ══════════════════════ 9 · STILL UNSOLVED ══════════════════════ -->
-    <section class="page" data-page="9" data-label="Still unsolved" hidden>
-      <p class="brand">Micromutual</p>
-      <p class="eyebrow">08 / Still unsolved</p>
-      <h2 class="display">Four things ten years did not&nbsp;solve.</h2>
-      <p class="body-copy measure">Everything before this page is a projection; these four are the parts a
-        projection cannot honestly close.</p>
+<!-- ══════════════════ 4 · ONE PASS ══════════════════ -->
+<section class="screen" data-screen="4" data-label="One pass" data-cam="street" data-veil="none" hidden>
+  <div class="plate" style="grid-area:1/1/3/6">
+    <p class="eyebrow">03 / Shared work</p>
+    <h2 class="display">One pass. Four parcels. No&nbsp;meeting.</h2>
+    <p class="body">A tracked unit, leased by the street at $1,550 a month and owned by nobody on it.</p>
+  </div>
 
-      <ol class="unsolved">
-        <li>
-          <p class="eyebrow">Willingness to pay</p>
-          <ul class="frags">
-            <li>$86 a month, against a credit that may be worth a fraction of a percent.</li>
-            <li>Never demonstrated at scale, by anyone, anywhere.</li>
-          </ul>
-        </li>
-        <li>
-          <p class="eyebrow">The authority</p>
-          <ul class="frags">
-            <li>The one invented rule on page two.</li>
-            <li>In 2026: no state, no precedent.</li>
-            <li>An unlicensed pool paying property losses is transacting insurance.</li>
-          </ul>
-        </li>
-        <li>
-          <p class="eyebrow">Consent</p>
-          <ul class="frags">
-            <li>A geofence enforces a refusal.</li>
-            <li>It does not change a mind.</li>
-            <li>One adjacent pair still caps the street.</li>
-          </ul>
-        </li>
-        <li>
-          <p class="eyebrow">Correlation</p>
-          <ul class="frags">
-            <li>Sized for ten. A fire is not ten.</li>
-            <li>The pool's answer to the common peril is prevention, not payment.</li>
-          </ul>
-        </li>
-      </ol>
-    </section>
+  <div class="plate" id="worklog" style="grid-area:1/9/3/13"></div>
 
-    <!-- ══════════════════════ 10 · CLOSING ══════════════════════ -->
-    <section class="page page-closing" data-page="10" data-label="The larger idea" hidden>
-      <p class="brand">Micromutual</p>
-      <h2 class="display closing-display">The fence line was always the wrong&nbsp;unit.</h2>
-      <p class="body-copy measure">Thirty-eight households, one machine and one ledger &mdash; the money
-        mostly buys work, the payment layer is small and honest about being small, and the only enforceable
-        promise on the street belongs to a licensed carrier.</p>
-      <p class="body-copy measure">That is the version an underwriter can read.</p>
+  <div class="gw" aria-hidden="true"></div>
 
-      <nav class="index" aria-label="Jump to a page">
-        <p class="eyebrow">The ten pages</p>
-        <ol id="page-index"></ol>
-      </nav>
-    </section>
+  <div class="plate plate--works" style="grid-area:5/9/8/13">
+    <p class="eyebrow eyebrow--works">What coordinated it</p>
+    <dl class="rows">
+      <dt>Four agents</dt><dd>One each. They hold the consent tokens and the calendar.</dd>
+      <dt>What they settled</dt><dd>A window, a route, a price, and who is billed for what.</dd>
+      <dt>Who met</dt><dd class="strong">Nobody.</dd>
+    </dl>
+  </div>
 
-    <footer class="paper-footer">
-      <p>Concept for discussion · not an insurance offer · fictional household, fictional figures</p>
-    </footer>
-  </article>
+  <div class="plate" style="grid-area:7/1/8/6">
+    <p class="figrow"><span>378 machine hours</span><span>36 boundary gaps</span><span>610 m of canyon edge</span></p>
+  </div>
+
+  <div class="strip" id="season" style="grid-area:8/1/9/13" role="group" aria-label="Season of work"></div>
+</section>
+
+<!-- ══════════════════ 5 · THE REFUSAL ══════════════════ -->
+<section class="screen" data-screen="5" data-label="The refusal" data-cam="street" data-veil="none" hidden>
+  <div class="plate" style="grid-area:1/1/4/5">
+    <p class="eyebrow">04 / Consent</p>
+    <h2 class="display">An agent can schedule around a refusal. It cannot change a&nbsp;mind.</h2>
+  </div>
+
+  <div class="plate plate--refuse" style="grid-area:1/9/4/13">
+    <p class="eyebrow eyebrow--red">Nobody's neighbour</p>
+    <div class="who">
+      <span class="mark mark--red" aria-hidden="true">GS</span>
+      <div>
+        <p class="who-name">Gerald S.</p>
+        <p class="who-sub">34 Tramonto Ridge Road · owner since 1994</p>
+      </div>
+    </div>
+    <p class="body">He will not have a tracked machine on his land, and nobody can make him.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="tiles" id="consent-readout" style="grid-area:4/1/9/5"></div>
+
+  <div class="plate" style="grid-area:1/5/3/9">
+    <p class="body">Tap any parcel to withhold its consent. Nobody is overruled; the refusal is visible, and it is priced.</p>
+  </div>
+
+  <div class="strip" style="grid-area:8/5/9/13">
+    <button class="chipbtn" type="button" data-consent="reset">All 38 enrolled</button>
+    <button class="chipbtn" type="button" data-consent="one">Gerald alone</button>
+    <button class="chipbtn" type="button" data-consent="pair">An adjacent pair</button>
+    <button class="chipbtn" type="button" data-consent="eight">Eight refuse</button>
+  </div>
+</section>
+
+<!-- ══════════════════ 6 · ALMA'S SHED ══════════════════ -->
+<section class="screen" data-screen="6" data-label="Alma's shed" data-cam="parcel" data-veil="soft" hidden>
+  <div class="plate" style="grid-area:1/1/3/7">
+    <p class="eyebrow">05 / Two kinds of money</p>
+    <h2 class="display">Clearing the limb is work. Replacing the shed is a&nbsp;claim.</h2>
+    <p class="body">An August windstorm drops a live oak across three parcels and flattens Alma's shed.</p>
+  </div>
+
+  <div class="plate plate--works" style="grid-area:7/1/9/5">
+    <p class="eyebrow eyebrow--works">Works account</p>
+    <p class="fig fig--works">$3,850</p>
+    <ul class="frags">
+      <li>Clearing, three parcels.</li>
+      <li>Vendor invoice, not a claim.</li>
+      <li>No deductible, no assessment.</li>
+    </ul>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate plate--hardship plate--scroll" style="grid-area:1/8/6/13">
+    <p class="eyebrow eyebrow--gold">Hardship account</p>
+    <label class="slabel" for="loss">The shed — <output id="loss-out">$6,400</output></label>
+    <input type="range" id="loss" min="1000" max="20000" step="100" value="6400" aria-describedby="loss-desc">
+    <div id="loss-bands"></div>
+    <p class="sr-only" id="loss-desc">Bands showing Alma's first $750, the pool's payment up to its $4,000 cap, and any remainder left with her. Above her policy's $10,000 deductible the policy responds and the pool pays nothing.</p>
+    <p class="body">Alma's policy: $10,000 deductible. Past it, the pool steps back.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:7/6/9/13">
+    <p class="body">The pool looks at a loss only after the policy has, and it never funds any part of a deductible.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 7 · TEN AT ONCE ══════════════════ -->
+<section class="screen" data-screen="7" data-label="Ten at once" data-cam="street" data-veil="soft" hidden>
+  <div class="plate" style="grid-area:1/1/3/7">
+    <p class="eyebrow">06 / Ten at once</p>
+    <h2 class="display">Sized for ten. Alma is one of the&nbsp;ten.</h2>
+  </div>
+
+  <div class="strip" style="grid-area:3/1/4/7" role="radiogroup" aria-label="Kind of year">
+    <button class="chipbtn is-on" type="button" role="radio" aria-checked="true" data-mode="scattered">Scattered losses</button>
+    <button class="chipbtn" type="button" role="radio" aria-checked="false" data-mode="event">One declared event</button>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="tiles" id="corr-readout" style="grid-area:1/8/6/13"></div>
+
+  <div class="plate plate--scroll" id="corr-scattered" style="grid-area:6/1/9/13">
+    <label class="slabel" for="claimants">Households claiming — <output id="claimants-out">10 of 38</output></label>
+    <input type="range" id="claimants" min="1" max="38" step="1" value="10">
+    <div id="corr-stack"></div>
+    <p class="body">Ten at the cap is exactly $40,000, the whole stack; the eleventh is paid from the same money.</p>
+  </div>
+
+  <div class="plate plate--scroll" id="corr-event" style="grid-area:6/1/9/13" hidden>
+    <div class="threeup">
+      <div>
+        <p class="eyebrow eyebrow--red">Hardship layer</p>
+        <p class="fig fig--short">$0</p>
+        <ul class="frags"><li>By rule, not by shortfall.</li><li>A declared wildfire — excluded in writing.</li></ul>
+      </div>
+      <div>
+        <p class="eyebrow eyebrow--carrier">Alma's own policy</p>
+        <p class="fig fig--carrier">Responds</p>
+        <ul class="frags"><li>Its own limits, its own deductible.</li><li>The only enforceable promise on the street.</li></ul>
+      </div>
+      <div>
+        <p class="eyebrow eyebrow--works">What the pool bought</p>
+        <p class="fig fig--works">Prevention</p>
+        <ul class="frags"><li>378 machine hours, 36 boundary gaps.</li><li class="strong">Modelled, not observed: a treated street, one third the structure-to-structure ignitions.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 8 · THE CARRIER'S SIDE ══════════════════ -->
+<section class="screen" data-screen="8" data-label="The carrier's side" data-cam="wide" data-veil="hard" hidden>
+  <div class="plate" style="grid-area:1/1/3/8">
+    <p class="eyebrow">07 / The carrier's side</p>
+    <h2 class="display">What a carrier gets that it cannot&nbsp;buy.</h2>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:1/9/3/13">
+    <p class="body">None of this promises Alma a premium reduction; the community credit is filed, not owed.</p>
+  </div>
+
+  <div class="cards" style="grid-area:3/1/8/13">
+    <div class="plate card">
+      <p class="eyebrow">Evidence</p>
+      <p class="fig">1,216</p>
+      <ul class="frags"><li>Parcel passes, eight years.</li><li>Before-and-after lidar on each.</li></ul>
+    </div>
+    <div class="plate card">
+      <p class="eyebrow">A designation to rate on</p>
+      <p class="fig">Enhanced</p>
+      <ul class="frags"><li>Wildfire Prepared Neighborhood.</li><li>Verified annually, parcel by parcel.</li></ul>
+    </div>
+    <div class="plate card">
+      <p class="eyebrow">A layer to sell</p>
+      <p class="fig">14.3<span class="fig-unit">% rate on line</span></p>
+      <ul class="frags"><li>$21,700 limit, attaching at $18,300.</li><li>Premium $3,100, annual aggregate.</li></ul>
+    </div>
+    <div class="plate card">
+      <p class="eyebrow">A street that renews</p>
+      <p class="fig">38</p>
+      <ul class="frags"><li>Policies on one verified block.</li><li>Alma's was non-renewed in 2032.</li></ul>
+    </div>
+  </div>
+
+  <div class="plate" style="grid-area:8/1/9/13">
+    <p class="body">The association cannot assess its members, so the shortfall is priced rather than argued about.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 9 · BEFORE ALMA JOINED ══════════════════ -->
+<section class="screen" data-screen="9" data-label="Before Alma joined" data-cam="block" data-veil="hard" hidden>
+  <div class="plate" style="grid-area:1/1/4/8">
+    <p class="eyebrow">08 / Before you join</p>
+    <h2 class="display">No assessments. No entitlement. No exit&nbsp;balance.</h2>
+    <p class="body">Three things Alma was told before her first payment.</p>
+  </div>
+
+  <div class="cards cards--3" style="grid-area:4/1/8/13">
+    <div class="plate plate--wash card">
+      <p class="bnum">01</p>
+      <p class="eyebrow">No assessments</p>
+      <ul class="frags"><li>No power to call for more money.</li><li>Short means less paid, never another invoice.</li></ul>
+    </div>
+    <div class="plate plate--wash card">
+      <p class="bnum">02</p>
+      <p class="eyebrow">No enforceable promise</p>
+      <ul class="frags"><li>Published rules, independent assessment, an appeal.</li><li>And no contractual right to payment.</li></ul>
+    </div>
+    <div class="plate plate--wash card">
+      <p class="bnum">03</p>
+      <p class="eyebrow">Nothing to withdraw</p>
+      <ul class="frags"><li>Thirty days' notice, any time.</li><li>Contributions are spent on work, not saved.</li></ul>
+    </div>
+  </div>
+
+  <div class="plate" style="grid-area:8/1/9/13">
+    <p class="body">The layer forgoes enforceability on purpose, because that is what keeps it out of the insurance code.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 10 · STILL UNSOLVED ══════════════════ -->
+<section class="screen" data-screen="10" data-label="Still unsolved" data-cam="wide" data-veil="hard" hidden>
+  <div class="plate" style="grid-area:1/1/5/5">
+    <p class="eyebrow">09 / Still unsolved</p>
+    <h2 class="display">Four things ten years did not&nbsp;solve.</h2>
+    <p class="body">The parts a projection cannot honestly close.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:7/1/9/5">
+    <p class="body strong">Coordination is not capital, and it is not law.</p>
+    <p class="note">Agents scheduling around a grudge solves none of the four.</p>
+  </div>
+
+  <ol class="unsolved" style="grid-area:1/5/9/13">
+    <li class="plate">
+      <p class="eyebrow eyebrow--red">Willingness to pay</p>
+      <ul class="frags"><li>$86 a month against a credit worth perhaps a fraction of a percent.</li><li>Never demonstrated at scale, anywhere.</li></ul>
+    </li>
+    <li class="plate">
+      <p class="eyebrow eyebrow--red">The authority</p>
+      <ul class="frags"><li>The one invented rule.</li><li>In 2026: no state, no precedent.</li></ul>
+    </li>
+    <li class="plate">
+      <p class="eyebrow eyebrow--red">Consent</p>
+      <ul class="frags"><li>A geofence enforces Gerald's refusal.</li><li>It does not change his mind.</li></ul>
+    </li>
+    <li class="plate">
+      <p class="eyebrow eyebrow--red">Correlation</p>
+      <ul class="frags"><li>Sized for ten. A fire is not ten.</li><li>The answer to the common peril is prevention, not payment.</li></ul>
+    </li>
+  </ol>
+</section>
+
+<!-- ══════════════════ 11 · THE LARGER IDEA ══════════════════ -->
+<section class="screen" data-screen="11" data-label="The larger idea" data-cam="street" data-veil="soft" hidden>
+  <div class="plate" style="grid-area:1/1/5/8">
+    <h2 class="display display--xl">The fence line was always the wrong&nbsp;unit.</h2>
+    <p class="body">Four neighbours who are not friends, one machine and one ledger — and the only enforceable promise on Alma's street belongs to a licensed carrier.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:1/9/3/13">
+    <p class="body">That is the version an underwriter can read.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <nav class="plate plate--scroll" style="grid-area:5/1/9/8" aria-label="Jump to a screen">
+    <p class="eyebrow">The eleven screens</p>
+    <ol class="index" id="index"></ol>
+  </nav>
+
+  <div class="plate plate--wash" style="grid-area:8/9/9/13">
+    <p class="note">Concept for discussion · not an insurance offer · invented households, invented figures.</p>
+  </div>
+</section>
+
 </main>
 
-<footer class="shell-footer">
-  <nav class="nav" aria-label="Page navigation">
-    <button class="icon-btn" type="button" id="prev" aria-label="Previous page">
+<!-- ═══════════════ CHROME ═══════════════
+     Small plates in the bottom gutter. No bar: the ground runs behind them
+     to all four edges. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
       <span aria-hidden="true">&larr;</span>
     </button>
     <label class="picker">
-      <span class="sr-only">Choose a page</span>
+      <span class="sr-only">Choose a screen</span>
       <select id="picker"></select>
     </label>
-    <button class="icon-btn" type="button" id="next" aria-label="Next page">
-      <span aria-hidden="true">&rarr;</span>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">Meet the neighbours</span> <span aria-hidden="true">&rarr;</span>
     </button>
-  </nav>
-  <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
-</footer>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
 
 <script src="app.js"></script>
 </body>

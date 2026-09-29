@@ -3,49 +3,57 @@
 
    Printed on the Fieldnotes price-certainty stock: paper #FBF9F1, ink
    #3D605D, wash #E0E9E5 (design.md §2). Georgia headlines against Arial
-   eyebrows, body 15px/22.5px, no webfonts. Control conventions inherited
-   from design.md §9: ink pill as the primary action, hover goes down into
-   the wash, 2px ink focus ring on a 2px paper offset, radii 3/5/8,
-   elevation as a hairline first, grain on the shell at 0.05.
+   eyebrows, no webfonts. Control conventions from design.md §9: ink pill as
+   the primary action, hover goes down into the wash, 2px ink focus ring on a
+   2px paper offset, radii 3/5/8, elevation as a hairline first, grain 0.05.
 
-   Every colour used for text or for a mark that carries meaning was
-   measured against the paper; ratios are in comments beside each token.
+   STAGING. Every screen is a full-bleed drawn ground that reaches all four
+   edges, with opaque paper plates of type floating on top — the Emberwatch
+   principle (design.md §9, Maps: "a label stuck on a map is opaque"), applied
+   to drawn grounds rather than tiles. There is no fixed paper rectangle and
+   no empty stage: .screen is inset 0, .ground is inset 0, and the plates are
+   positioned against the four corners inside a chrome-safe band.
+
+   Every colour used for text or for a mark that carries meaning was measured
+   against the surface it actually lands on; ratios are in comments.
    ───────────────────────────────────────────────────────────────────────── */
 
 :root {
   --paper:        #FBF9F1;
-  --ink:          #3D605D;   /* on paper: 6.58:1 */
-  --ink-quiet:    #4C6A65;   /* on paper 5.60:1, on the wash 4.77:1 — the
-                                quiet text colour has to clear AA on BOTH
-                                grounds, because most small labels sit on wash */
-  --wash:         #E0E9E5;   /* fill only, never a lone boundary */
-  --wash-deep:    #D3E0DB;   /* pressed */
-  --rule:         #7E938F;   /* on paper: 3.08:1 — axes, meaningful edges */
+  --plate:        #FDFCF8;   /* raised paper: the opaque ground for floating
+                                type. ink 6.23:1, ink-quiet 5.75:1 */
+  --ink:          #3D605D;   /* on paper 6.58:1, on plate 6.23:1 */
+  --ink-quiet:    #4C6A65;   /* paper 5.60 / plate 5.75 / wash 4.77 */
+  --wash:         #E0E9E5;   /* diagram fill; ink 5.16:1 */
+  --wash-deep:    #D3E0DB;   /* pressed, and the deeper band tint */
+  --rule:         #7E938F;   /* on paper 3.08:1 — axes, meaningful edges */
   --hairline:     rgba(61, 96, 93, .16);
+  --gridline:     rgba(61, 96, 93, .15);
 
-  /* Signal hues. Each was driven down in lightness until it cleared AA as
-     text on the paper AND on the wash, because a figure caption can sit on
-     either. Ratios: paper / wash. */
-  --market:       #9B4E26;   /* 5.67 / 4.83 — volatile, money leaving  */
-  --smooth:       #56636E;   /* 5.85 / 4.98 — budget billing           */
-  --gain:         #3F6B4E;   /* 5.81 / 4.95 — settlement in your favour*/
-  --accent:       #7A6231;   /* 5.51 / 4.63 — annotation               */
+  /* Signal hues, each driven down until it clears AA as text on paper AND on
+     the wash. Ratios: paper / wash / plate. */
+  --market:       #9B4E26;   /* 5.67 / 4.83 / 5.83 */
+  --smooth:       #56636E;   /* 5.85 / 4.98 / 6.01 */
+  --gain:         #3F6B4E;   /* 5.81 / 4.95 / 5.97 */
+  --accent:       #7A6231;   /* 5.51 / 4.63 / 5.66 */
 
   --market-fill:  rgba(155, 78, 38, .16);
   --gain-fill:    rgba(63, 107, 78, .16);
-  --ink-fill:     rgba(61, 96, 93, .14);
 
   --r-sm: 3px;
   --r-md: 5px;
   --r-lg: 8px;
 
-  --head-h: 56px;
-  --foot-h: 60px;
+  /* Chrome-safe band: the floating chrome pills live in these margins, so no
+     plate and no ground label may enter them. */
+  --sx: 22px;
+  --st: 66px;
+  --sb: 66px;
 }
 
 * { box-sizing: border-box; }
 
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; }
 
 body {
   margin: 0;
@@ -55,13 +63,12 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* Grain hangs on the shell, under everything, as in the Emberwatch
-   prototype: 0.05 rather than the pamphlet's 0.07 because it lies under
-   tabulated figures rather than one composed page. */
+/* Grain hangs over the whole shell at 0.05 (design.md §9), above the drawn
+   grounds so a full-bleed ground is printed rather than rendered. */
 .grain {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 4;
   pointer-events: none;
   opacity: .05;
   background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -82,16 +89,17 @@ body {
   text-transform: uppercase;
   color: var(--ink-quiet);
 }
+.eyebrow.on-ink { color: var(--ink); }
 
 h2 {
-  margin: 10px 0 14px;
+  margin: 8px 0 12px;
   font: 400 35px/37.8px Georgia, "Times New Roman", serif;
   letter-spacing: -.03em;
   color: var(--ink);
-  max-width: 17em;
 }
 
-.body-copy { margin: 0 0 18px; max-width: 34em; }
+.body-copy { margin: 0 0 14px; }
+.body-copy:last-child { margin-bottom: 0; }
 
 .caption {
   margin: 10px 0 0;
@@ -101,15 +109,14 @@ h2 {
 }
 
 .framing {
-  margin: 0 0 22px;
-  padding: 12px 14px;
-  max-width: 34em;
+  margin: 0 0 18px;
+  padding: 11px 13px;
   border-left: 3px solid var(--accent);
   background: var(--wash);
   border-radius: 0 var(--r-md) var(--r-md) 0;
   font-size: 13px;
   line-height: 19px;
-  color: var(--ink);
+  color: var(--ink);       /* on wash: 5.16:1 */
 }
 
 .hero-figure {
@@ -120,37 +127,78 @@ h2 {
 }
 
 .num { font-variant-numeric: tabular-nums; }
-
 .inl { white-space: nowrap; font-weight: bold; }
 
-/* ── Shell ────────────────────────────────────────────────────────────── */
+/* ── Stage and screens ────────────────────────────────────────────────── */
 
-.shell-head, .shell-foot {
-  position: fixed;
-  left: 0; right: 0;
-  z-index: 3;
-  background: var(--paper);
+.stage { position: fixed; inset: 0; z-index: 1; }
+
+.screen { display: none; position: absolute; inset: 0; overflow: hidden; }
+.screen.is-current { display: block; }
+
+.ground { position: absolute; inset: 0; overflow: hidden; background: var(--paper); }
+
+.layer { position: absolute; inset: 0; pointer-events: none; }
+
+/* Plate: the opaque surface type sits on over a drawn ground. Elevation is a
+   hairline first; a dark halo on this stock reads as dirt. */
+.plate {
+  position: absolute;
+  pointer-events: auto;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .16), 0 10px 26px -18px rgba(61, 96, 93, .5);
+}
+
+.at-tl { left: var(--sx); top: var(--st); }
+.at-tr { right: var(--sx); top: var(--st); }
+.at-bl { left: var(--sx); bottom: var(--sb); }
+.at-br { right: var(--sx); bottom: var(--sb); }
+.at-r  { right: var(--sx); top: var(--st); }
+.at-l  { left: var(--sx); top: var(--st); }
+
+.w-lead  { width: 452px; max-width: calc(100vw - 2 * var(--sx)); }
+.w-rail  { width: 336px; max-width: calc(100vw - 2 * var(--sx)); }
+.w-wide  { width: 400px; max-width: calc(100vw - 2 * var(--sx)); }
+.cap-h   { max-height: calc(100vh - var(--st) - var(--sb)); overflow: auto; }
+
+.plate-rule {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+
+/* Banded screens: the ground itself is a stack of full-width bands, so the
+   drawing reaches all four edges without a floating plate. */
+.bands { position: absolute; inset: 0; display: grid; }
+.band { position: relative; min-height: 0; padding: 18px var(--sx); overflow: hidden; }
+.band.pad-t { padding-top: var(--st); }
+.band.pad-b { padding-bottom: var(--sb); }
+.band.tint  { background: var(--wash); }
+.band.tint-deep { background: var(--wash-deep); }
+.band + .band { box-shadow: inset 0 1px 0 var(--hairline); }
+
+/* ── Floating chrome ──────────────────────────────────────────────────── */
+
+.chrome { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.chrome > * { pointer-events: auto; }
+
+.chip {
+  position: absolute;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 24px;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 100px;
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .16), 0 8px 20px -16px rgba(61, 96, 93, .5);
 }
 
-.shell-head {
-  top: 0;
-  height: var(--head-h);
-  border-bottom: 1px solid var(--hairline);
-  justify-content: space-between;
-}
-
-.shell-foot {
-  bottom: 0;
-  height: var(--foot-h);
-  border-top: 1px solid var(--hairline);
-  justify-content: space-between;
-}
-
-.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.c-brand { left: var(--sx); top: 14px; }
+.c-right { right: var(--sx); top: 14px; }
+.c-foot  { left: var(--sx); bottom: 14px; }
+.c-nav   { right: var(--sx); bottom: 14px; padding: 5px 6px; gap: 6px; }
 
 .brand-mark {
   font: 600 12px/1 Arial, Helvetica, sans-serif;
@@ -158,17 +206,7 @@ h2 {
   text-transform: lowercase;
   color: var(--ink);
 }
-
-.brand-sub {
-  font: 400 11px/1.3 Arial, Helvetica, sans-serif;
-  color: var(--ink-quiet);
-}
-
-.head-right { display: flex; align-items: center; gap: 16px; }
-
-.household-chip { display: flex; align-items: center; gap: 8px; }
-/* A CSS display beats the hidden attribute, so say it explicitly. */
-.household-chip[hidden] { display: none; }
+.brand-sub { font: 400 11px/1.3 Arial, Helvetica, sans-serif; color: var(--ink-quiet); }
 
 .position {
   margin: 0;
@@ -178,27 +216,10 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
-/* design.md §3: every page carries a footer disclaimer, 48 of 48. It lives
-   on the page, not in the chrome, so it travels with the content. */
-.paper-footer {
-  grid-column: 1 / -1;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--hairline);
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--ink-quiet);
-}
+.foot-note { margin: 0; font-size: 11px; line-height: 16px; color: var(--ink-quiet); }
 
-.hint {
-  margin: 0;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--ink-quiet);
-}
-.hint[hidden] { display: none; }
-
-.nav { display: flex; align-items: center; gap: 8px; }
+.household-chip { display: flex; align-items: center; gap: 8px; }
+.household-chip[hidden] { display: none; }
 
 /* ── Controls ─────────────────────────────────────────────────────────── */
 
@@ -221,30 +242,18 @@ button, select, input[type="range"] { font-family: inherit; }
   cursor: pointer;
   transition: background .15s cubic-bezier(.4,0,.2,1), color .15s cubic-bezier(.4,0,.2,1);
 }
-
-.pill-ink {
-  background: var(--ink);
-  color: var(--paper);          /* 6.58:1 */
-  border: 1px solid var(--ink);
-}
+.pill-ink { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); } /* 6.58:1 */
 .pill-ink:hover  { background: #35544F; }
 .pill-ink:active { background: #2C4744; }
-
-.pill-quiet {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--rule);
-}
+.pill-quiet { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
 .pill-quiet:hover  { background: var(--wash); }
 .pill-quiet:active { background: var(--wash-deep); }
 
 .icon-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
   border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-md);
   background: transparent;
   color: var(--ink);
   cursor: pointer;
@@ -256,358 +265,419 @@ button, select, input[type="range"] { font-family: inherit; }
 .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 select {
-  min-height: 36px;
+  min-height: 32px;
   max-width: 62vw;
   padding: 0 8px;
   border: 1px solid var(--rule);
   border-radius: var(--r-md);
-  background: var(--paper);
+  background: var(--plate);
   color: var(--ink);
   font-size: 13px;
   cursor: pointer;
 }
-.picker select { max-width: min(44vw, 320px); }
+.picker select { max-width: min(38vw, 300px); }
 
-/* Segmented sets (scenario, settlement mode, structure) */
-.scenario-set, .toggle-set {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 4px;
-}
+.scenario-set, .toggle-set { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
 
 .seg {
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 13px;
   border: 1px solid var(--rule);
   border-radius: var(--r-lg);
   background: transparent;
   color: var(--ink);
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   text-align: left;
 }
 .seg:hover  { background: var(--wash); }
 .seg:active { background: var(--wash-deep); }
-.seg[aria-pressed="true"] {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
-}
+.seg[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-.slider-block { margin: 4px 0 0; max-width: 34em; }
-.slider-block .eyebrow { display: block; margin-bottom: 10px; }
+.slider-block { margin: 0; }
+.slider-block .eyebrow { display: block; margin-bottom: 8px; }
 
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;              /* Chromium's default 2px pushes the track out of
-                             its own container and shows as a 4px overflow */
-  width: 100%;
-  max-width: 420px;
-  height: 28px;
-  background: transparent;
-  cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  margin: 0;                /* Chromium's default 2px overflows its container */
+  width: 100%; height: 28px;
+  background: transparent; cursor: pointer;
 }
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px; border-radius: 2px; background: var(--rule);
-}
-input[type="range"]::-moz-range-track {
-  height: 4px; border-radius: 2px; background: var(--rule);
-}
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--rule); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--rule); }
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 22px; height: 22px; margin-top: -9px;
-  border-radius: 50%;
-  background: var(--ink);
-  border: 2px solid var(--paper);
+  -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px;
+  border-radius: 50%; background: var(--ink); border: 2px solid var(--paper);
   box-shadow: 0 0 0 1px var(--ink);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--ink);
-  border: 2px solid var(--paper);
-  box-shadow: 0 0 0 1px var(--ink);
+  width: 20px; height: 20px; border-radius: 50%; background: var(--ink);
+  border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink);
 }
 
-.slider-value { margin: 4px 0 0; font-size: 14px; line-height: 21px; }
+.slider-value { margin: 2px 0 0; font-size: 14px; line-height: 20px; }
 .slider-value strong { font-weight: bold; }
 
-.note-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.note-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
 .note-row .caption { margin: 0; }
 
-/* ── Page frame ───────────────────────────────────────────────────────── */
+/* ── Ground A: the year, drawn on graph paper, edge to edge ───────────── */
 
-.stage {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  padding: var(--head-h) 0 var(--foot-h);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+.g-year { position: absolute; inset: 0; }
 
-.page {
-  display: none;
-  gap: 48px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 36px 24px 48px;
-  align-items: start;
-}
-.page.is-current { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; }
-
-.page-body { min-width: 0; overflow-wrap: break-word; }
-.page-visual { min-width: 0; }
-
-/* Plate: the composed surface a diagram sits on. Elevation is a hairline
-   first (design.md §9); a dark halo on this stock reads as dirt. */
-.plate {
-  padding: 20px;
-  border-radius: var(--r-lg);
-  background: var(--paper);
-  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .12), 0 6px 20px -14px rgba(61, 96, 93, .45);
-}
-
-.plate-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.plate-rule {
-  margin-top: 22px;
-  padding-top: 14px;
-  border-top: 1px solid var(--hairline);
-}
-
-/* ── Cover ────────────────────────────────────────────────────────────── */
-
-.page-cover.is-current { grid-template-columns: minmax(320px, 520px) 1fr; }
-
-/* Two pages are the comparison itself, so the cards get the whole measure
-   and the text sits above them rather than beside them. */
-.page-wide.is-current { grid-template-columns: 1fr; gap: 28px; }
-.page-wide .page-body { max-width: 780px; }
-
-.cover-title {
-  margin: 14px 0 18px;
-  font-size: 54px;
-  line-height: 54px;
-  letter-spacing: -.035em;
-}
-.cover-title span { display: block; }
-
-.cover-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-.cover-visual { align-self: stretch; }
-
-/* A printed plate, not a photograph: twelve months of a volatile market
-   resolving into one level line. Drawn in CSS, so it needs no image. */
-.cover-plate {
-  position: relative;
-  min-height: 340px;
-  height: 100%;
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(251,249,241,.92) 0%, rgba(251,249,241,0) 42%),
-    var(--wash);
-  box-shadow: inset 0 0 0 1px rgba(61, 96, 93, .12);
-}
-
-.cp-inner { position: absolute; inset: 0 0 56px 0; }
-
-.cp-bar {
+/* Horizontal price rules and vertical month rules run the full bleed: the
+   ground is the sheet the year is printed on, not a box inside the page. */
+.g-year .hrule { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--gridline); }
+.g-year .hrule.axis { border-top: 1px solid var(--rule); }
+.g-year .hlab {
   position: absolute;
-  bottom: 0;
-  width: 4.2%;
-  border-radius: 2px 2px 0 0;
-  background: var(--market);
-}
-
-.cp-line {
-  position: absolute;
-  left: 4%; right: 4%;
-  height: 0;
-  border-top: 2px solid var(--ink);
-}
-
- /* Sits over the shoulder-season months, where the bars are shortest, so
-    it never lands on one. */
-.cp-tag {
-  position: absolute;
-  left: 36%;
-  transform: translateY(calc(-100% - 7px));
-  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.cp-cap {
-  position: absolute;
-  left: 20px; right: 20px; bottom: 12px;
-  margin: 0;
-  font-size: 13px;
-  line-height: 19px;
-  color: var(--ink);
-}
-
-/* ── Charts (HTML/CSS bars; no SVG, so type never scales) ─────────────── */
-
-.chart {
-  position: relative;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 3px;
-  height: 190px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.chart.signed { border-bottom: 0; }
-
-.col {
-  position: relative;
-  height: 100%;
-  border-radius: var(--r-sm) var(--r-sm) 0 0;
-}
-
-.col .bar {
-  position: absolute;
-  left: 0; right: 0;
-  border-radius: 2px;
-}
-
-.col .bar.pos { background: var(--market); }
-.col .bar.neg { background: var(--gain); }
-.col .bar.soft { background: var(--market-fill); box-shadow: inset 0 0 0 1px var(--market); }
-.col .bar.softgain { background: var(--gain-fill); box-shadow: inset 0 0 0 1px var(--gain); }
-.col .bar.smooth { background: var(--smooth); }
-.col .bar.inkbar { background: var(--ink); }
-
-.col .mlabel {
-  position: absolute;
-  left: 0; right: 0; bottom: -19px;
-  text-align: center;
-  font: 600 9px/1 Arial, Helvetica, sans-serif;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--ink-quiet);
-}
-
-.chart .zero, .chart .target {
-  position: absolute;
-  left: 0; right: 0;
-  height: 0;
-  border-top: 1px dashed var(--ink);
-  pointer-events: none;
-}
-.chart .zero { border-top-style: solid; border-color: var(--ink-quiet); }
-
-.chart .target-tag {
-  position: absolute;
-  right: 0;
-  transform: translateY(-50%);
+  transform: translateY(-100%);
   padding: 2px 6px;
-  background: var(--paper);
+  border-radius: var(--r-sm);
+  background: var(--plate);         /* opaque: the right-hand copy lands on bars */
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .08em;
+  color: var(--ink-quiet);          /* on the plate 5.75:1 */
+  font-variant-numeric: tabular-nums;
+}
+.g-year .hlab.l { left: 6px; }
+.g-year .hlab.r { right: 6px; }
+.g-year .vrule { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--gridline); }
+
+/* The bars live in a plot inset from the left by the width of the axis
+   gutter, so an axis figure never lands on top of a bar and has to be
+   measured against it. */
+.g-year .plot { position: absolute; top: 0; bottom: 0; right: 0; left: 52px; }
+
+.g-year .ybar { position: absolute; border-radius: 3px 3px 0 0; }
+.g-year .ybar.pos  { background: var(--market); }
+.g-year .ybar.neg  { background: var(--gain); border-radius: 0 0 3px 3px; }
+.g-year .ybar.soft { background: var(--market-fill); box-shadow: inset 0 0 0 1.5px var(--market); }
+.g-year .ybar.softgain { background: var(--gain-fill); box-shadow: inset 0 0 0 1.5px var(--gain); }
+
+/* A month label is set inside the head of its own bar in paper (5.67:1 on the
+   market hue, 5.81:1 on the gain hue) and below it in ink when the bar is too
+   short to hold type. */
+.g-year .ymon {
+  position: absolute;
+  text-align: center;
+  font: 600 11px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+/* Inside a solid bar the label is paper (5.67:1 on the market hue, 5.81:1 on
+   the gain hue); inside a soft 16% fill it is ink (4.84:1 and 4.86:1 on the
+   fill composited over the paper). */
+.g-year .ymon.inside { color: var(--paper); }
+.g-year .ymon.outside { color: var(--ink-quiet); }
+/* Over a 16% fill neither paper nor ink clears AA reliably, so the label
+   takes its own opaque chip — the same rule as a label over a map. */
+.g-year .ymon.on-fill { color: var(--ink); }
+.g-year .ymon.on-fill i {
+  font-style: normal; display: inline-block; padding: 3px 7px;
+  border-radius: var(--r-sm); background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+/* Which side of the agreed target a month falls on, as a field. */
+.g-year .zone { position: absolute; left: 0; right: 0; pointer-events: none; }
+.g-year .zone.up { background: rgba(63, 107, 78, .05); }
+.g-year .zone.dn { background: rgba(155, 78, 38, .05); }
+.g-year .zonelab {
+  position: absolute; right: 12px;
+  padding: 5px 9px; border-radius: var(--r-sm);
+  background: var(--plate); box-shadow: inset 0 0 0 1px var(--hairline);
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif; letter-spacing: .12em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.g-year .zonelab.up { color: var(--gain); }
+.g-year .zonelab.dn { color: var(--market); }
+
+.g-year .yval {
+  position: absolute;
+  text-align: center;
+  font: 400 13px/1 Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.g-year .tline { position: absolute; left: 0; right: 0; height: 0; border-top: 2px solid var(--ink); }
+.g-year .tline.dash { border-top-style: dashed; }
+.g-year .ttag {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 5px 9px;
+  background: var(--plate);
   box-shadow: inset 0 0 0 1px var(--ink);
   border-radius: var(--r-sm);
-  font: 600 10px/1.3 Arial, Helvetica, sans-serif;
-  letter-spacing: .08em;
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--ink);
   white-space: nowrap;
 }
+.g-year .zline { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--rule); }
 
-.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 2px; }
-.legend span { display: flex; align-items: flex-start; gap: 7px; font-size: 13px; line-height: 19px; color: var(--ink); }
-.legend i { width: 12px; height: 12px; margin-top: 4px; border-radius: 2px; flex: none; }
+/* ── Ground B: the home, cut through, edge to edge ────────────────────── */
 
-/* ── Figure rows ──────────────────────────────────────────────────────── */
+.g-home { position: absolute; inset: 0; background: var(--paper); }
 
-.figure-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
+.g-home .slab {
+  position: absolute; left: 0; right: 0;
+  background: var(--wash-deep);
+  background-image: repeating-linear-gradient(135deg, rgba(61,96,93,.09) 0 2px, transparent 2px 9px);
+}
+.g-home .slab.top { top: 0; box-shadow: inset 0 -2px 0 var(--rule); }
+.g-home .slab.bot { bottom: 0; box-shadow: inset 0 2px 0 var(--rule); }
+
+.g-home .roof {
+  position: absolute; left: 0; right: 0; top: 0;
+  background: var(--wash-deep);
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+}
+.g-home .roof.solar {
+  background:
+    repeating-linear-gradient(90deg, rgba(61,96,93,.26) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(0deg, rgba(61,96,93,.26) 0 2px, transparent 2px 20px),
+    var(--wash-deep);
+}
+.g-home .roofline { position: absolute; left: 0; right: 0; height: 0; border-top: 2px solid var(--rule); }
+
+.g-home .party {
+  position: absolute; top: 0; bottom: 0;
+  background: var(--wash-deep);
+  background-image: repeating-linear-gradient(135deg, rgba(61,96,93,.09) 0 2px, transparent 2px 9px);
+}
+.g-home .party.l { left: 0; box-shadow: inset -2px 0 0 var(--rule); }
+.g-home .party.r { right: 0; box-shadow: inset 2px 0 0 var(--rule); }
+
+.g-home .interior {
+  position: absolute;
+  background:
+    repeating-linear-gradient(90deg, var(--gridline) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, var(--gridline) 0 1px, transparent 1px 64px),
+    var(--wash);
 }
 
-.fig {
-  flex: 1 1 130px;
-  min-width: 130px;
-  padding: 12px 14px;
+.g-home .slablab {
+  position: absolute;
+  padding: 4px 9px;
+  border-radius: var(--r-sm);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);          /* on the plate: 5.75:1 */
+  white-space: nowrap;
+}
+
+.g-home .partylab {
+  position: absolute;
+  top: 50%;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+  font: 600 10px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);                /* on wash-deep #D3E0DB: 4.71:1 */
+}
+
+/* Mini home, used as the ground of a chooser column. */
+.g-obj.mini { width: 104px; }
+.g-obj.mini .glyph { width: 42px; height: 42px; }
+.g-obj.mini .glyph svg { width: 25px; height: 25px; }
+.g-obj.mini .n { font-size: 11px; line-height: 15px; }
+
+.spacer { display: none; }
+
+/* An object in the home. Opaque chip, always — over a hatched slab a
+   translucent one stops separating. */
+.g-obj {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 176px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  text-align: center;
+}
+.g-obj .glyph {
+  width: 76px; height: 76px;
+  display: grid; place-items: center;
   border-radius: var(--r-md);
-  background: var(--wash);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1.5px var(--rule);
+  color: var(--ink);
 }
-.fig.mark-market { box-shadow: inset 3px 0 0 var(--market); }
-.fig.mark-smooth { box-shadow: inset 3px 0 0 var(--smooth); }
-.fig.mark-ink    { box-shadow: inset 3px 0 0 var(--ink); }
-.fig.mark-gain   { box-shadow: inset 3px 0 0 var(--gain); }
+.g-obj .glyph svg { width: 46px; height: 46px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.g-obj .chip-lab {
+  padding: 5px 9px;
+  border-radius: var(--r-sm);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.g-obj .n { display: block; font: 600 12px/16px Arial, Helvetica, sans-serif; color: var(--ink); }
+.g-obj .s { display: block; font-size: 11px; line-height: 15px; color: var(--ink-quiet); }
 
-.fig .k { display: block; font: 600 10px/1.4 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
-.fig .v { display: block; margin-top: 4px; font: 400 24px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.02em; color: var(--ink); }
-.fig .v.sm { font-size: 19px; }
-.fig .n { display: block; margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.g-obj.assigned .glyph { background: var(--ink); color: var(--paper); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.g-obj.assigned .chip-lab { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.g-obj.assigned .n::after { content: " ×"; color: var(--market); }
 
-/* ── Choice cards (household) ─────────────────────────────────────────── */
+.g-obj.ghost .glyph { background: transparent; box-shadow: inset 0 0 0 1.5px var(--rule); color: var(--ink-quiet); border-radius: var(--r-md); opacity: .95; }
+.g-obj.ghost .glyph svg { stroke-dasharray: 3 3; }
+.g-obj.ghost .n { color: var(--ink-quiet); }
 
-.choice-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g-obj.locked .glyph { box-shadow: inset 0 0 0 1.5px var(--rule); }
+
+/* ── Ground C: the wall the price climbs ──────────────────────────────── */
+
+.g-wall { position: absolute; inset: 0; display: flex; flex-direction: column-reverse; }
+.g-wall .rung { position: relative; min-height: 0; background: var(--wash); box-shadow: inset 0 -1px 0 var(--rule); overflow: hidden; }
+.g-wall .rung.over { background: var(--paper); box-shadow: inset 0 -2px 0 var(--ink); }
+.g-wall .flood { position: absolute; left: var(--wallgut, 66px); right: 0; bottom: 0; background: var(--market-fill); }
+.g-wall .rung.full .flood { background: rgba(155, 78, 38, .3); }
+/* The flood is a fill, and a fill is never a ground for type: the rung's
+   label sits on its own opaque plate so its contrast does not move as the
+   water rises past it. */
+.g-wall .rlab {
+  position: absolute; left: 33%; top: 12px; max-width: 38%;
+  padding: 10px 13px; border-radius: var(--r-md);
+  background: var(--plate); box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.g-wall .rlab .ln { display: block; font: 600 11px/1.5 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.g-wall .rung.full .rlab .ln { color: var(--market); }
+.g-wall .rlab .lv { display: block; margin-top: 2px; font: 400 21px/1.15 Georgia, "Times New Roman", serif; color: var(--ink); font-variant-numeric: tabular-nums; }
+.g-wall .rlab .note { display: block; margin-top: 4px; max-width: 30em; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.g-wall .waterline { position: absolute; left: var(--wallgut, 66px); right: 0; height: 0; border-top: 2px solid var(--market); }
+.g-wall .wallaxis { position: absolute; top: 0; bottom: 0; left: var(--wallgut, 66px); border-left: 1px solid var(--rule); }
+.g-wall .tick { position: absolute; left: var(--wallgut, 66px); right: 0; height: 0; border-top: 1px solid var(--gridline); }
+.g-wall .ticklab {
+  position: absolute; left: 8px; transform: translateY(-60%);
+  font: 600 10px/1.4 Arial, Helvetica, sans-serif; letter-spacing: .06em;
+  color: var(--ink-quiet); font-variant-numeric: tabular-nums;   /* on wash 4.77:1 */
+}
+.g-wall .watertag {
+  position: absolute; left: 33%; transform: translateY(-50%);
+  padding: 5px 9px; border-radius: var(--r-sm);
+  background: var(--plate); box-shadow: inset 0 0 0 1.5px var(--market);
+  font: 600 11px/1.3 Arial, Helvetica, sans-serif; letter-spacing: .06em;
+  color: var(--market); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+
+/* ── Strips (the three arrangements) ──────────────────────────────────── */
+
+.strip { position: relative; height: 100%; display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: stretch; }
+.strip .who { align-self: center; }
+.strip .who .tot { font: 400 30px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.025em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.strip .who .sub { margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.strip .mini { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; height: 100%; min-height: 72px; align-items: end; padding-bottom: 2px; }
+.strip .mini i { display: block; border-radius: 2px 2px 0 0; }
+.strip .mini i.trueup { margin-left: 14px; }
+
+/* ── Chain and legal grid ─────────────────────────────────────────────── */
+
+.chain { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; align-items: center; gap: 0; height: 100%; }
+.chain .node { min-height: 190px; max-height: 330px; }
+.chain .node {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  font-size: 13px; line-height: 18px;
+}
+.chain .node .step { font: 400 40px/1 Georgia, "Times New Roman", serif; color: var(--accent); letter-spacing: -.02em; }  /* on the plate 5.66:1, and large */
+.chain .node .body { margin-top: auto; }
+.chain .node .r { display: block; font: 600 10px/1.5 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.chain .arr { display: grid; place-items: center; color: var(--rule); width: 30px; }
+.chain .arr svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.legal-grid { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 20px; height: 100%; align-items: start; }
+.legal-grid > div { padding-top: 10px; border-top: 2px solid var(--hairline); }
+.legal-grid .warn { border-top-color: var(--market); }
+.legal-grid dt { margin: 0 0 4px; font: 600 10px/1.5 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.legal-grid dd { margin: 0; font-size: 13px; line-height: 19px; }
+.legal-grid .warn dd { color: var(--market); }
+
+/* ── Verdict columns ──────────────────────────────────────────────────── */
+
+.vcols { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: 100%; }
+.vcol { position: relative; overflow: hidden; }
+.vcol + .vcol { box-shadow: inset 1px 0 0 var(--rule); }
+.vplate {
+  position: absolute; left: 14px; right: 14px; top: 12px;
+  padding: 14px 16px; border-radius: var(--r-lg);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline), 0 10px 26px -18px rgba(61,96,93,.5);
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.vcol.sel .vplate { box-shadow: inset 0 0 0 2px var(--ink), 0 10px 26px -18px rgba(61,96,93,.5); }
+.vplate h3 { margin: 8px 0 6px; font: 400 23px/26px Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.vplate .place { margin: 0 0 10px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.vplate p.why { margin: 0 0 8px; font-size: 13px; line-height: 19px; }
+.vplate .who-wins { align-self: flex-start; padding: 3px 8px; border-radius: var(--r-sm); font: 600 10px/1.6 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; box-shadow: inset 0 0 0 1px currentColor; }
+.vplate .who-wins.hardware  { color: var(--gain); }
+.vplate .who-wins.financial { color: var(--ink); }
+.vplate .who-wins.neither   { color: var(--market); }
+.vplate .tnum { margin: 8px 0 0; font-size: 12px; line-height: 17px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+
+/* ── Choice columns (the three households) ────────────────────────────── */
+
+.ccols { position: absolute; inset: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.ccol { position: relative; overflow: hidden; }
+.ccol + .ccol { box-shadow: inset 1px 0 0 var(--rule); }
+.ccol .g-home { inset: 0; }
 
 .choice {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 16px;
-  border: 1px solid var(--rule);
+  position: absolute; left: 16px; right: 16px; top: 16px;
+  display: block; text-align: left;
+  padding: 15px 16px;
+  border: 0;
   border-radius: var(--r-lg);
-  background: var(--paper);
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--hairline), 0 10px 26px -18px rgba(61,96,93,.5);
   color: var(--ink);
   cursor: pointer;
 }
 .choice:hover  { background: var(--wash); }
 .choice:active { background: var(--wash-deep); }
-.choice[aria-checked="true"] {
-  background: var(--wash);
-  border-color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
-}
-
-.choice h3 { margin: 6px 0 8px; font: 400 21px/25px Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
-.choice p { margin: 0 0 10px; font-size: 13px; line-height: 19px; color: var(--ink); }
-.choice dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12px; line-height: 17px; }
+.choice[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ink), 0 10px 26px -18px rgba(61,96,93,.5); }
+.choice h3 { margin: 4px 0 2px; font: 400 24px/27px Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.choice .place { margin: 0 0 8px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.choice .line { margin: 0 0 10px; font-size: 13px; line-height: 19px; color: var(--ink); }
+.choice dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 12px; line-height: 17px; }
 .choice dt { color: var(--ink-quiet); }
 .choice dd { margin: 0; font-variant-numeric: tabular-nums; }
-.choice .chosen { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font: 600 10px/1 Arial; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.choice .chosen { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font: 600 10px/1 Arial, Helvetica, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
 .choice:not([aria-checked="true"]) .chosen { visibility: hidden; }
+.choice .spine { display: inline-block; margin-top: 10px; padding: 3px 8px; border-radius: var(--r-sm); font: 600 10px/1.6 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); box-shadow: inset 0 0 0 1px currentColor; }
 
-/* ── Lists: bounds, gives, conditions ─────────────────────────────────── */
+/* ── Figures ──────────────────────────────────────────────────────────── */
 
-.bounds, .gives, .conditions { margin: 12px 0 0; padding: 0; list-style: none; }
+.figure-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.figure-row.tight { gap: 8px; }
+
+.fig { flex: 1 1 120px; min-width: 118px; padding: 10px 12px; border-radius: var(--r-md); background: var(--wash); }
+.fig.mark-market { box-shadow: inset 3px 0 0 var(--market); }
+.fig.mark-smooth { box-shadow: inset 3px 0 0 var(--smooth); }
+.fig.mark-ink    { box-shadow: inset 3px 0 0 var(--ink); }
+.fig.mark-gain   { box-shadow: inset 3px 0 0 var(--gain); }
+.fig .k { display: block; font: 600 10px/1.4 Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
+.fig .v { display: block; margin-top: 3px; font: 400 22px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.02em; color: var(--ink); }
+.fig .v.sm { font-size: 17px; }
+.fig .n { display: block; margin-top: 3px; font-size: 11px; line-height: 16px; color: var(--ink-quiet); }
+
+/* ── Lists ────────────────────────────────────────────────────────────── */
+
+.bounds, .gives, .conditions { margin: 10px 0 0; padding: 0; list-style: none; }
 
 .bounds li, .gives li {
-  display: grid;
-  grid-template-columns: 12px minmax(0, 1fr);
-  gap: 10px;
-  padding: 9px 0;
-  border-top: 1px solid var(--hairline);
-  font-size: 14px;
-  line-height: 20px;
+  display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 9px;
+  padding: 7px 0; border-top: 1px solid var(--hairline);
+  font-size: 13px; line-height: 19px;
 }
 .bounds li:first-child, .gives li:first-child { border-top: 0; }
-
-.gives li .mk, .bounds li .mk {
-  font: 600 10px/20px Arial;
-  letter-spacing: .06em;
-  color: var(--ink-quiet);
-  font-variant-numeric: tabular-nums;
-}
+.gives li .mk, .bounds li .mk { font: 600 10px/19px Arial, Helvetica, sans-serif; color: var(--ink-quiet); }
 .gives li.on { color: var(--ink); }
 .gives li.on .mk { color: var(--market); }
 .gives li.off { color: var(--ink-quiet); }
@@ -616,194 +686,139 @@ input[type="range"]::-moz-range-thumb {
 .conditions { counter-reset: c; }
 .conditions li {
   counter-increment: c;
-  display: grid;
-  grid-template-columns: 26px 1fr;
-  gap: 10px;
-  padding: 10px 0;
-  border-top: 1px solid var(--hairline);
-  font-size: 14px;
-  line-height: 20px;
+  display: grid; grid-template-columns: 22px 1fr; gap: 9px;
+  padding: 7px 0; border-top: 1px solid var(--hairline);
+  font-size: 13px; line-height: 19px;
 }
 .conditions li:first-child { border-top: 0; }
-.conditions li::before {
-  content: counter(c);
-  font: 400 18px/20px Georgia, serif;
-  color: var(--accent);
-}
+.conditions li::before { content: counter(c); font: 400 17px/19px Georgia, "Times New Roman", serif; color: var(--accent); }
+
+.legend { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+.legend span { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; line-height: 17px; color: var(--ink); }
+.legend i { width: 11px; height: 11px; margin-top: 3px; border-radius: 2px; flex: none; }
 
 /* ── Agent tape ───────────────────────────────────────────────────────── */
 
-.tape { margin: 12px 0 0; padding: 0; list-style: none; min-height: 190px; }
-
+.tape { margin: 10px 0 0; padding: 0; list-style: none; }
 .tape li {
-  display: grid;
-  grid-template-columns: 52px 1fr auto;
-  gap: 12px;
-  align-items: baseline;
-  padding: 9px 0;
-  border-top: 1px solid var(--hairline);
-  font-size: 13px;
-  line-height: 19px;
+  display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: baseline;
+  padding: 8px 0; border-top: 1px solid var(--hairline);
+  font-size: 13px; line-height: 18px;
 }
 .tape li:first-child { border-top: 0; }
 .tape .t { font-variant-numeric: tabular-nums; color: var(--ink-quiet); font-size: 12px; }
 .tape .m { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: bold; }
 .tape .m.in  { color: var(--gain); }
 .tape .m.out { color: var(--market); }
+.tape .m.nil { color: var(--ink-quiet); }
 .tape li.fresh { background: var(--wash); border-radius: var(--r-sm); }
 
-/* ── Ledger (the arithmetic of the target) ────────────────────────────── */
+/* ── Ledger ───────────────────────────────────────────────────────────── */
 
-.ledger { margin-top: 18px; border-top: 1px solid var(--hairline); }
-
+.ledger { margin-top: 12px; border-top: 1px solid var(--hairline); }
 .ledger .row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--hairline);
-  font-size: 14px;
-  line-height: 20px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px;
+  padding: 6px 0; border-bottom: 1px solid var(--hairline);
+  font-size: 13px; line-height: 18px;
 }
 .ledger .row > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ledger .row.total { font-weight: bold; border-bottom: 0; }
-.ledger .row .why { display: block; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
+.ledger .row .why { display: block; font-size: 11px; line-height: 16px; color: var(--ink-quiet); }
 .ledger .row.credit > :last-child { color: var(--gain); }
 .ledger .row.charge > :last-child { color: var(--market); }
 
-/* ── Triptych (page 7) ────────────────────────────────────────────────── */
+/* ── Breakevens ───────────────────────────────────────────────────────── */
 
-.triptych { display: grid; gap: 18px; margin-top: 16px; }
-
-.trip {
-  display: grid;
-  grid-template-columns: minmax(150px, 190px) 1fr;
-  gap: 16px;
-  align-items: center;
-  padding: 14px;
-  border-radius: var(--r-md);
-  background: var(--wash);
-}
-.trip .who { min-width: 0; }
-.trip h3 { margin: 4px 0 2px; font: 400 19px/23px Georgia, serif; letter-spacing: -.02em; }
-.trip .tot { font: 400 26px/1.1 Georgia, serif; letter-spacing: -.025em; }
-.trip .sub { font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
-.trip .mini { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; height: 62px; align-items: end; }
-.trip .mini i { display: block; border-radius: 1px; }
-.trip .mini i.trueup { margin-left: 8px; }
-
-/* ── Tower (page 8) ───────────────────────────────────────────────────── */
-
-.tower { display: grid; gap: 8px; }
-
-.layer {
-  padding: 10px 12px;
-  border-radius: var(--r-md);
-  background: var(--wash);
-  box-shadow: inset 0 0 0 1px var(--hairline);
-}
-.layer .lh { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
-.layer .ln { font: 600 11px/1.4 Arial; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-quiet); }
-.layer .lv { font-size: 13px; font-variant-numeric: tabular-nums; }
-.layer .meter { position: relative; height: 10px; margin-top: 8px; border-radius: 5px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink-quiet); overflow: hidden; }
-.layer .meter i { position: absolute; inset: 0 auto 0 0; background: var(--market); border-radius: 5px; }
-.layer.exhausted { box-shadow: inset 0 0 0 2px var(--market); }
-.layer.exhausted .ln { color: var(--market); }
-.layer .note { margin-top: 6px; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
-
-.breakevens { display: grid; gap: 8px; margin-top: 12px; }
-.be { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: baseline; font-size: 13px; line-height: 19px; padding: 7px 0; border-top: 1px solid var(--hairline); }
+.breakevens { display: grid; gap: 0; margin-top: 8px; }
+.be { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; font-size: 12px; line-height: 17px; padding: 6px 0; border-top: 1px solid var(--hairline); }
 .be:first-child { border-top: 0; }
 .be b { font-variant-numeric: tabular-nums; }
 .be.hit b { color: var(--market); }
-.be .who { color: var(--ink); }
 .be .who em { font-style: normal; color: var(--ink-quiet); }
 
-/* ── Legal (page 10) ──────────────────────────────────────────────────── */
+/* ── The person plate ─────────────────────────────────────────────────── */
 
-.chain { display: grid; gap: 6px; margin: 14px 0 0; }
-.chain .node {
-  padding: 10px 12px;
-  border-radius: var(--r-md);
-  background: var(--wash);
-  font-size: 14px;
-  line-height: 20px;
+.person { display: flex; align-items: center; gap: 12px; }
+.person .avatar {
+  width: 44px; height: 44px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--rule);
+  font: 400 15px/1 Georgia, "Times New Roman", serif;
+  letter-spacing: .04em;
+  color: var(--ink);
 }
-.chain .node .r { display: block; font: 600 10px/1.4 Arial; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); }
-.chain .arr { text-align: center; color: var(--rule); line-height: 1; font-size: 14px; }
+.person .nm { margin: 0; font: 400 26px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.person .pl { margin: 2px 0 0; font-size: 12px; line-height: 17px; color: var(--ink-quiet); }
 
-.legal-grid { display: grid; gap: 0; margin-top: 18px; }
-.legal-grid div {
-  display: grid;
-  grid-template-columns: minmax(110px, 150px) 1fr;
-  gap: 14px;
-  padding: 10px 0;
-  border-top: 1px solid var(--hairline);
-  font-size: 14px;
-  line-height: 20px;
-}
-.legal-grid dt { font: 600 10px/20px Arial; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-quiet); margin: 0; }
-.legal-grid dd { margin: 0; }
-.legal-grid .warn dd { color: var(--market); }
-
-/* ── Verdicts (page 11) ───────────────────────────────────────────────── */
-
-.verdicts { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-.verdict {
-  padding: 16px;
-  border-radius: var(--r-lg);
-  background: var(--paper);
-  box-shadow: inset 0 0 0 1px var(--hairline);
-}
-.verdict.sel { background: var(--wash); box-shadow: inset 0 0 0 1px var(--ink); }
-.verdict h3 { margin: 6px 0 10px; font: 400 20px/24px Georgia, serif; letter-spacing: -.02em; }
- /* Ground stays paper: a signal hue is annotation, never a field for type
-    (design.md §9). On its own 16% fill a 10px label measures 4.0:1; on the
-    paper it is 4.9–5.8:1. */
-.verdict .who-wins { display: inline-block; margin-bottom: 10px; padding: 3px 8px; border-radius: var(--r-sm); font: 600 10px/1.6 Arial; letter-spacing: .12em; text-transform: uppercase; box-shadow: inset 0 0 0 1px currentColor; }
-.verdict .who-wins.hardware  { color: var(--gain); }
-.verdict .who-wins.financial { color: var(--ink); }
-.verdict .who-wins.neither   { color: var(--market); }
-.verdict p { margin: 0 0 10px; font-size: 14px; line-height: 20px; }
-.verdict p:last-child { margin-bottom: 0; }
-.verdict .why { color: var(--ink-quiet); font-size: 13px; line-height: 19px; }
-
-/* ── Narrow ───────────────────────────────────────────────────────────── */
+/* ── Narrow: the ground stays full-bleed, the plates become one column ── */
 
 @media (max-width: 900px) {
-  .page.is-current,
-  .page-cover.is-current { grid-template-columns: 1fr; gap: 28px; }
-  .choice-grid, .verdicts { grid-template-columns: 1fr; }
-  .page { padding: 24px 16px 40px; }
-  h2 { font-size: 29px; line-height: 32px; }
-  .cover-title { font-size: 38px; line-height: 39px; }
-  .shell-head, .shell-foot { padding: 0 14px; gap: 10px; }
-  .brand-sub { display: none; }
-  .brand-mark { white-space: nowrap; }
-  .hint { display: none; }
-  .head-right { gap: 10px; min-width: 0; }
-  /* The word HOUSEHOLD is redundant beside a household name, and the header
-     has no room for it; the select keeps its accessible name. */
-  .household-chip > .eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .household-chip select { max-width: 47vw; font-size: 12px; }
-  .position { font-size: 10px; letter-spacing: .08em; }
-  .plate { padding: 16px; }
-  .trip { grid-template-columns: 1fr; gap: 10px; }
-  .legal-grid div { grid-template-columns: 1fr; gap: 2px; }
-  .legal-grid dt { line-height: 1.4; }
-  .chart { height: 160px; }
-  .cover-plate { min-height: 280px; }
-  .cp-inner { inset: 0 0 66px 0; }
-  .tape { min-height: 0; }
-  .tape li { grid-template-columns: 46px 1fr; }
-  .tape .m { grid-column: 2; }
-}
+  :root { --sx: 12px; --st: 58px; --sb: 62px; }
 
-@media (max-width: 420px) {
+  .layer {
+    position: absolute; inset: 0;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: var(--st) var(--sx) var(--sb);
+    pointer-events: auto;
+  }
+  /* Relative, not static: a static box paints beneath the absolutely
+     positioned ground it is supposed to sit on. */
+  .plate, .at-tl, .at-tr, .at-bl, .at-br, .at-l, .at-r {
+    position: relative; left: auto; right: auto; top: auto; bottom: auto;
+    width: auto; max-width: none; max-height: none;
+  }
+  .layer:empty { display: none; }
+  .layer > * { flex: none; }
+  .layer > .spacer { display: block; flex: 0 0 26vh; }
+  :root { --wallgut: 46px; }
+  .g-year .plot { left: 38px; }
+  .g-year .ymon { font-size: 9px; letter-spacing: .02em; }
+  .g-year .zonelab { right: 8px; font-size: 9px; letter-spacing: .08em; }
+
+  h2 { font-size: 27px; line-height: 30px; }
+  .brand-sub { display: none; }
+  .household-chip > .eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .household-chip select { max-width: 40vw; font-size: 12px; }
+  .position { font-size: 10px; letter-spacing: .06em; }
+  .c-foot { display: none; }
+
+  /* The per-screen row templates are authored for a wide screen; narrow, the
+     bands simply stack at their natural height and the screen scrolls. */
+  .bands { grid-template-rows: none !important; grid-auto-rows: min-content; overflow-y: auto; }
+  .band { padding: 14px var(--sx); }
+  .band-split { grid-template-columns: 1fr !important; }
+
+  .strip { grid-template-columns: 1fr; gap: 8px; }
+  .strip .mini { min-height: 54px; }
+
+  .chain { grid-auto-flow: row; grid-auto-rows: min-content; gap: 0; height: auto; }
+  .chain .arr { width: auto; height: 22px; }
+  .chain .node { flex-direction: row; align-items: baseline; gap: 12px; min-height: 0; max-height: none; }
+  .chain .node .step { font-size: 24px; }
+  .chain .node .body { margin-top: 0; }
+  .legal-grid { grid-auto-flow: row; gap: 10px; height: auto; }
+  .vcols { grid-auto-flow: row; height: auto; }
+  .vcol { min-height: 0; }
+  .vplate { position: relative; left: auto; right: auto; top: auto; margin: 12px 0; }
+  /* Static, so the stacked bands can size themselves to it. */
+  .ccols { position: static; grid-auto-flow: row; overflow: visible; }
+  .ccol { min-height: 430px; }
+  .choice { position: relative; left: auto; right: auto; top: auto; margin: 12px; }
+
+  .g-obj { width: 108px; }
+  .g-obj .glyph { width: 44px; height: 44px; }
+  .g-obj .glyph svg { width: 26px; height: 26px; }
+  .g-obj .n { font-size: 11px; line-height: 15px; }
+  .g-obj .s { display: none; }
+
+  .g-wall .rlab { left: 54px; right: 10px; max-width: none; padding: 8px 10px; }
+  .g-wall .rlab .lv { font-size: 18px; }
+  .g-wall .watertag { left: 54px; }
+  .g-wall .ticklab { left: 5px; }
+
   .fig { min-width: 100%; }
-  .chart { gap: 2px; }
-  .col .mlabel { font-size: 8px; letter-spacing: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
