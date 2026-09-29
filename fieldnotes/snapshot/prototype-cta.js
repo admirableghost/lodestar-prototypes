@@ -1,5 +1,14 @@
 /*
- * "View prototype" — an Emberwatch-only third link on the closing page.
+ * "View prototype" — an Emberwatch-only link to the interactive prototype.
+ *
+ * It appears in TWO places, because a reader looks in both:
+ *   1. the library card on the home page, beside "View thesis" and
+ *      "Explore causal map" — where someone scanning the collection looks;
+ *   2. the closing page (8 of 8) of the pamphlet, beside "View the thesis"
+ *      and "Join the discussion" — where someone who has read it looks.
+ * The first was added after the second, because the card is the obvious
+ * place and the page-8 row sits under a "For reviewers" label that reads as
+ * not-for-you.
  *
  * WHY A SEPARATE SCRIPT
  *
@@ -28,6 +37,12 @@
  * arrow-right after its label, is visually and behaviourally identical to the
  * two beside it, with no CSS added anywhere. The wrapper already sets
  * `flex-wrap: wrap`, so the third link wraps cleanly on a narrow stage.
+ *
+ * The card's links live in `nav.edition-actions` inside
+ * `div.gallery-entry.gallery-emberwatch`. "Explore causal map" carries no
+ * class — `.edition-actions a` styles it — and is composed exactly as the
+ * page-8 links are: a text node, a space, then the same 16px Lucide
+ * arrow-right. So the same builder serves both, and no CSS is added.
  *
  * SCOPE
  *
@@ -107,13 +122,38 @@
     nav.setAttribute(FLAG, "");
   }
 
+  function addCardLink() {
+    /* Scoped to the Emberwatch entry; the other five cards are untouched. */
+    var nav = document.querySelector(".gallery-emberwatch nav.edition-actions");
+    if (!nav || nav.hasAttribute(FLAG)) return;
+
+    var link = document.createElement("a");
+    link.href = PROTOTYPE_URL;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    /* Its two neighbours name their edition in the accessible label
+       ("Explore Emberwatch causal map"), because on the shelf the label is
+       read out of the context of its card. */
+    link.setAttribute("aria-label", "View the Emberwatch prototype");
+    link.appendChild(document.createTextNode(LABEL + " "));
+    link.appendChild(arrowRight());
+
+    nav.appendChild(link);
+    nav.setAttribute(FLAG, "");
+  }
+
+  function apply() {
+    addLink();
+    addCardLink();
+  }
+
   /* The reader is a client-side hash router: page 8 mounts and unmounts as
      someone pages back and forth, and React may replace the nav wholesale.
      Observing the subtree covers every one of those cases, including the
      first render, without polling. */
   function watch() {
-    addLink();
-    new MutationObserver(addLink).observe(document.body, { childList: true, subtree: true });
+    apply();
+    new MutationObserver(apply).observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === "loading") {
