@@ -69,6 +69,18 @@
 
   var openTerm = null;   // "id:key"
   var showRate = false;
+  /* Phone only: which contract's block is open. Stacking all three in full
+     ran 413px past the bottom of a 390x844 window, and nothing on screen
+     said the rest was down there. */
+  var openContract = LG.CONTRACTS[0].id;
+
+  /* A portrait identifies; it never captions. The names beside these are
+     invented and the subjects are stand-ins — see assets/PROVENANCE.md. */
+  function faceEl(who) {
+    var i = el("i", "face face-" + who);
+    i.setAttribute("aria-hidden", "true");
+    return i;
+  }
 
   function corner() {
     var c = el("div", "terms-cell terms-corner");
@@ -99,11 +111,39 @@
     return d;
   }
 
+  /* On a phone the head is the control: one contract open at a time, all
+     three names always on screen, nothing below the fold. */
+  function headButton(c) {
+    var b = el("div", "terms-cell terms-head");
+    var t = el("button", "head-hit");
+    t.type = "button";
+    t.appendChild(el("span", "ct-letter", c.letter));
+    t.appendChild(el("span", "ct-name", c.name));
+    t.appendChild(el("span", "ct-mark"));
+    t.setAttribute("aria-expanded", openContract === c.id ? "true" : "false");
+    t.addEventListener("click", function () {
+      openContract = openContract === c.id ? null : c.id;
+      openTerm = null;
+      showRate = false;
+      renderTerms();
+      renderTermOut();
+    });
+    b.appendChild(t);
+    return b;
+  }
+
   function termButton(c, row) {
     var id = c.id + ":" + row.key;
-    var b = el("button", "terms-cell", row.get(c));
+    var b = el("button", "terms-cell");
+    /* The row name is a real element rather than a ::before, so the row
+       that is named for Ada can carry her face. Hidden on wide screens,
+       where the row name lives in the label column instead. */
+    var lab = el("span", "cell-row");
+    if (row.key === "survivor") lab.appendChild(faceEl("ada"));
+    lab.appendChild(el("span", "cell-row-t", row.short));
+    b.appendChild(lab);
+    b.appendChild(el("span", "cell-val", row.get(c)));
     b.type = "button";
-    b.setAttribute("data-row", row.short);
     b.setAttribute("aria-expanded", openTerm === id ? "true" : "false");
     b.addEventListener("click", function () {
       openTerm = openTerm === id ? null : id;
@@ -131,16 +171,25 @@
       : "auto repeat(" + (TERM_ROWS.length + (showRate ? 1 : 0)) + ", minmax(0, 1fr))";
 
     if (narrow()) {
-      /* One block per contract; the terms stay the architecture of the block. */
+      /* One block per contract; the terms stay the architecture of the
+         block. Only the open one shows its rows, and the headline rate,
+         when it is asked for, replaces them across all three — the same
+         either/or the wide layout makes by hiding the rate while a cell is
+         being read. Everything stays inside the window. */
       t.appendChild(corner());
       LG.CONTRACTS.forEach(function (c) {
-        var g = el("div", "terms-group");
-        g.appendChild(headCell(c));
-        TERM_ROWS.forEach(function (row) { g.appendChild(termButton(c, row)); });
+        var g = el("div", "terms-group" + (openContract === c.id ? " is-open" : ""));
+        g.appendChild(headButton(c));
         if (showRate) {
           var r = rateCell(c);
           r.classList.add("terms-row-rate");
           g.appendChild(r);
+        } else if (openContract === c.id) {
+          TERM_ROWS.forEach(function (row) {
+            g.appendChild(termButton(c, row));
+            /* The reading opens where the finger is, not 400px below it. */
+            if (openTerm === c.id + ":" + row.key) g.appendChild(termOutBox(c, row));
+          });
         }
         t.appendChild(g);
       });
@@ -152,6 +201,12 @@
 
     TERM_ROWS.forEach(function (row) {
       var lab = el("div", "terms-cell terms-label");
+      /* The survivor row is the question Robert actually has, so the row it
+         is named for is the one that carries her face. */
+      if (row.key === "survivor") {
+        lab.classList.add("terms-label-face");
+        lab.appendChild(faceEl("ada"));
+      }
       lab.appendChild(el("p", "rl", row.label));
       if (row.sub) lab.appendChild(el("p", "rs", row.sub));
       t.appendChild(lab);
@@ -170,17 +225,27 @@
     }
   }
 
+  function termOutBox(c, row) {
+    var box = el("div", "term-out plate");
+    var eb = el("p", "eyebrow", c.letter + " &middot; " + row.label);
+    if (row.key === "survivor") {
+      box.classList.add("term-out-face");
+      box.appendChild(faceEl("ada"));
+    }
+    box.appendChild(eb);
+    box.appendChild(el("p", null, c.terms[row.key]));
+    return box;
+  }
+
   function renderTermOut() {
     var out = $("termOut");
     out.innerHTML = "";
-    if (!openTerm) return;
+    /* On a phone the reading is rendered inline, inside the open block. */
+    if (!openTerm || narrow()) return;
     var parts = openTerm.split(":");
     var c = LG.CONTRACTS.filter(function (x) { return x.id === parts[0]; })[0];
     var row = TERM_ROWS.filter(function (x) { return x.key === parts[1]; })[0];
-    var box = el("div", "term-out plate");
-    box.appendChild(el("p", "eyebrow", c.letter + " &middot; " + row.label));
-    box.appendChild(el("p", null, c.terms[parts[1]]));
-    out.appendChild(box);
+    out.appendChild(termOutBox(c, row));
   }
 
   /* ====================================================== screen 4 — lives */
@@ -212,8 +277,8 @@
     var s = $("spans");
     s.innerHTML = "";
     var adaEndRobertAge = A0 + (life.adaDeath - H.adaAge);
-    [["Robert", life.robertDeath, life.robertDeath, ""],
-     ["Ada", adaEndRobertAge, life.adaDeath, "ada"]].forEach(function (r) {
+    [["Robert", life.robertDeath, life.robertDeath, "", "robert"],
+     ["Ada", adaEndRobertAge, life.adaDeath, "ada", "ada"]].forEach(function (r) {
       var row = el("div", "span-row");
       row.appendChild(el("i", "span-track"));
       var f = el("i", "span-fill" + (r[3] ? " " + r[3] : ""));
@@ -237,6 +302,11 @@
         }
       }
 
+      /* Each lifeline begins with the face it belongs to, so that when his
+         line stops and hers carries on it is two people, not two bars. */
+      var face = faceEl(r[4]);
+      face.className += " span-face";
+      row.appendChild(face);
       var lab = el("span", "span-lab", r[0]);
       row.appendChild(lab);
       var end = el("span", "span-end", '<span class="de-word">dies at </span>' + r[2]);
@@ -405,7 +475,9 @@
     /* On a phone the chart is a band at the top of a scrolling scene, so it
        keeps less room below it and its band label clears the back control. */
     var phone = W < 700;
-    var top = Math.round(Ht * (phone ? 0.34 : 0.30)), bottom = Ht - (phone ? 42 : 104);
+    /* The phone band is short, so the headroom above the plot is what keeps
+       the two chart labels clear of the fixed controls in the corners. */
+    var top = Math.round(Ht * (phone ? 0.38 : 0.30)), bottom = Ht - (phone ? 42 : 104);
     var ih = Math.max(60, bottom - top);
 
     var lastAlive = Math.min(Math.max(life.robertDeath, A0 + (life.adaDeath - H.adaAge)), A1);
@@ -432,7 +504,7 @@
 
     /* the bridge band, running off the top and the bottom of the screen */
     s.push('<rect x="0" y="0" width="' + X(startAge).toFixed(1) + '" height="' + Ht + '" fill="#E3DBCB"/>');
-    s.push('<text x="' + (X(startAge) / 2).toFixed(1) + '" y="' + (phone ? 92 : 46) + '" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" letter-spacing="2.4" fill="#61533D"' + HALO + '>THE BRIDGE</text>');
+    s.push('<text x="' + (X(startAge) / 2).toFixed(1) + '" y="' + (phone ? top - 12 : 46) + '" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" letter-spacing="2.4" fill="#61533D"' + HALO + '>THE BRIDGE</text>');
 
     /* savings */
     s.push('<path d="' + area + '" fill="#61533D" fill-opacity="0.13"/>');
@@ -609,6 +681,7 @@
     n = Math.max(1, Math.min(pages.length, n));
     current = n;
     pages.forEach(function (p, i) { p.hidden = (i + 1) !== n; });
+    document.body.setAttribute("data-screen", String(n));
     $("headCount").textContent = String(n).padStart(2, "0") + " / " + String(pages.length).padStart(2, "0");
     $("prevBtn").disabled = n === 1;
     $("nextLabel").textContent = pages[n - 1].dataset.cta;
@@ -648,6 +721,11 @@
       var on = this.getAttribute("aria-pressed") !== "true";
       this.setAttribute("aria-pressed", on ? "true" : "false");
       this.textContent = on ? "Hide the sources" : "Where each figure comes from";
+      /* Four provenance lines are 200px of type. On a phone the screen's
+         job changes from meeting him to reading where the figures came
+         from, so the plates rise over more of the photograph rather than
+         pushing the last source line out of the window. */
+      document.getElementById("page-2").classList.toggle("srcs-on", on);
       renderFigures(on);
     });
 

@@ -43,20 +43,33 @@
     <div class="plate plate-tall">
       <p class="eyebrow">01 / The household</p>
       <div class="ident">
-        <span class="monogram" aria-hidden="true">AO</span>
+        <img class="face face-lg" src="./portraits/ada.jpg" width="300" height="300" decoding="async"
+             alt="Generated portrait representing Ada Okonjo, an invented character." />
         <span class="ident-body">
           <span class="ident-name">Ada Okonjo</span>
           <span class="ident-sub">41 · veterinary nurse · holds the mandate</span>
         </span>
       </div>
-      <div class="photo-window" role="img" aria-label="A photograph of a family at a kitchen table with a laptop, standing in for the invented household."></div>
-      <p class="caption-note">An invented household. The photograph is an illustration, not a policyholder.</p>
+      <div class="photo-window" role="img" aria-label="A generated image of a family at a kitchen table with a laptop, representing the invented household."></div>
+      <p class="caption-note">An invented household, and generated images: no real person is shown here, and nobody here is a policyholder.</p>
       <dl class="fact-list">
-        <dt>Living here</dt><dd>Ada, 41 · Femi, 44 · Tolu, 7</dd>
+        <dt>Living here</dt>
+        <dd class="fact-people">
+          <img class="face" src="./portraits/ada.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Ada Okonjo, an invented character." />
+          <img class="face" src="./portraits/femi.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Femi Okonjo, an invented character." />
+          <span>Ada, 41 · Femi, 44 · Tolu, 7</span>
+        </dd>
         <dt>Standing fleet</dt><dd>Six agents · 214 acts a week</dd>
         <dt>Mandate</dt><dd>Version 7 · signed 4 February 2036</dd>
         <dt>The place</dt><dd>A 1970s house on a quarter acre, long rear garden</dd>
-        <dt>North boundary</dt><dd>A privet hedge · Deb Hollis's side beyond it</dd>
+        <dt>North boundary</dt>
+        <dd class="fact-people">
+          <img class="face" src="./portraits/deb.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Deb Hollis, the invented neighbour." />
+          <span>A privet hedge · Deb Hollis's side beyond it</span>
+        </dd>
       </dl>
     </div>
   </div>
@@ -66,6 +79,19 @@
       <h2 class="display sm">Meet Ada Okonjo.</h2>
       <p class="body-copy">A veterinary nurse on twelve-hour shifts. The house is empty from seven in the morning until half past six, which is why nearly everything here is delegated.</p>
       <p class="mobile-facts">Ada, 41 · Femi, 44 · Tolu, 7 · six agents · 214 acts a week · mandate v7</p>
+      <!-- On a phone the card beside the plan is dropped, so the household and
+           the neighbour meet the reader here instead. -->
+      <p class="mobile-faces">
+        <span class="mf-faces">
+          <img class="face" src="./portraits/ada.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Ada Okonjo, an invented character." />
+          <img class="face" src="./portraits/femi.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Femi Okonjo, an invented character." />
+          <img class="face" src="./portraits/deb.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Deb Hollis, the invented neighbour." />
+        </span>
+        <span>Ada and Femi Okonjo, and Deb Hollis over the privet hedge on the north boundary. Invented characters, generated images: no real person is shown.</span>
+      </p>
       <p class="pull">Everything the agents do inside this line is theirs to do. Everything past it is not.</p>
     </div>
   </div>
@@ -144,7 +170,7 @@
       <button class="pill sm ghost" type="button" id="actPrev" aria-label="Previous act">&#9664;</button>
       <span class="step-index" id="actIndex">Act 1 of 9</span>
       <button class="pill sm ghost" type="button" id="actNext" aria-label="Next act">&#9654;</button>
-      <button class="pill sm" type="button" id="actJump">Jump to the divergence</button>
+      <button class="pill sm" type="button" id="actJump"><span class="lg">Jump to the divergence</span><span class="sh">The divergence</span></button>
     </div>
   </div>
 </section>
@@ -160,14 +186,20 @@
       <h2 class="display sm">It stopped and asked. It asked the wrong question.</h2>
 
       <ol class="beats">
-        <li><span class="bt">13:06</span><span class="bb">Yard unit 2 cut 14.2 m of hedge. 9.4 m of it stood on Deb Hollis's side of the line.</span></li>
-        <li><span class="bt">13:44</span><span class="bb">The agent reached its escalation clause and stopped to ask.</span></li>
+        <li><span class="bt">13:06</span><span class="bb">
+          <img class="face" src="./portraits/deb.jpg" width="300" height="300" decoding="async"
+               alt="Generated portrait representing Deb Hollis, the invented neighbour." />
+          <span>Yard unit 2 cut 14.2 m of hedge. 9.4 m of it stood on Deb Hollis's side of the line.</span>
+        </span></li>
+        <li><span class="bt">13:44</span><span class="bb"><span>The agent reached its escalation clause and stopped to ask.</span></span></li>
       </ol>
 
       <div class="transcript">
         <p><span class="who">Agent</span>“Booking haulage for the cuttings from clearing your rear boundary — $380, non-refundable. Approve?”</p>
-        <p><span class="who">Ada</span>“Yes, go ahead.”</p>
+        <p class="said"><img class="face" src="./portraits/ada.jpg" width="300" height="300" decoding="async"
+             alt="Generated portrait representing Ada Okonjo, an invented character." /><span><span class="who">Ada</span>“Yes, go ahead.”<em>from a corridor at the clinic</em></span></p>
       </div>
+      <p class="caption-note">Ada and Deb are invented and both images are generated; no real person is shown.</p>
 
       <p class="omit"><span class="eyebrow">What the question left out</span>The cut had crossed the property line.</p>
 
@@ -253,7 +285,14 @@
         <div class="stat"><span class="fig-h" id="qShare">$100</span><span class="eyebrow">household share</span></div>
       </div>
       <p class="quote-why" id="qWhy"></p>
+    </div>
+    <div class="plate dials-plate">
       <div class="dials" id="dials"></div>
+    </div>
+    <!-- The rating disclosure sits OUTSIDE the scrolling plate, in a bar of its
+         own, so it is on screen at every window size and can never end up
+         behind a scroll the reader has not made. -->
+    <div class="plate plate-bar rating-bar">
       <p class="rating-note">Invented rating sketch · no filed rates exist for this anywhere</p>
     </div>
   </div>

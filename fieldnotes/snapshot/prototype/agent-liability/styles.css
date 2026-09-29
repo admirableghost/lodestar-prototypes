@@ -19,7 +19,7 @@
    Ink on wash #E9E7EC is 6.34:1; ink on the 10% signal tints is 6.3:1 or better.
 
    PLATES ARE OPAQUE. Going full-bleed puts type over drawn grounds and a
-   photograph, and a translucent plate makes the ratio unmeasurable and
+   cover image, and a translucent plate makes the ratio unmeasurable and
    unstable. Every plate paints solid #FBF9F1 (or solid --wash) and carries a
    hairline plus a soft shadow for lift, so every ratio above still holds
    literally, at the pixel, wherever the plate lands.
@@ -54,7 +54,8 @@
   --gut:20px;
   --top:20px;
   --bot:82px;
-  --plate-pad:22px 24px;
+  --pp-y:22px;
+  --pp-x:24px;
   --lift:0 22px 46px -30px rgba(36,35,52,.62), 0 2px 6px -3px rgba(36,35,52,.18);
 }
 
@@ -87,7 +88,11 @@ body{
 .ground.faint{opacity:.42;}
 
 /* ── Plates ──────────────────────────────────────────────────────────────── */
-.panel{position:absolute;z-index:20;display:flex;flex-direction:column;gap:12px;}
+/* A panel is a column of space, not a surface: it never takes a tap, so the
+   log, the clause wall and the act wall behind it stay reachable everywhere the
+   plate itself is not. */
+.panel{position:absolute;z-index:20;display:flex;flex-direction:column;gap:12px;pointer-events:none;}
+.panel > *{pointer-events:auto;}
 .panel-l{left:var(--gut);top:var(--top);bottom:var(--bot);width:min(430px,34vw);}
 .panel-r{right:var(--gut);top:var(--top);bottom:var(--bot);width:min(430px,34vw);}
 .panel-l.panel-narrow,.panel-r.panel-narrow{width:min(390px,31vw);}
@@ -102,12 +107,44 @@ body{
   border:1px solid var(--hair);
   border-radius:var(--r2);
   box-shadow:var(--lift);
-  padding:var(--plate-pad);
+  padding:var(--pp-y) var(--pp-x);
 }
 /* A tall plate is the column: it owns the side of the screen and scrolls
    inside itself if a narrow viewport squeezes it, so the ground behind it is
-   never pushed out of the frame to make room for words. */
-.plate-tall{flex:0 1 auto;min-height:0;max-height:100%;overflow:auto;display:flex;flex-direction:column;}
+   never pushed out of the frame to make room for words.
+
+   Everything is composed to fit outright between 1280×720 and 1920×1080 and at
+   390×844, so this scroll is a safety valve for window sizes outside that
+   range, not the normal reading state. When it does engage it has to announce
+   itself: macOS overlay scrollbars are invisible at rest, so a plate that is
+   holding something back gets a permanent thin scrollbar, a fade at its foot
+   and a tab stop of its own (see markScrollables in app.js). */
+.plate-tall{
+  flex:0 1 auto;min-height:0;max-height:100%;overflow:auto;
+  display:flex;flex-direction:column;
+  scroll-behavior:smooth;
+}
+.can-scroll{
+  scrollbar-width:thin;
+  scrollbar-color:var(--rule) var(--wash);
+}
+.can-scroll::-webkit-scrollbar{width:9px;}
+.can-scroll::-webkit-scrollbar-track{background:var(--wash);border-radius:var(--r2);}
+.can-scroll::-webkit-scrollbar-thumb{background:var(--rule);border-radius:var(--r2);}
+.more-hint{
+  display:none;flex:0 0 auto;position:sticky;z-index:3;pointer-events:none;
+  align-self:stretch;height:calc(var(--pp-y) + 14px);
+  bottom:calc(-1 * var(--pp-y));
+  margin:0 calc(-1 * var(--pp-x)) calc(-1 * var(--pp-y));
+  background:linear-gradient(180deg,rgba(251,249,241,0) 0%,var(--paper) 62%);
+  border-radius:0 0 var(--r2) var(--r2);
+}
+.plate-tall.can-scroll > .more-hint{display:block;}
+.plate-tall.can-scroll > .more-hint::after{
+  content:"more ↓";position:absolute;right:calc(var(--pp-x) - 4px);bottom:2px;
+  font:600 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+@media (prefers-reduced-motion:reduce){.plate-tall{scroll-behavior:auto;}}
 .plate-bar{
   flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   padding:11px 14px;
@@ -166,6 +203,8 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
 .ctl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 14px;}
 .step-index{font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);min-width:74px;text-align:center;}
+/* the jump control carries a short label for the phone's one-line button row */
+#actJump .sh{display:none;}
 
 :where(button,select,a,[tabindex]):focus-visible{
   outline:2px solid var(--ink);outline-offset:2px;border-radius:var(--r1);
@@ -187,7 +226,12 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .back:hover{background:var(--wash);}
 /* The back control sits over a plate on most screens; the plates that reach
-   the top-left corner leave a notch for it. */
+   the top-left corner leave a notch for it. On a wide screen that is a fixed
+   margin, because the column always starts at the top. On a phone a plate only
+   reaches the corner when its content is tall enough to fill the column, so
+   the notch is applied there by measurement (see notchUnderBack in app.js) —
+   a fixed offset would cost every screen 44px of height to solve one. */
+.plate.under-back > :first-child{padding-left:var(--notch,46px);}
 .panel-l,.panel-tl,.panel-cover{padding-left:0;}
 .screen[data-screen] .panel-l > .plate:first-child,
 .screen[data-screen] .panel-tl > .plate:first-child{margin-left:52px;}
@@ -220,10 +264,11 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .icon-button:disabled{color:var(--dim);border-color:var(--hair);cursor:default;background:var(--paper);box-shadow:none;}
 .nav-next{box-shadow:var(--lift);}
 
-/* ── 1 · Cover: the photograph is the ground ─────────────────────────────── */
-/* The pamphlet's cover device — a photograph fading to the paper colour — run
-   full-bleed instead of boxed. All type stays on the opaque plate, which is
-   what lets the contrast be measured rather than hoped for. */
+/* ── 1 · Cover: the cover image is the ground ────────────────────────────── */
+/* The pamphlet's cover device — the edition's own generated cover image fading
+   to the paper colour — run full-bleed instead of boxed. All type stays on the
+   opaque plate, which is what lets the contrast be measured rather than hoped
+   for. */
 .ground-photo{
   background:url("./cover.jpg") 52% 46% / cover no-repeat, var(--paper);
 }
@@ -238,17 +283,28 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 
 /* ── 2 · The place ───────────────────────────────────────────────────────── */
 .ident{display:flex;align-items:center;gap:12px;margin:0 0 14px;}
-.monogram{
-  width:44px;height:44px;border-radius:50%;flex:0 0 auto;
-  border:1px solid var(--rule);background:var(--wash);color:var(--ink);
-  display:inline-flex;align-items:center;justify-content:center;
-  font:400 16px var(--serif);letter-spacing:.02em;
+/* ── The people ──────────────────────────────────────────────────────────── */
+/* Faces cropped from the edition's own cover and from the neighbours image
+   (see portraits/PROVENANCE.md). Both sources are GENERATED, not photographs:
+   no real person is depicted, so there is no subject to credit and no one who
+   could be mistaken for a policyholder. Each screen that shows a face states
+   the invention and the generation once, plainly, beside it. */
+.face{
+  width:38px;height:38px;flex:0 0 auto;border-radius:50%;object-fit:cover;
+  display:block;border:1px solid var(--rule);background:var(--wash);
 }
+.face-lg{width:54px;height:54px;}
+/* the faces stay on the row with their fact: the sentence wraps inside its own
+   column rather than the portrait dropping to a line of its own */
+.fact-people{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
+.fact-people > span{min-width:0;}
+.fact-people .face{width:28px;height:28px;}
+.fact-list + .caption-note{margin-top:12px;}
 .ident-name{display:block;font:400 21px/1.15 var(--serif);letter-spacing:-.02em;color:var(--ink);}
 .ident-sub{display:block;font-size:13px;line-height:18px;color:var(--muted);margin-top:2px;}
 /* A CSS window onto the edition's own cover art. The file is unaltered; the
-   crop lives here. It is an illustration of an invented household, captioned
-   as such directly beneath it, and never as a real policyholder. */
+   crop lives here. The image is generated and the household is invented, which
+   the caption directly beneath it says; it is never a real policyholder. */
 .photo-window{
   height:clamp(120px,17vh,168px);border-radius:var(--r2);border:1px solid var(--hair);
   background:url("./cover.jpg") 50% 40% / 150% auto no-repeat, var(--wash);
@@ -257,7 +313,10 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .caption-note{margin:0 0 14px;font-size:11px;line-height:16px;color:var(--muted);}
 /* the household's facts ride with the narrative plate on a phone, where the
    card beside the plan is dropped */
-.mobile-facts{display:none;margin:0 0 14px;font-size:12px;line-height:17px;color:var(--muted);}
+.mobile-facts{display:none;margin:0 0 12px;font-size:12px;line-height:17px;color:var(--muted);}
+.mobile-faces{display:none;margin:0 0 14px;font-size:11px;line-height:16px;color:var(--muted);}
+.mf-faces{display:flex;gap:6px;margin-bottom:6px;}
+.mobile-faces .face{width:34px;height:34px;}
 .fact-list{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:13px;line-height:18px;}
 .fact-list dt{font:600 10px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:3px;white-space:nowrap;}
 .fact-list dd{margin:0;color:var(--ink);}
@@ -334,6 +393,8 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .clause-btn .ct{display:block;font:600 11px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
 .clause-btn .cr{display:block;font:400 clamp(18px,2vw,29px)/1.22 var(--serif);letter-spacing:-.024em;color:var(--ink);}
 .clause-btn .csig{font-size:12px;line-height:17px;color:var(--muted);}
+/* the label sits above the name rather than butting against it */
+.clause-btn .csig .eyebrow{display:block;margin:0 0 2px;}
 .clause-btn[aria-pressed="true"] .csig{color:var(--ink);}
 
 .prov{margin-top:16px;border-top:1px solid var(--rule);padding-top:14px;}
@@ -377,9 +438,11 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .actwall li.flag .act-btn{background:var(--alert-fill);border-left-color:var(--alert);}
 .actwall li.flag .act-btn:hover{background:rgba(163,48,43,.18);}
 
-.panel-detail .plate-tall{padding:18px 20px;}
+.panel-detail .plate-tall{--pp-y:18px;--pp-x:20px;}
 .ld-side{padding:0 0 13px;border-bottom:1px solid var(--hair);margin-bottom:13px;}
-.ld-side:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0;}
+/* of-type, not child: the scroll hint is appended after these when the plate
+   is holding something back, and it must not steal the last rule. */
+.ld-side:last-of-type{border-bottom:0;margin-bottom:0;padding-bottom:0;}
 .ld-side .eyebrow{margin:0 0 6px;}
 .ld-quote{margin:0;font:400 17px/24px var(--serif);color:var(--ink);letter-spacing:-.015em;}
 .ld-meta{margin:8px 0 0;font-size:13px;line-height:19px;color:var(--muted);}
@@ -414,9 +477,30 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 
 /* ── 6 · The question at 13:44 ───────────────────────────────────────────── */
 .beats{list-style:none;margin:0 0 4px;padding:0;}
-.beats li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;margin-bottom:10px;}
+.beats li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;margin-bottom:9px;}
 .beats .bt{font:600 12px var(--sans);font-variant-numeric:tabular-nums;color:var(--muted);padding-top:2px;}
-.beats .bb{font-size:14px;line-height:20px;color:var(--ink);}
+/* the face rides in the beat itself rather than in a row of its own: the
+   neighbour appears exactly where her boundary is named, and the beat's two
+   lines of type are already taller than the portrait, so nothing grows */
+.beats .bb{font-size:14px;line-height:20px;color:var(--ink);display:flex;align-items:flex-start;gap:10px;}
+.beats .bb .face{width:30px;height:30px;}
+/* Ada's face rides on her own line of the record — the agent has none, which
+   is the point of the screen: a person answered, under time pressure, in
+   forty-one seconds, and the thing that asked her was not a person. */
+.transcript p.said{display:flex;align-items:flex-start;gap:10px;}
+.transcript p.said .face{width:40px;height:40px;}
+.transcript p.said em{
+  display:block;font-style:normal;margin-top:1px;
+  font-size:11px;line-height:15px;color:var(--muted);
+}
+/* This column carries the two portraits, the transcript and the omission in
+   one plate, so the FRAME around them is tightened — rules, gaps and trailing
+   margins — and none of the type or the words. It stands whole at 1280×720. */
+.screen[data-screen="6"] .beats li{margin-bottom:8px;}
+.screen[data-screen="6"] .transcript{margin-top:10px;}
+.screen[data-screen="6"] .caption-note{margin:9px 0 0;}
+.screen[data-screen="6"] .omit{margin:13px 0 13px;}
+.plate-tall > .body-copy:last-of-type{margin-bottom:0;}
 .panel-chip .chip-stat{display:inline-flex;flex-direction:column;gap:2px;margin-right:22px;}
 .panel-chip .chip-stat:last-child{margin-right:0;}
 .panel-chip .eyebrow{margin:0;}
@@ -505,7 +589,7 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .lg-btn .nm{font-size:14px;line-height:18px;}
 .lg-btn .nm em{font-style:normal;display:block;font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:2px;}
 .lg-btn .ct{font:600 16px var(--sans);font-variant-numeric:tabular-nums;}
-.book-foot{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:16px;border-top:1px solid var(--rule);padding-top:13px;}
+.book-foot{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:14px;border-top:1px solid var(--rule);padding-top:12px;}
 .stat .eyebrow{margin:3px 0 0;}
 
 /* ── 9 · The premium decomposition is the screen ─────────────────────────── */
@@ -529,6 +613,9 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .vband .vb-pct{font:600 11px var(--sans);letter-spacing:.1em;color:var(--paper);opacity:.85;}
 .vband.narrow .vb-name{display:none;}
 .vband.narrow .vb-amt{font-size:16px;}
+/* thinner than its own figure: the stripe carries no type at all, and the
+   opaque tag above it states the amount and the share */
+.vband.hair .vband-in{display:none;}
 /* The 6% indemnity band is a stripe; its label goes on an opaque tag pinned to
    the top of the stripe rather than inside it, so it never sets 11px type on a
    20-pixel-wide ground. */
@@ -539,13 +626,21 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 }
 .vband-tag .eyebrow{margin:0 0 3px;color:var(--alert);}
 .vband-tag .fig-t{color:var(--alert);}
-.dials{margin-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}
-.dial{border-top:1px solid var(--hair);padding:10px 0 0;margin-top:10px;}
+.vband-tag-sub{margin:2px 0 0;font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+/* The dials live in a plate of their own (see index.html), which does not
+   scroll. If the window is too short for the whole column, the prose above
+   gives way and says so; the controls always stand inside the frame, because
+   a control behind a scroll is not a control. */
+.dials{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}
+.dials-plate{flex:0 0 auto;}
+.dials-plate .dial:first-child,.dials-plate .dial:nth-child(2){border-top:0;padding-top:0;margin-top:0;}
+.dial{border-top:1px solid var(--hair);padding:9px 0 0;margin-top:9px;}
 .dial:nth-child(2){border-top:1px solid var(--rule);}
 .dial:first-child{border-top:1px solid var(--rule);}
-.rating-note{grid-column:1 / -1;margin:14px 0 0;padding-top:11px;border-top:1px solid var(--hair);font-size:11px;line-height:16px;color:var(--muted);}
-.dial > .eyebrow{margin:0 0 8px;color:var(--ink);}
-.seg{display:flex;flex-wrap:wrap;gap:6px;}
+.rating-bar{padding:9px 14px;}
+.rating-note{margin:0;font-size:11px;line-height:16px;color:var(--muted);}
+.dial > .eyebrow{margin:0 0 6px;color:var(--ink);}
+.seg{display:flex;flex-wrap:wrap;gap:5px;}
 .seg button{
   font:12px var(--sans);color:var(--ink);background:var(--paper);
   border:1px solid var(--rule);border-radius:var(--r2);padding:7px 10px;min-height:34px;cursor:pointer;
@@ -555,7 +650,12 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 .quote-figs{display:flex;flex-wrap:wrap;gap:10px 26px;margin-bottom:10px;}
 .quote-why{margin:0;font-size:13px;line-height:19px;color:var(--ink);border-top:1px solid var(--rule);padding-top:10px;max-width:52ch;}
 
-@media (min-width:761px){ .screen[data-screen="9"] .panel-l{width:min(530px,40vw);} }
+/* The premium column holds four segmented controls. It is given the width it
+   needs for their labels to sit on one line and their options to pair up, so
+   that every control stands inside the frame at 1280x720 — a control behind a
+   scroll is not a control. The band wall still runs full-bleed behind it, and
+   the indemnity stripe still lands at the far right, clear of the plate. */
+@media (min-width:761px){ .screen[data-screen="9"] .panel-l{width:min(590px,46vw);} }
 
 /* ── 10 · Three open questions, floor to ceiling ─────────────────────────── */
 .ground-questions{background:var(--paper);display:flex;flex-direction:column;}
@@ -584,9 +684,21 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
   background:var(--wash);border-left:3px solid var(--note);padding:11px 13px;border-radius:0 var(--r1) var(--r1) 0;
 }
 .bd-body p b{font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:10px;color:var(--note);display:block;margin-bottom:4px;}
+/* The pager only appears where the wall cannot stand three columns side by
+   side; on a wide screen it is hidden and all three questions are present. */
+.qpager{display:flex;align-items:center;gap:10px;margin:12px 0 0;}
+.qp-btn{
+  width:34px;height:34px;flex:0 0 auto;padding:0;cursor:pointer;
+  border:1px solid var(--rule);background:var(--paper);border-radius:var(--r2);
+  color:var(--ink);font:400 18px/1 var(--serif);
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.qp-btn:hover{background:var(--wash);}
+.qp-btn:disabled{color:var(--dim);border-color:var(--hair);cursor:default;}
+.qp-label{font:600 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);}
 
 /* ── 11 · Closing ────────────────────────────────────────────────────────── */
-.panel-mid .plate{padding:32px 34px;}
+.panel-mid .plate{--pp-y:32px;--pp-x:34px;}
 .closing-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
 
 /* ── Narrow: the plate stops being a column and becomes a sheet ──────────── */
@@ -617,30 +729,68 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
 /* Phone: every screen keeps its ground full-bleed and drops the plate to a
    sheet along the foot, so the subject still reaches all four edges. */
 @media (max-width:760px){
-  :root{--gut:12px;--top:12px;--bot:150px;--plate-pad:16px 16px;}
-  .panel-l,.panel-r,.panel-tl,.panel-bl,.panel-br,.panel-cover,.panel-br.panel-chip{
+  :root{--gut:12px;--top:12px;--bot:150px;--pp-y:16px;--pp-x:16px;}
+  /* Every sheet is given a DEFINITE column — top AND bottom, not a max-height.
+     A flex column whose height is only capped does not shrink its children: it
+     lays them out full size and lets them hang past the frame, which is exactly
+     how a sentence ends up outside the viewport with nothing to scroll. With a
+     definite height the plate shrinks, scrolls, and says so.
+
+     The sheet still rides the foot of the screen and leaves the ground showing
+     above it, because the plate inside is sized by its own content. */
+  .panel-l,.panel-r,.panel-bl,.panel-br,.panel-cover,.panel-br.panel-chip{
     left:var(--gut);right:var(--gut);width:auto;max-width:none;
-    top:auto;bottom:var(--bot);
-    max-height:min(58vh,520px);
+    top:var(--top);bottom:var(--bot);max-height:none;
+    justify-content:flex-end;
   }
-  .panel-tl{top:var(--top);bottom:auto;max-height:36vh;}
+  /* the cover panel is centred on a wide screen; on a phone it is a sheet at
+     the foot, so the centring transform has to be undone with the position */
+  .panel-cover{transform:none;}
+  .panel-tl{
+    left:var(--gut);right:var(--gut);width:auto;max-width:none;
+    top:var(--top);bottom:auto;height:36vh;max-height:none;
+    justify-content:flex-start;
+  }
   .screen[data-screen] .panel-l > .plate:first-child,
   .screen[data-screen] .panel-tl > .plate:first-child{margin-left:0;}
   .panel-tl > .plate:first-child{padding-left:60px;}
   .panel-mid{left:var(--gut);right:var(--gut);width:auto;top:50%;transform:translateY(-50%);}
   .panel-detail{display:flex;}
   .plate-tall{overflow:auto;-webkit-overflow-scrolling:touch;}
-  .panel-mid .plate{padding:22px 18px;}
+  .panel-mid .plate{--pp-y:22px;--pp-x:18px;}
 
   /* The second plate on a two-plate screen would bury the ground. On a phone
      the ground wins: the narrative plate stays, the secondary one goes. */
   .screen[data-screen="2"] .panel-r{display:none;}
   .screen[data-screen="6"] .panel-br{display:none;}
   .mobile-facts{display:block;}
+  .mobile-faces{display:block;}
   /* the day's record keeps its beat on a phone: a short header plate at the
-     top, the wall through the middle, the act detail as a sheet at the foot */
-  .screen[data-screen="5"] .panel-tl{max-height:29vh;}
-  .screen[data-screen="5"] .panel-detail{max-height:min(38vh,330px);}
+     top, the wall through the middle, the act detail as a sheet at the foot.
+     The sheet takes everything the header plate does not, so the opening act
+     is shown whole rather than cut at the foot of the screen. */
+  .screen[data-screen="5"] .panel-tl{height:27vh;}
+  .screen[data-screen="5"] .panel-detail{top:calc(var(--top) + 27vh + 10px);}
+  /* the act controls stay on one line, so the sheet spends its height on the
+     act rather than on a wrapped button row */
+  .panel-detail .plate-bar{gap:8px;flex-wrap:nowrap;padding:9px 10px;}
+  .panel-detail .plate-bar .step-index{min-width:0;flex:0 1 auto;font-size:10px;letter-spacing:.06em;}
+  .panel-detail .plate-bar .pill.sm{padding:7px 9px;}
+  #actJump .lg{display:none;}
+  #actJump .sh{display:inline;}
+  /* The act's own words keep their size — the quoted clause and the record of
+     what was done are the argument, and are not what a layout trades away. Only
+     the frame around them tightens: the rules, the gaps and the exposure row. */
+  .ld-side{padding-bottom:10px;margin-bottom:10px;}
+  .ld-meta{margin-top:6px;}
+  .ld-side.instructed,.ld-side.instructed.none{padding:10px 11px;margin-bottom:10px;}
+  .ld-side.exposure{
+    margin-top:11px;padding:10px 11px;gap:4px 18px;align-items:center;
+  }
+  .ld-side.exposure > div{min-width:0;flex:1 1 auto;display:flex;align-items:baseline;gap:8px;}
+  .ld-side.exposure .fig-h{font-size:19px;}
+  .ld-side.exposure .eyebrow{display:block;margin:0;line-height:14px;}
+  .ev{margin-top:8px;gap:5px;}
 
   /* the premium's bands turn on their side, because a 6% column is 23 px wide
      on a phone and no label belongs in 23 px */
@@ -684,6 +834,28 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
   .act-btn .t{font-size:11px;}
   .panel-detail .plate-bar{order:-1;}
 
+  /* Three open questions, one at a time. Three full-height columns do not fit a
+     phone, and the alternative — tightening the type until all three fit, or
+     letting the wall scroll — either spends the reading load or throws away the
+     thing that makes a wall read as a wall. So the wall PAGINATES: one question
+     whole, at a size worth reading, with a pager in the head (see boundaries()
+     in app.js). Nothing is cut and nothing is hidden below a fold. */
+  .q-head{padding:12px 12px 12px 60px;}
+  .q-head .eyebrow{margin-bottom:6px;}
+  .q-head h2{font-size:24px;line-height:1.08;}
+  /* the single question takes the whole wall, the way a column does on a wide
+     screen: its note settles at the foot, clear of the floating chrome */
+  .qwall{grid-auto-rows:minmax(min-content,1fr);}
+  .qwall li{padding:16px 16px 124px;gap:14px;border-bottom:0;justify-content:flex-start;}
+  .qwall .bd-body{margin-top:auto;}
+  .qwall .q{font-size:25px;line-height:1.12;}
+  .qwall .n{font-size:26px;}
+  .q-top{gap:12px;}
+  .qwall .s{font-size:15px;line-height:22px;padding-top:12px;}
+  .q-status{padding-top:12px;gap:12px;}
+  .q-state{font-size:21px;}
+  .bd-body p{font-size:13px;line-height:19px;padding:11px 13px;}
+
   .band{padding:0 12px;}
   .band .bl-why{display:none;}
   .band .bl-amt{font-size:20px;}
@@ -693,7 +865,7 @@ h2.display.sm{font-size:clamp(24px,2.1vw,30px);line-height:1.08;}
   .qwall{overflow:auto;}
   .vband-in{gap:9px;}
   .vband .vb-name{font-size:10px;}
-  .book-foot{gap:10px 18px;}
+  .book-foot{gap:8px 16px;margin-top:11px;padding-top:10px;}
   .tally{gap:8px 16px;}
   .quote-figs{gap:8px 18px;}
 }

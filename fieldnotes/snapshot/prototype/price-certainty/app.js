@@ -69,7 +69,7 @@ const GLYPH = {
 const HOUSEHOLDS = {
   h1: {
     key: 'h1',
-    name: 'Rosa A.', first: 'Rosa', initials: 'RA',
+    name: 'Rosa A.', first: 'Rosa', initials: 'RA', face: 'rosa',
     place: 'Flat 3B, Kestrel House — a 1962 block',
     short: 'Rosa A. · rented flat, 1962 block',
     line: 'Rents a fourth-floor flat, works nights at a care home, paid fortnightly.',
@@ -107,7 +107,7 @@ const HOUSEHOLDS = {
 
   h2: {
     key: 'h2',
-    name: 'Marion K.', first: 'Marion', initials: 'MK',
+    name: 'Marion K.', first: 'Marion', initials: 'MK', face: 'marion',
     place: '14 Thornleigh Road — a 1931 terrace',
     short: 'Marion K. · 1931 terrace, battery on loan',
     line: 'Bought the terrace in 2009. Heat pump and battery financed by the carrier in 2033.',
@@ -151,7 +151,7 @@ const HOUSEHOLDS = {
 
   h3: {
     key: 'h3',
-    name: 'Yusuf T.', first: 'Yusuf', initials: 'YT',
+    name: 'Yusuf T.', first: 'Yusuf', initials: 'YT', face: 'yusuf',
     place: 'Saltmarsh Lane — a 2029 deep retrofit',
     short: 'Yusuf T. · 2029 retrofit, owned outright',
     line: 'Owns the retrofit outright. Exports more than he imports from April to September.',
@@ -280,6 +280,22 @@ const el = (tag, cls, html) => {
 };
 const $ = id => document.getElementById(id);
 const compact = () => window.matchMedia('(max-width: 900px)').matches;
+
+/* A generated face standing in for an invented household — no real person is
+   depicted; see assets/portraits/PROVENANCE.md. The invented name is always
+   set immediately beside it, and the alt text is empty rather than describing
+   a person, so a screen reader is handed the invented name and never a
+   description that would read as an identity of its own. */
+const faceTag = (h, size) =>
+  '<img class="face face-' + size + '" src="./assets/portraits/' + h.face +
+  '.jpg" alt="" width="320" height="320" decoding="async" />';
+
+/* Face, name and address as one lockup — whose home is on screen. */
+function personRow(host, h, size) {
+  host.innerHTML = faceTag(h, size || 'm') +
+    '<span class="who"><span class="nm">' + h.name + '</span>' +
+    '<span class="pl">' + h.place + '</span></span>';
+}
 
 /* ── State ───────────────────────────────────────────────────────────── */
 
@@ -447,8 +463,15 @@ function cull(host) {
         const hidden = pts.some(([x, y]) =>
           x < 0 || y < 0 || x >= window.innerWidth || y >= window.innerHeight ||
           document.elementsFromPoint(x, y).some(e =>
-            e.classList && (e.classList.contains('plate') || e.classList.contains('chip') ||
-                            e.classList.contains('choice') || e.classList.contains('vplate'))));
+            e !== n && e.classList && (
+              e.classList.contains('plate') || e.classList.contains('chip') ||
+              e.classList.contains('choice') || e.classList.contains('vplate') ||
+              e.classList.contains('pc-pager') ||
+              /* The chips drawn on the ground are opaque too, so a month
+                 label half-buried under a zone tag is just as lost as one
+                 under a plate. Each chip is exempt from itself. */
+              e.classList.contains('zonelab') || e.classList.contains('ttag') ||
+              e.classList.contains('watertag') || e.classList.contains('hlab'))));
         if (hidden) n.style.visibility = 'hidden';
       });
   });
@@ -669,6 +692,7 @@ let tapeTimer = null, tapeAt = 0;
 function render2() {
   const h = HOUSEHOLDS[SPINE];
   groundHome($('g2'), h, -1, false);
+  personRow($('s2Person'), h, 'm');
 
   const bl = $('s2Bounds');
   bl.innerHTML = '';
@@ -724,18 +748,25 @@ function render3() {
     const lo = sum(bills(h, 'calm')), hi = sum(bills(h, 'shock'));
 
     const col = el('div', 'ccol');
-    const ground = el('div');
-    ground.style.cssText = 'position:absolute;inset:0';
-    col.appendChild(ground);
-    groundHome(ground, h, h.stops.length - 1, true);
+    /* The drawn cut-through is the column's ground on a wide screen. On a
+       phone the choice card fills its column edge to edge, so the drawing
+       would be rendered only to be covered: the portrait carries the
+       identity there instead. */
+    if (!compact()) {
+      const ground = el('div');
+      ground.style.cssText = 'position:absolute;inset:0';
+      col.appendChild(ground);
+      groundHome(ground, h, h.stops.length - 1, true);
+    }
 
     const b = el('button', 'choice');
     b.type = 'button';
     b.setAttribute('role', 'radio');
     b.setAttribute('aria-checked', String(k === state.household));
     b.appendChild(el('p', 'eyebrow', h.assets));
-    b.appendChild(el('h3', null, h.name));
-    b.appendChild(el('p', 'place', h.place));
+    b.appendChild(el('div', 'choice-head',
+      faceTag(h, 'm') + '<div><h3>' + h.name + '</h3>' +
+      '<p class="place">' + h.place + '</p></div>'));
     b.appendChild(el('p', 'line', h.line));
     const dl = el('dl');
     [['Cost range', money(lo) + ' – ' + money(hi)],
@@ -786,6 +817,7 @@ function render5() {
   const q = Q();
 
   groundHome($('g5'), h, stopIdx, false);
+  personRow($('s5Person'), h, 's');
 
   $('assignLabel').innerHTML =
     '<strong>' + q.stop.label + '</strong> · earns ' + money(q.flexGross) + ' a year';
@@ -1019,7 +1051,8 @@ function render9() {
     const h = HOUSEHOLDS[k], q = quote(h, h.stops.length - 1);
     const m = (q.flexGross - h.assetFinance + q.target) / q.E;
     const row = el('div', 'be' + (mult >= m ? ' hit' : ''));
-    row.appendChild(el('span', 'who', h.name + ' <em>· ' + Math.round(POOL.weights[k] * 100) + '% of the book</em>'));
+    row.appendChild(el('span', 'who', faceTag(h, 'xs') + '<span>' + h.name +
+      ' <em>· ' + Math.round(POOL.weights[k] * 100) + '% of the book</em></span>'));
     row.appendChild(el('b', 'num', pctUp(m)));
     be.appendChild(row);
   });
@@ -1118,13 +1151,16 @@ function render11() {
     const h = HOUSEHOLDS[k], v = VERDICTS[k];
     const q = quote(h, h.stops.length - 1);
     const col = el('div', 'vcol' + (k === state.household ? ' sel' : ''));
-    const ground = el('div');
-    ground.style.cssText = 'position:absolute;inset:0';
-    col.appendChild(ground);
-    groundHome(ground, h, h.stops.length - 1, true);
+    if (!compact()) {
+      const ground = el('div');
+      ground.style.cssText = 'position:absolute;inset:0';
+      col.appendChild(ground);
+      groundHome(ground, h, h.stops.length - 1, true);
+    }
     const pl = el('div', 'vplate');
     pl.appendChild(el('span', 'who-wins ' + v.who, v.tag));
-    pl.appendChild(el('h3', null, h.name));
+    pl.appendChild(el('div', 'choice-head',
+      faceTag(h, 'm') + '<div><h3>' + h.name + '</h3></div>'));
     pl.appendChild(el('p', 'why', v.line));
     pl.appendChild(el('p', 'tnum',
       (q.target >= 0 ? 'Target ' + money(q.target) : 'Paid ' + money(Math.abs(q.target))) +
@@ -1153,6 +1189,230 @@ function render11() {
   ].forEach(t => c.appendChild(el('li', null, t)));
 }
 
+/* ═══ Phone · the screen turns instead of scrolling ═══════════════════ */
+/* The shell does not scroll — html and body are overflow:hidden so a
+   full-bleed ground can stay full-bleed — so on a 390 px phone anything
+   that did not fit was sliced off the bottom edge without a sound. An
+   inner scroller is not a fix either: a line below the fold is still a
+   line the reader has not been shown.
+
+   So a narrow screen is divided into parts that each fit the viewport
+   whole, turned by a control that says how many parts there are. This
+   measures the real layout rather than guessing at breakpoints, so it
+   holds at any phone size and survives the copy changing.               */
+
+const pcPart = {};                    /* screen number → the part on show */
+
+const pcHost  = s => s.querySelector('.bands') || s.querySelector('.layer');
+const pcDrawn = s => s.querySelector('.ground > .g-year, .ground > .g-home, .ground > .g-wall');
+
+/* Boxes meant to hold a slice of a screen rather than all of it: a plate or
+   a band prints just as well around two of its children as around six.
+   Anything else is broken open only when it is too tall to fit. */
+const PC_SPLIT = '.plate, .band, .band-split';
+
+function pcAtoms(host, budget) {
+  const out = [];
+  const walk = node => {
+    const kids = [...node.children].filter(k =>
+      !k.classList.contains('spacer') && !k.classList.contains('pc-pager'));
+    const tall = node.getBoundingClientRect().height > budget;
+    if (!kids.length || (node !== host && !node.matches(PC_SPLIT) && !tall)) { out.push(node); return; }
+    kids.forEach(walk);
+  };
+  walk(host);
+  return out;
+}
+
+/* A label with nothing under it is not a part: an eyebrow or a heading is
+   glued to whatever follows it. */
+function pcUnits(atoms, useGroups) {
+  const units = [];
+  let cur = [];
+  atoms.forEach((a, i) => {
+    cur.push(a);
+    if (!(a.matches('.eyebrow, h2, h3, .person-row') && i < atoms.length - 1)) { units.push(cur); cur = []; }
+  });
+  if (cur.length) units.push(cur);
+  if (!useGroups) return units;
+  /* Some blocks are only an argument together — the three arrangements on
+     screen 7 are a comparison, and a comparison split over two parts is
+     not one. data-pc-group holds them on the same part while they fit. */
+  const grp = u => {
+    const g = u[0].closest('[data-pc-group]');
+    return g ? g.dataset.pcGroup : null;
+  };
+  const merged = [];
+  units.forEach(u => {
+    const g = grp(u);
+    const last = merged[merged.length - 1];
+    if (g && last && grp(last) === g) last.push(...u); else merged.push(u);
+  });
+  return merged;
+}
+
+function pcClear(screen) {
+  screen.querySelectorAll('[data-pc-part],[data-pc-box],[data-pc-first]').forEach(n => {
+    n.style.display = '';
+    delete n.dataset.pcPart;
+    delete n.dataset.pcBox;
+    delete n.dataset.pcFirst;
+  });
+}
+
+/* Fill each part until the next unit would overflow the viewport, then
+   start another. Measured, not estimated. */
+function pcPack(screen, host, budget, drawn, useGroups) {
+  pcClear(screen);
+  const units = pcUnits(pcAtoms(host, budget), useGroups);
+  const flat = units.flat();
+  flat.forEach(a => { a.style.display = 'none'; });
+  const over = () => host.scrollHeight > host.clientHeight + 1;
+
+  /* On a screen staged over a drawing, the opening part carries the
+     eyebrow and the headline and the ground keeps the rest of the sheet —
+     which is the only way a phone sees the picture at all. */
+  let brk = -1;
+  if (drawn) {
+    brk = units.findIndex(u => u.some(a => a.matches('h2')));
+    if (brk < 0) brk = 0;
+  }
+
+  let part = 1, open = [];
+  units.forEach((u, ui) => {
+    u.forEach(a => { a.style.display = ''; });
+    if (open.length && over()) {
+      u.forEach(a => { a.style.display = 'none'; });
+      open.forEach(a => { a.dataset.pcPart = part; a.style.display = 'none'; });
+      part++; open = [];
+      u.forEach(a => { a.style.display = ''; });
+    }
+    open.push(...u);
+    if (ui === brk) {
+      open.forEach(a => { a.dataset.pcPart = part; a.style.display = 'none'; });
+      part++; open = [];
+    }
+  });
+  open.forEach(a => { a.dataset.pcPart = part; });
+  return open.length ? part : Math.max(part - 1, 1);
+}
+
+function pcApply(screen, host, n) {
+  const atoms = [...screen.querySelectorAll('[data-pc-part]')];
+  atoms.forEach(a => { a.style.display = (Number(a.dataset.pcPart) === n ? '' : 'none'); });
+  /* A box whose whole contents belong to another part would otherwise
+     print as an empty rule of paper. */
+  const boxes = new Set();
+  atoms.forEach(a => { for (let p = a.parentElement; p && p !== host; p = p.parentElement) boxes.add(p); });
+  boxes.forEach(b => {
+    b.dataset.pcBox = '1';
+    b.style.display = atoms.some(a => Number(a.dataset.pcPart) === n && b.contains(a)) ? '' : 'none';
+  });
+  /* Whatever now opens a box loses the rule it used to be separated by. */
+  atoms.forEach(a => { delete a.dataset.pcFirst; });
+  new Set(atoms.filter(a => Number(a.dataset.pcPart) === n).map(a => a.parentElement))
+    .forEach(p => {
+      const first = [...p.children].find(k => atoms.includes(k) && Number(k.dataset.pcPart) === n);
+      if (first) first.dataset.pcFirst = '1';
+    });
+}
+
+function pcWorst(screen, host, parts) {
+  let worst = 0;
+  for (let i = 1; i <= parts; i++) {
+    pcApply(screen, host, i);
+    worst = Math.max(worst, host.scrollHeight - host.clientHeight);
+  }
+  return worst;
+}
+
+const PC_L = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>';
+const PC_R = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+function pcPager(screen) {
+  const p = el('div', 'pc-pager');
+  p.setAttribute('role', 'group');
+  p.setAttribute('aria-label', 'Parts of this screen');
+  p.innerHTML =
+    '<button class="pc-turn pc-back" type="button">' + PC_L + 'Back</button>' +
+    '<p class="pc-count"></p>' +
+    '<button class="pc-turn pc-more" type="button">More' + PC_R + '</button>';
+  p.querySelector('.pc-back').addEventListener('click', () =>
+    pcShow(screen, (pcPart[Number(screen.dataset.screen)] || 1) - 1));
+  p.querySelector('.pc-more').addEventListener('click', () =>
+    pcShow(screen, (pcPart[Number(screen.dataset.screen)] || 1) + 1));
+  screen.appendChild(p);
+  return p;
+}
+
+/* Ground labels are hidden where a plate covers them, so every time the
+   plates move the ground has to be judged again. */
+function recull(screen) {
+  screen.querySelectorAll('.ground').forEach(g => { if (g.firstElementChild) cull(g); });
+}
+
+function pcShow(screen, n) {
+  const host = pcHost(screen);
+  const atoms = [...screen.querySelectorAll('[data-pc-part]')];
+  if (!host || !atoms.length) { recull(screen); return; }
+  const parts = atoms.reduce((m, a) => Math.max(m, Number(a.dataset.pcPart)), 1);
+  n = Math.min(Math.max(n, 1), parts);
+  pcPart[Number(screen.dataset.screen)] = n;
+  pcApply(screen, host, n);
+  const pager = screen.querySelector('.pc-pager');
+  if (pager) {
+    pager.querySelector('.pc-count').textContent = 'Part ' + n + ' of ' + parts;
+    pager.querySelector('.pc-back').disabled = n === 1;
+    pager.querySelector('.pc-more').disabled = n === parts;
+  }
+  $('live').textContent = 'Screen ' + state.page + ' of ' + LAST_PAGE + ', part ' + n +
+    ' of ' + parts + '. ' + PAGE_LABELS[state.page - 1] + '.';
+  recull(screen);
+}
+
+function pcPaginate(screen) {
+  pcClear(screen);
+  const old = screen.querySelector('.pc-pager');
+  if (old) old.remove();
+  screen.classList.remove('pc-paged');
+  if (!compact()) return;
+
+  const host = pcHost(screen);
+  if (!host) return;
+  const drawn = !!pcDrawn(screen);
+  if (!drawn && host.scrollHeight <= host.clientHeight + 1) return;
+
+  screen.classList.add('pc-paged');
+  const pager = pcPager(screen);
+
+  /* Coarse parts first — whole plates and bands, which read best. Only if
+     one of them still will not fit is the content broken open further. */
+  let parts = 1;
+  for (const [f, g] of [[0.95, true], [0.95, false], [0.62, false], [0.42, false], [0.28, false]]) {
+    parts = pcPack(screen, host, host.clientHeight * f, drawn, g);
+    if (pcWorst(screen, host, parts) <= 1) break;
+  }
+
+  if (parts < 2) { pcClear(screen); pager.remove(); screen.classList.remove('pc-paged'); }
+}
+
+function pcRefresh() {
+  const cur = document.querySelector('.screen.is-current');
+  if (!cur) return;
+  const focus = document.activeElement;
+  const held = focus && cur.contains(focus) ? focus : null;
+  let keep = pcPart[state.page] || 1;
+  pcPaginate(cur);
+  /* A slider that moved itself onto another part would vanish under the
+     reader's thumb. The control being used decides which part is shown. */
+  if (held) {
+    const a = held.closest('[data-pc-part]');
+    if (a) keep = Number(a.dataset.pcPart);
+  }
+  pcShow(cur, keep);
+  if (held && document.activeElement !== held) held.focus({ preventScroll: true });
+}
+
 /* ── Render / navigation ─────────────────────────────────────────────── */
 
 const RENDERERS = { 1: render1, 2: render2, 3: render3, 4: render4, 5: render5, 6: render6,
@@ -1173,12 +1433,14 @@ function render() {
   $('householdChip').hidden = state.page < 3;
   $('householdSelect').value = state.household;
   $('live').textContent = 'Screen ' + state.page + ' of ' + LAST_PAGE + '. ' + PAGE_LABELS[state.page - 1] + '.';
+  pcRefresh();
 }
 
 function goto(n, fromHash) {
   state.page = Math.min(Math.max(n, 1), LAST_PAGE);
   if (!fromHash) location.hash = 'page/' + state.page;
   document.querySelectorAll('.layer').forEach(l => { l.scrollTop = 0; });
+  pcPart[state.page] = 1;
   render();
 }
 
@@ -1214,10 +1476,12 @@ function boot() {
   $('assignSlider').addEventListener('input', e => {
     state.assign[state.household] = Number(e.target.value);
     render5();
+    pcRefresh();
   });
   $('shockSlider').addEventListener('input', e => {
     state.shock = Number(e.target.value);
     render9();
+    pcRefresh();
   });
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

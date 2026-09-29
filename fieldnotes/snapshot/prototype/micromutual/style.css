@@ -7,6 +7,16 @@
 
    Fieldnotes micromutual stock — paper #FBFCF5, ink #293D31, Georgia
    headline against Arial eyebrow, no webfonts, no external requests.
+
+   SIZING — the thing that was broken, and how it is fixed
+   Every length in the deck is a multiple of one unit, --fs, so the whole
+   composition breathes with the window instead of holding 15px type inside a
+   720px-tall stage and slicing the overflow off. --fs is a clamp blended from
+   viewport HEIGHT and width, because the stage is height-bound: 13px at
+   1280x720, 15px from 1024px tall upward. On top of that sits --fit, a
+   per-screen multiplier that app.js lowers only when a screen's own content
+   would still leave the stage. Plates are sized by what they hold — no plate
+   is given a height it then has to clip.
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -37,8 +47,25 @@
 
   --plate-shadow: 0 0 0 1px rgba(41,61,49,.11), 0 14px 34px -20px rgba(41,61,49,.55);
 
+  /* ── the one unit ──────────────────────────────────────────────────────
+     Height-led, because the deck does not scroll: a 720px window gets 13px
+     body copy and a 1080px window gets 15px, continuously in between. */
+  --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
+  --fit: 1;                              /* app.js lowers this per screen */
+  --fs: var(--fs-base);
+
+  /* Display sizes blend width and height so a wide-but-short window does not
+     get a 38px headline it has no room for. */
+  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
+  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
+  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
+  --tilesz: clamp(16px, 0.90vw + 1.10vh, 27px);
+  --rowsz:  clamp(14px, 0.75vw + 0.85vh, 21px);
+  --namesz: clamp(17px, 0.90vw + 1.05vh, 25px);
+
   --gutter: 18px;
   --chrome-h: 76px;
+  --grid-gap: calc(var(--fs-base) * .93);
 }
 
 * { box-sizing: border-box; }
@@ -54,21 +81,31 @@ body {
   height: 100%;
   background: #E4E9D8;
   color: var(--edition-ink);
-  font: 15px/22.5px var(--sans);
+  font: var(--fs-base)/1.5 var(--sans);
   overflow: hidden;
 }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
 }
 
+/* The skip link used to be a full-size plate parked 60px above the top edge,
+   which is a line of real text sitting outside the viewport on every screen
+   at every size. It is now hidden the way hidden text should be — a 1px box —
+   and becomes a plate only once it has focus, inside the stage. */
 .skip {
-  position: fixed; left: 16px; top: -60px; z-index: 60;
+  position: fixed; left: 16px; top: 12px; z-index: 60;
+  width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   background: var(--edition-ink); color: var(--paper);
-  padding: 10px 14px; border-radius: var(--r-m); text-decoration: none;
+  border-radius: var(--r-m); text-decoration: none;
 }
-.skip:focus { top: 12px; }
+.skip:focus {
+  width: auto; height: auto; overflow: visible;
+  clip: auto; clip-path: none; padding: 10px 14px;
+}
 
 :where(a, button, select, input, [tabindex]):focus-visible {
   outline: 2px solid var(--edition-ink);
@@ -109,7 +146,8 @@ body {
   border-radius: var(--r-s);
   box-shadow: 0 0 0 1px rgba(41,61,49,.22), 0 6px 16px -10px rgba(41,61,49,.6);
   padding: 4px 9px;
-  font: 600 10px/1.5 var(--sans); letter-spacing: .13em; text-transform: uppercase;
+  font: 600 calc(var(--fs-base) * .667)/1.5 var(--sans);
+  letter-spacing: .13em; text-transform: uppercase;
   white-space: nowrap;
 }
 .pin--you  { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(41,61,49,.6); }
@@ -129,37 +167,46 @@ body {
   padding: var(--gutter) var(--gutter) var(--chrome-h);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(8, 1fr);
-  gap: 14px;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--grid-gap);
   pointer-events: none;                 /* the ground stays reachable */
-  align-items: stretch;
+  align-items: start;
+
+  /* every length below is a multiple of this */
+  --fs: calc(var(--fs-base) * var(--fit));
+  --pad-y: calc(var(--fs) * 1.07);
+  --pad-x: calc(var(--fs) * 1.20);
+  font-size: var(--fs);
 }
 .screen[hidden] { display: none; }
-.screen > * { min-width: 0; min-height: 0; }
+.screen > * { min-width: 0; }
 
 .plate, .strip > *, .tiles > *, .chipbtn, .cta, .iconbtn, .picker, input, select {
   pointer-events: auto;
 }
 
+/* A plate is as tall as what it holds. It is never handed a height it then
+   has to hide the remainder of. */
 .plate {
   background: var(--paper);
   border-radius: var(--r-l);
   box-shadow: var(--plate-shadow);
-  padding: 16px 18px;
-  overflow: auto;
-  display: flex; flex-direction: column; justify-content: center;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex; flex-direction: column; justify-content: flex-start;
 }
 .plate--wash     { background: var(--edition-wash); }
 .plate--works    { background: var(--works-fill); }
 .plate--hardship { background: var(--hardship-fill); }
 .plate--refuse   { background: var(--short-fill); }
-.plate--scroll   { justify-content: flex-start; }
+/* the one plate that is deliberately stretched: it holds a list that a reader
+   can expand, so it is the one plate allowed to become a scroller */
+.plate--fill     { align-self: stretch; overflow: auto; justify-content: flex-start; }
 
 /* ── type ───────────────────────────────────────────────────────────────── */
 
 .eyebrow {
-  margin: 0 0 9px;
-  font: 600 10px/1.4 var(--sans);
+  margin: 0 0 calc(var(--fs) * .6);
+  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft);
 }
@@ -169,71 +216,100 @@ body {
 .eyebrow--carrier { color: var(--carrier); }
 
 .display {
-  margin: 0 0 12px;
-  font: 400 clamp(26px, 2.5vw, 38px)/1.08 var(--serif);
-  letter-spacing: -1.05px;
+  margin: 0 0 calc(var(--fs) * .8);
+  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
+  letter-spacing: -.028em;
   text-wrap: balance;
 }
-.display--xl { font-size: clamp(30px, 3.4vw, 50px); letter-spacing: -1.5px; }
+.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
 .display--xl span { display: block; }
 .display:last-child { margin-bottom: 0; }
 
-.body { margin: 0 0 10px; font: 15px/22.5px var(--sans); max-width: 58ch; }
+.body { margin: 0 0 calc(var(--fs) * .67); font: var(--fs)/1.5 var(--sans); max-width: 58ch; }
 .body:last-child { margin-bottom: 0; }
-.note { margin: 0; font: 12px/17px var(--sans); color: var(--ink-soft); }
+.note { margin: 0; font: calc(var(--fs) * .8)/1.42 var(--sans); color: var(--ink-soft); }
 
 .frags { margin: 0; padding: 0; list-style: none; color: var(--ink-soft); }
 .frags li { margin: 0 0 2px; }
 .strong { color: var(--edition-ink); font-weight: 700; }
 
-.fig { margin: 0 0 8px; font: 400 clamp(26px, 2.3vw, 34px)/1 var(--serif); letter-spacing: -.85px; }
-.fig-unit { font: 13px/1 var(--sans); letter-spacing: 0; color: var(--ink-soft); margin-left: 3px; }
+.fig {
+  margin: 0 0 calc(var(--fs) * .5);
+  font: 400 calc(var(--figsz) * var(--fit))/1 var(--serif); letter-spacing: -.025em;
+}
+.fig-unit { font: calc(var(--fs) * .867)/1 var(--sans); letter-spacing: 0; color: var(--ink-soft); margin-left: 3px; }
 .fig--works   { color: var(--works); }
 .fig--short   { color: var(--short); }
 .fig--carrier { color: var(--carrier); }
 
 .figrow {
-  display: flex; gap: 4px 26px; flex-wrap: wrap; margin: 0;
-  font: 400 clamp(16px, 1.35vw, 21px)/1.3 var(--serif); letter-spacing: -.4px;
+  display: flex; gap: 4px calc(var(--fs) * 1.7); flex-wrap: wrap; margin: 0;
+  font: 400 calc(var(--rowsz) * var(--fit))/1.3 var(--serif); letter-spacing: -.02em;
 }
 
-.rows { margin: 0 0 12px; display: grid; grid-template-columns: 13ch 1fr; gap: 5px 14px; }
+.rows {
+  margin: 0 0 calc(var(--fs) * .8); display: grid;
+  grid-template-columns: 13ch 1fr; gap: calc(var(--fs) * .33) calc(var(--fs) * .93);
+}
 .rows:last-child { margin-bottom: 0; }
 .rows dt {
-  font: 600 10px/1.9 var(--sans); letter-spacing: .14em;
+  font: 600 calc(var(--fs) * .667)/1.9 var(--sans); letter-spacing: .14em;
   text-transform: uppercase; color: var(--ink-soft);
 }
-.rows dd { margin: 0; font: 15px/21px var(--sans); }
+.rows dd { margin: 0; font: var(--fs)/1.4 var(--sans); }
 
 /* ── the household mark ─────────────────────────────────────────────────── */
 
-.who { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 14px; }
+.who { display: flex; gap: calc(var(--fs) * .8); align-items: center; margin: 0 0 calc(var(--fs) * .9); }
 .mark {
-  flex: 0 0 auto; width: 46px; height: 46px; border-radius: 50%;
+  flex: 0 0 auto; width: calc(var(--fs) * 3); height: calc(var(--fs) * 3);
+  border-radius: 50%;
   display: grid; place-items: center;
   border: 1px solid var(--rule); color: var(--edition-ink);
-  font: 400 16px/1 var(--serif); letter-spacing: .5px;
+  font: 400 calc(var(--fs) * 1.07)/1 var(--serif); letter-spacing: .5px;
+}
+/* A photographed stand-in, not a real person: the file is cropped to a face,
+   the ring still carries the relationship, and the accessible name beside it
+   is the invented character. See assets/portraits/PROVENANCE.md. */
+.mark--photo {
+  display: block; object-fit: cover; object-position: 50% 50%;
+  border-width: 2px; background: var(--edition-wash);
 }
 .mark--red  { border-color: var(--short); color: var(--short); }
 .mark--grey { border-color: var(--rule); color: var(--ink-soft); }
-.who-name { margin: 0 0 2px; font: 400 clamp(20px, 1.7vw, 25px)/1.15 var(--serif); letter-spacing: -.5px; }
-.who-sub  { margin: 0; font: 13px/19px var(--sans); color: var(--ink-soft); }
+.who-name { margin: 0 0 2px; font: 400 calc(var(--namesz) * var(--fit))/1.15 var(--serif); letter-spacing: -.02em; }
+.who-sub  { margin: 0; font: calc(var(--fs) * .867)/1.42 var(--sans); color: var(--ink-soft); }
 
 /* ── the cast, and the graph legend ─────────────────────────────────────── */
 
-.cast { display: grid; gap: 11px; }
-.cast-row { display: flex; gap: 11px; align-items: center; }
-.cast .mark { width: 34px; height: 34px; font-size: 15px; }
-.cast-name { margin: 0 0 1px; font: 600 13px/18px var(--sans); }
-.cast-line { margin: 0; font: 13px/18px var(--sans); color: var(--ink-soft); }
+.cast { display: grid; gap: calc(var(--fs) * .72); }
+.cast-row { display: flex; gap: calc(var(--fs) * .72); align-items: center; }
+.cast .mark { width: calc(var(--fs) * 2.8); height: calc(var(--fs) * 2.8); font-size: var(--fs); }
+.cast-name { margin: 0 0 1px; font: 600 calc(var(--fs) * .867)/1.32 var(--sans); }
+.cast-line { margin: 0; font: calc(var(--fs) * .867)/1.32 var(--sans); color: var(--ink-soft); }
 
-.legend { display: flex; gap: 6px 20px; flex-wrap: wrap; margin: 0; font: 13px/18px var(--sans); }
-.legend span { display: inline-flex; align-items: center; gap: 8px; }
+/* four faces in street order, so the row never restages the source photograph */
+.faces { display: flex; gap: calc(var(--fs) * .55); margin: calc(var(--fs) * .3) 0 0; }
+.face { flex: 1 1 0; min-width: 0; text-align: center; }
+.face .mark {
+  width: calc(var(--fs) * 2.5); height: calc(var(--fs) * 2.5);
+  margin: 0 auto calc(var(--fs) * .2);
+}
+.face-name {
+  margin: 0; font: 600 calc(var(--fs) * .733)/1.25 var(--sans);
+  color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.legend {
+  display: flex; gap: calc(var(--fs) * .4) calc(var(--fs) * 1.3); flex-wrap: wrap; margin: 0;
+  font: calc(var(--fs) * .867)/1.35 var(--sans);
+}
+.legend span { display: inline-flex; align-items: center; gap: calc(var(--fs) * .5); }
 .legend svg { display: block; flex: 0 0 auto; }
 
 /* ── accounts ───────────────────────────────────────────────────────────── */
 
-.accounts { display: grid; gap: 9px; }
+.accounts { display: grid; gap: calc(var(--fs) * .6); }
 .account {
   border-radius: var(--r-m);
   box-shadow: inset 0 0 0 1px rgba(41,61,49,.13);
@@ -246,14 +322,14 @@ body {
 .acct-policy   { border-left-color: var(--carrier); background: var(--carrier-fill); }
 
 .acct-head {
-  width: 100%; display: flex; align-items: baseline; gap: 14px;
-  min-height: 48px; padding: 10px 14px;
+  width: 100%; display: flex; align-items: baseline; gap: calc(var(--fs) * .93);
+  min-height: 44px; padding: calc(var(--fs) * .55) calc(var(--fs) * .93);
   background: transparent; border: 0; cursor: pointer; text-align: left;
   color: inherit; font: inherit;
 }
 .acct-head:hover { background: rgba(41,61,49,.05); }
 .acct-tag {
-  font: 600 10px/1.5 var(--sans); letter-spacing: .14em;
+  font: 600 calc(var(--fs) * .667)/1.5 var(--sans); letter-spacing: .14em;
   text-transform: uppercase; flex: 0 0 auto; min-width: 17ch;
 }
 .acct-works .acct-tag    { color: var(--works); }
@@ -263,10 +339,10 @@ body {
 .chip {
   display: inline-block; margin-left: 6px; padding: 2px 6px;
   border: 1px solid var(--carrier); border-radius: var(--r-s);
-  color: var(--carrier); font: 600 9px/1.3 var(--sans); letter-spacing: .1em;
+  color: var(--carrier); font: 600 calc(var(--fs) * .6)/1.3 var(--sans); letter-spacing: .1em;
 }
-.acct-fig { font: 400 21px/1 var(--serif); letter-spacing: -.5px; flex: 1 1 auto; }
-.acct-per { font: 13px/1 var(--sans); color: var(--ink-soft); letter-spacing: 0; }
+.acct-fig { font: 400 calc(var(--fs) * 1.4)/1 var(--serif); letter-spacing: -.024em; flex: 1 1 auto; }
+.acct-per { font: calc(var(--fs) * .867)/1 var(--sans); color: var(--ink-soft); letter-spacing: 0; }
 .chev {
   flex: 0 0 auto; width: 9px; height: 9px; margin-left: auto;
   border-right: 1.5px solid var(--edition-ink);
@@ -275,26 +351,28 @@ body {
   transition: transform .15s cubic-bezier(.4,0,.2,1);
 }
 .acct-head[aria-expanded="true"] .chev { transform: rotate(-135deg) translate(-3px,-3px); }
-.acct-body { padding: 0 14px 12px; }
+.acct-body { padding: 0 calc(var(--fs) * .93) calc(var(--fs) * .8); }
 
 .stamp {
-  margin: 10px 0 0; align-self: flex-start; padding: 5px 10px;
+  margin: calc(var(--fs) * .67) 0 0; align-self: flex-start; padding: 5px 10px;
   border: 1.5px solid var(--short); color: var(--short);
   border-radius: var(--r-s);
-  font: 600 11px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+  font: 600 calc(var(--fs) * .733)/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase;
 }
 
 /* ── controls ───────────────────────────────────────────────────────────── */
 
+/* Controls keep a 44px floor whatever --fit does: a shrinking composition may
+   not shrink a tap target. */
 .strip { display: flex; gap: 8px; align-items: stretch; }
 .strip > * { flex: 1 1 0; min-width: 0; }
 
 .chipbtn {
-  min-height: 44px; padding: 7px 14px;
+  min-height: 44px; padding: 7px calc(var(--fs) * .93);
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
-  font: 15px/1.3 var(--sans); cursor: pointer; text-align: left;
+  font: var(--fs)/1.3 var(--sans); cursor: pointer; text-align: left;
 }
 .chipbtn:hover { background: var(--edition-wash); }
 .chipbtn.is-on, .chipbtn[aria-pressed="true"] {
@@ -302,18 +380,18 @@ body {
   font-weight: 600;
 }
 .chipbtn .s-when {
-  display: block; font: 600 10px/1.5 var(--sans);
+  display: block; font: 600 calc(var(--fs) * .667)/1.5 var(--sans);
   letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
 }
 .chipbtn[aria-pressed="true"] .s-when { color: var(--wash-2); }
-.chipbtn .s-what { display: block; font: 15px/20px var(--sans); }
+.chipbtn .s-what { display: block; font: var(--fs)/1.33 var(--sans); }
 
-.slabel { display: block; margin: 0 0 6px; font: 15px/22.5px var(--sans); }
-.slabel output { font: 400 23px/1 var(--serif); letter-spacing: -.5px; vertical-align: -2px; }
+.slabel { display: block; margin: 0 0 calc(var(--fs) * .4); font: var(--fs)/1.5 var(--sans); }
+.slabel output { font: 400 calc(var(--fs) * 1.53)/1 var(--serif); letter-spacing: -.022em; vertical-align: -2px; }
 
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
-  width: 100%; height: 40px; background: transparent; cursor: pointer; margin: 0;
+  width: 100%; height: 36px; background: transparent; cursor: pointer; margin: 0;
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 6px; background: var(--wash-2); border-radius: 3px; border: 1px solid var(--rule);
@@ -335,15 +413,15 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── tiles, cards, bars ─────────────────────────────────────────────────── */
 
-.tiles { display: grid; gap: 9px; align-content: stretch; }
+.tiles { display: grid; gap: calc(var(--fs) * .6); align-content: start; }
 .tile {
-  padding: 10px 13px; border-radius: var(--r-m);
+  padding: calc(var(--fs) * .67) calc(var(--fs) * .87); border-radius: var(--r-m);
   background: var(--paper); box-shadow: var(--plate-shadow);
   display: flex; flex-direction: column; justify-content: center;
 }
-.tile .eyebrow { margin-bottom: 4px; }
-.tile-fig { margin: 0; font: 400 clamp(20px, 1.85vw, 27px)/1.05 var(--serif); letter-spacing: -.7px; }
-.tile-note { margin: 3px 0 0; font: 13px/17px var(--sans); color: var(--ink-soft); }
+.tile .eyebrow { margin-bottom: calc(var(--fs) * .27); }
+.tile-fig { margin: 0; font: 400 calc(var(--tilesz) * var(--fit))/1.05 var(--serif); letter-spacing: -.026em; }
+.tile-note { margin: calc(var(--fs) * .2) 0 0; font: calc(var(--fs) * .867)/1.3 var(--sans); color: var(--ink-soft); }
 .tile--enhanced  { background: var(--works-fill); }
 .tile--enhanced  .tile-fig { color: var(--works); }
 .tile--essential { background: var(--hardship-fill); }
@@ -353,27 +431,31 @@ input[type="range"]::-moz-range-thumb {
 .tile--rule      { background: var(--edition-wash); }
 .tile--rule .tile-note { color: var(--edition-ink); }
 
-.cards { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); align-items: start; }
-.cards--3 { grid-template-columns: repeat(3, 1fr); }
+.cards {
+  display: grid; gap: calc(var(--fs) * .8);
+  grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start;
+}
+.cards--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .card { border-top: 3px solid var(--edition-ink); justify-content: flex-start; }
-.bnum { margin: 0 0 4px; font: 400 25px/1 var(--serif); letter-spacing: -.6px; color: var(--works); }
+.bnum { margin: 0 0 4px; font: 400 calc(var(--fs) * 1.67)/1 var(--serif); letter-spacing: -.024em; color: var(--works); }
 
-.threeup { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); }
+.threeup { display: grid; gap: calc(var(--fs) * 1.07); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .unsolved {
   margin: 0; padding: 0; list-style: none;
-  display: grid; gap: 12px;
+  display: grid; gap: calc(var(--fs) * .8);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: auto auto;
-  align-content: space-between;
+  align-content: start;
 }
 .unsolved > li { border-left: 3px solid var(--short); background: var(--short-fill); }
 
-.index { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px 20px;
-         grid-template-columns: repeat(2, 1fr); }
+.index {
+  margin: 0; padding: 0; list-style: none; display: grid;
+  gap: 1px calc(var(--fs) * 1.3); grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .index button {
-  background: transparent; border: 0; padding: 6px 0; cursor: pointer;
-  color: var(--edition-ink); font: 15px/21px var(--sans);
+  background: transparent; border: 0; padding: calc(var(--fs) * .27) 0; cursor: pointer;
+  color: var(--edition-ink); font: var(--fs)/1.4 var(--sans);
   text-align: left; width: 100%; text-decoration: underline;
   text-decoration-color: var(--rule); text-underline-offset: 3px;
 }
@@ -382,7 +464,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* loss bands */
 .band-bar {
-  display: flex; height: 32px; border-radius: var(--r-s); overflow: hidden;
+  display: flex; height: calc(var(--fs) * 2); border-radius: var(--r-s); overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(41,61,49,.22);
 }
 .band-seg { height: 100%; }
@@ -390,31 +472,34 @@ input[type="range"]::-moz-range-thumb {
 .seg-pool { background: var(--hardship); }
 .seg-rest { background: repeating-linear-gradient(45deg, var(--short) 0 5px, #C24C38 5px 10px); }
 .band-keys {
-  display: flex; gap: 5px 20px; flex-wrap: wrap; margin: 8px 0 12px;
-  font: 13px/18px var(--sans);
+  display: flex; gap: calc(var(--fs) * .33) calc(var(--fs) * 1.3); flex-wrap: wrap;
+  margin: calc(var(--fs) * .53) 0 calc(var(--fs) * .8);
+  font: calc(var(--fs) * .867)/1.35 var(--sans);
 }
-.band-keys span { display: inline-flex; align-items: center; gap: 7px; }
+.band-keys span { display: inline-flex; align-items: center; gap: calc(var(--fs) * .47); }
 .band-keys i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; flex: 0 0 auto; }
 .k-you  { background: var(--edition-ink); }
 .k-pool { background: var(--hardship); }
 .k-rest { background: var(--short); }
-.band-keys b { font: 600 13px/18px var(--sans); font-variant-numeric: tabular-nums; }
+.band-keys b { font: 600 calc(var(--fs) * .867)/1.35 var(--sans); font-variant-numeric: tabular-nums; }
 
 /* capacity stack */
 .stack-bar {
-  position: relative; height: 56px; border-radius: var(--r-s);
+  position: relative; height: calc(var(--fs) * 3.2); border-radius: var(--r-s);
   background: var(--wash-2); box-shadow: inset 0 0 0 1px rgba(41,61,49,.22);
   overflow: hidden; display: flex; margin: 4px 0 0;
 }
 .stack-seg {
   height: 100%; display: flex; align-items: center; padding: 0 10px;
-  font: 600 12px/1.3 var(--sans); color: var(--paper); overflow: hidden; white-space: nowrap;
+  font: 600 calc(var(--fs) * .8)/1.3 var(--sans); color: var(--paper);
+  overflow: hidden; white-space: nowrap;
 }
 .st-pool     { background: var(--hardship); }
 .st-contract { background: var(--carrier); }
 .st-gap      { background: repeating-linear-gradient(45deg, var(--short) 0 6px, #C24C38 6px 12px); }
 .stack-caption {
-  margin: 7px 0 8px; font: 13px/18px var(--sans); color: var(--edition-ink);
+  margin: calc(var(--fs) * .47) 0 calc(var(--fs) * .53);
+  font: calc(var(--fs) * .867)/1.35 var(--sans); color: var(--edition-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -467,13 +552,25 @@ input[type="range"]::-moz-range-thumb {
 .cta:hover { background: #1F2F25; border-color: #1F2F25; }
 .cta[disabled] { opacity: .45; cursor: default; }
 
-/* the ground window is a desktop no-op; it opens a hole in the mobile stack */
+/* The ground window is a desktop no-op. On a phone it is the hole the street
+   shows through, and it takes whatever height the plates have not claimed —
+   which is how the stack stays inside one screenful instead of running off
+   the bottom of it. */
 .gw { display: none; }
+
+/* ── short windows ──────────────────────────────────────────────────────── */
+
+/* Below about 780px of stage the gutter and the chrome are the cheapest
+   height to give back, before --fit has to touch the type at all. */
+@media (min-width: 900px) and (max-height: 820px) {
+  :root { --gutter: 13px; --chrome-h: 66px; }
+  .chrome { padding: 0 var(--gutter) 10px; }
+}
 
 /* ── narrow ─────────────────────────────────────────────────────────────── */
 
 @media (max-width: 899px) {
-  :root { --gutter: 14px; --chrome-h: 72px; }
+  :root { --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px; }
 
   .world { inset: -5% -9%; }
 
@@ -482,35 +579,63 @@ input[type="range"]::-moz-range-thumb {
      an unknown background. The ground still runs behind the bar to the edge. */
   .deck { inset: 0 0 var(--chrome-h) 0; }
 
+  /* One screenful, top to bottom. Plates take the height they need, the
+     street window takes what is left, and app.js lowers --fit if the sum
+     would still be more than the phone has. */
   .screen {
-    display: block;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: var(--gutter) var(--gutter) 14px;
+    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: var(--gutter) var(--gutter) 8px;
   }
-  .screen > * { grid-area: auto !important; margin: 0 0 12px; }
-  .screen > *:last-child { margin-bottom: 0; }
-  .plate { overflow: visible; }
+  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
 
-  /* the hole the street shows through */
-  .gw { display: block; height: 50vh; min-height: 300px; }
+  /* No plate holds its own scroller on a phone: a scroller near the top edge
+     hides its first lines above the window, which is the defect this whole
+     pass is about. The screen is the only thing that ever gives, and --fit
+     keeps it from having to. */
+  .plate--fill { align-self: auto; overflow: visible; }
 
-  .cards, .cards--3, .threeup, .unsolved, .index { grid-template-columns: 1fr; }
-  .unsolved { grid-template-rows: none; }
+  .gw { display: block; flex: 1 1 0; min-height: 0; }
+
+  /* On the two screens where the drawing IS the argument — the machine's
+     route across all four parcels, and the parcels you tap to withhold
+     consent — the window is not allowed to be squeezed to a sliver. It keeps
+     a floor and --fit pays for it out of the type. */
+  .gw--map { flex: 1 0 auto; min-height: min(20vh, 160px); }
+
+  .cards, .cards--3, .threeup, .unsolved, .index, .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .strip { flex-wrap: wrap; }
   .strip > * { flex: 1 1 46%; }
   .rows { grid-template-columns: 1fr; gap: 1px; }
-  .rows dt { margin-top: 8px; }
-  .acct-head { flex-wrap: wrap; gap: 3px 12px; }
-  .acct-tag { min-width: 0; width: 100%; }
+  .rows dt { margin-top: calc(var(--fs) * .4); }
+  /* The tag used to be forced onto its own line, which cost four extra lines
+     on the one screen that has the least room to spare. It wraps only when
+     the figure beside it genuinely will not fit. */
+  .acct-head { flex-wrap: wrap; gap: 2px 10px; align-items: baseline; }
+  .acct-tag { min-width: 0; flex: 0 1 auto; }
+  .acct-fig { flex: 1 0 auto; text-align: right; }
+  .faces { gap: calc(var(--fs) * .4); }
 
-  .chrome { padding: 0 var(--gutter) 12px; align-items: center; }
+  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
   .chrome-r { width: 100%; }
   .picker { flex: 1 1 auto; min-width: 0; }
   .picker select { width: 100%; max-width: none; }
   .cta { padding: 0 14px; font-size: 14px; }
   .cta span:first-child { display: none; }
-  .pin { font-size: 9px; padding: 3px 7px; }
+}
+
+/* On a phone shorter than about 740px there is no height to give the window
+   a floor out of; the plates come first and the street takes what is left. */
+@media (max-width: 899px) and (max-height: 739px) {
+  .gw--map { flex: 1 1 0; min-height: 0; }
+}
+
+/* Below about 340px two columns stop being columns. Above it they stay,
+   because one column is taller and height is the scarce thing here. */
+@media (max-width: 340px) {
+  .cards, .cards--3, .threeup, .unsolved, .index { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

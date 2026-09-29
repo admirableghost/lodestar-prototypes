@@ -726,6 +726,8 @@
       '<p class="figrow">' + st.items.map(function (x) { return "<span>" + x + "</span>"; }).join("") + "</p>" +
       '<p class="tile-note">Works account, year to date: ' + money(st.spend) + " of " +
       money(WORKS_BUDGET) + ".</p>";
+
+    refit();
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -785,6 +787,8 @@
       '<p class="tile-note">Enhanced needs 90% of gaps, 90% of properties, and no two ' +
       "refusals side by side.</p></div>"
     ].join("");
+
+    refit();
   }
 
   svg.addEventListener("click", function (e) {
@@ -863,6 +867,8 @@
         return '<span><i class="' + x.c + '"' + sty + "></i>" + x.l + " <b>" + money(x.v) + "</b>" +
           (x.note ? " — " + x.note : "") + "</span>";
       }).join("") + "</p>";
+
+    refit();
   }
   loss.addEventListener("input", drawLoss);
   drawLoss();
@@ -925,6 +931,7 @@
     ].join("");
 
     if (redrawPlan !== false && current === 7) { drawFor(7); }
+    refit();
   }
   claimants.addEventListener("input", function () { drawCorr(true); });
   drawCorr(false);
@@ -940,6 +947,7 @@
       document.getElementById("corr-scattered").hidden = ev;
       document.getElementById("corr-event").hidden = !ev;
       corrRead.hidden = ev;
+      refit();
     });
   });
 
@@ -947,28 +955,136 @@
      ACCOUNTS
      ══════════════════════════════════════════════════════════════════════ */
 
-  Array.prototype.forEach.call(document.querySelectorAll(".acct-head"), function (h) {
+  var acctHeads = Array.prototype.slice.call(document.querySelectorAll(".acct-head"));
+  function setAcct(h, open) {
+    h.setAttribute("aria-expanded", open ? "true" : "false");
+    document.getElementById(h.getAttribute("aria-controls")).hidden = !open;
+  }
+  acctHeads.forEach(function (h) {
     h.addEventListener("click", function () {
       var open = h.getAttribute("aria-expanded") === "true";
-      h.setAttribute("aria-expanded", open ? "false" : "true");
-      document.getElementById(h.getAttribute("aria-controls")).hidden = open;
+      setAcct(h, !open);
+      /* On a phone the four accounts are one at a time. Four open at once is
+         more than a 360px-tall-ish stack can hold, and the alternative — the
+         last one pushed off the bottom, or nine-pixel type — is worse than
+         closing the one you were not reading. On a desktop there is room for
+         all four, so they stay independent. */
+      if (!open && narrow) {
+        acctHeads.forEach(function (o) { if (o !== h) { setAcct(o, false); } });
+      }
+      refit();
     });
   });
 
-  /* A plate is sized by what it holds, not by the cell it was placed in —
-     otherwise a three-line plate stretches to 400px and reopens exactly the
-     dead-space problem the full-bleed layout was meant to close. Anything
-     anchored to the last row hangs from the bottom; everything else sits at
-     the top of its cell, and the street fills the rest. */
-  Array.prototype.forEach.call(
-    document.querySelectorAll(".screen > [style*='grid-area']"), function (el) {
-      if (el.classList.contains("plate--fill") || el.classList.contains("tiles") ||
-          el.classList.contains("strip")) { return; }
-      var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
-      if (!m) { return; }
-      el.style.alignSelf = (+m[2] === 9 && +m[1] > 1) ? "end" : "start";
-      el.style.maxHeight = "100%";
+  /* ══════════════════════════════════════════════════════════════════════
+     FITTING A SCREEN TO THE STAGE
+
+     A plate is sized by what it holds, not by the cell it was placed in.
+     Anything anchored to the last row hangs from the bottom; everything else
+     sits at the top of its cell, and the street fills the rest.
+
+     What used to be here capped each plate at the height of its grid cell
+     (`maxHeight = "100%"`) and let `overflow` deal with the remainder. On a
+     short window that quietly sliced the first and last line off a
+     vertically-centred plate — the eyebrow off the top, the last word off the
+     bottom — with no way to scroll to either. A plate may no longer be given
+     a height it has to hide the rest of, so instead the COMPOSITION gives
+     way: `--fit` scales the whole screen's type and spacing until everything
+     it holds is inside the stage. It is 1 on any window with room, and the
+     type scale itself already moves with viewport height, so it is rarely
+     asked for much.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var FIT_FLOOR = 0.74;
+
+  function anchorPlates() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll(".screen > [style*='grid-area']"), function (el) {
+        if (el.classList.contains("plate--fill") || el.classList.contains("tiles")) { return; }
+        var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
+        if (!m) { return; }
+        el.style.alignSelf = (+m[2] === 9 && +m[1] > 1) ? "end" : "start";
+      });
+  }
+  anchorPlates();
+
+  /* the rectangle a screen's contents may occupy */
+  function stageBox(sc) {
+    var r = sc.getBoundingClientRect(), cs = getComputedStyle(sc);
+    return {
+      top: r.top + parseFloat(cs.paddingTop), bottom: r.bottom - parseFloat(cs.paddingBottom),
+      left: r.left + parseFloat(cs.paddingLeft), right: r.right - parseFloat(cs.paddingRight)
+    };
+  }
+
+  /* True when anything on this screen is outside the stage, cut by a box it
+     cannot be scrolled inside, or sitting on top of a neighbour. */
+  function spills(sc) {
+    if (narrow) { return sc.scrollHeight > sc.clientHeight + 1; }
+
+    var box = stageBox(sc), rects = [], bad = false, i, j;
+    Array.prototype.forEach.call(sc.children, function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) { return; }
+      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 ||
+          r.left < box.left - 1 || r.right > box.right + 1) { bad = true; }
+      rects.push(r);
     });
+    /* two opaque plates over one another is the same defect as a cut line:
+       one of them is unreadable */
+    for (i = 0; i < rects.length && !bad; i++) {
+      for (j = i + 1; j < rects.length; j++) {
+        if (rects[i].left < rects[j].right - 1 && rects[i].right > rects[j].left + 1 &&
+            rects[i].top < rects[j].bottom - 1 && rects[i].bottom > rects[j].top + 1) {
+          bad = true; break;
+        }
+      }
+    }
+    /* and anything inside a plate that its own box is hiding. A 1px box is
+       the visually-hidden idiom — text meant only for a screen reader — and
+       is not a defect; neither is a decorative bar with no words in it. */
+    if (!bad) {
+      Array.prototype.forEach.call(sc.querySelectorAll("*"), function (el) {
+        if (bad) { return; }
+        if (el.clientWidth <= 1 || el.clientHeight <= 1) { return; }
+        if (!el.textContent || !el.textContent.trim()) { return; }
+        var cs = getComputedStyle(el);
+        if (cs.overflowY !== "visible" && el.scrollHeight > el.clientHeight + 2) { bad = true; }
+        if (cs.overflowX !== "visible" && el.scrollWidth > el.clientWidth + 2) { bad = true; }
+      });
+    }
+    return bad;
+  }
+
+  function fitScreen(sc) {
+    if (!sc || sc.hidden) { return; }
+    sc.style.setProperty("--fit", "1");
+    if (!spills(sc)) { return; }
+
+    var lo = FIT_FLOOR, hi = 1, best = FIT_FLOOR, mid, i;
+    for (i = 0; i < 7; i++) {
+      mid = (lo + hi) / 2;
+      sc.style.setProperty("--fit", mid.toFixed(4));
+      if (spills(sc)) { hi = mid; } else { lo = mid; best = mid; }
+    }
+    sc.style.setProperty("--fit", best.toFixed(4));
+    /* Reflow is not perfectly monotonic — one word rewrapping can undo a
+       step — so verify, and step down if the search landed on a bad value. */
+    for (i = 0; i < 8 && best > FIT_FLOOR && spills(sc); i++) {
+      best = Math.max(FIT_FLOOR, best - 0.025);
+      sc.style.setProperty("--fit", best.toFixed(4));
+    }
+  }
+
+  /* Anything that rewrites a screen's contents has to re-fit it. */
+  var fitPending = null;
+  function refit() {
+    cancelAnimationFrame(fitPending);
+    fitPending = requestAnimationFrame(function () {
+      fitScreen(screens && screens[current - 1]);
+      placePins();
+    });
+  }
 
   /* ══════════════════════════════════════════════════════════════════════
      NAVIGATION
@@ -1016,6 +1132,9 @@
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
     drawFor(n);
+    /* fit before the camera moves: on a phone the camera aims at whatever
+       height the plates have left over, so it needs the settled layout */
+    fitScreen(sc);
     moveCamera(sc.dataset.cam);
     buildPins(n);
 
@@ -1055,7 +1174,17 @@
     relayout = setTimeout(function () {
       var was = narrow;
       narrow = isNarrow();
-      if (was !== narrow) { drawFor(current); moveCamera(screens[current - 1].dataset.cam, true); }
+      /* The window is the stage. Every screen is re-fitted to the new one,
+         not just the visible one, so a resize can never leave a hidden
+         screen holding a scale that was right for a different window. */
+      screens.forEach(function (s) {
+        var h = s.hidden;
+        if (h) { s.hidden = false; }
+        fitScreen(s);
+        if (h) { s.hidden = true; }
+      });
+      if (was !== narrow) { drawFor(current); }
+      moveCamera(screens[current - 1].dataset.cam, true);
       placePins();
     }, 140);
   });

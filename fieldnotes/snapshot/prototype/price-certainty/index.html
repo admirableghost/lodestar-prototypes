@@ -21,12 +21,14 @@
   <div class="ground" id="g1"></div>
   <div class="layer">
     <div class="plate at-tl w-lead">
-      <p class="eyebrow">Price Certainty &middot; Edition 06 &middot; Interactive</p>
-      <h2 id="h1" style="font-size:50px;line-height:50px;letter-spacing:-.035em;margin:12px 0 14px">
+      <p class="eyebrow" data-pc-group="cover">Price Certainty &middot; Edition 06 &middot; Interactive</p>
+      <h2 id="h1" data-pc-group="cover" style="font-size:50px;line-height:50px;letter-spacing:-.035em;margin:12px 0 14px">
         <span style="display:block">A steadier cost,</span><span style="display:block">ten years on.</span>
       </h2>
-      <p class="body-copy">In 2036 nobody reads a tariff: a household sets its comfort bounds once, an agent trades the home's flexibility all year, and a carrier turns the proceeds into one annual number.</p>
-      <p class="framing">A projection of 2036 with invented figures, not a forecast. Rosa, Marion and Yusuf are invented households, and no real utility, retailer, insurer or reinsurer shown here is a participant.</p>
+      <p class="body-copy" data-pc-group="cover">In 2036 nobody reads a tariff: a household sets its comfort bounds once, an agent trades the home's flexibility all year, and a carrier turns the proceeds into one annual number.</p>
+      <!-- The framing block is the honesty disclosure: on a phone it stays with
+           the headline rather than waiting behind a page turn. -->
+      <p class="framing" data-pc-group="cover">A projection of 2036 with invented figures, not a forecast. Rosa, Marion and Yusuf are invented households, and no real utility, retailer, insurer or reinsurer shown here is a participant.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="pill pill-ink" data-goto="2">Follow Rosa <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <button class="pill pill-quiet" data-goto="9">Straight to the risk chain</button>
@@ -46,6 +48,7 @@
   <div class="layer">
     <div class="plate at-tl w-lead cap-h">
       <p class="eyebrow">01 / The household we follow</p>
+      <div class="person-row" id="s2Person"></div>
       <h2 id="h2">Rosa can hand over a water heater.</h2>
       <p class="body-copy">She rents Flat 3B in a 1962 block, works nights at a care home and is paid fortnightly. The storage heaters are hard-wired and the landlord has twice said no to a heat pump, so an immersion tank and one socket are the whole list of things she is allowed to give.</p>
       <p class="eyebrow plate-rule">Bounds she set, once</p>
@@ -71,6 +74,7 @@
         <p class="eyebrow">02 / Who is in the room</p>
         <h2 id="h3" style="font-size:31px;line-height:34px;margin:6px 0 8px">Flexibility is the new capital.</h2>
         <p class="body-copy" style="max-width:66em;margin:0">Everything a carrier can sell on a household's behalf depends on hardware that household can host, so the homes most exposed to a volatile market have the least to trade. Rosa carries this story; choose another and every screen after this recalculates.</p>
+        <p class="caption" style="margin-top:6px">Generated portraits: the households are invented and no real person is shown.</p>
       </div>
       <div class="band" style="padding:0">
         <div class="ccols" id="s3Cols" role="radiogroup" aria-label="Choose a household"></div>
@@ -104,6 +108,7 @@
   <div class="layer">
     <div class="plate at-tl w-lead cap-h">
       <p class="eyebrow">04 / The trade</p>
+      <div class="person-row sm" id="s5Person"></div>
       <h2 id="h5">What the certainty costs you.</h2>
       <p class="body-copy">Hand over more of the home and the annual net cost falls &mdash; not because the risk shrank, but because the carrier can sell more of what you stopped controlling.</p>
       <div class="slider-block">
@@ -156,9 +161,11 @@
           <div class="scenario-set" id="scenarioSet7"></div>
         </div>
       </div>
-      <div class="band tint"><div class="strip" id="s7a"></div></div>
-      <div class="band"><div class="strip" id="s7b"></div></div>
-      <div class="band tint pad-b"><div class="strip" id="s7c"></div></div>
+      <!-- The three arrangements are one comparison: data-pc-group keeps them
+           on the same phone part for as long as all three fit. -->
+      <div class="band tint" data-pc-group="arrangements"><div class="strip" id="s7a"></div></div>
+      <div class="band" data-pc-group="arrangements"><div class="strip" id="s7b"></div></div>
+      <div class="band tint pad-b" data-pc-group="arrangements"><div class="strip" id="s7c"></div></div>
     </div>
   </div>
   <div class="layer"></div>

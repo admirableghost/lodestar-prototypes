@@ -70,9 +70,73 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     var t = e.target;
     if (t && (t.tagName === "SELECT" || t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    // a focused plate that is holding something back owns the arrow keys, so a
+    // keyboard reader can reach the rest of it instead of leaving the screen
+    if (t && t.closest && t.closest(".can-scroll")) return;
     if (e.key === "ArrowRight") { show(current + 1); }
     else if (e.key === "ArrowLeft") { show(current - 1); }
   });
+
+  /* ═══════════════ A plate that cannot show all of itself says so ═══════════
+
+     Every composition here is built to fit outright at the sizes this is read
+     at. Outside that range a plate scrolls rather than cut a sentence off —
+     and then it has to be obvious that it did: a permanent scrollbar, a fade
+     at the foot, and a tab stop so the keyboard can reach the rest. */
+  function markScrollables() {
+    $$(".plate-tall").forEach(function (p) {
+      if (!p.lastElementChild || !p.lastElementChild.classList.contains("more-hint")) {
+        var h = el("span", "more-hint");
+        h.setAttribute("aria-hidden", "true");
+        p.appendChild(h);
+      }
+      // measure with the hint collapsed, so the hint can never cause itself
+      p.classList.remove("can-scroll");
+      // a plate on a hidden screen has no height and would read as overflowing
+      if (!p.clientHeight) { p.removeAttribute("tabindex"); return; }
+      var can = p.scrollHeight - p.clientHeight > 2;
+      p.classList.toggle("can-scroll", can);
+      if (can) p.setAttribute("tabindex", "0");
+      else p.removeAttribute("tabindex");
+    });
+
+    notchUnderBack();
+
+    /* The question wall stacks and scrolls on a screen that is narrow or short
+       but not a phone — 1280×600, say — and it has to announce that too. */
+    var qw = $("#boundaries");
+    if (qw && qw.clientHeight) {
+      qw.classList.remove("can-scroll");
+      var qcan = qw.scrollHeight - qw.clientHeight > 2;
+      qw.classList.toggle("can-scroll", qcan);
+      if (qcan) qw.setAttribute("tabindex", "0");
+      else qw.removeAttribute("tabindex");
+    }
+  }
+
+  /* On a phone a plate reaches the top-left corner only when its content is
+     tall enough to fill the column, and then the floating back control would
+     sit on its first line. Rather than spend 44px of every screen's height on
+     the one case, the plate that actually reaches the control is measured and
+     notched. */
+  function notchUnderBack() {
+    var back = document.querySelector(".chrome.back");
+    if (!back) return;
+    var b = back.getBoundingClientRect();
+    $$(".panel > .plate").forEach(function (p) {
+      if (!p.clientHeight) { p.classList.remove("under-back"); return; }
+      var r = p.getBoundingClientRect();
+      /* measure where the plate's TEXT starts, not its border: a plate that
+         already carries a notch of its own (the day's record header) must not
+         be given a second one */
+      var padL = parseFloat(getComputedStyle(p).paddingLeft) || 0;
+      var textL = r.left + padL;
+      var hits = r.top < b.bottom + 6 && textL < b.right + 8 && r.bottom > b.top;
+      p.classList.toggle("under-back", hits);
+      if (hits) p.style.setProperty("--notch", Math.round(b.right + 10 - textL) + "px");
+      else p.style.removeProperty("--notch");
+    });
+  }
 
   /* ═══════════════ The place: a drawn site plan ═══════════════ */
 
@@ -356,16 +420,21 @@
       }
     }
 
-    /* The wall is sized to the viewport, not the other way round: the row
-       height is fixed and the count is measured, so the log always reaches the
-       foot of the screen and the last row is cut by the edge, not by a box. */
+    /* The wall is sized to the viewport, not the other way round. The row
+       count is chosen so the rows divide the ground EXACTLY: the log still
+       reaches the foot of the screen, but the bottom row is a whole row, not a
+       half-row sliced by the viewport edge. (It used to run one row long on
+       purpose, which read as a bleed and measured as cut-off text.) */
     function measure() {
       var ground = list.parentElement;
       var h = ground.clientHeight;
       if (!h) return;
-      var rowH = window.innerWidth <= 760 ? 44 : 48;
+      var target = window.innerWidth <= 760 ? 44 : 48;
+      var rows = Math.max(4, Math.round(h / target));
+      // floor to 1/100 px so rounding can never push the last row past the foot
+      var rowH = Math.floor((h / rows) * 100) / 100;
       list.style.setProperty("--row", rowH + "px");
-      capacity = Math.ceil(h / rowH) + 1;
+      capacity = rows;
       while (list.children.length > capacity) list.removeChild(list.lastChild);
       while (list.children.length < capacity) {
         var guard = 0, r = null;
@@ -499,6 +568,7 @@
       panel.appendChild(v);
       panel.appendChild(el("p", "prov-note",
         "The registry is invented; whether such a log is evidence is open question 01."));
+      markScrollables();
     }
 
     render();
@@ -654,6 +724,9 @@
       a2.appendChild(el("span", "eyebrow", "Acts matched to a clause"));
       exp.appendChild(a2);
       detail.appendChild(exp);
+      // a newly chosen act starts at its own top, not where the last one ended
+      detail.scrollTop = 0;
+      markScrollables();
     }
 
     $("#actPrev").addEventListener("click", function () { if (sel > 0) { sel--; render(); } });
@@ -748,8 +821,15 @@
 
       /* Before the first layer is asked, the four of them divide the whole
          stage equally: the screen is the order a claim travels, floor to
-         ceiling, with nothing yet settled and no blank left over. */
-      var pendingWeight = step === 0 ? 1 : 0.075;
+         ceiling, with nothing yet settled and no blank left over.
+
+         Once stepping starts an unasked layer is a placeholder rather than a
+         quantity, so its weight is arbitrary — but it has to be large enough to
+         hold its own card. On a phone the card's label wraps to two lines, so
+         the placeholder is given more of the wall there; the settled layers
+         keep their true proportions against each other either way, and by the
+         last step there are no placeholders left at all. */
+      var pendingWeight = step === 0 ? 1 : (window.innerWidth <= 760 ? 0.17 : 0.075);
 
       wall.innerHTML = "";
       for (i = 0; i < 4; i++) {
@@ -780,6 +860,7 @@
       $("#fallStep").disabled = step >= 4;
       $("#fallStep").textContent = step === 0 ? "First layer" : "Next layer";
       $("#fallAll").textContent = step >= 4 ? "Start over" : "Settle it";
+      markScrollables();
     }
 
     function layoutBands() {
@@ -975,10 +1056,14 @@
         wall.appendChild(b);
       });
 
+      /* The tag carries the indemnity's own figure, not just its share, because
+         the stripe itself can be thinner than the word "$0.35" — at which point
+         the stripe's label comes out and this is the only place it is stated. */
       var pct = Math.round(ind / gross * 100);
       var tag = el("div", "vband-tag");
       tag.appendChild(el("p", "eyebrow", "Expected indemnity"));
-      tag.appendChild(el("span", "fig-t", pct + "% of the premium"));
+      tag.appendChild(el("span", "fig-t", "$" + ind.toFixed(2) + " a year"));
+      tag.appendChild(el("p", "vband-tag-sub", pct + "% of the premium"));
       wall.appendChild(tag);
 
       $("#qWhy").textContent = "Indemnity is " + pct
@@ -986,6 +1071,7 @@
         + "; the rest buys the record and the pursuit through three layers.";
 
       fit();
+      markScrollables();
     }
 
     /* The tag is pinned over the middle of the indemnity stripe and clamped
@@ -995,8 +1081,17 @@
       var tag = $(".vband-tag", wall);
       if (!bands.length || !tag) return;
       var W = wall.clientWidth || window.innerWidth;
+      /* On a phone the bands lie on their side, so a band's extent is its
+         height and a full-width row always has room for its own label. */
+      var vertical = getComputedStyle(wall).flexDirection === "column";
+      var extent = vertical ? (wall.clientHeight || window.innerHeight) : W;
       bands.forEach(function (b) {
-        b.classList.toggle("narrow", Number(b.dataset.frac) * W < 118);
+        var px = Number(b.dataset.frac) * extent;
+        b.classList.toggle("narrow", !vertical && px < 118);
+        /* Under a mandate that dispatches no machines the indemnity falls to a
+           fifteen-pixel band, which cannot hold "$0.35" without cutting it.
+           The label steps out and the opaque tag above states the figure. */
+        b.classList.toggle("hair", px < (vertical ? 30 : 62));
       });
       var last = bands[bands.length - 1];
       var centre = last.offsetLeft + last.offsetWidth / 2;
@@ -1031,10 +1126,14 @@
     }
   ];
 
+  var qpaint = function () {};
+
   (function boundaries() {
     var host = $("#boundaries");
+    var items = [];
     BOUNDS.forEach(function (b, i) {
       var li = el("li");
+      items.push(li);
 
       var top = el("div", "q-top");
       top.appendChild(el("span", "n", "0" + (i + 1)));
@@ -1057,6 +1156,43 @@
 
       host.appendChild(li);
     });
+
+    /* On a phone three full-height columns do not fit, and neither of the usual
+       escapes is acceptable: tightening the type until all three fit spends the
+       reading load, and letting the wall scroll throws away the thing that
+       makes a wall read as a wall. So the wall paginates — one question at a
+       time, whole, at a size worth reading, with the pager in the head. On a
+       wide screen the pager is hidden and all three stand side by side. */
+    var pager = el("div", "qpager");
+    var pPrev = el("button", "qp-btn", "‹");
+    pPrev.type = "button";
+    pPrev.setAttribute("aria-label", "Previous question");
+    var pLabel = el("span", "qp-label");
+    var pNext = el("button", "qp-btn", "›");
+    pNext.type = "button";
+    pNext.setAttribute("aria-label", "Next question");
+    pager.appendChild(pPrev);
+    pager.appendChild(pLabel);
+    pager.appendChild(pNext);
+    $(".q-head").appendChild(pager);
+
+    var phone = window.matchMedia("(max-width:760px)");
+    var qi = 0;
+
+    qpaint = function () {
+      var paged = phone.matches;
+      if (!paged) qi = 0;
+      pager.hidden = !paged;
+      items.forEach(function (li, i) { li.hidden = paged && i !== qi; });
+      pLabel.textContent = "Question " + (qi + 1) + " of " + items.length;
+      pPrev.disabled = qi === 0;
+      pNext.disabled = qi === items.length - 1;
+    };
+
+    pPrev.addEventListener("click", function () { if (qi > 0) { qi--; qpaint(); } });
+    pNext.addEventListener("click", function () { if (qi < items.length - 1) { qi++; qpaint(); } });
+    if (phone.addEventListener) phone.addEventListener("change", qpaint);
+    qpaint();
   })();
 
   /* ═══════════════ Layout: every ground is measured, not assumed ═══════════ */
@@ -1076,6 +1212,8 @@
       waterfall.relayout();
       book.fit();
       premium.fit();
+      qpaint();
+      markScrollables();
     });
   }
   window.addEventListener("resize", relayout);
