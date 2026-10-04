@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resilience Grid 2036 — Alder County</title>
+<meta name="description" content="A regional wildfire prevention network in 2036, in an invented wildland-urban-interface county — assembled only from companies and deals that already exist, and honest about the one thing nobody has measured.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#deck">Skip to the story</a>
+
+<!-- ═══════════════ THE GROUND ═══════════════
+     Alder County, invented. It is not an illustration inside the page; it is
+     the page. Inset past all four edges so it never shows a border, with a
+     per-screen camera that moves over it. Settlements are drawn as clusters,
+     never as addressable houses — see app.js and design.md §3.1. -->
+<div class="world" id="world">
+  <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
+       aria-label="Plan of Alder County: a ridge system above three settlement clusters in a wildland-urban interface valley, with one canyon corridor, a transmission line crossing the ridge saddle, four fire-district boundaries, and the protection network's cameras, sensors, fire stations and suppression pads."></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="pins" id="pins" aria-hidden="true"></div>
+
+<main class="deck" id="deck">
+
+<!-- ══════════════════ 1 · THE PROBLEM ══════════════════ -->
+<section class="screen" data-screen="1" data-label="The problem" data-cam="county" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">Resilience Grid · Alder County · 2036</p>
+    <h1 class="display display--xl"><span>Priced to the parcel.</span><span>Unavailable at any price.</span></h1>
+    <p class="body">The models got better every year for a decade, and they were right. The ridge still burns, the interface still grows, and the quotes still stop coming.</p>
+  </div>
+
+  <div class="gw gw--map" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/7/6">
+    <p class="eyebrow">Regional insurability</p>
+    <div class="gauge gauge--retreating">
+      <p class="gauge-now"><span class="gauge-glyph" aria-hidden="true">▼</span> Retreating</p>
+      <div class="gauge-track"><div class="gauge-bar"></div></div>
+      <div class="gauge-stops">
+        <span class="gauge-stop" data-on="1">Retreating</span>
+        <span class="gauge-stop">Managed</span>
+        <span class="gauge-stop">Viable</span>
+      </div>
+    </div>
+    <p class="note">Better prediction moved the price. It did not move the risk.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:7/1/9/6">
+    <p class="body"><span class="strong">Nobody can finance prevention out of one household's premium credit.</span></p>
+    <p class="note">Invented county, invented figures. No real insurer operates this network.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/5/13">
+    <p class="eyebrow">Alder County <span class="illus">· illustrative</span></p>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-fig">14,200</span>
+        <p class="stat-txt">households in the wildland&#8209;urban interface</p>
+      </div>
+      <div class="stat stat--alarm">
+        <span class="stat-fig">2 of 11</span>
+        <p class="stat-txt">carriers still quoting new business here</p>
+      </div>
+      <div class="stat">
+        <span class="stat-fig">1 in 3</span>
+        <p class="stat-txt">interface homes with one road out</p>
+      </div>
+    </div>
+    <p class="note">Every figure on this plate is invented.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:5/8/9/13">
+    <p class="eyebrow">The discount gap</p>
+    <p class="body">22 of the top 25 US property insurers already offer a wildfire mitigation discount.</p>
+    <p class="aside">It averages about <span class="strong">$100 a year</span> — roughly a tenth of the annualised cost of the work. Three insurers removed wildfire from rating altogether rather than pay the credit, affecting over 500,000 policies. <span class="aside-yr">Resources for the Future, 2025.</span></p>
+  </div>
+
+</section>
+
+<!-- ══════════════════ 2 · THE NETWORK ══════════════════ -->
+<section class="screen" data-screen="2" data-label="The network" data-cam="network" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">01 / The network</p>
+    <h2 class="display display--xl"><span>Every layer exists.</span><span>The network does not.</span></h2>
+    <p class="body">Forty-three companies across twelve countries already build the sensing, verification and suppression layers. None of them sells the assembly. An insurer that helped assemble it would be paying to change the risk instead of paying to describe it.</p>
+  </div>
+
+  <div class="gw gw--map" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:7/1/9/6">
+    <p class="eyebrow">The point</p>
+    <p class="body" id="layer-count">All four layers already have sellers. Not one of them sells the assembly.</p>
+    <p class="note">Switch a layer off to see what the rest of it is worth without it. No participant here can build it alone, and no participant here can fund it alone.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/9/13">
+    <p class="eyebrow">Four layers · <span class="illus">tap one to switch it off</span></p>
+    <div class="layers">
+
+      <div class="layer layer--see" data-on="1">
+        <p class="eyebrow eyebrow--vendor">See · catch the ignition</p>
+        <p class="layer-what">Find the fire, or the fault that becomes one, in the first minutes.</p>
+        <div class="caps">
+          <span class="cap">Mountaintop smoke cameras<span class="cap-co">Pano AI</span></span>
+          <span class="cap">Thermal satellites</span>
+          <span class="cap">Forest gas sensors</span>
+          <span class="cap">Pole&#8209;mounted line sensors</span>
+          <span class="cap">Radar that sees through smoke</span>
+        </div>
+      </div>
+
+      <div class="layer layer--know" data-on="1">
+        <p class="eyebrow eyebrow--carrier">Understand · turn it into a forecast</p>
+        <p class="layer-what">Where this goes in the next two hours, and what it reaches.</p>
+        <div class="caps">
+          <span class="cap">Fire&#8209;spread modelling<span class="cap-co">Technosylva</span></span>
+          <span class="cap">Vegetation intelligence, tree by tree</span>
+          <span class="cap">Catastrophe modelling</span>
+        </div>
+      </div>
+
+      <div class="layer layer--act" data-on="1">
+        <p class="eyebrow eyebrow--fire">Act · put something in the way</p>
+        <p class="layer-what">De&#8209;energise, cut fuel, wet the house, hit the head of the fire.</p>
+        <div class="caps">
+          <span class="cap">Autonomous aerial suppression<span class="cap-co">Seneca</span></span>
+          <span class="cap">Autonomy on full&#8209;size aircraft</span>
+          <span class="cap">Fuel&#8209;reduction robotics</span>
+          <span class="cap">Crews sent to insured homes</span>
+        </div>
+      </div>
+
+      <div class="layer layer--fund" data-on="1">
+        <p class="eyebrow eyebrow--capital">Fund &amp; coordinate · decide what gets done</p>
+        <p class="layer-what">Who buys it, who permits it, who is on the hook if nothing is done.</p>
+        <div class="caps">
+          <span class="cap">Utility ignition&#8209;prevention capital</span>
+          <span class="cap">Fire&#8209;district procurement</span>
+          <span class="cap">Foundation and donor funding</span>
+          <span class="cap">A resilience spread in a cat bond<span class="cap-co">Hannover Re</span></span>
+        </div>
+      </div>
+
+    </div>
+    <div class="chips" style="margin-top:.7em">
+      <button class="chipbtn" type="button" data-layer="see" aria-pressed="true">See</button>
+      <button class="chipbtn" type="button" data-layer="know" aria-pressed="true">Understand</button>
+      <button class="chipbtn" type="button" data-layer="act" aria-pressed="true">Act</button>
+      <button class="chipbtn" type="button" data-layer="fund" aria-pressed="true">Fund</button>
+      <button class="chipbtn" type="button" id="reveal-all">All four</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ 3 · THE MOMENT ══════════════════ -->
+<section class="screen" data-screen="3" data-label="The moment" data-cam="ignite" data-veil="ignite">
+
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow eyebrow--alarm">02 / The moment</p>
+    <h2 class="display display--xl"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
+    <p class="body">A fault on the Mill Creek lateral at 14:31, wind already over the ridge. An alert would have ended in somebody's inbox.</p>
+  </div>
+
+  <div class="gw gw--map" aria-hidden="true"></div>
+
+  <div class="plate plate--carrier" style="grid-area:6/1/9/6">
+    <p class="eyebrow eyebrow--carrier">What the human decides</p>
+    <p class="body">Everything above her is corroboration. Two calls are hers alone: whether 320 homes evacuate or hold, and whether aircraft drop over occupied parcels.</p>
+    <p class="note">Illustrative scenario. The times are a story, not a vendor capability claim.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/9/13">
+    <p class="eyebrow">14:31 → 14:47 · <span class="illus">invented event</span></p>
+    <div class="tl" id="tl">
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">14:31</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Line sensor, Mill Creek lateral</p>
+          <p class="tl-what">Fault signature on the span. A flag, not yet a fire.</p>
+        </div>
+      </div>
+
+      <div class="tl-row tl-row--corrob" data-on="0">
+        <p class="tl-time">14:33</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Ridge camera, Alder Peak</p>
+          <p class="tl-what">Smoke at the same span. Second source, different physics.</p>
+        </div>
+      </div>
+
+      <div class="tl-row tl-row--corrob" data-on="0">
+        <p class="tl-time">14:34</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Thermal satellite pass</p>
+          <p class="tl-what">Heat at the same coordinates. Ignition treated as verified.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">14:36</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Utility grid operations</p>
+          <p class="tl-what">Lateral de&#8209;energised. Reclosers locked out on two adjacent feeders.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">14:38</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Spread model</p>
+          <p class="tl-what">Canyon corridor run. The head of the fire turns toward the 320 homes above Mill Creek.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">14:41</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Fire District 3</p>
+          <p class="tl-what">Two engines to the canyon mouth. The one road out held open.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">14:43</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Autonomous suppression</p>
+          <p class="tl-what">Four aircraft launched from the Mill Creek pad, one operator.</p>
+        </div>
+      </div>
+
+      <div class="tl-row tl-row--human" data-on="0">
+        <p class="tl-time">14:47</p>
+        <div class="tl-body">
+          <p class="tl-who">Duty chief, District 3 — human</p>
+          <p class="tl-what">Holds or releases the evacuation of 320 homes, and signs off on the drop over occupied parcels.</p>
+          <p class="tl-decide"><span class="strong">The network cannot make either call.</span> It can only put both of them in front of her sooner, with three sources behind them.</p>
+        </div>
+      </div>
+
+    </div>
+    <button class="tl-play" type="button" id="tl-play">Run the ignition</button>
+  </div>
+
+</section>
+
+<!-- ══════════════════ 4 · WHY ANYONE PAYS ══════════════════ -->
+<section class="screen" data-screen="4" data-label="Why anyone pays" data-cam="flows" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">03 / Why anyone pays</p>
+    <h2 class="display"><span>Seven parties.</span><span>One avoided fire.</span></h2>
+    <p class="body">Each one is escaping a different cost. None of them is buying the network; each is buying its own avoided loss. The network is what their money adds up to.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/7">
+    <p class="eyebrow">The exchange · <span class="illus">one possible model</span></p>
+    <div class="xchg-head"><span>Participant</span><span>Avoids</span><span>Contributes</span></div>
+    <div class="xchg">
+
+      <div class="xr xr--utility">
+        <p class="xr-who">The utility</p>
+        <p class="xr-cell xr-avoids">Ignition liability</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Money</span>line sensors, de&#8209;energisation</p>
+      </div>
+
+      <div class="xr xr--fire">
+        <p class="xr-who">Four fire districts</p>
+        <p class="xr-cell xr-avoids">A campaign fire they cannot staff</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Permission</span>dispatch authority, command</p>
+      </div>
+
+      <div class="xr xr--public">
+        <p class="xr-who">Alder County</p>
+        <p class="xr-cell xr-avoids">Evacuating the canyon corridor</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Permission</span>rights of way, burn permits</p>
+      </div>
+
+      <div class="xr xr--household">
+        <p class="xr-who">Households</p>
+        <p class="xr-cell xr-avoids">Non&#8209;renewal, and the deductible</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Consent</span>work on their own land, dues</p>
+      </div>
+
+      <div class="xr xr--carrier">
+        <p class="xr-who">The carrier</p>
+        <p class="xr-cell xr-avoids">Correlated interface losses, and forced retreat</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Evidence</span>verification, loss history, filed terms</p>
+      </div>
+
+      <div class="xr xr--capital">
+        <p class="xr-who">Catastrophe capital</p>
+        <p class="xr-cell xr-avoids">Attachment on an interface account</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Structure</span>a resilience spread</p>
+      </div>
+
+      <div class="xr xr--vendor">
+        <p class="xr-who">Vendors</p>
+        <p class="xr-cell xr-avoids">Selling one fire district at a time</p>
+        <p class="xr-cell xr-contributes"><span class="kind">Capacity</span>hardware, crews, aircraft</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:1/8/4/13">
+    <p class="eyebrow">Who actually pays <span class="illus">· illustrative shares</span></p>
+    <div class="share">
+      <div class="share-row"><span class="share-k share-k--utility">Utility</span><span class="share-bar"><i style="width:45%"></i></span><span class="share-v">45%</span></div>
+      <div class="share-row"><span class="share-k share-k--public">Public &amp; philanthropic</span><span class="share-bar"><i style="width:20%"></i></span><span class="share-v">20%</span></div>
+      <div class="share-row"><span class="share-k share-k--carrier">All carriers, pooled</span><span class="share-bar"><i style="width:15%"></i></span><span class="share-v">15%</span></div>
+      <div class="share-row"><span class="share-k share-k--household">Households, by levy</span><span class="share-bar"><i style="width:10%"></i></span><span class="share-v">10%</span></div>
+      <div class="share-row"><span class="share-k share-k--capital">Cat capital</span><span class="share-bar"><i style="width:5%"></i></span><span class="share-v">5%</span></div>
+      <div class="share-row"><span class="share-k share-k--vendor">Vendors, in kind</span><span class="share-bar"><i style="width:5%"></i></span><span class="share-v">5%</span></div>
+    </div>
+    <p class="note">One carrier's own slice sits inside the pooled 15%. <span class="strong">The insurer is not the anchor tenant — the utility is.</span></p>
+  </div>
+
+  <div class="plate" style="grid-area:4/8/7/13">
+    <p class="eyebrow">So what is left to own?</p>
+    <div class="opb">
+      <div class="opb-col"><p class="opb-h">Own</p><p class="opb-t">The record of what was done and what changed. The method that proves it. The translation into filed terms.</p></div>
+      <div class="opb-col"><p class="opb-h">Partner</p><p class="opb-t">Grid action. Dispatch and command. Permits. Capital structure.</p></div>
+      <div class="opb-col"><p class="opb-h">Buy</p><p class="opb-t">Cameras, satellites, sensors, aircraft, crews. All of it, on short contracts.</p></div>
+    </div>
+    <p class="note">Money is the one thing the utility does not need from an insurer. The trade is evidence for access.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:7/8/9/13">
+    <p class="eyebrow">It already happens, small</p>
+    <p class="aside">The <span class="strong">Aspen Fire Protection District</span> buys from <span class="strong">Seneca</span>, <span class="strong">Pano AI</span> and <span class="strong">OroraTech</span> at once — and the Seneca and OroraTech purchases are funded with foundation and donor money. A fire district assembling a mini&#8209;network, already not paying for it alone. <span class="aside-yr">2026.</span></p>
+  </div>
+
+</section>
+
+<!-- ══════════════════ 5 · THE LOOP ══════════════════ -->
+<section class="screen" data-screen="5" data-label="The loop" data-cam="loop" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow">04 / The loop</p>
+    <h2 class="display display--xl"><span>The drone is</span><span>the easy part.</span><span>Proving it worked</span><span>is the business.</span></h2>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/6">
+    <p class="eyebrow">The operating loop</p>
+    <div class="loop">
+      <svg id="loop-svg" viewBox="0 0 200 200" role="img" aria-label="A five-stage loop: observe, intervene, verify, measure, update, returning to observe. Verify and measure are emphasised."></svg>
+      <div class="loop-legend">
+        <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">01 Observe</p><p class="loop-line">Three independent sources, one ignition. Cheap, and getting cheaper.</p></div></div>
+        <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">02 Intervene</p><p class="loop-line">De&#8209;energise, cut fuel, put water on the head of it. Purchasable today.</p></div></div>
+        <div class="loop-item loop-item--hard"><span class="loop-bullet"></span><div><p class="loop-name">03 Verify</p><p class="loop-line">Prove the work happened: which parcel, to what standard, on what date.</p></div></div>
+        <div class="loop-item loop-item--hard"><span class="loop-bullet"></span><div><p class="loop-name">04 Measure</p><p class="loop-line">Prove the loss that did not occur. Every number anyone has for this is modelled, not observed.</p></div></div>
+        <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">05 Update</p><p class="loop-line">Feed the result into the rate, the renewal, and next season's work.</p></div></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:.6em">Observe and intervene are procurement; anyone can buy them. The loop fails at 03 and 04, never at 02.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/5/13">
+    <p class="eyebrow">Where an edge might sit</p>
+    <p class="body">The sensors and the aircraft are for sale to everyone. Across seventeen insurer prevention deals on record, not one gives the insurer exclusive rights to the data.</p>
+    <dl class="rows">
+      <dt>Strongest</dt><dd>Intervention&#8209;and&#8209;outcome logs the insurer owns, joined to its own claims book</dd>
+      <dt>Maybe</dt><dd>Co&#8209;ownership of the verification standard — if anyone writes one</dd>
+      <dt>Maybe</dt><dd>Being the party that convenes the payers. A position, not a technology</dd>
+      <dt>Weakest</dt><dd>Priority access to aircraft, and the partner list itself</dd>
+    </dl>
+    <p class="note">Swiss Re bought Fathom outright rather than partner for its flood models. Ownership, not access, was the route to exclusivity. <span class="strong">This is reasoning, not a finding.</span></p>
+  </div>
+
+  <div class="plate" style="grid-area:5/8/9/13">
+    <div class="counter">
+      <p class="eyebrow">When prevention fails</p>
+      <p class="aside"><span class="strong">Baloise</span> funded hail cloud&#8209;seeding flights with <span class="strong">ETH Zurich</span> from 2018 to 2023. It ended them, saying the effect on large hail <span class="strong">"has not been demonstrably measurable."</span> <span class="aside-yr">Announced October 2024.</span></p>
+      <p class="note" style="margin-top:.55em">The flights were real. Measurement is what failed — and that is what ended the funding. An effect nobody can measure is an effect nobody funds twice.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ 6 · MARKET CREATION ══════════════════ -->
+<section class="screen" data-screen="6" data-label="Market creation" data-cam="payoff" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">05 / Market creation</p>
+    <h2 class="display display--xl"><span>The product is not</span><span>the drone. It is a market</span><span>that stays open.</span></h2>
+    <p class="body">Without the network the chain runs one way, and the household is standing at the end of it. With it, the chain could break at the second step — if the measured loss reduction turns out to be real.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/8/7">
+    <div class="fork">
+      <div class="fork-col fork-col--out">
+        <p class="fork-head">Without the network</p>
+        <p class="fork-step">Risk rises</p>
+        <p class="fork-step">Price rises to match</p>
+        <p class="fork-step">Availability falls</p>
+        <p class="fork-step">The carrier retreats</p>
+        <p class="fork-step">The household holds the risk</p>
+      </div>
+      <div class="fork-rule" aria-hidden="true"></div>
+      <div class="fork-col fork-col--in">
+        <p class="fork-head">With the network</p>
+        <p class="fork-step">Risk observed, three sources</p>
+        <p class="fork-step">Intervention changes the expected outcome</p>
+        <p class="fork-step">The result is measured, not modelled</p>
+        <p class="fork-step">Underwriting learns from its own logs</p>
+        <p class="fork-step">Cover could stay available</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:8/1/9/7">
+    <p class="note">Could, potentially, if the measured loss reduction is real. Invented county, invented figures. No real insurer operates this network.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/4/13">
+    <p class="eyebrow">Regional insurability</p>
+    <div class="gauge gauge--viable">
+      <p class="gauge-now"><span class="gauge-glyph" aria-hidden="true">▲</span> Viable</p>
+      <div class="gauge-track"><div class="gauge-bar"></div></div>
+      <div class="gauge-stops">
+        <span class="gauge-stop">Retreating</span>
+        <span class="gauge-stop">Managed</span>
+        <span class="gauge-stop" data-on="1">Viable</span>
+      </div>
+    </div>
+    <p class="note">The same instrument as screen one, moved — on evidence, not on appetite.</p>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:4/8/7/13">
+    <p class="eyebrow">Signals already here</p>
+    <ul class="sig">
+      <li><span class="strong">Liberty Mutual</span> and <span class="strong">Tokio Marine</span> backed Pano AI's $44M Series B. 2025.</li>
+      <li><span class="strong">American Family</span> and <span class="strong">Mercury</span> backed BurnBot. 2024 and 2026.</li>
+      <li><span class="strong">Chubb</span>, <span class="strong">Travelers</span> and <span class="strong">Aviva Canada</span> send crews to defend insured homes.</li>
+      <li><span class="strong">Tahoe Donner</span>: premium cut 39%, deductible cut 84%, on verified fuel reduction. 2025.</li>
+      <li><span class="strong">NCIUA</span>'s $600M cat bond returns a 0.35% resilience spread for storm&#8209;resistant roofs. 2025.</li>
+    </ul>
+  </div>
+
+  <div class="plate plate--carrier" style="grid-area:7/8/9/13">
+    <p class="eyebrow eyebrow--carrier">The question</p>
+    <p class="display">What if the next prevention business is not a device or a service, but the infrastructure that keeps a risk insurable?</p>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ═══════════════ CHROME ═══════════════
+     Small plates in the bottom gutter. No bar: the ground runs behind them
+     to all four edges. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">See the network</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>
