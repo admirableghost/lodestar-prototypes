@@ -245,6 +245,14 @@ body {
   text-wrap: balance;
 }
 .display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
+/* The closing provocation is the hero of screen 6 and is sized to win the
+   lower right of the composition. It wraps on its own, so no authored
+   line breaks — it is a question, not a headline. */
+.display--ask {
+  font-size: calc(var(--dsp) * var(--fit) * 1.06);
+  letter-spacing: -.026em; line-height: 1.12;
+}
+.display--ask span { display: inline; }
 .display span { display: block; }
 .display:last-child { margin-bottom: 0; }
 
@@ -275,6 +283,10 @@ body {
   text-transform: uppercase; color: var(--ink-soft);
 }
 .rows dd { margin: 0; font: var(--t-body)/1.4 var(--sans); }
+/* Screen 3's authority legend: three short pairs that must not compete with
+   the event timeline beside them. */
+.rows--legend { grid-template-columns: 7.5ch 1fr; gap: calc(var(--fs) * .3) calc(var(--fs) * .8); }
+.rows--legend dd { font-size: var(--t-sec); }
 
 /* ── stat lines, screen 1. Illustrative regional figures. ─────────────── */
 .stats { display: grid; gap: calc(var(--fs) * .72); margin: 0; }
@@ -523,6 +535,10 @@ body {
 .xr-who { margin: 0; font: 600 var(--t-mid)/1.35 var(--sans); }
 .xr-cell { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
 .xr-cell .strong { color: var(--edition-ink); font-weight: 400; }
+/* The simplified exchange: a participant and the one loss it escapes. The
+   three-column form (avoids / contributes) was the densest object in the
+   deck; the full ledger is carried in concept.md instead. */
+.xr-plain { grid-column: 2 / -1; color: var(--edition-ink); }
 .xchg-head {
   display: grid; grid-template-columns: 11.5ch 1fr 1fr;
   gap: 0 calc(var(--fs) * .7); padding-left: calc(var(--fs) * .6 + 4px);
@@ -592,6 +608,14 @@ body {
 .loop { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--fs) * .9);
         align-items: center; margin: 0; }
 .loop svg { display: block; width: calc(var(--fs) * 12.5); height: auto; flex: 0 0 auto; }
+/* Screen 5's loop is the dominant object on its screen, not a diagram beside
+   a paragraph. The ring grows and the stage names come up to display size;
+   only the two hard steps carry a line of explanation. */
+.loop--hero { gap: calc(var(--fs) * 1.5); }
+.loop--hero svg { width: calc(var(--fs) * 17); }
+.loop--hero .loop-legend { gap: calc(var(--fs) * .62); }
+.loop--hero .loop-name { font-size: var(--t-body); }
+.loop--hero .loop-item--hard .loop-name { font-size: calc(var(--t-body) * 1.08); }
 .loop-legend { display: grid; gap: calc(var(--fs) * .45); margin: 0; }
 .loop-item { display: grid; grid-template-columns: calc(var(--fs) * 1.1) 1fr;
              gap: 0 calc(var(--fs) * .5); align-items: start; }

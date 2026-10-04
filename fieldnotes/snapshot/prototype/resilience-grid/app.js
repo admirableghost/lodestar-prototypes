@@ -553,7 +553,7 @@
     var cnt = document.getElementById("layer-count");
     if (cnt) {
       cnt.textContent = allOn
-        ? "These layers already meet at incidents. What is missing is the standing arrangement between them."
+        ? "The technology already exists. What is missing is a standing agreement for who acts, who pays, and what evidence changes an insurance decision."
         : "Without " + off.map(function (k) { return offNames[k]; }).join(" and ") +
           ", the rest of it is an expensive way to watch.";
     }

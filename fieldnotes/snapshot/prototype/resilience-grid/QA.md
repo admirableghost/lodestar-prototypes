@@ -1,5 +1,33 @@
 # Resilience Grid — verification record
 
+> ## Pass 4 — 5 October 2026, density reduction
+>
+> One thought per screen. **Visible words cut from 1,858 to 696 (−63%)**,
+> measured with `scratchpad/density.mjs` reading `innerText` of the visible
+> screen at 1440×900.
+>
+> | Screen | Before | After | Cut | Plates |
+> |---|---|---|---|---|
+> | 1 The problem | 173 | **75** | −57% | 5 → 3 |
+> | 2 The network | 256 | **113** | −56% | 3 → 2 |
+> | 3 The moment | 299 | **173** | −42% | 3 → 3 |
+> | 4 Why anyone pays | 400 | **124** | −69% | 5 → 3 |
+> | 5 The loop | 412 | **119** | −71% | 4 → 3 |
+> | 6 Market creation | 318 | **92** | −71% | 6 → 4 |
+>
+> Deeper than the ~40% asked. Screen 3 was cut least on purpose: the timeline
+> is the dominant visual of the strongest screen and the authority badges are
+> load-bearing. Nothing removed was deleted — it is preserved in `concept.md`
+> and `research-notes.md`.
+>
+> **No readability was traded for it.** Type floors unchanged: `--fit = 1` on
+> mobile, smallest visible text still **11px** at 360/390/430. No text faded,
+> no table squeezed back in, no shrink-to-fit reintroduced.
+>
+> One bug found and fixed during this pass: `paintLayers()` was overwriting
+> screen 2's new headline line with its own older string, so the strong
+> "what is missing" sentence never appeared at rest.
+
 > ## Pass 3 — 5 October 2026, after independent adversarial review
 >
 > **The previous QA in this file was wrong in a way worth recording.** It

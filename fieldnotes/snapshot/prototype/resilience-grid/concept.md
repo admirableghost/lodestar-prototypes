@@ -3,6 +3,29 @@
 Internal. For the IDEO / State Farm futures discussion, 9 October.
 Sacrificial strategic prototype: built to be argued with, not shipped.
 
+> **Density pass, 5 October 2026.** The six screens were cut from 1,858 to
+> 696 visible words (−63%) so each carries one dominant thought. Material
+> that came off the glass is preserved here and in `research-notes.md` —
+> nothing was discarded, only de-surfaced.
+>
+> **No longer on screen, still answerable from these notes:** the Alder
+> County stat card (14,200 households, 1 in 3 with one road out); the
+> seven-row avoids/contributes ledger (§5); the five-clause operating
+> agreement in full (§5); the three funding tiers (§5); the ranked moat
+> candidates (§5); the "signals already here" precedent list (§7); the
+> four-questions measurement breakdown (§4); the Aspen Fire Protection
+> District precedent (§7); the RFF figures (removed permanently, see
+> `research-notes.md`).
+>
+> **The six ideas a viewer should retain after one pass:**
+> 1. Better prediction alone can still end in market retreat.
+> 2. The missing piece is a standing operating agreement across capabilities
+>    that already exist.
+> 3. AI enables bounded coordination; humans keep consequential authority.
+> 4. Different parties participate because they avoid different losses.
+> 5. The network only matters if its incremental effect can be measured.
+> 6. If it works, prevention can help keep markets insurable.
+
 ---
 
 ## 1. Thesis
