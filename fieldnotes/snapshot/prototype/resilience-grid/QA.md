@@ -1,5 +1,29 @@
 # Resilience Grid — verification record
 
+> ## Pass 3 — 5 October 2026, after independent adversarial review
+>
+> **The previous QA in this file was wrong in a way worth recording.** It
+> reported "CLEAN" across six screens and five viewports because it tested
+> clipping, overlap, horizontal scroll and console errors — and never tested
+> **rendered font size**. An independent reviewer found important text at
+> 6–10px on mobile. They were right. Re-measuring found the smallest rendered
+> label at **6.0px** and notes at **7.7px**, on every screen, at 360, 390 and
+> 430px wide.
+>
+> Root cause: the inherited `--fit` binary search was running on narrow
+> viewports. It exists so a non-scrolling desktop stage holds its content; a
+> phone screen scrolls, so the search bought nothing and shrank everything to
+> its 0.74 floor. `fitScreen()` now returns immediately when narrow, type
+> takes hard per-role floors, and phones scroll.
+>
+> **Measured after the fix, at 360 / 390 / 430px, all six screens:**
+> `--fit = 1` everywhere; smallest rendered text **11px** (uppercase labels and
+> badges); notes and table cells **12.5px**; running copy **14px**+. Nothing
+> renders below 11px anywhere.
+>
+> The lesson for the next pass: a layout audit that does not assert on
+> computed `font-size` is not a readability audit.
+
 > **Revision pass, 5 October 2026.** A surgical evidence-discipline revision
 > touched screens 1, 2, 4, 5 and 6 — no new screens, no visual redesign, no
 > change to the narrative architecture. Two components were removed (`.share`
@@ -160,6 +184,51 @@ touched.** The new prototype is additive and its only shared dependency is
 
 ---
 
+## Pass 3 — what was verified, with evidence
+
+**Rendered type** (`scratchpad/typeaudit.mjs`, 360/390/430 × 6 screens).
+Before: `eyebrow 6.4px · gauge-stop 6.0px · note 7.7px · cap 7.7px · tl-time
+7.7px`, `--fit` pinned at 0.74. After: `--fit = 1`, minimum 11px, notes
+12.5px, body 14px+. Badge floors added at 11px for `.layer-state`, `.tl-kind`
+and `.agr-n`. The 9px `text` the audit reports on screen 5 is inside
+`#loop-svg`, confirmed `display: none` and `checkVisibility() === false` on
+narrow — it is never rendered.
+
+**No text fading, measured not assumed** (`scratchpad/states.mjs`). With two
+layers switched off: layer `opacity: 1`, `.layer-what` colour
+`rgb(54, 65, 74)` — full ink — and the "Off" badge `display: inline-block`.
+Mid-replay, an unreached timeline row: `opacity: 1`, text colour full ink.
+State is carried by border, ground tint, dot fill and a word.
+
+**Interaction, each reproduced before and after:**
+
+| Bug | Before | After |
+|---|---|---|
+| "All four" | Toggled — pressing it with all layers on switched them all **off** | Only ever restores. Label flips to "All four shown" and the button disables when there is nothing to restore |
+| Replay labels | One button reading "Pause" while stopped, "Replay" while running | `Replay from the start → Pause → Resume → Pause`, plus a separate "Show all steps" that disables when all 8 are shown |
+| Mobile Next name | `display:none` on the label left the accessible name as "→" | Label visually hidden but kept in the tree: accessible name is "See the network →" at 390px, confirmed |
+| Skip link | `href="#deck"` rewrote the hash, the router read "no screen", user landed on **screen 1** | A button. From screen 5 it keeps hash `#s/5`, stays on screen 5, and moves focus to that screen's heading. Verified from a clean load at desktop and phone, starting on screens 1 and 5 |
+| Unrecognised hash | `fromHash()` defaulted to 1, so any stray hash navigated away | Returns `null`; the handler ignores it |
+| Map labels | Hidden only when *entirely* off-screen, so pins hung half off the edge | Hidden unless **wholly** inside the viewport |
+
+**Assistive-tech state** — a second `aria-live="polite"` region (`#state-status`)
+announces layer and replay changes, separate from the navigation announcer so
+the two cannot overwrite each other. Verified: "See layer switched off.",
+"Replay paused at step 1 of 8.", "All four layers shown."
+
+**Layout** (`scratchpad/mobile.mjs` at 360/390/430, `qa.mjs` at five widths):
+no clipping, no horizontal scroll, no console or page errors. Desktop
+(1920/1440/1280) still never scrolls, `--fit = 1`.
+
+**Visual** — read actual screenshots, not just assertions: all six screens at
+1440×900, and all six at 390×844 captured at two to three scroll positions
+each (`scratchpad/m/`), plus the layers-off and replay-paused states.
+
+**Non-regression** — `git status` shows only this directory; `git diff` against
+`emberwatch/`, `micromutual/`, `agent-liability/`, `longevity/`,
+`price-certainty/`, `prototype-cta.js`, the shared `fieldnotes/design.md` and
+the library `index.html` is empty.
+
 ## What is still imperfect
 
 1. **Screen 4 on a small phone is a 540px scroll.** Reachable, legible, at the
@@ -178,7 +247,20 @@ touched.** The new prototype is additive and its only shared dependency is
    certain on a page with a drawn ground underneath.
 5. **Not wired into the library page.** Deliberate — see README — but it means
    the prototype is only reachable by direct link.
-6. **Tested in Chromium only.** No Safari or Firefox pass.
+6. **Tested in Chromium only.** No Safari or Firefox pass. `max()` in
+   `font` shorthand and `checkVisibility()` are both well supported, but I
+   have not confirmed them on WebKit.
+7. **Mobile screens are now long.** With type at a readable size and no
+   shrink-to-fit, screen 4 runs about 1,600px of scroll at 360×640 and screen
+   3 about 960px. That is the correct trade — readable and scrollable beats
+   complete and 6px — but screen 4 is two and a half screenfuls on a small
+   phone and would benefit from being split or thinned if mobile becomes a
+   primary viewing mode.
+8. **The agreement is hypothetical and says so, but it is the one place the
+   prototype invents institutional detail.** Clause 5's "commit in advance to
+   reconsider" is the load-bearing idea and has no precedent in the evidence
+   base — the NCIUA bond is the nearest thing and it is a different mechanism
+   in a different peril.
 7. **The FORTIFIED figures are the one place the revision added numbers.**
    55–74% fewer claims and 15–40% lower severity are verified in
    `research-notes.md` §2, but they come from a peer-reviewed study of a

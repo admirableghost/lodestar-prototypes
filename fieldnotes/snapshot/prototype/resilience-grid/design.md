@@ -141,6 +141,29 @@ settled. It has not: prevention does not create availability on its own, and
 the gauge has to carry that conditionality in its geometry as well as in its
 label.
 
+### 1.3b Two rules that override the inherited behaviour — **[NEW]**
+
+Both were added after an independent review found real failures, and both
+overrule something this prototype had inherited.
+
+**1. No state is ever expressed by fading text.** The inherited idiom for "not
+active yet" was opacity: screen 2's switched-off layers sat at `.48` and screen
+3's unplayed timeline rows at `.22`. Measured, that put body copy far below AA
+and made seven of eight timeline rows unreadable until someone pressed a
+button. State is now carried by **border colour, ground tint, a dot's fill, and
+a word in a badge** — `.layer-state` reading "Off", `.tl-kind` naming the
+authority class. Type colour and opacity do not move. Any future state in this
+prototype must be expressible in greyscale print, which fading never was.
+
+**2. Below 900px the composition does not shrink; the screen scrolls.** The
+inherited `--fit` binary search exists so a desktop stage that cannot scroll
+still holds its content. A phone screen *does* scroll, so running the search
+there bought nothing and cost everything: at 360, 390 and 430px wide it drove
+uppercase labels to **6.4px** and notes to **7.7px** on all six screens.
+`fitScreen()` now returns immediately when narrow, and the type takes hard
+floors (§1.4b). Vertical scrolling on a phone is the correct behaviour, not a
+fallback.
+
 ### 1.4 Type — **[INHERITED]**
 
 Unchanged from Micromutual's scale, which is `fieldnotes/design.md` §2's type
@@ -167,6 +190,27 @@ at prototype sizes. No webfonts, no external request.
 | `.note` | `calc(var(--fs) * .8)/1.42` sans, `--ink-soft` |
 | `.fig` | `400 calc(var(--figsz) * var(--fit))/1` serif, `-.025em` |
 | `.rows dt/dd` | eyebrow-set term, `var(--fs)/1.4` value, `13ch 1fr` grid |
+
+### 1.4b The five text roles and their mobile floors — **[NEW]**
+
+Every `font-size` in `style.css` resolves through one of five variables, so a
+floor can be applied in one place rather than in forty rules.
+
+| Role | Desktop | Mobile floor | Used by |
+|---|---|---|---|
+| `--t-body` | `var(--fs)` | **14px** | running copy, `.rows dd` |
+| `--t-sub` | `--fs × .93` | **13.5px** | stat lines |
+| `--t-mid` | `--fs × .867` | **13px** | names, timeline actions |
+| `--t-sec` | `--fs × .8` | **12.5px** | notes, asides, chips, table cells |
+| `--t-lab` | `--fs × .667` | **11px** | uppercase labels, eyebrows |
+
+Badges (`.layer-state`, `.tl-kind`, `.agr-n`) and map pins carry their own
+`max(…)` floors of 10–11px. `--fs-base` itself starts at **14px** on narrow
+rather than 13px: a phone is not a short desktop.
+
+Measured after the change: nothing on any of the six screens renders below
+**11px** at 360, 390 or 430px wide, and nothing carrying a sentence below
+**12.5px**. Before it, the smallest rendered label was 6.0px.
 
 **The figure split is [INHERITED] from §9 and matters here:** a hero figure is
 Georgia with the face's old-style numerals; anything in a column stays Arial
@@ -309,13 +353,32 @@ company per rail set in `--ink-soft`. Chips are categories; company names are
 annotations on categories. **At most one company name per rail** — a wall of
 logos is the vendor directory this prototype is specifically not.
 
+### 3.3b `.agr` — the operating agreement — **[NEW]**
+
+Five numbered clauses on screen 4, and the one place the prototype says
+concretely what the parties sign: a consortium commissions, parties fund what
+they already carry, providers deliver under protocols, an **independent**
+evaluator measures, and — clause 5, set in `--carrier` — participating carriers
+commit **in advance to reconsider** specified capacity and underwriting
+decisions when evidence thresholds are met.
+
+Clause 5 carries the carrier colour and the only coloured numeral because it is
+the commercial proposition. It says *reconsider*, never *cover*; a design that
+let that clause read as a guarantee would misrepresent the concept.
+
 ### 3.4 `.tl` — the event timeline — **[NEW]**
 
 A three-column grid: time (`tabular-nums`, Arial, right-aligned), actor dot and
 name, action. One row per beat, seven beats. A continuous hairline runs down
 behind the dots so the column reads as a sequence.
 
-Two modifiers do the real work:
+**Every row carries a `.tl-kind` badge naming its authority class** —
+Detection, Corroboration, Model, Bounded protocol action, or the human row.
+This is the design answer to "AI confirmed it, therefore everything executed":
+the badges make visible that evidence and authority are different things, and
+that only narrow, pre-authorised actions happen without a person.
+
+Two further modifiers do the real work:
 
 - `.tl-row--corrob` — a row that *confirms* an earlier signal rather than
   adding a new one, marked by a doubled dot. Three independent corroborations

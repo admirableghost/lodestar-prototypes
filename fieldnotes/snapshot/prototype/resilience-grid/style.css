@@ -103,11 +103,16 @@ body {
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   background: var(--edition-ink); color: var(--paper);
   border-radius: var(--r-m); text-decoration: none;
+  font: 600 14px/1 var(--sans); cursor: pointer;
 }
 .skip:focus {
   width: auto; height: auto; overflow: visible;
-  clip: auto; clip-path: none; padding: 10px 14px;
+  clip: auto; clip-path: none; padding: 12px 14px;
 }
+/* the heading receives focus from the skip button; it must not draw a ring
+   when it is reached by a mouse click on the page */
+.display:focus { outline: none; }
+.display:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
 
 :where(a, button, select, input, [tabindex]):focus-visible {
   outline: 2px solid var(--edition-ink);
@@ -151,7 +156,7 @@ body {
   border-radius: var(--r-s);
   box-shadow: 0 0 0 1px rgba(54,65,74,.22), 0 6px 16px -10px rgba(54,65,74,.6);
   padding: 4px 9px;
-  font: 600 calc(var(--fs-base) * .667)/1.5 var(--sans);
+  font: 600 max(10px, calc(var(--fs-base) * .667))/1.5 var(--sans);
   letter-spacing: .13em; text-transform: uppercase;
   white-space: nowrap;
 }
@@ -182,6 +187,19 @@ body {
   --fs: calc(var(--fs-base) * var(--fit));
   --pad-y: calc(var(--fs) * 1.07);
   --pad-x: calc(var(--fs) * 1.20);
+
+  /* ── the five text roles ──────────────────────────────────────────────
+     Every font-size in this file resolves through one of these, so a floor
+     can be applied in one place. On a wide window they are pure multiples
+     of --fs; on a narrow one they take hard minimums (see the narrow block)
+     because --fit used to drive labels to 6.4px and notes to 7.7px, which
+     is not small type, it is unreadable type. */
+  --t-body: var(--fs);                   /* running copy            */
+  --t-sub:  calc(var(--fs) * .93);       /* stat lines              */
+  --t-mid:  calc(var(--fs) * .867);      /* names, timeline actions */
+  --t-sec:  calc(var(--fs) * .8);        /* notes, asides, chips    */
+  --t-lab:  calc(var(--fs) * .667);      /* uppercase labels        */
+
   font-size: var(--fs);
 }
 .screen[hidden] { display: none; }
@@ -207,7 +225,7 @@ body {
 
 .eyebrow {
   margin: 0 0 calc(var(--fs) * .6);
-  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
+  font: 600 var(--t-lab)/1.4 var(--sans);
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft);
 }
@@ -230,9 +248,9 @@ body {
 .display span { display: block; }
 .display:last-child { margin-bottom: 0; }
 
-.body { margin: 0 0 calc(var(--fs) * .67); font: var(--fs)/1.5 var(--sans); max-width: 58ch; }
+.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
 .body:last-child { margin-bottom: 0; }
-.note { margin: 0; font: calc(var(--fs) * .8)/1.42 var(--sans); color: var(--ink-soft); }
+.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft); }
 .note + .note { margin-top: calc(var(--fs) * .35); }
 .strong { color: var(--edition-ink); font-weight: 700; }
 
@@ -241,7 +259,7 @@ body {
   font: 400 calc(var(--figsz) * var(--fit))/1 var(--serif); letter-spacing: -.025em;
 }
 .fig-unit {
-  font: calc(var(--fs) * .8)/1 var(--sans); letter-spacing: 0;
+  font: var(--t-sec)/1 var(--sans); letter-spacing: 0;
   color: var(--ink-soft); margin-left: 3px;
 }
 .fig--alarm   { color: var(--alarm); }
@@ -253,10 +271,10 @@ body {
 }
 .rows:last-child { margin-bottom: 0; }
 .rows dt {
-  font: 600 calc(var(--fs) * .667)/1.9 var(--sans); letter-spacing: .14em;
+  font: 600 var(--t-lab)/1.9 var(--sans); letter-spacing: .14em;
   text-transform: uppercase; color: var(--ink-soft);
 }
-.rows dd { margin: 0; font: var(--fs)/1.4 var(--sans); }
+.rows dd { margin: 0; font: var(--t-body)/1.4 var(--sans); }
 
 /* ── stat lines, screen 1. Illustrative regional figures. ─────────────── */
 .stats { display: grid; gap: calc(var(--fs) * .72); margin: 0; }
@@ -266,7 +284,7 @@ body {
   font: 400 calc(var(--rowsz) * var(--fit) * 1.18)/1 var(--serif);
   letter-spacing: -.02em; font-variant-numeric: oldstyle-nums;
 }
-.stat-txt { margin: 0; font: calc(var(--fs) * .93)/1.35 var(--sans); }
+.stat-txt { margin: 0; font: var(--t-sub)/1.35 var(--sans); }
 .stat--alarm .stat-fig { color: var(--alarm); }
 
 /* ══ EVIDENCE vs SCENARIO — the one new convention ══════════════════════
@@ -278,7 +296,7 @@ body {
   margin: calc(var(--fs) * .5) 0 0;
   padding-left: calc(var(--fs) * .8);
   border-left: 2px solid var(--rule);
-  font: calc(var(--fs) * .8)/1.45 var(--sans); color: var(--ink-soft);
+  font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft);
 }
 .aside::before {
   content: "◆ "; color: var(--edition-ink); font-size: .85em;
@@ -289,14 +307,14 @@ body {
 /* signals already here — the evidence plate, screen 6 */
 .sig { margin: 0; padding: 0 0 0 calc(var(--fs) * .8); list-style: none;
        border-left: 2px solid var(--rule); display: grid; gap: calc(var(--fs) * .5); }
-.sig li { font: calc(var(--fs) * .8)/1.4 var(--sans); color: var(--ink-soft); }
+.sig li { font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft); }
 .sig li::before { content: "◆ "; color: var(--edition-ink); font-size: .85em; }
 .sig .strong { color: var(--edition-ink); }
 
 /* the standing illustrative mark, for invented regional figures */
 .illus {
   display: inline-block; margin: 0;
-  font: 600 calc(var(--fs) * .667)/1.6 var(--sans);
+  font: 600 var(--t-lab)/1.6 var(--sans);
   letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
 }
 
@@ -320,7 +338,7 @@ body {
   gap: calc(var(--fs) * .4); margin: 0;
 }
 .gauge-stop {
-  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
+  font: 600 var(--t-lab)/1.4 var(--sans);
   letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
   padding-top: calc(var(--fs) * .4);
   border-top: 1px solid var(--hair);
@@ -331,7 +349,7 @@ body {
 .gauge-now {
   display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
   margin: 0 0 calc(var(--fs) * .55);
-  font: 600 calc(var(--fs) * 1.0)/1.3 var(--sans);
+  font: 600 max(14px, var(--fs))/1.3 var(--sans);
 }
 .gauge-glyph { font-size: 1.05em; line-height: 1; }
 .gauge--retreating .gauge-now, .gauge--retreating .gauge-bar { color: var(--alarm); }
@@ -351,24 +369,35 @@ body {
   border-left: 4px solid var(--rule);
   border-radius: var(--r-s);
   padding: calc(var(--fs) * .5) 0 calc(var(--fs) * .5) calc(var(--fs) * .8);
-  /* The OFF state is a deliberate user action, not the default, so it may
-     recede — but not past legibility. .48 keeps the rail's type readable
-     while the border colour and the chips carry the "switched off" signal. */
-  opacity: .48;
-  transition: opacity .4s cubic-bezier(.4,0,.2,1);
+  /* NO TEXT FADING. The off state used to set opacity .48 on the whole rail,
+     which took every word in it below readable contrast. State is now carried
+     by the border, the ground and a badge; the type does not move. */
+  transition: border-color .3s linear, background .3s linear;
 }
-.layer[data-on="1"] { opacity: 1; }
+.layer[data-on="0"] {
+  border-left-color: var(--hair);
+  background: var(--edition-wash);
+}
+.layer[data-on="0"] .eyebrow { color: var(--ink-soft); }
+/* the badge is the unambiguous signal, and it is a word, not a tint */
+.layer-state {
+  display: none;
+  margin-left: .5em; padding: 1px 5px;
+  border-radius: var(--r-s); background: var(--wash-2); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans); letter-spacing: .1em;
+}
+.layer[data-on="0"] .layer-state { display: inline-block; }
 .layer--see   { border-left-color: var(--vendor); }
 .layer--know  { border-left-color: var(--carrier); }
 .layer--act   { border-left-color: var(--fire); }
 .layer--fund  { border-left-color: var(--capital); }
 .layer .eyebrow { margin-bottom: calc(var(--fs) * .25); }
-.layer-what { margin: 0 0 calc(var(--fs) * .45); font: calc(var(--fs) * .93)/1.35 var(--sans); }
+.layer-what { margin: 0 0 calc(var(--fs) * .45); font: var(--t-sub)/1.35 var(--sans); }
 .caps { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .3) calc(var(--fs) * .33); margin: 0; }
 .cap {
   background: var(--edition-wash); border-radius: var(--r-s);
   padding: 2px calc(var(--fs) * .45);
-  font: calc(var(--fs) * .8)/1.5 var(--sans);
+  font: var(--t-sec)/1.5 var(--sans);
   white-space: nowrap;
 }
 .cap-co { color: var(--ink-soft); }
@@ -381,12 +410,26 @@ body {
   display: grid;
   grid-template-columns: 5.4ch calc(var(--fs) * 1.5) 1fr;
   align-items: start; gap: 0 calc(var(--fs) * .5);
-  padding: calc(var(--fs) * .36) 0;
-  opacity: .22; transition: opacity .35s linear;
+  padding: calc(var(--fs) * .36) calc(var(--fs) * .3);
+  /* NO TEXT FADING. Steps not yet reached used to sit at .22 opacity, which
+     made seven of the eight rows unreadable until the replay ran. Every row
+     is now fully legible at rest; progression is carried by the dot, a left
+     rule and a ground tint. */
+  border-left: 2px solid transparent;
+  border-radius: var(--r-s);
+  transition: background .3s linear, border-color .3s linear;
 }
-.tl-row[data-on="1"] { opacity: 1; }
+.tl-row[data-on="1"] {
+  background: var(--edition-wash);
+  border-left-color: var(--rule);
+}
+/* a step not yet reached: hollow dot */
+.tl-row[data-on="0"] .tl-dot {
+  background: var(--paper) !important;
+  box-shadow: 0 0 0 2px var(--rule), 0 0 0 5px var(--paper) !important;
+}
 .tl-time {
-  font: 600 calc(var(--fs) * .8)/1.45 var(--sans);
+  font: 600 var(--t-sec)/1.45 var(--sans);
   font-variant-numeric: tabular-nums; color: var(--ink-soft);
   text-align: right; white-space: nowrap;
 }
@@ -411,8 +454,20 @@ body {
 .tl-dot--public  { background: var(--public); }
 /* a corroborating signal is a different KIND of event from an action */
 .tl-row--corrob .tl-dot { background: var(--paper); box-shadow: 0 0 0 2px var(--vendor), 0 0 0 5px var(--paper); }
-.tl-who { margin: 0; font: 600 calc(var(--fs) * .8)/1.45 var(--sans); }
-.tl-what { margin: 0; font: calc(var(--fs) * .867)/1.42 var(--sans); }
+.tl-who { margin: 0; font: 600 var(--t-sec)/1.45 var(--sans); }
+/* The authority class of each step, so "three sources agreed" is never
+   mistaken for "therefore everything executed". Detection and corroboration
+   are evidence; a bounded protocol action is pre-authorised and narrow; the
+   consequential decision is human. */
+.tl-kind {
+  display: inline-block; margin-left: .5em;
+  padding: 1px 5px; border-radius: var(--r-s);
+  background: var(--wash-2); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .94))/1.5 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.tl-row--corrob .tl-kind { background: var(--vendor-fill); color: var(--vendor); }
+.tl-what { margin: 0; font: var(--t-mid)/1.42 var(--sans); }
 .tl-body { min-width: 0; }
 
 /* the one human decision point — the most prominent row in the timeline */
@@ -427,19 +482,26 @@ body {
 .tl-row--human .tl-who::before { content: "◆ "; }
 .tl-decide {
   margin: calc(var(--fs) * .25) 0 0;
-  font: calc(var(--fs) * .8)/1.4 var(--sans); color: var(--ink-soft);
+  font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft);
 }
 .tl-decide .strong { color: var(--carrier); }
 
+.tl-controls {
+  display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .45);
+  margin-top: calc(var(--fs) * .6);
+}
 .tl-play {
   display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
-  align-self: flex-start; margin-top: calc(var(--fs) * .6);
   min-height: 38px; padding: 0 calc(var(--fs) * .9);
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
-  font: 600 calc(var(--fs) * .867)/1 var(--sans); cursor: pointer;
+  font: 600 var(--t-mid)/1 var(--sans); cursor: pointer;
 }
 .tl-play:hover { background: var(--edition-wash); }
+.tl-play[disabled] {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair); cursor: default;
+}
 
 /* ══ 3.5  .xchg — the value exchange ════════════════════════════════════ */
 
@@ -458,8 +520,8 @@ body {
 .xr--vendor    { border-left-color: var(--vendor); }
 .xr--capital   { border-left-color: var(--capital); }
 .xr--household { border-left-color: var(--edition-ink); }
-.xr-who { margin: 0; font: 600 calc(var(--fs) * .867)/1.35 var(--sans); }
-.xr-cell { margin: 0; font: calc(var(--fs) * .8)/1.38 var(--sans); color: var(--ink-soft); }
+.xr-who { margin: 0; font: 600 var(--t-mid)/1.35 var(--sans); }
+.xr-cell { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
 .xr-cell .strong { color: var(--edition-ink); font-weight: 400; }
 .xchg-head {
   display: grid; grid-template-columns: 11.5ch 1fr 1fr;
@@ -467,14 +529,14 @@ body {
   margin: 0 0 calc(var(--fs) * .2);
 }
 .xchg-head span {
-  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
+  font: 600 var(--t-lab)/1.4 var(--sans);
   letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
 }
 /* money / capacity / permission / data / assets — so a reader can see at a
    glance that most participants are not contributing money */
 .kind {
   display: inline-block; margin-right: 4px;
-  font: 600 calc(var(--fs) * .667)/1.5 var(--sans);
+  font: 600 var(--t-lab)/1.5 var(--sans);
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--edition-ink);
 }
@@ -496,13 +558,34 @@ body {
 .tier-g--kind { border-left-color: var(--fire); }
 .tier-h {
   margin: 0 0 calc(var(--fs) * .15);
-  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
+  font: 600 var(--t-lab)/1.4 var(--sans);
   letter-spacing: .14em; text-transform: uppercase;
 }
 .tier-g--lead .tier-h { color: var(--utility); }
 .tier-g--co   .tier-h { color: var(--carrier); }
 .tier-g--kind .tier-h { color: var(--fire); }
-.tier-l { margin: 0; font: calc(var(--fs) * .8)/1.4 var(--sans); }
+.tier-l { margin: 0; font: var(--t-sec)/1.4 var(--sans); }
+
+/* ── .agr — the hypothetical operating agreement ──────────────────────
+   Screen 4's commercial proposition, as five numbered clauses. It is the
+   one place the prototype says concretely what the parties sign. */
+
+.agr { margin: 0 0 calc(var(--fs) * .5); padding: 0; list-style: none;
+       display: grid; gap: calc(var(--fs) * .45); counter-reset: agr; }
+.agr li {
+  display: grid; grid-template-columns: calc(var(--fs) * 1.5) 1fr;
+  gap: 0 calc(var(--fs) * .5);
+  font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft);
+}
+.agr-n {
+  display: grid; place-items: center;
+  width: calc(var(--fs) * 1.25); height: calc(var(--fs) * 1.25);
+  border-radius: 50%; background: var(--edition-ink); color: var(--paper);
+  font: 700 max(11px, calc(var(--t-lab) * .96))/1 var(--sans);
+}
+.agr li:last-child .agr-n { background: var(--carrier); }
+.agr li:last-child { color: var(--edition-ink); }
+.agr .strong { color: var(--edition-ink); }
 
 /* ══ 3.6  .loop — the operating loop ════════════════════════════════════ */
 
@@ -518,9 +601,9 @@ body {
   border-radius: 50%; border: 1.5px solid var(--rule); background: transparent;
 }
 .loop-item--hard .loop-bullet { background: var(--edition-ink); border-color: var(--edition-ink); }
-.loop-name { margin: 0; font: 600 calc(var(--fs) * .867)/1.4 var(--sans); color: var(--ink-soft); }
+.loop-name { margin: 0; font: 600 var(--t-mid)/1.4 var(--sans); color: var(--ink-soft); }
 .loop-item--hard .loop-name { color: var(--edition-ink); }
-.loop-line { margin: 0; font: calc(var(--fs) * .8)/1.38 var(--sans); color: var(--ink-soft); }
+.loop-line { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
 
 /* ══ 3.7  .counter — the documented failure ═════════════════════════════ */
 
@@ -540,7 +623,7 @@ body {
 .fork-col { display: grid; gap: calc(var(--fs) * .35); align-content: start; }
 .fork-head {
   margin: 0 0 calc(var(--fs) * .3);
-  font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
+  font: 600 var(--t-lab)/1.4 var(--sans);
   letter-spacing: .14em; text-transform: uppercase;
 }
 .fork-col--out .fork-head { color: var(--alarm); }
@@ -548,7 +631,7 @@ body {
 .fork-step {
   margin: 0; display: grid; grid-template-columns: calc(var(--fs) * .95) 1fr;
   gap: 0 calc(var(--fs) * .3);
-  font: calc(var(--fs) * .867)/1.38 var(--sans);
+  font: var(--t-mid)/1.38 var(--sans);
 }
 .fork-step::before { content: "↓"; color: var(--rule); font-size: .9em; line-height: 1.5; }
 .fork-col--out .fork-step:last-child { color: var(--alarm); font-weight: 700; }
@@ -561,7 +644,7 @@ body {
   min-height: 34px; padding: 0 calc(var(--fs) * .8);
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
-  font: 600 calc(var(--fs) * .8)/1 var(--sans); cursor: pointer;
+  font: 600 var(--t-sec)/1 var(--sans); cursor: pointer;
 }
 .chipbtn:hover { background: var(--edition-wash); }
 .chipbtn[aria-pressed="true"] {
@@ -629,7 +712,24 @@ body {
 /* ══ NARROW ═════════════════════════════════════════════════════════════ */
 
 @media (max-width: 899px) {
-  :root { --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px; }
+  :root {
+    --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px;
+    /* a phone is not a short desktop: start from 14px, not 13px */
+    --fs-base: clamp(14px, 3.6vw, 15.5px);
+  }
+
+  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
+     app.js does not run the --fit search on a narrow window at all (see
+     fitScreen), so --fit is 1 here and these are the real rendered sizes.
+     The floors are belt-and-braces for very short viewports. Nothing on a
+     phone renders below 11px, and nothing carrying a sentence below 14px. */
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
 
   .world { inset: -5% -9%; }
 
@@ -662,7 +762,7 @@ body {
   }
   .xr-cell::before {
     display: block;
-    font: 600 calc(var(--fs) * .667)/1.6 var(--sans);
+    font: 600 var(--t-lab)/1.6 var(--sans);
     letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
   }
   .xr-avoids::before      { content: "Avoids"; }
@@ -686,14 +786,20 @@ body {
   .tl-row { grid-template-columns: 5ch calc(var(--fs) * 1.3) 1fr; }
   .tl-row--human { grid-template-columns: 5ch 1fr; }
 
-  .gauge-stop { font-size: calc(var(--fs) * .62); }
 
   .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
   .chrome-r { width: 100%; }
   .picker { flex: 1 1 auto; min-width: 0; }
   .picker select { width: 100%; max-width: none; }
   .cta { padding: 0 14px; font-size: 14px; }
-  .cta span:first-child { display: none; }
+  /* The label is hidden from SIGHT, not from the accessibility tree.
+     display:none left the button's accessible name as the arrow glyph
+     alone, so it announced as "→" on a phone. */
+  .cta span:first-child {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
 }
 
 /* On a phone shorter than about 740px there is no height to give the window

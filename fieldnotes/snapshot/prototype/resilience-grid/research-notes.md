@@ -204,6 +204,18 @@ mitigation changing a price. That is the prototype's whole mechanism, in law.
   and three insurers removed wildfire risk from rating altogether to avoid the
   discount requirement, affecting over 500,000 policies^84^.
 
+  > **Correction (2026-10-05), applied after independent review.** The RFF
+  > working paper is an analysis of **California** homeowners insurers under
+  > California's mitigation-discount regime, not a national survey, and the
+  > "$100 average" and the "one tenth of cost" figures are two separate
+  > estimates that this evidence base previously presented as one arithmetic
+  > comparison. The prototype no longer carries either number. The supported
+  > statement, and the only one now on screen, is: *a study of leading
+  > California homeowners insurers found widespread mitigation discounts, but
+  > available credits generally cover only a small share of estimated retrofit
+  > costs.* Do not reintroduce the figures, do not infer insurer motive from
+  > them, and do not describe the finding as national.
+
 **That $100-vs-cost gap is the market failure the prototype is about.** Nobody
 can finance prevention out of an individual household's premium credit. Which
 is exactly why the payer has to be plural.
@@ -262,6 +274,33 @@ found in use," or carries an `INFERRED` ID.
 
 ---
 
+### Further corrections applied 2026-10-05
+
+- **FORTIFIED / Hurricane Sally (55–74% fewer claims, 15–40% lower severity)**
+  has been **removed from the prototype entirely**. It is a hurricane study,
+  the peril mismatch distracted more than it informed, and the phrase "the
+  best-measured prevention evidence anyone has" overstated a single study's
+  standing. Screen 5 keeps only the strategic challenge, with no figures:
+  *proven hardening and fuel management are the baseline; the network earns
+  its place only where it adds measurable protection beyond them.*
+- **Tahoe Donner** must be described as *an association policy whose quoted
+  terms reflected **modelled** fuel-treatment benefits*. It is not a household
+  renewal, not measured loss reduction, and not evidence of general market
+  availability.
+- **NCIUA** — the $600M is the **catastrophe bond's size**, not a prevention
+  budget, and the resilience spread returns to mitigation only if losses stay
+  below a set level. Both qualifications must appear wherever it is cited.
+- **Exclusivity** is an absence of public evidence, not an established fact
+  about the contracts. The only permitted wording is: *we found no public
+  evidence of insurer-exclusive data rights in the deals we reviewed.*
+- **Universal novelty claims are banned.** Not "no insurer is doing any of
+  it", not "none of them sells the assembly". The permitted claim is: *we have
+  not established a scaled regional example of this complete operating loop.*
+- **Baloise** is *discontinued the programme without conclusive evidence of
+  benefit*. Not "measurement is what failed" — that wording implies the
+  intervention worked and only the instrument let it down, which the source
+  does not support.
+
 ## 5. The eight facts worth putting on screen
 
 Deliberately few. Everything else above is background for the argument.
@@ -273,16 +312,19 @@ Deliberately few. Everything else above is background for the argument.
    for prevention. (^5,6,7^)
 3. **Chubb, Travelers and Aviva Canada** already send crews to defend insured
    homes as fires approach. (^8,9,79^)
-4. **Tahoe Donner**: premium cut 39%, deductible cut 84%, on *verified* fuel
-   reduction — the first policy its authors knew of that explicitly priced
-   community mitigation. (^82^)
+4. **Tahoe Donner**: an association policy whose quoted terms reflected
+   *modelled* fuel-treatment benefits — the first its authors knew of to
+   price community mitigation. Not a household renewal. (^82^)
 5. **Aspen Fire Protection District** buys from Seneca, Pano AI and OroraTech —
    funded by foundation and donor money, not by one balance sheet. (^3,29^)
-6. **NCIUA's $600M cat bond** returns a 0.35% resilience spread to fund
-   FORTIFIED roofs if losses stay low; Hannover Re fronted it; a second bond
-   repeats it. (^21,22,23^)
-7. **Average wildfire mitigation discount: about $100 a year** — roughly a tenth
-   of the annualised cost of the work. (^84^)
+6. **NCIUA**: a **$600M catastrophe bond** — the bond's size, not a prevention
+   budget — carrying a 0.35% resilience spread that funds FORTIFIED roofs
+   only if losses stay below a set level. Hannover Re fronted it; a second
+   bond repeats it. (^21,22,23^)
+7. **Mitigation credits exist but are not sized to pay for mitigation.** A
+   study of leading *California* homeowners insurers found widespread
+   discounts covering only a small share of estimated retrofit costs. (^84^,
+   as corrected above — the figures are no longer used.)
 8. **Baloise stopped funding hail suppression in 2023** because the effect "has
    not been demonstrably measurable." (^28^)
 

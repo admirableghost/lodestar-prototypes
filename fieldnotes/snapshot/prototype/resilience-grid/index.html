@@ -4,13 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Resilience Grid 2036 — Alder County</title>
-<meta name="description" content="A regional wildfire prevention network in 2036, in an invented wildland-urban-interface county — assembled only from companies and deals that already exist, and honest about the one thing nobody has measured.">
+<meta name="description" content="A regional wildfire prevention network in 2036, in an invented wildland-urban-interface county — built from capabilities that already exist, and honest about the operating agreement and the evidence that would have to come with it.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<a class="skip" href="#deck">Skip to the story</a>
+<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
+     router read that as "no screen", and the user was thrown back to screen 1
+     — the opposite of skipping to content. It now moves focus to the heading
+     of whatever screen is open. -->
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
 
 <!-- ═══════════════ THE GROUND ═══════════════
      Alder County, invented. It is not an illustration inside the page; it is
@@ -31,7 +35,7 @@
 
   <div class="plate" style="grid-area:1/1/4/7">
     <p class="eyebrow">Resilience Grid · Alder County · 2036</p>
-    <h1 class="display display--xl"><span>Priced precisely.</span><span>Increasingly unavailable.</span></h1>
+    <h1 class="display display--xl" tabindex="-1"><span>Priced precisely.</span><span>Increasingly unavailable.</span></h1>
     <p class="body">The models got better every year for a decade, and they were right. Precision can tell you exactly how risky a community is; it does not keep a market functioning there.</p>
   </div>
 
@@ -52,7 +56,7 @@
   </div>
 
   <div class="plate plate--wash" style="grid-area:7/1/9/6">
-    <p class="body"><span class="strong">A credit that size cannot finance the work it is meant to reward.</span></p>
+    <p class="body"><span class="strong">Prevention at this scale cannot be financed out of household premium credits alone.</span></p>
     <p class="note">Invented county, invented figures. No real insurer operates this network.</p>
   </div>
 
@@ -63,22 +67,22 @@
         <span class="stat-fig">14,200</span>
         <p class="stat-txt">households in the wildland&#8209;urban interface</p>
       </div>
-      <div class="stat stat--alarm">
-        <span class="stat-fig">2 of 11</span>
-        <p class="stat-txt">carriers still quoting new business freely</p>
-      </div>
       <div class="stat">
         <span class="stat-fig">1 in 3</span>
         <p class="stat-txt">interface homes with one road out</p>
       </div>
+      <div class="stat stat--alarm">
+        <span class="stat-fig" aria-hidden="true">↓</span>
+        <p class="stat-txt">fewer carriers remain willing to write new business — illustrative market contraction</p>
+      </div>
     </div>
-    <p class="note">Every figure on this plate is invented.</p>
+    <p class="note">Invented county. The figures above are illustrative, not a count of any real market.</p>
   </div>
 
   <div class="plate plate--wash" style="grid-area:5/8/9/13">
     <p class="eyebrow">The discount gap</p>
-    <p class="body">22 of the top 25 US property insurers already offer a wildfire mitigation discount.</p>
-    <p class="aside">It averages about <span class="strong">$100 a year</span> — roughly a tenth of the annualised cost of the work. Three insurers removed wildfire from rating altogether rather than pay the credit, affecting over 500,000 policies. <span class="aside-yr">Resources for the Future, 2025.</span></p>
+    <p class="body">Mitigation credits exist. They are not sized to pay for mitigation.</p>
+    <p class="aside">A study of leading <span class="strong">California</span> homeowners insurers found widespread mitigation discounts, but available credits generally cover only a small share of estimated retrofit costs. <span class="aside-yr">Resources for the Future, 2025.</span></p>
   </div>
 
 </section>
@@ -88,7 +92,7 @@
 
   <div class="plate" style="grid-area:1/1/4/7">
     <p class="eyebrow">01 / The network</p>
-    <h2 class="display display--xl"><span>The pieces exist.</span><span>The agreement</span><span>is the proposition.</span></h2>
+    <h2 class="display display--xl" tabindex="-1"><span>The pieces exist.</span><span>The agreement</span><span>is the proposition.</span></h2>
     <p class="body">Forty-three companies across twelve countries build these layers, and utilities, fire agencies and insurers already buy from them. What does not arise on its own is a durable operating and economic arrangement between parties whose incentives are currently fragmented.</p>
   </div>
 
@@ -105,7 +109,7 @@
     <div class="layers">
 
       <div class="layer layer--see" data-on="1">
-        <p class="eyebrow eyebrow--vendor">See · catch the ignition</p>
+        <p class="eyebrow eyebrow--vendor">See · catch the ignition<span class="layer-state">Off</span></p>
         <p class="layer-what">Find the fire, or the fault that becomes one, in the first minutes.</p>
         <div class="caps">
           <span class="cap">Mountaintop smoke cameras<span class="cap-co">Pano AI</span></span>
@@ -117,7 +121,7 @@
       </div>
 
       <div class="layer layer--know" data-on="1">
-        <p class="eyebrow eyebrow--carrier">Understand · turn it into a forecast</p>
+        <p class="eyebrow eyebrow--carrier">Understand · turn it into a forecast<span class="layer-state">Off</span></p>
         <p class="layer-what">Where this goes in the next two hours, and what it reaches.</p>
         <div class="caps">
           <span class="cap">Fire&#8209;spread modelling<span class="cap-co">Technosylva</span></span>
@@ -127,7 +131,7 @@
       </div>
 
       <div class="layer layer--act" data-on="1">
-        <p class="eyebrow eyebrow--fire">Act · put something in the way</p>
+        <p class="eyebrow eyebrow--fire">Act · put something in the way<span class="layer-state">Off</span></p>
         <p class="layer-what">De&#8209;energise, cut fuel, wet the house, hit the head of the fire.</p>
         <div class="caps">
           <span class="cap">Autonomous aerial suppression<span class="cap-co">Seneca</span></span>
@@ -138,7 +142,7 @@
       </div>
 
       <div class="layer layer--fund" data-on="1">
-        <p class="eyebrow eyebrow--capital">Fund &amp; coordinate · decide what gets done</p>
+        <p class="eyebrow eyebrow--capital">Fund &amp; coordinate · decide what gets done<span class="layer-state">Off</span></p>
         <p class="layer-what">Who buys it, who permits it, who is on the hook if nothing is done.</p>
         <div class="caps">
           <span class="cap">Utility ignition&#8209;prevention capital</span>
@@ -165,15 +169,20 @@
 
   <div class="plate" style="grid-area:1/1/4/6">
     <p class="eyebrow eyebrow--alarm">02 / The moment</p>
-    <h2 class="display display--xl"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
+    <h2 class="display display--xl" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
     <p class="body">A fault on the Mill Creek lateral at 14:31, wind already over the ridge. An alert would have ended in somebody's inbox.</p>
   </div>
 
   <div class="gw gw--map" aria-hidden="true"></div>
 
-  <div class="plate plate--carrier" style="grid-area:6/1/9/6">
-    <p class="eyebrow eyebrow--carrier">What the human decides</p>
-    <p class="body">Everything above her is corroboration. Two calls are hers alone: whether 320 homes evacuate or hold, and whether aircraft drop over occupied parcels.</p>
+  <div class="plate plate--carrier" style="grid-area:5/1/9/6">
+    <p class="eyebrow eyebrow--carrier">Who is allowed to do what</p>
+    <p class="body">Each party's agent acts only inside permissions agreed in advance, and every action it takes is written to one auditable record. Bounded actions — de-energising a lateral, rolling an engine — are pre-authorised and narrow. Consequential calls are not delegated.</p>
+    <dl class="rows">
+      <dt>Agents do</dt><dd>Correlate signals across parties, and execute pre&#8209;agreed bounded actions</dd>
+      <dt>Humans do</dt><dd>Evacuation, and any drop over occupied parcels. The duty chief, not the network</dd>
+      <dt>The record</dt><dd>Feeds the scheduled evidence review on the next screen</dd>
+    </dl>
     <p class="note">Illustrative scenario. The times are a story, not a vendor capability claim.</p>
   </div>
 
@@ -185,7 +194,7 @@
         <p class="tl-time">14:31</p>
         <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Line sensor, Mill Creek lateral</p>
+          <p class="tl-who">Line sensor, Mill Creek lateral<span class="tl-kind">Detection</span></p>
           <p class="tl-what">Fault signature on the span. A flag, not yet a fire.</p>
         </div>
       </div>
@@ -194,7 +203,7 @@
         <p class="tl-time">14:33</p>
         <div class="tl-mark"><span class="tl-dot"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Ridge camera, Alder Peak</p>
+          <p class="tl-who">Ridge camera, Alder Peak<span class="tl-kind">Corroboration</span></p>
           <p class="tl-what">Smoke at the same span. Second source, different physics.</p>
         </div>
       </div>
@@ -203,7 +212,7 @@
         <p class="tl-time">14:34</p>
         <div class="tl-mark"><span class="tl-dot"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Thermal satellite pass</p>
+          <p class="tl-who">Thermal satellite pass<span class="tl-kind">Corroboration</span></p>
           <p class="tl-what">Heat at the same coordinates. Ignition treated as verified.</p>
         </div>
       </div>
@@ -212,7 +221,7 @@
         <p class="tl-time">14:36</p>
         <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Utility grid operations</p>
+          <p class="tl-who">Utility grid operations<span class="tl-kind">Bounded protocol action</span></p>
           <p class="tl-what">Lateral de&#8209;energised. Reclosers locked out on two adjacent feeders.</p>
         </div>
       </div>
@@ -221,7 +230,7 @@
         <p class="tl-time">14:38</p>
         <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Spread model</p>
+          <p class="tl-who">Spread model<span class="tl-kind">Model</span></p>
           <p class="tl-what">Canyon corridor run. The head of the fire turns toward the 320 homes above Mill Creek.</p>
         </div>
       </div>
@@ -230,7 +239,7 @@
         <p class="tl-time">14:41</p>
         <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Fire District 3</p>
+          <p class="tl-who">Fire District 3<span class="tl-kind">Bounded protocol action</span></p>
           <p class="tl-what">Two engines to the canyon mouth. The one road out held open.</p>
         </div>
       </div>
@@ -239,7 +248,7 @@
         <p class="tl-time">14:43</p>
         <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
         <div class="tl-body">
-          <p class="tl-who">Autonomous suppression</p>
+          <p class="tl-who">Autonomous suppression<span class="tl-kind">Bounded protocol action</span></p>
           <p class="tl-what">Four aircraft launched from the Mill Creek pad, one operator.</p>
         </div>
       </div>
@@ -254,7 +263,10 @@
       </div>
 
     </div>
-    <button class="tl-play" type="button" id="tl-play">Run the ignition</button>
+    <div class="tl-controls">
+      <button class="tl-play" type="button" id="tl-play">Replay from the start</button>
+      <button class="tl-play" type="button" id="tl-all">Show all steps</button>
+    </div>
   </div>
 
 </section>
@@ -264,7 +276,7 @@
 
   <div class="plate" style="grid-area:1/1/4/7">
     <p class="eyebrow">03 / Why anyone pays</p>
-    <h2 class="display"><span>Seven parties.</span><span>One avoided fire.</span></h2>
+    <h2 class="display" tabindex="-1"><span>Seven parties.</span><span>One avoided fire.</span></h2>
     <p class="body">Each one is escaping a different cost. None of them is buying the network; each is buying its own avoided loss. The network is what their money adds up to.</p>
   </div>
 
@@ -336,24 +348,23 @@
         <p class="tier-l">Fire departments · technology providers · response operators</p>
       </div>
     </div>
-    <p class="note">No split is known or validated. The ordering is the claim: <span class="strong">the parties carrying the largest direct liability have the strongest reason to fund the infrastructure, and an insurer need not be among them.</span></p>
+    <p class="note">No split is known or validated. The ordering is the claim: <span class="strong">the party best placed to fund prevention need not be the party best placed to insure the remaining risk.</span> State Farm need not be the anchor funder.</p>
   </div>
 
-  <div class="plate" style="grid-area:4/8/7/13">
-    <p class="eyebrow">What the agreement does</p>
-    <p class="body">A regional agreement commissions delivery and independent verification; carriers define what evidence could support coverage capacity and terms.</p>
-    <dl class="rows">
-      <dt>Build</dt><dd>Little or nothing. The hardware is commodity and purchasable by anyone</dd>
-      <dt>Partner</dt><dd>Grid action, dispatch and command, permits, capital structure</dd>
-      <dt>Verify</dt><dd>Independently, by a party that is neither the payer nor the beneficiary</dd>
-      <dt>Consume</dt><dd>Verified outcomes, as an input to risk estimates</dd>
-      <dt>Underwrite</dt><dd>Translate that evidence into capacity and terms, where it holds up</dd>
-    </dl>
+  <div class="plate" style="grid-area:4/8/8/13">
+    <p class="eyebrow">The operating agreement <span class="illus">· hypothetical</span></p>
+    <ol class="agr">
+      <li><span class="agr-n">1</span><span><span class="strong">A regional consortium commissions</span> prevention services for the interface — fuel treatment, sensing, response capacity.</span></li>
+      <li><span class="agr-n">2</span><span><span class="strong">Parties fund the components whose avoided costs they already carry.</span> The utility funds ignition prevention; public agencies fund evacuation capacity and fuel treatment on public land.</span></li>
+      <li><span class="agr-n">3</span><span><span class="strong">Providers deliver under defined operating protocols</span> — what may be actioned automatically, what requires a human, and who holds command.</span></li>
+      <li><span class="agr-n">4</span><span><span class="strong">An independent evaluator measures</span> interventions performed, operational outcomes, relevant exposure change, and the uncertainty and failure cases alongside them.</span></li>
+      <li><span class="agr-n">5</span><span><span class="strong">If agreed evidence thresholds are met, participating carriers commit in advance to reconsider</span> specified capacity and underwriting decisions — geography reopened for consideration, eligibility reviewed, limits and pricing inputs revisited.</span></li>
+    </ol>
+    <p class="note">Clause 5 is the commitment that makes the rest bankable, and it is a commitment to <span class="strong">review</span>, not to cover. No automatic coverage follows from participation.</p>
   </div>
 
-  <div class="plate plate--wash" style="grid-area:7/8/9/13">
-    <p class="eyebrow">It already happens, small</p>
-    <p class="aside">The <span class="strong">Aspen Fire Protection District</span> buys from <span class="strong">Seneca</span>, <span class="strong">Pano AI</span> and <span class="strong">OroraTech</span> at once — and the Seneca and OroraTech purchases are funded with foundation and donor money. A fire district assembling a mini&#8209;network, already not paying for it alone. <span class="aside-yr">2026.</span></p>
+  <div class="plate plate--wash" style="grid-area:8/8/9/13">
+    <p class="aside">The <span class="strong">Aspen Fire Protection District</span> buys from <span class="strong">Seneca</span>, <span class="strong">Pano AI</span> and <span class="strong">OroraTech</span>, with the Seneca and OroraTech purchases funded by foundation and donor money — a district already not paying alone. <span class="aside-yr">2026.</span> We have not established a scaled regional example of the complete operating loop above.</p>
   </div>
 
 </section>
@@ -363,7 +374,7 @@
 
   <div class="plate" style="grid-area:1/1/4/6">
     <p class="eyebrow">04 / The loop</p>
-    <h2 class="display display--xl"><span>The drone is</span><span>the easy part.</span><span>Showing it worked</span><span>is the business.</span></h2>
+    <h2 class="display display--xl" tabindex="-1"><span>The drone is</span><span>the easy part.</span><span>Showing it worked</span><span>is the business.</span></h2>
   </div>
 
   <div class="gw" aria-hidden="true"></div>
@@ -376,34 +387,34 @@
         <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">01 Observe</p><p class="loop-line">Three independent sources, one ignition. Cheap, and getting cheaper.</p></div></div>
         <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">02 Intervene</p><p class="loop-line">De&#8209;energise, cut fuel, put water on the head of it. Purchasable today.</p></div></div>
         <div class="loop-item loop-item--hard"><span class="loop-bullet"></span><div><p class="loop-name">03 Verify</p><p class="loop-line">Independently record what work happened: which parcel, to what standard, on what date.</p></div></div>
-        <div class="loop-item loop-item--hard"><span class="loop-bullet"></span><div><p class="loop-name">04 Measure</p><p class="loop-line">Estimate risk reduction against a credible comparison, and carry the uncertainty with it.</p></div></div>
+        <div class="loop-item loop-item--hard"><span class="loop-bullet"></span><div><p class="loop-name">04 Evaluate</p><p class="loop-line">Estimate risk reduction against a credible comparison, and carry the uncertainty with it.</p></div></div>
         <div class="loop-item"><span class="loop-bullet"></span><div><p class="loop-name">05 Learn &amp; update</p><p class="loop-line">Revise which interventions are worth repeating, and what they imply for risk and coverage.</p></div></div>
       </div>
     </div>
-    <p class="note" style="margin-top:.6em">Observe and intervene are procurement; anyone can buy them. The loop gets hard at 03 and 04 — and no step here delivers clean causal attribution.</p>
+    <p class="note" style="margin-top:.6em">Four separate questions, and they are not the same question: did the intervention happen as intended; did it change exposure; how much did expected risk move; and does that justify an underwriting decision. <span class="strong">An inconclusive result, a failed intervention and no change in terms are all valid outcomes of this loop</span> — and the commonest ones early on.</p>
   </div>
 
   <div class="plate" style="grid-area:1/8/5/13">
     <p class="eyebrow">Where an edge might sit <span class="illus">· hypothesis</span></p>
-    <p class="body">The sensors and the aircraft are for sale to everyone, and across seventeen insurer prevention deals on record not one secured exclusive rights to the data. So the candidate is not the data itself.</p>
+    <p class="body">The sensors and the aircraft are for sale to everyone. We found no public evidence of insurer&#8209;exclusive data rights in the deals we reviewed, so the candidate is not the data itself.</p>
     <dl class="rows">
       <dt>The claim</dt><dd>Becoming the carrier that translates independently verified prevention outcomes into underwriting capacity and terms</dd>
       <dt>What compounds</dt><dd>Operating history connecting intervention to outcome to underwriting — if it is long enough to beat buying the same feed</dd>
       <dt>Also possible</dt><dd>Being the party that convenes the payers. A position, not a technology</dd>
       <dt>Not an edge</dt><dd>Commodity sensing, vendor data, priority access to aircraft, the partner list</dd>
     </dl>
-    <p class="note">Every line above is a hypothesis. <span class="strong">We found no insurer doing any of it</span>, and a mandate like Colorado's could make the translation step table stakes rather than an advantage.</p>
+    <p class="note">Every line above is a hypothesis. <span class="strong">We have not established a scaled regional example of this complete operating loop</span>, and a mandate like Colorado's could make the translation step table stakes rather than an advantage.</p>
   </div>
 
   <div class="plate" style="grid-area:5/8/9/13">
     <div class="counter">
-      <p class="eyebrow">When prevention fails</p>
-      <p class="aside"><span class="strong">Baloise</span> funded hail cloud&#8209;seeding flights with <span class="strong">ETH Zurich</span> from 2018 to 2023. It ended them, saying the effect on large hail <span class="strong">"has not been demonstrably measurable."</span> <span class="aside-yr">Announced October 2024.</span></p>
-      <p class="note" style="margin-top:.55em">The flights were real. Measurement is what failed — and that is what ended the funding. An effect nobody can measure is an effect nobody funds twice.</p>
+      <p class="eyebrow">When prevention cannot show an effect</p>
+      <p class="aside"><span class="strong">Baloise</span> funded hail cloud&#8209;seeding flights with <span class="strong">ETH Zurich</span> from 2018 to 2023, then discontinued the programme without conclusive evidence of benefit. <span class="aside-yr">Announced October 2024.</span></p>
+      <p class="note" style="margin-top:.55em">The lesson is not that the intervention worked and the measurement let it down. It is that prevention which cannot demonstrate an effect does not create durable insurance value.</p>
     </div>
     <p class="eyebrow" style="margin-top:.8em">The question to answer first</p>
-    <p class="body"><span class="strong">What incremental protection does the network provide beyond proven property hardening and fuel management?</span></p>
-    <p class="aside">The best&#8209;measured prevention evidence anyone has is structural: <span class="strong">IBHS FORTIFIED</span> homes in Hurricane Sally saw 55–74% fewer claims and 15–40% lower severity. <span class="aside-yr">Study cited 2026.</span> Harder interventions may be harder to prove.</p>
+    <p class="body"><span class="strong">Does the network add enough protection beyond hardening and fuel management to justify its cost?</span></p>
+    <p class="note">Proven hardening and fuel management are the baseline. Detection, coordination and rapid response are the second layer, and the concept only earns its place where the incremental reduction can be shown. <span class="strong">We do not know that it can.</span></p>
   </div>
 
 </section>
@@ -413,7 +424,7 @@
 
   <div class="plate" style="grid-area:1/1/4/7">
     <p class="eyebrow">05 / Market creation</p>
-    <h2 class="display display--xl"><span>The product is not</span><span>the drone. It is a market</span><span>that might stay open.</span></h2>
+    <h2 class="display display--xl" tabindex="-1"><span>The product is not</span><span>the drone. It is a market</span><span>that might stay open.</span></h2>
     <p class="body">Without the network the chain runs one way, and the household is standing at the end of it. Prevention does not create availability on its own: the chain only breaks if the intervention changes risk, the change can be credibly estimated, and capital accepts the remaining tail.</p>
   </div>
 
@@ -465,14 +476,14 @@
       <li><span class="strong">Liberty Mutual</span> and <span class="strong">Tokio Marine</span> backed Pano AI's $44M Series B. 2025.</li>
       <li><span class="strong">American Family</span> and <span class="strong">Mercury</span> backed BurnBot. 2024 and 2026.</li>
       <li><span class="strong">Chubb</span>, <span class="strong">Travelers</span> and <span class="strong">Aviva Canada</span> send crews to defend insured homes.</li>
-      <li><span class="strong">Tahoe Donner</span>: premium cut 39%, deductible cut 84%, on verified fuel reduction. 2025.</li>
-      <li><span class="strong">NCIUA</span>'s $600M cat bond returns a 0.35% resilience spread for storm&#8209;resistant roofs. 2025.</li>
+      <li><span class="strong">Tahoe Donner</span>: an association policy whose quoted terms reflected modelled fuel&#8209;treatment benefits. Not a household renewal, and not measured loss reduction. 2025.</li>
+      <li><span class="strong">NCIUA</span>: a $600M catastrophe bond — the bond's size, not a prevention budget — carrying a 0.35% resilience spread that funds storm&#8209;resistant roofs only if losses stay below a set level. 2025.</li>
     </ul>
   </div>
 
   <div class="plate plate--carrier" style="grid-area:7/8/9/13">
     <p class="eyebrow eyebrow--carrier">The question</p>
-    <p class="display">What if the next prevention business is not a device or a service, but the institutional infrastructure that helps keep difficult risks insurable?</p>
+    <p class="display" tabindex="-1">What if the next prevention business is not a device or a service, but the institutional infrastructure that helps keep difficult risks insurable?</p>
   </div>
 
 </section>
@@ -498,6 +509,7 @@
 </div>
 
 <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
 
 <script src="app.js"></script>
 </body>

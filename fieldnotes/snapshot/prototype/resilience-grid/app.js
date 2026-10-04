@@ -503,8 +503,11 @@
       p.style.left = x + "px";
       p.style.top = y + "px";
       var r = p.getBoundingClientRect();
-      var hit = r.right < 4 || r.left > window.innerWidth - 4 ||
-                r.bottom < 4 || r.top > window.innerHeight - 4;
+      /* A pin must be WHOLLY inside the viewport. Testing only for "not
+         entirely off-screen" left labels hanging half off the left edge on
+         a phone, which is a clipped label, not a placed one. */
+      var hit = r.left < 4 || r.right > window.innerWidth - 4 ||
+                r.top < 4 || r.bottom > window.innerHeight - 4;
       for (var i = 0; i < boxes.length && !hit; i++) {
         var b = boxes[i];
         if (r.left < b.right + 6 && r.right > b.left - 6 &&
@@ -517,6 +520,13 @@
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 2 — the network layers
      ══════════════════════════════════════════════════════════════════════ */
+
+  /* One polite live region for state changes that are not screen changes —
+     a layer switched off, the replay started or paused. The screen
+     announcer (#announce) handles navigation; this handles everything else,
+     so the two never overwrite each other mid-sentence. */
+  var statusEl = document.getElementById("state-status");
+  function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
   var layerOrder = ["see", "know", "act", "fund"];
   /* All four start ON, for the same reason the timeline starts revealed: a
@@ -536,6 +546,10 @@
     var allOn = layerOrder.every(function (k) { return layerOn[k]; });
     var offNames = { see: "sensing", know: "a forecast", act: "a response", fund: "a payer" };
     var off = layerOrder.filter(function (k) { return !layerOn[k]; });
+    if (revealAll) {
+      revealAll.disabled = allOn;
+      revealAll.textContent = allOn ? "All four shown" : "Show all four";
+    }
     var cnt = document.getElementById("layer-count");
     if (cnt) {
       cnt.textContent = allOn
@@ -552,15 +566,20 @@
       var k = b.dataset.layer;
       layerOn[k] = !layerOn[k];
       paintLayers();
+      say(b.textContent.trim() + " layer " + (layerOn[k] ? "shown" : "switched off") + ".");
     });
   });
 
+  /* "Show all four" RESTORES. It used to toggle — pressing it with every
+     layer already on switched them all off, which is the opposite of what
+     the label promises. It now only ever turns layers on, and disables
+     itself once there is nothing left to restore. */
   var revealAll = document.getElementById("reveal-all");
   if (revealAll) {
     revealAll.addEventListener("click", function () {
-      var allOn = layerOrder.every(function (k) { return layerOn[k]; });
-      layerOrder.forEach(function (k) { layerOn[k] = !allOn; });
+      layerOrder.forEach(function (k) { layerOn[k] = true; });
       paintLayers();
+      say("All four layers shown.");
     });
   }
 
@@ -573,10 +592,18 @@
 
   function paintTl() {
     tlRows.forEach(function (r, i) { r.dataset.on = i < tlStep ? "1" : "0"; });
+    /* The control says exactly what pressing it will do. It used to read
+       "Pause" while stopped and "Replay" while running. */
     var btn = document.getElementById("tl-play");
     if (btn) {
-      btn.textContent = tlStep >= tlRows.length ? "Replay the ignition"
-                      : tlStep === 0 ? "Run the ignition" : "Pause";
+      btn.textContent = tlTimer ? "Pause"
+                      : tlStep >= tlRows.length ? "Replay from the start"
+                      : tlStep === 0 ? "Play the ignition"
+                      : "Resume";
+    }
+    var all = document.getElementById("tl-all");
+    if (all) {
+      all.disabled = !tlTimer && tlStep >= tlRows.length;
     }
     if (current === 3) {
       renderCounty({
@@ -591,16 +618,34 @@
 
   function tlStop() { clearInterval(tlTimer); tlTimer = null; }
 
+  /* Play / Pause / Resume / Replay, in one control that is always labelled
+     with the action it performs. */
   function tlRun() {
-    if (tlTimer) { tlStop(); paintTl(); return; }
-    if (tlStep >= tlRows.length) { tlStep = 0; }
+    if (tlTimer) {
+      tlStop(); paintTl();
+      say("Replay paused at step " + tlStep + " of " + tlRows.length + ".");
+      return;
+    }
+    var restarting = tlStep >= tlRows.length;
+    if (restarting) { tlStep = 0; }
     tlTimer = setInterval(function () {
       tlStep++;
-      if (tlStep >= tlRows.length) { tlStep = tlRows.length; tlStop(); }
+      if (tlStep >= tlRows.length) {
+        tlStep = tlRows.length; tlStop();
+        say("Replay complete. All " + tlRows.length + " steps shown.");
+      }
       paintTl();
     }, 1150);
     tlStep++;
     paintTl();
+    say(restarting ? "Replaying the ignition from the start." : "Replay resumed.");
+  }
+
+  function tlShowAll() {
+    tlStop();
+    tlStep = tlRows.length;
+    paintTl();
+    say("All " + tlRows.length + " steps shown.");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -729,6 +774,15 @@
   function fitScreen(sc) {
     if (!sc || sc.hidden) { return; }
     sc.style.setProperty("--fit", "1");
+
+    /* NARROW NEVER SHRINKS.
+       The --fit search exists so a desktop composition stays inside a stage
+       that does not scroll. A phone screen DOES scroll, so running the search
+       there bought nothing and cost everything: it drove uppercase labels to
+       6.4px and notes to 7.7px across all six screens at 360, 390 and 430px
+       wide. Below 900px the type holds its size and the screen scrolls. */
+    if (narrow) { return; }
+
     if (!spills(sc)) { return; }
 
     var lo = FIT_FLOOR, hi = 1, best = FIT_FLOOR, mid, i;
@@ -787,6 +841,8 @@
   tlStep = tlRows.length;
   var tlPlay = document.getElementById("tl-play");
   if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
+  var tlAll = document.getElementById("tl-all");
+  if (tlAll) { tlAll.addEventListener("click", tlShowAll); }
   drawLoop();
   paintLayers();
 
@@ -872,16 +928,29 @@
     }, 140);
   });
 
+  /* Skip link: move focus to the open screen's heading, without touching the
+     hash. Every .display carries tabindex="-1" so it can receive focus. */
+  var skip = document.getElementById("skip");
+  if (skip) {
+    skip.addEventListener("click", function () {
+      var sc = screens[current - 1];
+      var h = sc && (sc.querySelector(".display") || sc.querySelector(".eyebrow"));
+      if (h) { h.focus(); h.scrollIntoView({ block: "start" }); }
+    });
+  }
+
   function fromHash() {
     var m = /#s\/(\d+)/.exec(location.hash);
-    return m ? parseInt(m[1], 10) : 1;
+    return m ? parseInt(m[1], 10) : null;
   }
   window.addEventListener("hashchange", function () {
+    /* An unrecognised hash means something else on the page used one — it is
+       not a request to go to screen 1. */
     var n = fromHash();
-    if (n !== current) { show(n, false); }
+    if (n !== null && n !== current) { show(n, false); }
   });
 
   narrow = isNarrow();
-  show(fromHash(), false);
+  show(fromHash() || 1, false);
   moveCamera(screens[current - 1].dataset.cam, true);
 })();

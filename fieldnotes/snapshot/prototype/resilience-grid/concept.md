@@ -25,9 +25,9 @@ The provocation the six screens exist to produce:
 
 And the sharper one the build arrived at, which is the closing line of screen 5:
 
-> If every piece of this is for sale to everyone, and no insurer has ever
-> secured exclusive rights to the outcome data, **what exactly is State Farm
-> selling?**
+> If every piece of this is for sale to everyone, and we found no public
+> evidence of any insurer securing exclusive rights to the outcome data,
+> **what exactly is State Farm selling?**
 
 ---
 
@@ -54,10 +54,10 @@ Seven, and the whole design of screens 2 and 4 is that you can tell them apart.
 | Actor | Colour | Role in the network |
 |---|---|---|
 | Households | the ink | Consent on their own land, small dues. The reason the others are there. |
-| The investor-owned utility | violet `#5B4E7A` | **The anchor tenant.** Line sensing, de-energisation, the largest share of the money. |
+| The investor-owned utility | violet `#5B4E7A` | **A potential lead funder.** Line sensing, de-energisation; carries the most legally specific avoided cost. |
 | Four fire districts | ember `#9E4A14` | Dispatch authority and command. Four vetoes, no single counterparty. |
 | Alder County | green `#2F5A44` | Rights of way, burn permits, the convening authority, a financing vehicle. |
-| The carrier | teal `#2F5E7C` | Verification, loss history, and filed terms. A minority payer. |
+| The carrier | teal `#2F5E7C` | Claims and catastrophe knowledge, filed terms, capacity. Consumes independent evaluation; does not perform it. |
 | Catastrophe capital | plum `#8A3450` | A resilience spread, and the attachment-point test that disciplines it. |
 | Vendors | gold `#7A5A17` | Hardware, crews, aircraft. Commodity, and the research says so loudly. |
 
@@ -74,13 +74,40 @@ UNDERSTAND     corroboration across independent sources → verified ignition
 ACT            utility de-energises · districts dispatch · autonomous
    ↓           suppression launches · one human decides evacuation
    ↓
-VERIFY         what work happened, on which parcel, to what standard, when
+VERIFY         independently: what work happened, where, to what standard
    ↓
-MEASURE        what changed, against what counterfactual
+EVALUATE       estimate risk reduction against a credible comparison,
+   ↓           and carry the uncertainty with it
    ↓
-UPDATE         rate, renewal, next season's work  ──┐
+LEARN &        revise what is worth repeating, and what it implies
+UPDATE         for risk and coverage  ────────────┐
    └──────────────────────────────────────────────┘
 ```
+
+### Four decisions that are not the same decision
+
+Screen 5 keeps these apart deliberately, because collapsing them is how
+prevention stories become dishonest:
+
+1. Did the intervention happen as intended? *(verification)*
+2. Did it change exposure or outcome? *(evaluation)*
+3. How much did expected risk move, and with what uncertainty? *(estimation)*
+4. Does that justify a capital or underwriting decision? *(judgement)*
+
+Verification is not causal measurement, and causal measurement is not
+underwriting capacity. **An inconclusive result, a failed intervention and no
+change in terms are all valid outputs of this loop** — and the likeliest ones
+early on. The prototype says that on screen rather than implying the loop
+always ends in better cover.
+
+### What AI actually changes here
+
+Not detection quality — that is already purchasable. The 2036 difference is
+that **each party's agent acts only inside permissions agreed in advance, and
+every action lands in one auditable record**. Agents correlate signals across
+organisational boundaries and execute pre-agreed *bounded* actions; the record
+they produce is what feeds the scheduled evidence review in clause 5. The
+mechanism is institutional, not perceptual.
 
 Screen 3 makes one point and only one: **the network coordinates action, it
 does not merely inform a decision.** Seven machine beats in sixteen minutes,
@@ -112,9 +139,28 @@ the claim: the parties carrying the largest direct liability have the
 strongest reason to fund the infrastructure, **and an insurer need not be
 among them.**
 
-What makes it tangible on screen 4: *a regional agreement commissions delivery
-and independent verification; carriers define what evidence could support
-coverage capacity and terms.*
+### The operating agreement — the commercial proposition, on screen 4
+
+Hypothetical, and labelled as such. Five clauses:
+
+1. **A regional consortium commissions** prevention services for the interface
+   — fuel treatment, sensing, response capacity.
+2. **Parties fund the components whose avoided costs they already carry.** The
+   utility funds ignition prevention; public agencies fund evacuation capacity
+   and fuel treatment on public land.
+3. **Providers deliver under defined operating protocols** — what may be
+   actioned automatically, what requires a human, who holds command.
+4. **An independent evaluator measures** interventions performed, operational
+   outcomes, relevant exposure change, and the uncertainty and failure cases
+   alongside them.
+5. **If agreed evidence thresholds are met, participating carriers commit in
+   advance to reconsider** specified capacity and underwriting decisions —
+   geography reopened for consideration, eligibility reviewed, limits and
+   pricing inputs revisited.
+
+Clause 5 is what makes the rest bankable, and it is a commitment to **review**,
+not to cover. Nothing in this concept promises automatic coverage, and the
+screen says so directly beneath the clause.
 
 ### The reframe the build arrived at
 
@@ -195,20 +241,23 @@ year; everything without one is Alder County, 2036.
 - Liberty Mutual and Tokio Marine backed Pano AI's $44M Series B (2025);
   American Family and Mercury backed BurnBot (2024, 2026).
 - Chubb, Travelers and Aviva Canada send crews to defend insured homes.
-- Tahoe Donner: premium cut 39%, deductible cut 84%, on *verified* fuel
-  reduction (2025).
+- Tahoe Donner: an association policy whose quoted terms reflected *modelled*
+  fuel-treatment benefits (2025). Not a household renewal, not measured loss
+  reduction.
 - Aspen Fire Protection District buys from Seneca, Pano AI and OroraTech at
   once, on foundation and donor money (2026).
-- NCIUA's $600M cat bond returns a 0.35% resilience spread for FORTIFIED roofs
-  if losses stay low; Hannover Re fronted it; a second bond repeats it.
-- 22 of the top 25 US property insurers offer a wildfire mitigation discount;
-  it averages ~$100 a year, about a tenth of the annualised cost of the work;
-  three insurers dropped wildfire from rating rather than pay it.
+- NCIUA: a $600M catastrophe bond — the bond's size, not a prevention budget —
+  with a 0.35% resilience spread funding FORTIFIED roofs only if losses stay
+  below a set level; Hannover Re fronted it; a second bond repeats it.
+- A study of leading *California* homeowners insurers found widespread
+  mitigation discounts, but available credits generally cover only a small
+  share of estimated retrofit costs. (The specific figures were removed from
+  the prototype on 2026-10-05 — see research-notes.md.)
 - Baloise funded hail cloud-seeding with ETH Zurich 2018–2023 and ended it:
   the effect "has not been demonstrably measurable."
 - Swiss Re bought Fathom outright rather than partner for its flood models.
-- Across 17 insurer prevention deals on record, **none** gives the insurer
-  exclusive rights to the data.
+- We found **no public evidence** of insurer-exclusive data rights in the
+  deals reviewed. That is an absence of evidence, not a proven absence.
 
 **On screen as speculation, hedged, inside the 2036 frame:**
 
@@ -275,11 +324,12 @@ unavoidable rather than to resolve them.
   in the pack shows a utility choosing an insurer as its verification partner.
 - **The strongest *measured* prevention evidence in the entire pack is
   construction standards, not sensing or suppression** — FORTIFIED in Hurricane
-  Sally, 55–74% fewer claims and 15–40% lower severity. A sceptic can fairly
-  say the network is an expensive way to buy what a roof upgrade already buys.
-  **This is now on screen 5**, as the question to answer first: *what
-  incremental protection does the network provide beyond proven property
-  hardening and fuel management?* The prototype poses it and does not answer
-  it, which is the honest position.
+  Sally. A sceptic can fairly say the network is an expensive way to buy what
+  a roof upgrade already buys. **This is now on screen 5**, as the question to
+  answer first: *does the network add enough protection beyond hardening and
+  fuel management to justify its cost?* The FORTIFIED figures themselves were
+  removed on 2026-10-05 — the peril mismatch distracted more than it informed
+  — so the screen poses the challenge without borrowing a hurricane study's
+  authority. The prototype poses it and does not answer it.
 - **Six screens is a lot of argument for a low-fidelity provocation.** Screen 4
   is the densest and is the one to cut first if the room needs it shorter.
