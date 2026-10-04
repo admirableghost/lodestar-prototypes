@@ -97,19 +97,24 @@ her sooner, with three sources behind them.
 **Prevention is affordable because the insurer is not the only beneficiary.**
 If several parties capture avoided-loss value, several parties can pay.
 
-One possible split of annual network cost, **illustrative, shape not forecast**:
+An indicative participant structure, **ordered, not quantified**:
 
-| Payer | Share | Because |
+| Tier | Who | Because |
 |---|---|---|
-| Investor-owned utility | ~45% | Largest and most legally specific avoided cost: ignition liability. Already spends at this scale, and most of it is rate-base recoverable. |
-| Public + philanthropic | ~20% | Fuel reduction and evacuation capacity are public goods with public channels. Donor money is real money here. |
-| All carriers, pooled | ~15% | Pooling is the free-rider answer and the antitrust-safer structure. |
-| Households, by levy | ~10% | Collective benefit, collective levy — not a premium credit. |
-| Catastrophe capital | ~5% | A resilience spread, returning only if losses stay low. |
-| Vendors, in kind | ~5% | Deployment at a discount for outcome data and reference rights. |
+| **Potential lead funders** | Utility or infrastructure owner; public agency or municipality | The largest and most legally specific avoided costs sit here — ignition liability, evacuation, recovery. Both already spend at this scale, and much of it is rate-base recoverable or publicly financed. |
+| **Co-funders and beneficiaries** | Insurer and reinsurer; property owners; lenders and resilience capital | They capture avoided loss but have weaker direct liability. Pooling across carriers is also the free-rider answer and the antitrust-safer structure. |
+| **In-kind and operating participants** | Fire departments; technology providers; response operators | They contribute permission, command, capacity and deployment rather than cash. |
 
-**One carrier's own slice sits inside the pooled 15%.** That is the point of
-putting the bar on screen: the insurer is visibly not the anchor tenant.
+**No split is known or validated, and the prototype says so.** An earlier
+version put six exact percentages on screen marked "illustrative"; they were
+removed, because a labelled number still reads as knowledge. The ordering is
+the claim: the parties carrying the largest direct liability have the
+strongest reason to fund the infrastructure, **and an insurer need not be
+among them.**
+
+What makes it tangible on screen 4: *a regional agreement commissions delivery
+and independent verification; carriers define what evidence could support
+coverage capacity and terms.*
 
 ### The reframe the build arrived at
 
@@ -127,16 +132,30 @@ stations, all with regulatory cost recovery behind them. So:
   commitment — filed terms that improve on verified prevention. That is a
   currency only a carrier holds.
 
-### Own / partner / buy
+### The carrier's role, stated as verbs
 
-- **Own:** the intervention-outcome ledger; the attribution method; the
-  translation of verified prevention into filed terms; the network operating
-  agreement; the join to its own claims book.
+Deliberately **not** an ownership thesis. The prototype's earlier framing —
+"own the measurement" — was wrong twice over: it implied an exclusivity no
+insurer in the record has ever secured, and verification performed by the
+beneficiary is not verification.
+
+- **Build:** little or nothing. The hardware is commodity and purchasable by
+  anyone.
 - **Partner:** grid action, dispatch and command, permits, capital structure,
   response capacity, fuel-reduction delivery.
-- **Buy:** cameras, satellites, ground sensors, line sensors, vegetation
-  analytics, aircraft, crews. All of it, on short contracts, with portability
-  of our own outcome data written in.
+- **Verify:** independently — by a party that is neither the payer nor the
+  beneficiary. The carrier defines what evidence would matter; it does not
+  grade its own homework.
+- **Consume:** verified outcomes, as one input to risk estimates.
+- **Underwrite:** translate that evidence into capacity and terms, where it
+  holds up.
+
+The hypothesis, framed as a hypothesis: **State Farm could become the carrier
+that translates independently verified prevention outcomes into underwriting
+capacity and terms**, and the potentially compounding asset is the operating
+history connecting intervention → outcome → underwriting. Not proven, and a
+mandate like Colorado's could make the translation step table stakes rather
+than an advantage.
 
 ---
 
@@ -256,8 +275,11 @@ unavoidable rather than to resolve them.
   in the pack shows a utility choosing an insurer as its verification partner.
 - **The strongest *measured* prevention evidence in the entire pack is
   construction standards, not sensing or suppression** — FORTIFIED in Hurricane
-  Sally. A sceptic can fairly say the network is the expensive way to buy what
-  a roof upgrade already buys. That objection is not on screen and probably
-  should be, in a later pass.
+  Sally, 55–74% fewer claims and 15–40% lower severity. A sceptic can fairly
+  say the network is an expensive way to buy what a roof upgrade already buys.
+  **This is now on screen 5**, as the question to answer first: *what
+  incremental protection does the network provide beyond proven property
+  hardening and fuel management?* The prototype poses it and does not answer
+  it, which is the honest position.
 - **Six screens is a lot of argument for a low-fidelity provocation.** Screen 4
   is the densest and is the one to cut first if the room needs it shorter.

@@ -1,5 +1,21 @@
 # Resilience Grid — verification record
 
+> **Revision pass, 5 October 2026.** A surgical evidence-discipline revision
+> touched screens 1, 2, 4, 5 and 6 — no new screens, no visual redesign, no
+> change to the narrative architecture. Two components were removed (`.share`
+> percentage bar, `.opb` own/partner/buy) and one added (`.tier`). Every suite
+> below was re-run against the revised files and is reported post-revision.
+> Confirmed zero dangling references to the removed components in both
+> `index.html` and `style.css`.
+>
+> What changed, in one line each: screen 1 no longer claims cover is
+> unavailable at any price; screen 2 no longer implies these parties have
+> never interacted; screen 4 no longer shows invented funding percentages and
+> no longer frames the carrier's role as ownership; screen 5 no longer says
+> "prove the loss that did not occur" and now carries the
+> hardening-versus-network challenge; screen 6's end state is "Potentially
+> viable" with an explicit four-condition chain.
+
 What was actually tested, by whom, and what is still imperfect.
 Run with Playwright/Chromium against the real built files over a local HTTP
 server, plus a visual pass on rendered screenshots. Date: 4 October 2026.
@@ -30,12 +46,16 @@ On a phone the inherited design lets `.screen` scroll once `--fit` reaches its
 
 | Screen | 390×844 | 360×640 |
 |---|---|---|
-| 1 The problem | 0 | 1px |
-| 2 The network | 9px | 63px |
+| 1 The problem | 1px | 0 |
+| 2 The network | 54px | 108px |
 | 3 The moment | 38px | 92px |
-| 4 Why anyone pays | **315px** | **541px** |
-| 5 The loop | 1px | 147px |
-| 6 Market creation | 0 | 193px |
+| 4 Why anyone pays | **377px** | **592px** |
+| 5 The loop | 40px | 279px |
+| 6 Market creation | 32px | 258px |
+
+Screen 5 grew by roughly 130px at 360px wide because the revision added the
+hardening-versus-network challenge to it. That is a deliberate trade: the
+question is the single most useful objection in the deck.
 
 Everything is reachable; nothing is severed. Screen 4 is the outlier because
 it carries a seven-row exchange table plus three more plates, and on a phone
@@ -158,9 +178,14 @@ touched.** The new prototype is additive and its only shared dependency is
    certain on a page with a drawn ground underneath.
 5. **Not wired into the library page.** Deliberate — see README — but it means
    the prototype is only reachable by direct link.
-6. **The strongest counter-argument is not on screen.** The best *measured*
-   prevention evidence in the whole backing pack is FORTIFIED construction
-   standards, not sensing or suppression. A sceptic can say the network buys
-   expensively what a roof upgrade already buys. `concept.md` §9 records this;
-   a later pass should put it on screen 5 beside Baloise.
-7. **Tested in Chromium only.** No Safari or Firefox pass.
+6. **Tested in Chromium only.** No Safari or Firefox pass.
+7. **The FORTIFIED figures are the one place the revision added numbers.**
+   55–74% fewer claims and 15–40% lower severity are verified in
+   `research-notes.md` §2, but they come from a peer-reviewed study of a
+   *different peril* (Hurricane Sally). The screen says "the best-measured
+   prevention evidence anyone has is structural" rather than implying it
+   transfers to wildfire. Worth a second read before Monday.
+8. **"2 of 11 carriers still quoting new business freely"** is still an
+   invented figure, and "freely" is doing real work in that sentence. It sits
+   on a plate stamped invented, but a reader skimming could take it as a count
+   of carriers in a real market.

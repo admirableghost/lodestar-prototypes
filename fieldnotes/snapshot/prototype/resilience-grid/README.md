@@ -103,8 +103,7 @@ Nine components, each drawn for one argument on one screen:
 | `.gauge` | 1, 6 | regional insurability as a direction, not a score |
 | `.layers` / `.cap` | 2 | the four-rail network stack |
 | `.tl` | 3 | the event timeline, with corroboration and human rows |
-| `.xchg` / `.share` | 4 | the value exchange and who actually pays |
-| `.opb` | 4 | own / partner / buy |
+| `.xchg` / `.tier` | 4 | the value exchange, and who might fund it in tiers |
 | `.loop` | 5 | the five-stage operating loop |
 | `.counter` | 5 | the documented prevention failure |
 | `.fork` | 6 | without / with the network |
@@ -118,7 +117,16 @@ takes conditional verbs. See `design.md` §4.
 ## What must not change without re-reading the docs
 
 - **No number goes on screen unless it is in `research-notes.md` §1–§2, or is
-  an Alder County figure labelled illustrative on its own plate.**
+  an Alder County figure labelled illustrative on its own plate.** Funding
+  shares are not an exception: the percentage bar that once sat on screen 4
+  was removed because labelling a modelled split "illustrative" does not stop
+  it reading as knowledge.
+- **The carrier's role stays BUILD-little / PARTNER / VERIFY-independently /
+  CONSUME / UNDERWRITE.** No screen may say the insurer owns the measurement,
+  owns the data, or funds the majority. Independent verification means a party
+  that is neither the payer nor the beneficiary.
+- **Nothing says prevention produces availability.** Screen 6's chain is four
+  conditions and a "then", and the gauge stops short of the end of its track.
 - **No invented figure may carry a real company's name.**
 - **The ground must never resolve an individual dwelling.** Settlements are
   masses. The moment one house is clickable this becomes Emberwatch.

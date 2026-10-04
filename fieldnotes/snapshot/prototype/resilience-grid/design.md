@@ -129,11 +129,17 @@ than a property. They reuse three values already in the set.
 |---|---|---|
 | Retreating | `--alarm` `#A33322` | cover thinning, carriers leaving |
 | Managed | `--vendor` `#7A5A17` | prevention running, evidence not yet in |
-| Viable | `--public` `#2F5A44` | measured loss reduction, cover writable |
+| Potentially viable | `--public` `#2F5A44` | estimated risk reduction, subject to evidence and capacity |
 
 Never render these three as a traffic light of equal dots. The gauge
 (§3.2) is a track with a travelling marker, because the claim is about
 *direction*, and the direction is the argument.
+
+**The third state is named "Potentially viable", not "Viable", and its bar
+stops at 84% of the track.** A filled rail would say the question had been
+settled. It has not: prevention does not create availability on its own, and
+the gauge has to carry that conditionality in its geometry as well as in its
+label.
 
 ### 1.4 Type — **[INHERITED]**
 
@@ -334,9 +340,19 @@ Its header carries the standing hedge — `One possible model` — set as an
 cards with `avoids` and `contributes` as labelled rows, never a horizontally
 scrolling table.
 
-The contribution cell takes a `.kind` chip — money / capacity / permission /
-data / assets — so the reader can see at a glance that most participants are
-not contributing money.
+The contribution cell takes a `.kind` chip — money / permission / consent /
+underwriting / structure / capacity — so the reader can see at a glance that
+most participants are not contributing money.
+
+**`.tier`, alongside it, replaced a stacked percentage bar.** The first version
+put six exact funding shares on screen (45% / 20% / 15% / 10% / 5% / 5%). The
+numbers were marked illustrative and were still wrong to show: they implied a
+split nobody has modelled, and false precision is more damaging to a strategic
+provocation than vagueness. `.tier` is three ordered groups — potential lead
+funders, co-funders and beneficiaries, in-kind and operating participants —
+each a colour-bordered rail. **The ordering carries the whole argument** (the
+parties with the largest direct liability have the strongest reason to fund,
+and the insurer is not among them) without inventing a number.
 
 ### 3.6 `.loop` — the operating loop — **[NEW]**
 

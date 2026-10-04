@@ -539,7 +539,7 @@
     var cnt = document.getElementById("layer-count");
     if (cnt) {
       cnt.textContent = allOn
-        ? "All four layers already have sellers. Not one of them sells the assembly."
+        ? "These layers already meet at incidents. What is missing is the standing arrangement between them."
         : "Without " + off.map(function (k) { return offNames[k]; }).join(" and ") +
           ", the rest of it is an expensive way to watch.";
     }

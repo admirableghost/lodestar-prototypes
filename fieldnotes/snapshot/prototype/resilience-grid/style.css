@@ -338,8 +338,11 @@ body {
 .gauge--retreating .gauge-bar { background: var(--alarm); }
 .gauge--managed .gauge-now { color: var(--vendor); }
 .gauge--managed .gauge-bar { background: var(--vendor); width: 52%; }
+/* Deliberately short of the end of the track. The third state is
+   "potentially viable, subject to evidence and capacity" — a bar that filled
+   the rail would say the question had been settled. */
 .gauge--viable .gauge-now { color: var(--public); }
-.gauge--viable .gauge-bar { background: var(--public); width: 100%; }
+.gauge--viable .gauge-bar { background: var(--public); width: 84%; }
 
 /* ══ 3.3  .layers — the network stack ═══════════════════════════════════ */
 
@@ -476,58 +479,30 @@ body {
   color: var(--edition-ink);
 }
 
-/* ── .share — who actually pays, illustrative shares ──────────────────
-   Part of the exchange (§3.5). It exists to make one thing visible in a
-   glance: the insurer's slice is small and the utility's is not. */
+/* ── .tier — who might fund it ────────────────────────────────────────
+   Part of the exchange (§3.5). This replaced a stacked percentage bar that
+   put six exact shares on screen; the numbers implied knowledge nobody has.
+   An ORDERED set of tiers makes the same strategic point — the parties
+   carrying the largest direct liability have the strongest reason to fund,
+   and the insurer is not among them — without inventing a split. */
 
-.share { display: grid; gap: calc(var(--fs) * .4); margin: 0 0 calc(var(--fs) * .6); }
-.share-row {
-  display: grid; grid-template-columns: 11.5ch 1fr 3.6ch;
-  align-items: center; gap: 0 calc(var(--fs) * .5);
+.tier { display: grid; gap: calc(var(--fs) * .55); margin: 0 0 calc(var(--fs) * .6); }
+.tier-g {
+  border-left: 4px solid var(--rule);
+  padding-left: calc(var(--fs) * .7);
 }
-.share-k {
-  font: 600 calc(var(--fs) * .733)/1.3 var(--sans);
-  overflow: hidden; text-overflow: ellipsis;
-}
-.share-k--utility   { color: var(--utility); }
-.share-k--public    { color: var(--public); }
-.share-k--carrier   { color: var(--carrier); }
-.share-k--household { color: var(--edition-ink); }
-.share-k--capital   { color: var(--capital); }
-.share-k--vendor    { color: var(--vendor); }
-.share-bar {
-  display: block; height: calc(var(--fs) * .55);
-  background: var(--paper); border-radius: 999px; overflow: hidden;
-  box-shadow: inset 0 0 0 1px var(--hair);
-}
-.share-bar i { display: block; height: 100%; border-radius: 999px; background: var(--rule); }
-.share-row:nth-child(1) .share-bar i { background: var(--utility); }
-.share-row:nth-child(2) .share-bar i { background: var(--public); }
-.share-row:nth-child(3) .share-bar i { background: var(--carrier); }
-.share-row:nth-child(4) .share-bar i { background: var(--edition-ink); }
-.share-row:nth-child(5) .share-bar i { background: var(--capital); }
-.share-row:nth-child(6) .share-bar i { background: var(--vendor); }
-.share-v {
-  font: 600 calc(var(--fs) * .733)/1.3 var(--sans);
-  font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft);
-}
-
-/* ── .opb — own / partner / buy ───────────────────────────────────────
-   The disciplined half of the business model: what is actually left to own
-   once the sensing and the suppression are commodity. */
-
-.opb { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-       gap: calc(var(--fs) * .6); margin: 0 0 calc(var(--fs) * .55); }
-.opb-col { border-top: 2px solid var(--hair); padding-top: calc(var(--fs) * .4); }
-.opb-col:first-child { border-top-color: var(--edition-ink); }
-.opb-h {
-  margin: 0 0 calc(var(--fs) * .25);
+.tier-g--lead { border-left-color: var(--utility); }
+.tier-g--co   { border-left-color: var(--carrier); }
+.tier-g--kind { border-left-color: var(--fire); }
+.tier-h {
+  margin: 0 0 calc(var(--fs) * .15);
   font: 600 calc(var(--fs) * .667)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+  letter-spacing: .14em; text-transform: uppercase;
 }
-.opb-col:first-child .opb-h { color: var(--edition-ink); }
-.opb-t { margin: 0; font: calc(var(--fs) * .8)/1.38 var(--sans); color: var(--ink-soft); }
-.opb-col:first-child .opb-t { color: var(--edition-ink); }
+.tier-g--lead .tier-h { color: var(--utility); }
+.tier-g--co   .tier-h { color: var(--carrier); }
+.tier-g--kind .tier-h { color: var(--fire); }
+.tier-l { margin: 0; font: calc(var(--fs) * .8)/1.4 var(--sans); }
 
 /* ══ 3.6  .loop — the operating loop ════════════════════════════════════ */
 
@@ -703,12 +678,7 @@ body {
   .fork { grid-template-columns: 1fr; gap: calc(var(--fs) * .8); }
   .fork-rule { display: none; }
 
-  /* own / partner / buy stacks rather than squeezing three columns into a
-     phone; each becomes a labelled row */
-  .opb { grid-template-columns: 1fr; gap: calc(var(--fs) * .45); }
-  .opb-col { border-top-width: 1px; }
-
-  .share-row { grid-template-columns: 10ch 1fr 3.4ch; }
+  .tier { gap: calc(var(--fs) * .45); }
 
   .rows { grid-template-columns: 1fr; gap: 1px; }
   .rows dt { margin-top: calc(var(--fs) * .4); }
