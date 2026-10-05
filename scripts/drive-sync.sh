@@ -24,6 +24,7 @@ find_drive() {
   local m
   m=$(ls -d "$HOME"/Library/CloudStorage/GoogleDrive-*/ 2>/dev/null | head -1 || true)
   [ -z "$m" ] && return 1
+  m="${m%/}"   # ls -d adds a trailing slash; keep it off the joined paths
   # "My Drive" is the personal root; shared drives sit beside it
   if   [ -d "$m/My Drive" ];     then printf '%s' "$m/My Drive"
   elif [ -d "$m/Shared drives" ]; then printf '%s' "$m/Shared drives"
