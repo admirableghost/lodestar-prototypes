@@ -195,7 +195,7 @@ checked against `research-notes.md`:
 - **No invented figure carries a real company's name.**
 - **No Seneca performance claim** anywhere — Seneca appears once, as one chip
   on one rail.
-- **State Farm is never named on screen.** The carrier is "the carrier". Naming
+- **Kestrel Mutual is never named on screen.** The carrier is "the carrier". Naming
   a real insurer inside an invented county is precisely what §6 forbids; the
   attribution lives in `concept.md`, which is internal.
 

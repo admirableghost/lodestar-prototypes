@@ -3,7 +3,8 @@
 Two sourced photographs carry the opening (and the hero's mark everywhere
 else): a hillside home and a portrait. Both are real photographs of real
 subjects standing in for a fictional household. Neither may ever be captioned
-as the demonstration property, a real policyholder, or a State Farm customer.
+as the demonstration property, a real policyholder, or any real insurer's
+customer.
 
 ---
 

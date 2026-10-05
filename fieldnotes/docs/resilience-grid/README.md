@@ -1,6 +1,6 @@
 # Resilience Grid — how this is built
 
-Speculative prototype for the IDEO / State Farm futures discussion.
+Speculative prototype for the client futures discussion.
 A regional wildfire protection network in 2036, told from the region rather
 than from one house.
 

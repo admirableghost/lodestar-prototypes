@@ -341,9 +341,9 @@ to the verification step, not buried in a footnote.
   **no source confirming delivery or a real-fire use**. Seneca's verified stage
   is: one announced five-year contract with delivery due summer 2026, plus field
   tests and demos.
-- Any State Farm premium, withdrawal, book size, loss ratio or ZIP-code
+- Any Kestrel Mutual premium, withdrawal, book size, loss ratio or ZIP-code
   decision. The pack contains none, and CLAUDE.md forbids presenting a
-  fictional household as a real State Farm policyholder.
+  fictional household as a real Kestrel Mutual policyholder.
 - Any utility's wildfire liability figure attached to a named utility in our
   scenario.
 - Any claim that the network *will* reduce losses. The measured numbers we have

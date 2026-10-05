@@ -1,6 +1,6 @@
 # Resilience Grid — concept note
 
-Internal. For the IDEO / State Farm futures discussion, 9 October.
+Internal. For the client futures discussion, 9 October.
 Sacrificial strategic prototype: built to be argued with, not shipped.
 
 > **Density pass, 5 October 2026.** The six screens were cut from 1,858 to
@@ -37,20 +37,20 @@ category — sensing, verification, intervention, public agencies, utilities,
 financing — so that an exposure which is becoming economically unattractive to
 insure becomes insurable again.
 
-The prototype is deliberately *not* "State Farm partners with Seneca." Seneca
+The prototype is deliberately *not* "Kestrel Mutual partners with Seneca." Seneca
 is one chip on one rail of one of four layers on screen 2. The proposition is
 the assembly, and the argument is about who pays for it and who learns from it.
 
 The provocation the six screens exist to produce:
 
-> **Should State Farm help build the prevention infrastructure that makes
+> **Should Kestrel Mutual help build the prevention infrastructure that makes
 > difficult risks insurable?**
 
 And the sharper one the build arrived at, which is the closing line of screen 5:
 
 > If every piece of this is for sale to everyone, and we found no public
 > evidence of any insurer securing exclusive rights to the outcome data,
-> **what exactly is State Farm selling?**
+> **what exactly is Kestrel Mutual selling?**
 
 ---
 
@@ -191,7 +191,7 @@ The utility's existing spend dwarfs anything an insurer would contribute —
 5,000-mile undergrounding programmes, 650-camera fleets, hundreds of weather
 stations, all with regulatory cost recovery behind them. So:
 
-- **State Farm cannot be the funder of this network, and should stop trying.**
+- **Kestrel Mutual cannot be the funder of this network, and should stop trying.**
 - **Money is the one thing the utility does not need from a carrier.** What it
   is short of is independent justification: defensible third-party evidence
   that an operational action was warranted. A utility cannot credibly produce
@@ -219,7 +219,7 @@ beneficiary is not verification.
 - **Underwrite:** translate that evidence into capacity and terms, where it
   holds up.
 
-The hypothesis, framed as a hypothesis: **State Farm could become the carrier
+The hypothesis, framed as a hypothesis: **Kestrel Mutual could become the carrier
 that translates independently verified prevention outcomes into underwriting
 capacity and terms**, and the potentially compounding asset is the operating
 history connecting intervention → outcome → underwriting. Not proven, and a
@@ -297,7 +297,7 @@ year; everything without one is Alder County, 2036.
 
 **Never claimed anywhere:** a Seneca performance figure (the pack records
 unresolved conflicts on its own payload and found no confirmed delivery or
-real-fire use); any State Farm premium, withdrawal, book size or ZIP-code
+real-fire use); any Kestrel Mutual premium, withdrawal, book size or ZIP-code
 decision; any named utility's liability figure; a response-time capability.
 
 ---
@@ -307,17 +307,17 @@ decision; any named utility's liability figure; a response-time capability.
 These are the client's to answer, and the prototype is built to make them
 unavoidable rather than to resolve them.
 
-1. **Would State Farm accept being a minority payer and a non-owner of the
+1. **Would Kestrel Mutual accept being a minority payer and a non-owner of the
    hardware in exchange for owning the measurement?** This is a posture
-   decision about what business State Farm is in.
-2. **Would State Farm demand exclusive or co-owned intervention-outcome data,
+   decision about what business Kestrel Mutual is in.
+2. **Would Kestrel Mutual demand exclusive or co-owned intervention-outcome data,
    and walk if a vendor refuses?** No insurer in the record has done this, and
    it is the highest-leverage choice in the concept.
 3. **There is a real contradiction at the centre and the prototype displays it
    rather than engineering it away:** the moat requires exclusive outcome data,
    while the antitrust defence requires open, non-discriminatory network
    access. Both cannot be maximised.
-4. **What liability is State Farm willing to assume for having acted?** Pricing
+4. **What liability is Kestrel Mutual willing to assume for having acted?** Pricing
    risk and intervening in risk are different legal postures. The evidence base
    offers no statutory shelter, and this has no good answer without one.
 5. **Why does the utility need a carrier at all?** It owns the poles, the
