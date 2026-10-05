@@ -37,8 +37,11 @@
       ESC     = "#F3977A",
       COVER   = "#8FBEE4";
 
-  /* the two resting heights of the authority line, in world units */
-  var AUTH_Y = [762, 430];
+  /* The two resting heights of the authority line, in world units. Chosen so
+     that under every one of the three cameras the line lands in OPEN FIELD
+     between the plates rather than behind one, and so the rise between them
+     is large enough to read as a movement. */
+  var AUTH_Y = [880, 694];
 
   var svg = document.getElementById("field");
   var vb = null, camTimer = 0, authTimer = 0;
@@ -59,7 +62,7 @@
   var TRACE = (function () {
     var r = rng(8311), pts = [], x;
     for (x = -120; x <= W + 120; x += 64) {
-      pts.push([x, 612 + Math.sin(x / 190) * 64 + (r() - 0.5) * 56]);
+      pts.push([x, 742 + Math.sin(x / 190) * 52 + (r() - 0.5) * 48]);
     }
     return pts;
   })();
@@ -68,18 +71,19 @@
   var QUEUE = (function () {
     var r = rng(515), a = [], i;
     for (i = 0; i < 23; i++) {
-      a.push([150 + (i % 6) * 26, 884 - Math.floor(i / 6) * 22, 70 + r() * 130]);
+      a.push([150 + (i % 6) * 26, 846 - Math.floor(i / 6) * 22, 70 + r() * 130]);
     }
     return a;
   })();
 
-  /* screen 3 · five events. The fifth is above the authority line. */
+  /* screen 3 · five events. Four sit inside the boundary; the fifth is above
+     the authority line, with a dashed stem back down to it. */
   var EVENTS = [
-    { x: 300,  y: 640, over: false },
-    { x: 560,  y: 596, over: false },
-    { x: 810,  y: 656, over: false },
-    { x: 1060, y: 604, over: false },
-    { x: 1320, y: 286, over: true  }
+    { x: 780,  y: 772, over: false },
+    { x: 960,  y: 796, over: false },
+    { x: 1140, y: 760, over: false },
+    { x: 1320, y: 784, over: false },
+    { x: 1430, y: 600, over: true  }
   ];
 
   function smooth(pts) {
@@ -127,7 +131,7 @@
 
     /* held work, piled behind a vertical hold rule */
     if (opts.queue) {
-      s.push('<line x1="120" y1="640" x2="120" y2="930" stroke="' + HOLD +
+      s.push('<line x1="120" y1="600" x2="120" y2="900" stroke="' + HOLD +
              '" stroke-width="1.6" stroke-dasharray="5 7" opacity=".42"/>');
       QUEUE.forEach(function (q) {
         s.push('<rect x="' + q[0] + '" y="' + q[1] + '" width="' + q[2].toFixed(0) +
@@ -136,7 +140,7 @@
     }
 
     /* ── THE AUTHORITY LINE ── the permission boundary, as a line that moves */
-    var c = opts.events ? COVER : (authY > 600 ? HOLD : ACT);
+    var c = opts.events ? COVER : (authY > 790 ? HOLD : ACT);
     s.push('<line x1="-400" y1="' + authY.toFixed(1) + '" x2="' + (W + 400) + '" y2="' + authY.toFixed(1) +
            '" stroke="' + c + '" stroke-width="1.6" stroke-dasharray="16 12" opacity=".40"/>');
     s.push('<rect x="-400" y="' + authY.toFixed(1) + '" width="' + (W + 800) + '" height="' + (H + 400) +
@@ -157,9 +161,9 @@
       });
     }
 
-    /* seat the whole field into the bottom of the frame */
-    s.push('<rect x="-400" y="' + (H * 0.55) + '" width="' + (W + 800) + '" height="' + (H * 0.9) +
-           '" fill="url(#fade)"/>');
+    /* seat the field into the bottom of the frame, below everything the
+       field actually says anything with */
+    s.push('<rect x="-400" y="900" width="' + (W + 800) + '" height="700" fill="url(#fade)"/>');
 
     svg.innerHTML = s.join("");
   }

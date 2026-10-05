@@ -850,3 +850,23 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ══ TOUCH TARGETS (integration) ═══════════════════════════════════════
+   iPad is the primary delivery device and this is operated while someone
+   holds it. Every control takes a 44px minimum box. The chip and replay
+   buttons were 34px and 38px, which is a miss on a tablet. Padding, not
+   font-size, does the growing, so type is unaffected. */
+.chipbtn, .tl-play, .iconbtn, .cta, .picker select, button, select {
+  min-height: 44px;
+}
+.chipbtn, .tl-play { padding-top: 0; padding-bottom: 0; }
+/* a control that is only a glyph still needs width */
+.iconbtn { min-width: 44px; }
+
+/* ══ TOUCH TARGETS 2 (integration) ═════════════════════════════════════
+   Two misses the first pass left. A range input reports its track height,
+   not a thumb box, so it needs an explicit 44px height to be draggable with
+   a thumb on glass. And a chip with a two-letter label was 41px wide — the
+   44px rule is both dimensions, not just the vertical one. */
+input[type="range"] { height: 44px; }
+.chipbtn { min-width: 44px; }

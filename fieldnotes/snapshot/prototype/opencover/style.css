@@ -418,8 +418,12 @@ body {
 .doc-h--com { color: var(--carrier); border-bottom-color: var(--carrier); }
 
 .dl { margin: 0; }
+/* 23ch holds the longest key in the content without breaking it. A dotted
+   machine key split across two lines ("…no_lapse_at_rene / wal") reads as a
+   rendering fault, so keys are kept short enough to sit on one line and the
+   column is sized to the longest of them. */
 .kv {
-  display: grid; grid-template-columns: 19ch 1fr;
+  display: grid; grid-template-columns: 23ch 1fr;
   gap: 0 calc(var(--fs) * .7); align-items: baseline;
   padding: calc(var(--fs) * .21) 0;
   border-bottom: 1px solid var(--hair);
@@ -427,7 +431,7 @@ body {
 .kv:last-child { border-bottom: 0; }
 .kv dt {
   font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft);
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .kv dd {
   margin: 0; font: var(--t-mid)/1.45 var(--sans);
@@ -602,10 +606,12 @@ body {
 
   .gw { display: block; flex: 1 1 0; min-height: 0; }
 
-  /* The offer document keeps its two columns — a key over its value reads
-     as two unrelated lines — but the key column narrows to what a dotted
-     key actually needs at this size. */
-  .kv { grid-template-columns: 13ch 1fr; gap: 0 calc(var(--fs) * .5); }
+  /* The offer document stacks. 23ch of key plus a value does not fit a
+     360px column, and the alternative — breaking a dotted key across two
+     lines — reads as a fault. The row hairline still groups the pair, and
+     the key keeps its soft ink so the hierarchy survives the stack. */
+  .kv { grid-template-columns: 1fr; gap: 0; padding: calc(var(--fs) * .3) 0; }
+  .kv dt { font-size: var(--t-lab); letter-spacing: .04em; }
 
   /* A boundary with two sides stacks rather than squeezing: at 360px two
      columns of this list wrap to one word a line. */
@@ -630,7 +636,6 @@ body {
 }
 
 @media (max-width: 400px) {
-  .kv { grid-template-columns: 11.5ch 1fr; }
   .mark { white-space: normal; }
 }
 
@@ -661,3 +666,23 @@ body {
     --t-lab:  max(11px,   calc(var(--fs) * .667));
   }
 }
+
+/* ══ TOUCH TARGETS (integration) ═══════════════════════════════════════
+   iPad is the primary delivery device and this is operated while someone
+   holds it. Every control takes a 44px minimum box. The chip and replay
+   buttons were 34px and 38px, which is a miss on a tablet. Padding, not
+   font-size, does the growing, so type is unaffected. */
+.chipbtn, .tl-play, .iconbtn, .cta, .picker select, button, select {
+  min-height: 44px;
+}
+.chipbtn, .tl-play { padding-top: 0; padding-bottom: 0; }
+/* a control that is only a glyph still needs width */
+.iconbtn { min-width: 44px; }
+
+/* ══ TOUCH TARGETS 2 (integration) ═════════════════════════════════════
+   Two misses the first pass left. A range input reports its track height,
+   not a thumb box, so it needs an explicit 44px height to be draggable with
+   a thumb on glass. And a chip with a two-letter label was 41px wide — the
+   44px rule is both dimensions, not just the vertical one. */
+input[type="range"] { height: 44px; }
+.chipbtn { min-width: 44px; }

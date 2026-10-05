@@ -71,7 +71,7 @@
           { k: "annual_premium",               v: "1,340.00 USD" },
           { k: "excess.standard",              v: "450.00 USD" },
           { k: "excess.windscreen",            v: "0.00 USD" },
-          { k: "continuity.no_lapse_at_renewal", v: "true" }
+          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
         ] },
         { h: "covered perils", rows: [
           { k: "third_party_liability",        v: "unlimited" },
@@ -82,7 +82,7 @@
         { h: "not covered", cls: "out", rows: [
           { k: "track_use",                    v: "excluded", out: true },
           { k: "commercial_hire",              v: "excluded", out: true },
-          { k: "personal_effects.above_400",   v: "excluded", out: true }
+          { k: "personal_effects",             v: "excluded above 400.00 USD", out: true }
         ] },
         { h: "service commitments", cls: "com", rows: [
           { k: "first_response.days",  v: "1 working day",
@@ -111,7 +111,7 @@
           { k: "product",                      v: "motor · 12 months" },
           { k: "annual_premium",               v: "1,185.00 USD" },
           { k: "excess.standard",              v: "500.00 USD" },
-          { k: "continuity.no_lapse_at_renewal", v: "true" }
+          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
         ] },
         { h: "covered perils", rows: [
           { k: "third_party_liability",        v: "unlimited" },
@@ -148,7 +148,7 @@
           { k: "product",                      v: "motor · 12 months" },
           { k: "annual_premium",               v: "1,420.00 USD" },
           { k: "excess.standard",              v: "900.00 USD" },
-          { k: "continuity.no_lapse_at_renewal", v: "true" }
+          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
         ] },
         { h: "covered perils", rows: [
           { k: "third_party_liability",        v: "unlimited" },
@@ -157,8 +157,8 @@
           { k: "windscreen",                   v: "included, 75.00 USD excess" }
         ] },
         { h: "not covered", cls: "out", rows: [
-          { k: "theft.vehicle_unattended",     v: "excluded", out: true },
-          { k: "modifications.undeclared",     v: "excluded", out: true },
+          { k: "theft.unattended",             v: "excluded", out: true },
+          { k: "modifications",                v: "excluded if undeclared", out: true },
           { k: "driving_abroad",               v: "excluded", out: true }
         ] },
         { h: "service commitments", cls: "com", rows: [
@@ -390,7 +390,7 @@
            '" stroke-width="1.8" marker-end="url(#arr)"/>');
     /* the return. Heavier, in the ink, because it is the argument: the
        market re-opens on a missed commitment rather than on a date. */
-    s.push('<path d="M516 882Q374 826 400 702Q420 604 684 664" fill="none" stroke="' + INK +
+    s.push('<path d="M1402 874Q1534 812 1498 710Q1460 604 1258 584" fill="none" stroke="' + INK +
            '" stroke-width="2.6" marker-end="url(#ari)"/>');
 
     /* ── the records ── */
@@ -509,7 +509,7 @@
     }
     return [{ cls: "grey",  label: "Performance, recorded", wx: 700,  wy: 806, dy: -24 },
             { cls: "alarm", label: "One missed",            wx: 1120, wy: 896, dy: 0 },
-            { cls: "ink",   label: "Re-opened",             wx: 406,  wy: 680, dy: 0 }];
+            { cls: "ink",   label: "Re-opened",             wx: 1506, wy: 752, dy: 0 }];
   }
 
   function buildPins(n) {

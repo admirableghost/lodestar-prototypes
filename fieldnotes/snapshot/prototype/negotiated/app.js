@@ -494,7 +494,9 @@
           ? "Threshold met at " + committed + " of 60. The offer is available."
           : "Below the threshold at " + committed + " of 60. The offer is not available.");
       } else {
-        say(committed + " of 60 committed. " + Math.max(0, NEED - committed) + " short of 48.");
+        say(open
+          ? committed + " of 60 committed. The threshold of 48 is met and the offer stands."
+          : committed + " of 60 committed, " + (NEED - committed) + " short of 48.");
       }
     }
     lastOpen = open;

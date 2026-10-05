@@ -54,6 +54,20 @@
   var LOT_EDGES = [372, 1356];
   var TREES = [[300, 92], [205, 58], [1430, 78]];
 
+  /* A background treeline, so the lot has a neighbourhood around it rather
+     than ending in blank paper. The camera frame is always far wider than
+     the subject — `slice` on a world inset past all four edges — so the
+     planting has to run well beyond the lot in both directions. */
+  var BACKTREES = (function () {
+    var a = [], x, seed = 7;
+    for (x = -2600; x < 4400; x += 196) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      if (x > 230 && x < 1500) { continue; }   /* the lot itself stays open */
+      a.push([x + (seed % 70) - 35, 30 + (seed % 23)]);
+    }
+    return a;
+  })();
+
   /* ══════════════════════════════════════════════════════════════════════
      CAMERAS — one per screen
      ══════════════════════════════════════════════════════════════════════ */
@@ -95,16 +109,18 @@
            (op != null ? ' opacity="' + op + '"' : "") + ' stroke-linecap="round"/>';
   }
 
-  /* a tree: a trunk and three masses. The lot has four of them and they are
-     the only organic thing in the drawing. */
-  function tree(cx, r) {
+  /* a tree: a trunk and three masses. The only organic thing in the drawing,
+     and the background planting is the same glyph turned down. */
+  function tree(cx, r, faint) {
     var s = [];
-    s.push(rect(cx - r * 0.06 - 3, GROUND - r * 0.95, r * 0.12 + 6, r * 0.95, PUBLIC));
-    s.push('<g fill="' + PUBLIC + '" opacity=".17">');
+    s.push('<g opacity="' + (faint ? ".55" : "1") + '">');
+    s.push('<g opacity="' + (faint ? ".26" : ".44") + '">' +
+           rect(cx - r * 0.06 - 3, GROUND - r * 0.95, r * 0.12 + 6, r * 0.95, PUBLIC) + "</g>");
+    s.push('<g fill="' + PUBLIC + '" opacity="' + (faint ? ".11" : ".17") + '">');
     s.push('<circle cx="' + n2(cx) + '" cy="' + n2(GROUND - r * 1.38) + '" r="' + n2(r * 0.80) + '"/>');
     s.push('<circle cx="' + n2(cx - r * 0.54) + '" cy="' + n2(GROUND - r * 1.00) + '" r="' + n2(r * 0.56) + '"/>');
     s.push('<circle cx="' + n2(cx + r * 0.56) + '" cy="' + n2(GROUND - r * 1.06) + '" r="' + n2(r * 0.52) + '"/>');
-    s.push("</g>");
+    s.push("</g></g>");
     return s.join("");
   }
 
@@ -155,12 +171,20 @@
         '<stop offset="0" stop-color="#EFEDE4"/><stop offset="1" stop-color="#F7F5EC"/></linearGradient>' +
       '</defs>');
 
-    /* ── sky, hills, ground ── */
-    s.push(rect(-400, -400, W + 800, H + 800, "url(#sky)"));
-    s.push('<path d="M-400 716Q200 646 560 702Q900 746 1240 674Q1540 618 2200 690L2200 ' + (GROUND + 2) +
-           'L-400 ' + (GROUND + 2) + 'Z" fill="#ECEAE0"/>');
-    s.push(rect(-400, GROUND, W + 800, 500, "#F3F1E6"));
-    s.push(line(-400, GROUND, W + 400, GROUND, RULE, 1.8, null, 0.5));
+    /* ── sky, hills, ground ──
+       Drawn far past the world's nominal 1800 x 1000, because the camera
+       frame is always much larger than the subject: at the closest camera
+       the visible viewBox is about 2500 units wide, and at the widest it is
+       over 4000. Anything short of that showed a hard rectangular edge
+       where the drawing stopped and the page background began. */
+    s.push(rect(-9000, -9000, 20000, 20000, "url(#sky)"));
+    s.push('<path d="M-9000 700Q200 646 560 702Q900 746 1240 674Q1540 618 2200 690Q4000 736 9000 700L9000 ' +
+           (GROUND + 2) + 'L-9000 ' + (GROUND + 2) + 'Z" fill="#ECEAE0"/>');
+    s.push(rect(-9000, GROUND, 20000, 9000, "#F3F1E6"));
+    s.push(line(-9000, GROUND, 9000, GROUND, RULE, 1.8, null, 0.5));
+
+    /* ── the planting around the lot ── */
+    BACKTREES.forEach(function (tr) { s.push(tree(tr[0], tr[1], true)); });
 
     /* ── the neighbours, behind the lot boundary ── */
     if (o.neighbours) {
@@ -300,8 +324,24 @@
     }
 
     /* ── the walk up to the door ── */
-    s.push('<path d="M796 ' + GROUND + 'L862 ' + GROUND + 'L922 1000L716 1000Z" fill="' + PAPER +
+    s.push('<path d="M796 ' + GROUND + 'L862 ' + GROUND + 'L934 1010L704 1010Z" fill="' + PAPER +
            '" stroke="' + RULE + '" stroke-width="1.4" opacity=".9"/>');
+
+    /* ── the front fence, in the foreground ──
+       An elevation drawing is empty below its ground line by construction,
+       and the camera always leaves a deep band of it. One post-and-rail
+       frontage, drawn in the same hairlines as the house, makes that band
+       the front of the lot rather than blank paper. It opens for the walk. */
+    s.push('<g opacity=".5">');
+    [888, 910].forEach(function (ry) {
+      s.push(line(-3200, ry, 676, ry, INK, 2.2));
+      s.push(line(962, ry, 5000, ry, INK, 2.2));
+    });
+    for (x = -3200; x < 5000; x += 66) {
+      if (x > 676 && x < 962) { continue; }
+      s.push(rect(x, 872, 6, 62, INK));
+    }
+    s.push("</g>");
 
     svg.innerHTML = s.join("");
   }
@@ -393,23 +433,27 @@
 
   function pinSet(n) {
     if (n === 1) {
-      var a = [{ cls: "ink",  label: "This house, as surveyed", wx: 800,  wy: 415, dy: -40 },
+      /* anchored below the ground line, not above the ridge: a pin hung off
+         the roof apex of the closest camera lands off the top of the
+         viewport, and the collision guard then hides the one label the
+         screen most needs. */
+      var a = [{ cls: "ink",  label: "This house, as surveyed", wx: 800,  wy: 822, dy: 0 },
                { cls: "grey", label: "Detached garage",         wx: 1185, wy: 598, dy: -34 }];
       if (standard >= 2) {
         a.push({ cls: "fire",   label: "Screened vents", wx: 647,  wy: 588, dy: 0 });
-        a.push({ cls: "public", label: "Cleared edge",   wx: 800,  wy: 884, dy: 0 });
+        a.push({ cls: "public", label: "Cleared edge",   wx: 500,  wy: 866, dy: 0 });
       }
       return a;
     }
     if (n === 2) {
-      return [{ cls: "ink",  label: "This household", wx: 800, wy: 415, dy: -40 },
+      return [{ cls: "ink",  label: "This household", wx: 800, wy: 822, dy: 0 },
               { cls: eventOn ? "alarm" : "grey",
                 label: eventOn ? "Also lost" : "Also insured", wx: 180, wy: 640, dy: -42 },
               { cls: eventOn ? "alarm" : "grey",
                 label: eventOn ? "Also waiting" : "Neighbouring lots", wx: 1612, wy: 645, dy: -42 }];
     }
-    return [{ cls: "fire", label: "Reserved builder on site", wx: 800,  wy: 415, dy: -46 },
-            { cls: "grey", label: "Materials released",       wx: 1172, wy: 818, dy: -30 }];
+    return [{ cls: "fire", label: "Reserved builder on site", wx: 800,  wy: 415, dy: -44 },
+            { cls: "grey", label: "Materials released",       wx: 1172, wy: 790, dy: -16 }];
   }
 
   function buildPins(n) {
@@ -479,7 +523,11 @@
     stdBtns.forEach(function (b) {
       b.setAttribute("aria-pressed", +b.dataset.std === standard ? "true" : "false");
     });
-    if (specStd) { specStd.innerHTML = specStd.dataset["std" + standard] || ""; }
+    /* getAttribute, not dataset: `data-std-0` does not camel-case to
+       `std0` — a hyphen is only eaten before an ASCII letter, so the
+       dataset key is literally "std-0" and dataset.std0 is undefined.
+       That silently emptied the line this whole control exists to change. */
+    if (specStd) { specStd.textContent = specStd.getAttribute("data-std-" + standard) || ""; }
     if (current === 1) { renderLot({ phase: "intact", standard: standard }); buildPins(1); }
     refit();
   }
