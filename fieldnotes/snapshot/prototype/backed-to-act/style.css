@@ -756,3 +756,17 @@ body {
    44px rule is both dimensions, not just the vertical one. */
 input[type="range"] { height: 44px; }
 .chipbtn { min-width: 44px; }
+
+/* ══ TABLET CHROME (integration) ══════════════════════════════════════
+   iPad is the primary device, and iPad portrait is 820px — below the 899px
+   breakpoint, so it was inheriting the phone's chrome and showing the Next
+   button as a bare arrow. Stacking at that width is right; a tablet with
+   820px of width losing the one label that says where Next goes is not.
+   Restore the label above phone width. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .cta span:first-child {
+    position: static; width: auto; height: auto; padding: 0; margin: 0;
+    overflow: visible; clip: auto; clip-path: none; white-space: nowrap; border: 0;
+  }
+  .cta { padding: 0 18px; }
+}
