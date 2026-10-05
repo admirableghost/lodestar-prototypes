@@ -1,6 +1,6 @@
 # The six as one sequence
 
-**Commit** `98bbf80` · captured 2026-10-05 19:49:45 UTC
+**Commit** `b95c1fa` · captured 2026-10-05 19:58:36 UTC
 
 ## The walkthrough order and what each prototype is for
 

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Live** | https://fieldnotes-khaki-three.vercel.app/prototype/resilience-grid/ |
-| **Commit** | `98bbf80` — 98bbf80c56ce294f427665dc7ec07279dfea14c9 |
+| **Commit** | `b95c1fa` — b95c1fa9dd616ee1650a692c083b91a2d3e5ba03 |
 | **Captured from** | the deployed build at that commit |
 | **Folder** | `04-wildfire-protection` · live slug `resilience-grid` |
 | **Edition ink** | #2B3A42 |

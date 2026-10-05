@@ -4,13 +4,13 @@ This file is the review trigger. It exists only because all four gates passed.
 
 | Gate | Status |
 |---|---|
-| Deployment complete | yes — commit `98bbf80`, all six prototypes live |
+| Deployment complete | yes — commit `b95c1fa`, all six prototypes live |
 | Review screenshots complete | yes — 93 frames from the deployed build, every labelled state asserted against the DOM |
 | QA complete | yes — 9 viewport classes, two independent harnesses, zero problems |
 | NDA artifact scan complete | yes — zero matches across repository, deployed surface and review bundle |
 
-**Completed:** 2026-10-05 19:49:45 UTC
-**Commit:** 98bbf80c56ce294f427665dc7ec07279dfea14c9
+**Completed:** 2026-10-05 19:58:36 UTC
+**Commit:** b95c1fa9dd616ee1650a692c083b91a2d3e5ba03
 **Review root:** https://fieldnotes-khaki-three.vercel.app/review/iteration-001/
 **Machine-readable file list:** https://fieldnotes-khaki-three.vercel.app/review/index.json
 
