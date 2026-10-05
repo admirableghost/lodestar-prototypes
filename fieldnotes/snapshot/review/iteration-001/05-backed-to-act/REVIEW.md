@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Live** | https://fieldnotes-khaki-three.vercel.app/prototype/backed-to-act/ |
-| **Commit** | `b95c1fa` — b95c1fa9dd616ee1650a692c083b91a2d3e5ba03 |
+| **Commit** | `98bbf80` — 98bbf80c56ce294f427665dc7ec07279dfea14c9 |
 | **Captured from** | the deployed build at that commit |
 | **Folder** | `05-backed-to-act` · live slug `backed-to-act` |
 | **Edition ink** | #2E3A44 on a dark console #1E242B |
@@ -110,8 +110,12 @@ Contact sheet: `contact-sheet-ipad.png` (also `backed-to-act-contact-sheet-ipad.
 ## NDA scan
 
 ```
-patterns  /state[^a-z0-9]{0,3}farm/i        (State Farm, StateFarm, statefarm, state-farm, state_farm, state.farm)
-          initials used as a client shorthand
+patterns  /state[^a-z0-9]{0,3}farm/i
+          — the client's two-word name: the words adjacent, with any separator
+            or none, in any casing. The spellings are deliberately NOT listed
+            here. This file is served publicly, and an enumeration of forbidden
+            spellings is still an instance of the thing it forbids.
+          — plus the initials when used as a client shorthand
 scope     page copy · HTML · CSS · JS · comments · metadata · page title · URL slug
           filenames · folder names · aria-labels · this document · PNG metadata
           rendered text of every captured state

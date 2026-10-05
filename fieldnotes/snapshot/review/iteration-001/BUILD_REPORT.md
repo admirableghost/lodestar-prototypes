@@ -1,7 +1,7 @@
 # BUILD_REPORT — iteration-001
 
-**Completed** 2026-10-05 19:43:24 UTC
-**Commit** `b95c1fa9dd616ee1650a692c083b91a2d3e5ba03`
+**Completed** 2026-10-05 19:49:45 UTC
+**Commit** `98bbf80c56ce294f427665dc7ec07279dfea14c9`
 **Live root** https://fieldnotes-khaki-three.vercel.app
 
 ## What this iteration was for
@@ -109,9 +109,12 @@ Carried, not fixed — none blocks review.
 ## NDA scan
 
 ```
-patterns  /state[^a-z0-9]{0,3}farm/i   — State Farm, StateFarm, statefarm,
-                                         state-farm, state_farm, state.farm
-          initials used as a client shorthand
+patterns  /state[^a-z0-9]{0,3}farm/i
+          — the client's two-word name: the words adjacent, with any separator
+            or none, in any casing. The spellings are deliberately NOT listed
+            here. This file is served publicly, and an enumeration of forbidden
+            spellings is still an instance of the thing it forbids.
+          — plus the initials when used as a client shorthand
 ```
 
 | Scope | Result |
@@ -138,7 +141,7 @@ Zero leaks in every artifact.
 | Where | message **body**; no file, page or artifact contains the name |
 | Public? | **No.** GitHub API returns 422 "No commit found for SHA" |
 | Pushed history | `origin/main` tip `d692117` (2026-09-29) — **0 matches** |
-| Local unpushed | **14 commits**, including the offending one |
+| Local unpushed | **15 commits**, including the offending one |
 | Repo visibility | public (`admirableghost/lodestar-prototypes`) |
 
 A correction to the previous iteration's report: it stated this commit was in
@@ -155,7 +158,7 @@ been pushed. It never has been.
    then push normally. This is the recommended option and it is close to
    risk-free.
 2. **Squash the unpushed range** into commits with clean messages. Simpler, but
-   it discards the granular history of 14 commits.
+   it discards the granular history of 15 commits.
 3. **Leave it and never push this branch** — push a fresh branch built from the
    current tree instead. Keeps history intact locally, publishes nothing.
 4. **Do nothing.** Acceptable only while nobody pushes. The risk is that the
@@ -166,6 +169,7 @@ Any of these needs explicit approval. **No destructive action has been taken.**
 ### Unpushed commits
 
 ```
+98bbf80 iteration-001: deterministic review bundle and three iPad fixes
 b95c1fa Clear the iPad home-indicator strip under the chrome bar
 1707e63 Link the review bundle from the workshop index
 81692c3 Publish the review bundle as a route beside the prototypes
