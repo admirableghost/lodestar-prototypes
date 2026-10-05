@@ -1,7 +1,7 @@
 # BUILD_REPORT — iteration-001
 
-**Completed** 2026-10-05 19:49:45 UTC
-**Commit** `98bbf80c56ce294f427665dc7ec07279dfea14c9`
+**Completed** 2026-10-05 19:52:39 UTC
+**Commit** `370f96b398879a3e77f4f16261814f7e5b117ffe`
 **Live root** https://fieldnotes-khaki-three.vercel.app
 
 ## What this iteration was for
@@ -91,6 +91,31 @@ affordance; no gesture-strip collision; zero console errors.
 | OpenCover kept phone chrome on iPad portrait | medium | fixed |
 | Capture harness mislabelled an interaction state | high (artifact integrity) | fixed + 14 assertions added |
 | Gesture check false-positived on scrolling content | low (tooling) | fixed |
+| **Review docs spelled the banned name while documenting the scan for it** | **high** | **fixed** |
+
+### Incident — the review docs leaked the name they were documenting
+
+Recorded in full because it is the most serious thing that happened this
+iteration, and it was self-inflicted.
+
+The NDA section of all six `REVIEW.md` files and of this report originally
+documented the scan by **listing the spellings it searches for**. That list is
+itself an instance of the banned token, and those files are served publicly.
+The build contract had already identified this exact trap — "a 'do not write X'
+list is still an instance of X" — and the generator reproduced it anyway.
+
+| | |
+|---|---|
+| Detected by | the bundle NDA scan, before `READY_FOR_REVIEW` was announced |
+| Exposure | production alias only, ~12 minutes between two deploys |
+| Indexed? | no — `noindex` on every response, and at that time every crawler was disallowed |
+| Prior immutable deploy URLs | not public: return 302 to Vercel SSO (verified) |
+| Fix | the pattern is now described by its regex and its rule, with no spellings |
+| Re-scan | 0 matches across the bundle, 0 across the deployed surface |
+
+The scan catching this is the reason the scan runs over its own output. Any
+future generator that documents the pattern must describe it, never enumerate
+it.
 
 ## Unresolved issues
 
@@ -141,7 +166,7 @@ Zero leaks in every artifact.
 | Where | message **body**; no file, page or artifact contains the name |
 | Public? | **No.** GitHub API returns 422 "No commit found for SHA" |
 | Pushed history | `origin/main` tip `d692117` (2026-09-29) — **0 matches** |
-| Local unpushed | **15 commits**, including the offending one |
+| Local unpushed | **16 commits**, including the offending one |
 | Repo visibility | public (`admirableghost/lodestar-prototypes`) |
 
 A correction to the previous iteration's report: it stated this commit was in
@@ -158,7 +183,7 @@ been pushed. It never has been.
    then push normally. This is the recommended option and it is close to
    risk-free.
 2. **Squash the unpushed range** into commits with clean messages. Simpler, but
-   it discards the granular history of 15 commits.
+   it discards the granular history of 16 commits.
 3. **Leave it and never push this branch** — push a fresh branch built from the
    current tree instead. Keeps history intact locally, publishes nothing.
 4. **Do nothing.** Acceptable only while nobody pushes. The risk is that the
@@ -169,6 +194,7 @@ Any of these needs explicit approval. **No destructive action has been taken.**
 ### Unpushed commits
 
 ```
+370f96b Stop the review docs from spelling the name they forbid
 98bbf80 iteration-001: deterministic review bundle and three iPad fixes
 b95c1fa Clear the iPad home-indicator strip under the chrome bar
 1707e63 Link the review bundle from the workshop index
