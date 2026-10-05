@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>First Move — buying cover with an assistant</title>
+<meta name="description" content="A reconstruction of what a general assistant can already do when someone shops for insurance — and the one thing it still cannot do.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+
+<!-- A quiet ruled field, not a map. This prototype depicts a screen, so the
+     ground is a page rather than a place. -->
+<div class="world" id="world">
+  <svg id="field" preserveAspectRatio="xMidYMid slice" role="presentation" aria-hidden="true"></svg>
+</div>
+<div class="veil" id="veil" data-veil="soft" aria-hidden="true"></div>
+
+<main class="deck" id="deck">
+
+<!-- ══════ 1 · THE ANALYSIS IS ALREADY DELEGATED ══════ -->
+<section class="screen" data-screen="1" data-label="What it already does">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">Opening · today, reconstructed</p>
+    <h1 class="display display--xl" tabindex="-1"><span>She stopped reading</span><span>the policies herself.</span></h1>
+    <p class="body">Four renewal quotes, one question asked in plain language. The comparison is already something she delegates.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate plate--ask" style="grid-area:4/1/6/7">
+    <p class="eyebrow">What she asked</p>
+    <p class="said">“I have four renewal quotes. Which one actually covers me if the
+      garage floods, and where do they differ on the excess?”</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/8/13">
+    <p class="eyebrow">What it did with that <span class="illus">· reconstruction</span></p>
+    <div class="tl" id="read">
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">01</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body"><p class="tl-who">Read all four wordings</p>
+          <p class="tl-what">Including the schedules, where the differences live.</p></div>
+      </div>
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">02</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body"><p class="tl-who">Found the exclusion that matters</p>
+          <p class="tl-what">Two of the four treat an attached garage differently.</p></div>
+      </div>
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">03</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body"><p class="tl-who">Compared the excesses properly</p>
+          <p class="tl-what">Against her actual claim history, not the headline figure.</p></div>
+      </div>
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">04</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body"><p class="tl-who">Ranked them for her</p>
+          <p class="tl-what">The cheapest was third once the garage clause was read.</p></div>
+      </div>
+    </div>
+    <p class="note" id="read-count">Four documents read.</p>
+    <div class="tl-controls">
+      <button class="tl-play" type="button" id="read-play">Run it again</button>
+    </div>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:8/1/9/7">
+    <p class="note">Invented person, invented quotes. A reconstruction of a kind of exchange, not a recording of a real one, and no real product is depicted.</p>
+  </div>
+
+</section>
+
+<!-- ══════ 2 · WHERE IT STOPS ══════ -->
+<section class="screen" data-screen="2" data-label="Where it stops">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">Opening · the handoff</p>
+    <h2 class="display display--xl" tabindex="-1"><span>It can read</span><span>everything.</span><span>It cannot sign.</span></h2>
+    <p class="body">The analysis went the whole way. The transaction stops at a form, and she finishes it herself.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/8/7">
+    <p class="eyebrow">The handoff</p>
+    <div class="hand">
+      <div class="hand-side hand-side--can">
+        <p class="hand-h">Delegated</p>
+        <p class="hand-i">Read the wordings</p>
+        <p class="hand-i">Compare the exclusions</p>
+        <p class="hand-i">Rank against her situation</p>
+        <p class="hand-i">Draft the questions to ask</p>
+      </div>
+      <div class="hand-rule" aria-hidden="true"></div>
+      <div class="hand-side hand-side--cant">
+        <p class="hand-h">Still hers</p>
+        <p class="hand-i">Prove who she is</p>
+        <p class="hand-i">Answer the declarations</p>
+        <p class="hand-i">Authorise the payment</p>
+        <p class="hand-i">Sign</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="plate plate--wash" style="grid-area:8/1/9/7">
+    <p class="note">Invented person, invented quotes. Reconstruction, not a recording.</p>
+  </div>
+
+  <div class="plate plate--ask" style="grid-area:1/8/5/13">
+    <p class="eyebrow">What the insurer saw</p>
+    <p class="body">A form, filled in correctly, at 11pm. Nothing in it records that the decision was made by something that had read every word of all four policies.</p>
+  </div>
+
+  <div class="plate plate--carrier" style="grid-area:5/8/9/13">
+    <p class="eyebrow eyebrow--carrier">The question for the rest of this set</p>
+    <p class="display display--ask" tabindex="-1">What happens when the customer delegates the next step too?</p>
+  </div>
+
+</section>
+
+</main>
+
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">Where it stops</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

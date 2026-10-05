@@ -1,0 +1,916 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   First Move · the opening bookend
+   A wildfire protection network, told from the region rather than the house.
+
+   Forked from prototype/micromutual/style.css. Everything structural is
+   inherited unchanged — the ground-is-the-page layout, the one-unit sizing
+   with its per-screen --fit, the plate rules, the chrome. See design.md for
+   what is inherited and what is new; this file follows that document.
+
+   STOCK — Fieldnotes shared later-edition paper #FBF9F1, new ink #36414A.
+   Cool graphite, so it cannot be mistaken for Emberwatch's warm brown on a
+   shelf or in a screenshot. No webfonts, no images, no external request.
+
+   THE ONE RULE that makes a full-bleed drawing readable: every word sits on
+   an opaque plate. Nothing is ever set on the ground, on the veil, or on a
+   gradient. That is why every contrast figure below is measured against
+   --paper and never against white.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --paper:        #FBF9F1;
+  --edition-ink:  #4A4A52;   /*  8.33 : 1 on paper */
+  --edition-wash: #E6E7E7;
+  --wash-2:       #D8DBDC;   /* bar tracks only — carries no text */
+
+  --ink-soft:     #5C6872;   /*  5.42 on paper; >= 4.60 on every 13% fill */
+  --rule:         #8A959C;   /*  2.90 — hairlines and strokes, NEVER type */
+  --hair:         #DCDDD8;
+
+  /* ── the seven actors ───────────────────────────────────────────────────
+     Five values lifted unchanged from Micromutual's semantic set; --capital
+     is new; --fire is Emberwatch's "Prepare" driven down until it clears AA
+     on the wash as well as the paper. Households are the ink itself. */
+  --carrier:  #2F5E7C;   /* 6.61 — the insurer                      */
+  --utility:  #5B4E7A;   /* 7.08 — the electric utility             */
+  --fire:     #9E4A14;   /* 5.79 — the four fire districts          */
+  --public:   #2F5A44;   /* 7.47 — county and public agencies       */
+  --vendor:   #7A5A17;   /* 6.03 — sensing and suppression vendors  */
+  --capital:  #8A3450;   /* 7.41 — resilience / catastrophe capital */
+  --alarm:    #A33322;   /* 6.52 — the ignition, and shortfall      */
+
+  /* 13% alpha of the same value — one number per hue, not a second tint */
+  --carrier-fill: #E4EBEF;
+  --utility-fill: #EAE8F0;
+  --fire-fill:    #F6E8DC;
+  --public-fill:  #E6EDE7;
+  --vendor-fill:  #F1EBDC;
+  --capital-fill: #F3E4E9;
+  --alarm-fill:   #F4E4E0;
+
+  --r-s: 3px; --r-m: 6px; --r-l: 10px;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans:  Arial, Helvetica, sans-serif;
+
+  --plate-shadow: 0 0 0 1px rgba(54,65,74,.11), 0 14px 34px -20px rgba(54,65,74,.55);
+
+  /* ── the one unit ──────────────────────────────────────────────────────
+     Height-led, because the deck does not scroll on desktop: a 720px window
+     gets 13px body copy and a 1080px window gets 15px, continuously in
+     between. --fit is a per-screen multiplier app.js lowers only when a
+     screen's own content would still leave the stage. */
+  --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
+  --fit: 1;
+  --fs: var(--fs-base);
+
+  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
+  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
+  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
+  --rowsz:  clamp(14px, 0.75vw + 0.85vh, 21px);
+
+  --gutter: 18px;
+  --chrome-h: 76px;
+  --grid-gap: calc(var(--fs-base) * .93);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+
+/* Plates set their own `display`, which outranks the user-agent rule for
+   [hidden]. Without this a hidden screen still paints — and on a full-bleed
+   layout it paints straight on top of the one that should show. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #E0E2DE;
+  color: var(--edition-ink);
+  font: var(--fs-base)/1.5 var(--sans);
+  overflow: hidden;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+.skip {
+  position: fixed; left: 16px; top: 12px; z-index: 60;
+  width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  background: var(--edition-ink); color: var(--paper);
+  border-radius: var(--r-m); text-decoration: none;
+  font: 600 14px/1 var(--sans); cursor: pointer;
+}
+.skip:focus {
+  width: auto; height: auto; overflow: visible;
+  clip: auto; clip-path: none; padding: 12px 14px;
+}
+/* the heading receives focus from the skip button; it must not draw a ring
+   when it is reached by a mouse click on the page */
+.display:focus { outline: none; }
+.display:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
+
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--edition-ink);
+  outline-offset: 2px;
+  border-radius: var(--r-s);
+}
+
+/* ══ THE GROUND ═════════════════════════════════════════════════════════ */
+
+/* Inset past every edge, so Alder County is cropped by the viewport rather
+   than framed by it: 1440 x 900 renders it at roughly 122% x 116%. */
+.world { position: fixed; inset: -8% -11%; z-index: 0; }
+.world svg { display: block; width: 100%; height: 100%; }
+
+/* Per-screen wash. No text ever sits on it — every word is on an opaque
+   plate — so this only sets how loudly the ground speaks. */
+.veil {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  transition: background .45s cubic-bezier(.4,0,.2,1);
+  background: radial-gradient(130% 100% at 50% 45%,
+              rgba(251,249,241,0) 38%, rgba(224,226,222,.55) 100%);
+}
+.veil[data-veil="soft"] {
+  background: radial-gradient(135% 105% at 50% 45%,
+              rgba(251,249,241,0) 44%, rgba(216,219,220,.60) 100%);
+}
+.veil[data-veil="hard"] {
+  background: linear-gradient(180deg, rgba(249,248,240,.50), rgba(220,223,222,.64));
+}
+/* screen 3 only: the ground is the event, so the wash pulls back and warms */
+.veil[data-veil="ignite"] {
+  background: radial-gradient(90% 75% at 62% 56%,
+              rgba(163,51,34,.07) 0%, rgba(251,249,241,0) 45%, rgba(224,226,222,.52) 100%);
+}
+
+/* map pins — opaque plates, projected onto the ground by script */
+.pins { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.pin {
+  position: absolute; transform: translate(-50%, -50%);
+  background: var(--paper);
+  border-radius: var(--r-s);
+  box-shadow: 0 0 0 1px rgba(54,65,74,.22), 0 6px 16px -10px rgba(54,65,74,.6);
+  padding: 4px 9px;
+  font: 600 max(10px, calc(var(--fs-base) * .667))/1.5 var(--sans);
+  letter-spacing: .13em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.pin--ink     { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(54,65,74,.6); }
+.pin--alarm   { color: var(--alarm);   box-shadow: 0 0 0 1.5px var(--alarm),   0 6px 16px -10px rgba(54,65,74,.6); }
+.pin--fire    { color: var(--fire);    box-shadow: 0 0 0 1.5px var(--fire),    0 6px 16px -10px rgba(54,65,74,.6); }
+.pin--utility { color: var(--utility); box-shadow: 0 0 0 1.5px var(--utility), 0 6px 16px -10px rgba(54,65,74,.6); }
+.pin--vendor  { color: var(--vendor);  box-shadow: 0 0 0 1.5px var(--vendor),  0 6px 16px -10px rgba(54,65,74,.6); }
+.pin--grey    { color: var(--ink-soft);box-shadow: 0 0 0 1.5px var(--rule),    0 6px 16px -10px rgba(54,65,74,.6); }
+
+/* ══ THE DECK ═══════════════════════════════════════════════════════════ */
+
+/* The deck covers the whole viewport above the ground, so it has to be
+   transparent to the pointer as well as to the eye. Plates switch pointer
+   events back on. */
+.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+.screen {
+  position: absolute; inset: 0;
+  padding: var(--gutter) var(--gutter) var(--chrome-h);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  pointer-events: none;
+  align-items: start;
+
+  --fs: calc(var(--fs-base) * var(--fit));
+  --pad-y: calc(var(--fs) * 1.07);
+  --pad-x: calc(var(--fs) * 1.20);
+
+  /* ── the five text roles ──────────────────────────────────────────────
+     Every font-size in this file resolves through one of these, so a floor
+     can be applied in one place. On a wide window they are pure multiples
+     of --fs; on a narrow one they take hard minimums (see the narrow block)
+     because --fit used to drive labels to 6.4px and notes to 7.7px, which
+     is not small type, it is unreadable type. */
+  /* Floors are GLOBAL, not mobile-only. An earlier pass floored only below
+     899px and a 1280x720 presentation window still shrank uppercase labels
+     to 8.7px, because --fit runs on any short stage, not just a phone.
+     Nothing in this publication renders below 11px on any viewport. */
+  --t-body: max(13px,   var(--fs));              /* running copy            */
+  --t-sub:  max(12.5px, calc(var(--fs) * .93));  /* stat lines              */
+  --t-mid:  max(12px,   calc(var(--fs) * .867)); /* names, timeline actions */
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));   /* notes, asides, chips    */
+  --t-lab:  max(11px,   calc(var(--fs) * .667)); /* uppercase labels        */
+
+  font-size: var(--fs);
+
+  /* Last resort on a stage too short to hold the composition at legible
+     type: scroll. The brief is explicit — scrolling beats microscopic
+     typography. --fit still absorbs the first part of the squeeze through
+     padding and gaps, which do not take floors. */
+  overflow-y: auto;
+}
+.screen[hidden] { display: none; }
+.screen > * { min-width: 0; }
+
+.plate, .chipbtn, .cta, .iconbtn, .picker, .tl-play, select { pointer-events: auto; }
+
+/* A plate is as tall as what it holds. It is never handed a height it then
+   has to hide the remainder of. */
+.plate {
+  background: var(--paper);
+  border-radius: var(--r-l);
+  box-shadow: var(--plate-shadow);
+  padding: var(--pad-y) var(--pad-x);
+  display: flex; flex-direction: column; justify-content: flex-start;
+}
+.plate--wash    { background: var(--edition-wash); }
+.plate--carrier { background: var(--carrier-fill); }
+.plate--alarm   { background: var(--alarm-fill); }
+.plate--tight   { padding: calc(var(--fs) * .8) calc(var(--fs) * .95); }
+
+/* ══ TYPE ═══════════════════════════════════════════════════════════════ */
+
+.eyebrow {
+  margin: 0 0 calc(var(--fs) * .6);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.eyebrow--carrier { color: var(--carrier); }
+.eyebrow--utility { color: var(--utility); }
+.eyebrow--fire    { color: var(--fire); }
+.eyebrow--public  { color: var(--public); }
+.eyebrow--vendor  { color: var(--vendor); }
+.eyebrow--capital { color: var(--capital); }
+.eyebrow--alarm   { color: var(--alarm); }
+.eyebrow--ink     { color: var(--edition-ink); }
+
+.display {
+  margin: 0 0 calc(var(--fs) * .8);
+  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
+  letter-spacing: -.028em;
+  text-wrap: balance;
+}
+.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
+/* The closing provocation is the hero of screen 6 and is sized to win the
+   lower right of the composition. It wraps on its own, so no authored
+   line breaks — it is a question, not a headline. */
+.display--ask {
+  font-size: calc(var(--dsp) * var(--fit) * 1.06);
+  letter-spacing: -.026em; line-height: 1.12;
+}
+.display--ask span { display: inline; }
+.display span { display: block; }
+.display:last-child { margin-bottom: 0; }
+
+.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
+.body:last-child { margin-bottom: 0; }
+.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft); }
+.note + .note { margin-top: calc(var(--fs) * .35); }
+.strong { color: var(--edition-ink); font-weight: 700; }
+
+.fig {
+  margin: 0 0 calc(var(--fs) * .3);
+  font: 400 calc(var(--figsz) * var(--fit))/1 var(--serif); letter-spacing: -.025em;
+}
+.fig-unit {
+  font: var(--t-sec)/1 var(--sans); letter-spacing: 0;
+  color: var(--ink-soft); margin-left: 3px;
+}
+.fig--alarm   { color: var(--alarm); }
+.fig--carrier { color: var(--carrier); }
+
+.rows {
+  margin: 0 0 calc(var(--fs) * .8); display: grid;
+  grid-template-columns: 13ch 1fr; gap: calc(var(--fs) * .33) calc(var(--fs) * .93);
+}
+.rows:last-child { margin-bottom: 0; }
+.rows dt {
+  font: 600 var(--t-lab)/1.9 var(--sans); letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.rows dd { margin: 0; font: var(--t-body)/1.4 var(--sans); }
+/* Screen 3's authority legend: three short pairs that must not compete with
+   the event timeline beside them. */
+.rows--legend { grid-template-columns: 7.5ch 1fr; gap: calc(var(--fs) * .3) calc(var(--fs) * .8); }
+.rows--legend dd { font-size: var(--t-sec); }
+
+/* ── stat lines, screen 1. Illustrative regional figures. ─────────────── */
+.stats { display: grid; gap: calc(var(--fs) * .72); margin: 0; }
+.stat { display: flex; align-items: baseline; gap: calc(var(--fs) * .8); }
+.stat-fig {
+  flex: 0 0 auto; min-width: 4.4ch;
+  font: 400 calc(var(--rowsz) * var(--fit) * 1.18)/1 var(--serif);
+  letter-spacing: -.02em; font-variant-numeric: oldstyle-nums;
+}
+.stat-txt { margin: 0; font: var(--t-sub)/1.35 var(--sans); }
+.stat--alarm .stat-fig { color: var(--alarm); }
+
+/* ══ EVIDENCE vs SCENARIO — the one new convention ══════════════════════
+   Marked by FORM, not by a seventh colour. An aside is a dated thing that
+   actually happened; everything without a diamond is Alder County, 2036.
+   See design.md §4. */
+
+.aside {
+  margin: calc(var(--fs) * .5) 0 0;
+  padding-left: calc(var(--fs) * .8);
+  border-left: 2px solid var(--rule);
+  font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft);
+}
+.aside::before {
+  content: "◆ "; color: var(--edition-ink); font-size: .85em;
+}
+.aside .strong { color: var(--edition-ink); }
+.aside-yr { white-space: nowrap; }
+
+/* signals already here — the evidence plate, screen 6 */
+.sig { margin: 0; padding: 0 0 0 calc(var(--fs) * .8); list-style: none;
+       border-left: 2px solid var(--rule); display: grid; gap: calc(var(--fs) * .5); }
+.sig li { font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft); }
+.sig li::before { content: "◆ "; color: var(--edition-ink); font-size: .85em; }
+.sig .strong { color: var(--edition-ink); }
+
+/* the standing illustrative mark, for invented regional figures */
+.illus {
+  display: inline-block; margin: 0;
+  font: 600 var(--t-lab)/1.6 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+}
+
+/* ══ 3.2  .gauge — regional insurability ════════════════════════════════
+   A track with a travelling marker. Direction, never a score. */
+
+.gauge { margin: calc(var(--fs) * .4) 0 0; }
+.gauge-track {
+  position: relative; height: calc(var(--fs) * .5);
+  background: var(--wash-2); border-radius: 999px;
+  margin: 0 0 calc(var(--fs) * 1.5);
+}
+.gauge-bar {
+  position: absolute; inset: 0 auto 0 0; border-radius: 999px;
+  background: var(--alarm);
+  width: 12%;
+  transition: width .6s cubic-bezier(.4,0,.2,1), background .6s linear;
+}
+.gauge-stops {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--fs) * .4); margin: 0;
+}
+.gauge-stop {
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+  padding-top: calc(var(--fs) * .4);
+  border-top: 1px solid var(--hair);
+}
+.gauge-stop:nth-child(2) { text-align: center; }
+.gauge-stop:nth-child(3) { text-align: right; }
+.gauge-stop[data-on="1"] { color: var(--edition-ink); border-top-color: var(--edition-ink); }
+.gauge-now {
+  display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
+  margin: 0 0 calc(var(--fs) * .55);
+  font: 600 max(14px, var(--fs))/1.3 var(--sans);
+}
+.gauge-glyph { font-size: 1.05em; line-height: 1; }
+.gauge--retreating .gauge-now, .gauge--retreating .gauge-bar { color: var(--alarm); }
+.gauge--retreating .gauge-bar { background: var(--alarm); }
+.gauge--managed .gauge-now { color: var(--vendor); }
+.gauge--managed .gauge-bar { background: var(--vendor); width: 52%; }
+/* Deliberately short of the end of the track. The third state is
+   "potentially viable, subject to evidence and capacity" — a bar that filled
+   the rail would say the question had been settled. */
+.gauge--viable .gauge-now { color: var(--public); }
+.gauge--viable .gauge-bar { background: var(--public); width: 84%; }
+
+/* ══ 3.3  .layers — the network stack ═══════════════════════════════════ */
+
+.layers { display: grid; gap: calc(var(--fs) * .62); margin: 0; }
+.layer {
+  border-left: 4px solid var(--rule);
+  border-radius: var(--r-s);
+  padding: calc(var(--fs) * .5) 0 calc(var(--fs) * .5) calc(var(--fs) * .8);
+  /* NO TEXT FADING. The off state used to set opacity .48 on the whole rail,
+     which took every word in it below readable contrast. State is now carried
+     by the border, the ground and a badge; the type does not move. */
+  transition: border-color .3s linear, background .3s linear;
+}
+.layer[data-on="0"] {
+  border-left-color: var(--hair);
+  background: var(--edition-wash);
+}
+.layer[data-on="0"] .eyebrow { color: var(--ink-soft); }
+/* the badge is the unambiguous signal, and it is a word, not a tint */
+.layer-state {
+  display: none;
+  margin-left: .5em; padding: 1px 5px;
+  border-radius: var(--r-s); background: var(--wash-2); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans); letter-spacing: .1em;
+}
+.layer[data-on="0"] .layer-state { display: inline-block; }
+.layer--see   { border-left-color: var(--vendor); }
+.layer--know  { border-left-color: var(--carrier); }
+.layer--act   { border-left-color: var(--fire); }
+.layer--fund  { border-left-color: var(--capital); }
+.layer .eyebrow { margin-bottom: calc(var(--fs) * .25); }
+.layer-what { margin: 0 0 calc(var(--fs) * .45); font: var(--t-sub)/1.35 var(--sans); }
+.caps { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .3) calc(var(--fs) * .33); margin: 0; }
+.cap {
+  background: var(--edition-wash); border-radius: var(--r-s);
+  padding: 2px calc(var(--fs) * .45);
+  font: var(--t-sec)/1.5 var(--sans);
+  white-space: nowrap;
+}
+.cap-co { color: var(--ink-soft); }
+.cap-co::before { content: " · "; }
+
+/* ══ 3.4  .tl — the event timeline ══════════════════════════════════════ */
+
+.tl { margin: 0; display: grid; gap: 0; }
+.tl-row {
+  display: grid;
+  grid-template-columns: 5.4ch calc(var(--fs) * 1.5) 1fr;
+  align-items: start; gap: 0 calc(var(--fs) * .5);
+  padding: calc(var(--fs) * .36) calc(var(--fs) * .3);
+  /* NO TEXT FADING. Steps not yet reached used to sit at .22 opacity, which
+     made seven of the eight rows unreadable until the replay ran. Every row
+     is now fully legible at rest; progression is carried by the dot, a left
+     rule and a ground tint. */
+  border-left: 2px solid transparent;
+  border-radius: var(--r-s);
+  transition: background .3s linear, border-color .3s linear;
+}
+.tl-row[data-on="1"] {
+  background: var(--edition-wash);
+  border-left-color: var(--rule);
+}
+/* a step not yet reached: hollow dot */
+.tl-row[data-on="0"] .tl-dot {
+  background: var(--paper) !important;
+  box-shadow: 0 0 0 2px var(--rule), 0 0 0 5px var(--paper) !important;
+}
+.tl-time {
+  font: 600 var(--t-sec)/1.45 var(--sans);
+  font-variant-numeric: tabular-nums; color: var(--ink-soft);
+  text-align: right; white-space: nowrap;
+}
+/* the hairline that makes the column read as one sequence */
+.tl-mark { position: relative; height: 100%; display: flex; justify-content: center; }
+.tl-mark::before {
+  content: ""; position: absolute; top: 0; bottom: -100%;
+  width: 1px; background: var(--hair);
+}
+.tl-row:last-child .tl-mark::before { display: none; }
+.tl-dot {
+  position: relative; z-index: 1; margin-top: calc(var(--fs) * .35);
+  width: calc(var(--fs) * .55); height: calc(var(--fs) * .55);
+  border-radius: 50%; background: var(--rule); flex: 0 0 auto;
+  box-shadow: 0 0 0 3px var(--paper);
+}
+.tl-dot--utility { background: var(--utility); }
+.tl-dot--vendor  { background: var(--vendor); }
+.tl-dot--carrier { background: var(--carrier); }
+.tl-dot--fire    { background: var(--fire); }
+.tl-dot--alarm   { background: var(--alarm); }
+.tl-dot--public  { background: var(--public); }
+/* a corroborating signal is a different KIND of event from an action */
+.tl-row--corrob .tl-dot { background: var(--paper); box-shadow: 0 0 0 2px var(--vendor), 0 0 0 5px var(--paper); }
+.tl-who { margin: 0; font: 600 var(--t-sec)/1.45 var(--sans); }
+/* The authority class of each step, so "three sources agreed" is never
+   mistaken for "therefore everything executed". Detection and corroboration
+   are evidence; a bounded protocol action is pre-authorised and narrow; the
+   consequential decision is human. */
+.tl-kind {
+  display: inline-block; margin-left: .5em;
+  padding: 1px 5px; border-radius: var(--r-s);
+  background: var(--wash-2); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .94))/1.5 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.tl-row--corrob .tl-kind { background: var(--vendor-fill); color: var(--vendor); }
+.tl-what { margin: 0; font: var(--t-mid)/1.42 var(--sans); }
+.tl-body { min-width: 0; }
+
+/* the one human decision point — the most prominent row in the timeline */
+.tl-row--human {
+  background: var(--carrier-fill); border-radius: var(--r-m);
+  padding: calc(var(--fs) * .55) calc(var(--fs) * .6);
+  margin: calc(var(--fs) * .25) 0;
+  grid-template-columns: 5.4ch 1fr;
+}
+.tl-row--human .tl-mark { display: none; }
+.tl-row--human .tl-who { color: var(--carrier); }
+.tl-row--human .tl-who::before { content: "◆ "; }
+.tl-decide {
+  margin: calc(var(--fs) * .25) 0 0;
+  font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft);
+}
+.tl-decide .strong { color: var(--carrier); }
+
+.tl-controls {
+  display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .45);
+  margin-top: calc(var(--fs) * .6);
+}
+.tl-play {
+  display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
+  min-height: 38px; padding: 0 calc(var(--fs) * .9);
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  font: 600 var(--t-mid)/1 var(--sans); cursor: pointer;
+}
+.tl-play:hover { background: var(--edition-wash); }
+.tl-play[disabled] {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair); cursor: default;
+}
+
+/* ══ 3.5  .xchg — the value exchange ════════════════════════════════════ */
+
+.xchg { display: grid; gap: calc(var(--fs) * .4); margin: 0; }
+.xr {
+  display: grid; grid-template-columns: 11.5ch 1fr 1fr;
+  gap: 0 calc(var(--fs) * .7); align-items: start;
+  border-left: 4px solid var(--rule);
+  padding: calc(var(--fs) * .4) 0 calc(var(--fs) * .4) calc(var(--fs) * .6);
+  font-variant-numeric: tabular-nums;
+}
+.xr--carrier   { border-left-color: var(--carrier); }
+.xr--utility   { border-left-color: var(--utility); }
+.xr--fire      { border-left-color: var(--fire); }
+.xr--public    { border-left-color: var(--public); }
+.xr--vendor    { border-left-color: var(--vendor); }
+.xr--capital   { border-left-color: var(--capital); }
+.xr--household { border-left-color: var(--edition-ink); }
+.xr-who { margin: 0; font: 600 var(--t-mid)/1.35 var(--sans); }
+.xr-cell { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
+.xr-cell .strong { color: var(--edition-ink); font-weight: 400; }
+/* The simplified exchange: a participant and the one loss it escapes. The
+   three-column form (avoids / contributes) was the densest object in the
+   deck; the full ledger is carried in concept.md instead. */
+.xr-plain { grid-column: 2 / -1; color: var(--edition-ink); }
+.xchg-head {
+  display: grid; grid-template-columns: 11.5ch 1fr 1fr;
+  gap: 0 calc(var(--fs) * .7); padding-left: calc(var(--fs) * .6 + 4px);
+  margin: 0 0 calc(var(--fs) * .2);
+}
+.xchg-head span {
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+}
+/* money / capacity / permission / data / assets — so a reader can see at a
+   glance that most participants are not contributing money */
+.kind {
+  display: inline-block; margin-right: 4px;
+  font: 600 var(--t-lab)/1.5 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--edition-ink);
+}
+
+/* ── .tier — who might fund it ────────────────────────────────────────
+   Part of the exchange (§3.5). This replaced a stacked percentage bar that
+   put six exact shares on screen; the numbers implied knowledge nobody has.
+   An ORDERED set of tiers makes the same strategic point — the parties
+   carrying the largest direct liability have the strongest reason to fund,
+   and the insurer is not among them — without inventing a split. */
+
+.tier { display: grid; gap: calc(var(--fs) * .55); margin: 0 0 calc(var(--fs) * .6); }
+.tier-g {
+  border-left: 4px solid var(--rule);
+  padding-left: calc(var(--fs) * .7);
+}
+.tier-g--lead { border-left-color: var(--utility); }
+.tier-g--co   { border-left-color: var(--carrier); }
+.tier-g--kind { border-left-color: var(--fire); }
+.tier-h {
+  margin: 0 0 calc(var(--fs) * .15);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.tier-g--lead .tier-h { color: var(--utility); }
+.tier-g--co   .tier-h { color: var(--carrier); }
+.tier-g--kind .tier-h { color: var(--fire); }
+.tier-l { margin: 0; font: var(--t-sec)/1.4 var(--sans); }
+
+/* ── .agr — the hypothetical operating agreement ──────────────────────
+   Screen 4's commercial proposition, as five numbered clauses. It is the
+   one place the prototype says concretely what the parties sign. */
+
+.agr { margin: 0 0 calc(var(--fs) * .5); padding: 0; list-style: none;
+       display: grid; gap: calc(var(--fs) * .45); counter-reset: agr; }
+.agr li {
+  display: grid; grid-template-columns: calc(var(--fs) * 1.5) 1fr;
+  gap: 0 calc(var(--fs) * .5);
+  font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft);
+}
+.agr-n {
+  display: grid; place-items: center;
+  width: calc(var(--fs) * 1.25); height: calc(var(--fs) * 1.25);
+  border-radius: 50%; background: var(--edition-ink); color: var(--paper);
+  font: 700 max(11px, calc(var(--t-lab) * .96))/1 var(--sans);
+}
+.agr li:last-child .agr-n { background: var(--carrier); }
+.agr li:last-child { color: var(--edition-ink); }
+.agr .strong { color: var(--edition-ink); }
+
+/* ══ 3.6  .loop — the operating loop ════════════════════════════════════ */
+
+.loop { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--fs) * .9);
+        align-items: center; margin: 0; }
+.loop svg { display: block; width: calc(var(--fs) * 12.5); height: auto; flex: 0 0 auto; }
+/* Screen 5's loop is the dominant object on its screen, not a diagram beside
+   a paragraph. The ring grows and the stage names come up to display size;
+   only the two hard steps carry a line of explanation. */
+.loop--hero { gap: calc(var(--fs) * 1.5); }
+.loop--hero svg { width: calc(var(--fs) * 17); }
+.loop--hero .loop-legend { gap: calc(var(--fs) * .62); }
+.loop--hero .loop-name { font-size: var(--t-body); }
+.loop--hero .loop-item--hard .loop-name { font-size: calc(var(--t-body) * 1.08); }
+.loop-legend { display: grid; gap: calc(var(--fs) * .45); margin: 0; }
+.loop-item { display: grid; grid-template-columns: calc(var(--fs) * 1.1) 1fr;
+             gap: 0 calc(var(--fs) * .5); align-items: start; }
+.loop-bullet {
+  margin-top: calc(var(--fs) * .42);
+  width: calc(var(--fs) * .62); height: calc(var(--fs) * .62);
+  border-radius: 50%; border: 1.5px solid var(--rule); background: transparent;
+}
+.loop-item--hard .loop-bullet { background: var(--edition-ink); border-color: var(--edition-ink); }
+.loop-name { margin: 0; font: 600 var(--t-mid)/1.4 var(--sans); color: var(--ink-soft); }
+.loop-item--hard .loop-name { color: var(--edition-ink); }
+.loop-line { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
+
+/* ══ 3.7  .counter — the documented failure ═════════════════════════════ */
+
+.counter {
+  background: var(--alarm-fill);
+  border-left: 4px solid var(--alarm);
+  border-radius: var(--r-s);
+  padding: calc(var(--fs) * .6) calc(var(--fs) * .8);
+}
+.counter .eyebrow { color: var(--alarm); }
+
+/* ══ 3.8  .fork — without / with ════════════════════════════════════════ */
+
+.fork { display: grid; grid-template-columns: 1fr 1px 1fr;
+        gap: 0 calc(var(--fs) * .95); margin: 0; }
+.fork-rule { background: var(--hair); }
+.fork-col { display: grid; gap: calc(var(--fs) * .35); align-content: start; }
+.fork-head {
+  margin: 0 0 calc(var(--fs) * .3);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.fork-col--out .fork-head { color: var(--alarm); }
+.fork-col--in  .fork-head { color: var(--public); }
+.fork-step {
+  margin: 0; display: grid; grid-template-columns: calc(var(--fs) * .95) 1fr;
+  gap: 0 calc(var(--fs) * .3);
+  font: var(--t-mid)/1.38 var(--sans);
+}
+.fork-step::before { content: "↓"; color: var(--rule); font-size: .9em; line-height: 1.5; }
+.fork-col--out .fork-step:last-child { color: var(--alarm); font-weight: 700; }
+.fork-col--in  .fork-step:last-child { color: var(--public); font-weight: 700; }
+
+/* ══ 3.9  chip buttons (layer reveal, screen 2) ═════════════════════════ */
+
+.chips { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .4); margin: 0; }
+.chipbtn {
+  min-height: 34px; padding: 0 calc(var(--fs) * .8);
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  font: 600 var(--t-sec)/1 var(--sans); cursor: pointer;
+}
+.chipbtn:hover { background: var(--edition-wash); }
+.chipbtn[aria-pressed="true"] {
+  background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper);
+}
+
+/* ══ CHROME ═════════════════════════════════════════════════════════════ */
+
+.chrome {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+  height: var(--chrome-h);
+  padding: 0 var(--gutter) var(--gutter);
+  display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
+  pointer-events: none;
+}
+.chrome-r { display: flex; align-items: center; gap: 8px; }
+.iconbtn {
+  width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 16px/1 var(--sans); cursor: pointer;
+}
+.iconbtn:hover { background: var(--edition-wash); }
+/* A disabled control still has to be legible: ink-soft on wash is 4.6 : 1,
+   and the flat wash fill is what says "off", not a pale grey glyph. */
+.iconbtn[disabled] {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair); cursor: default;
+}
+.iconbtn[disabled]:hover { background: var(--edition-wash); }
+
+.picker select {
+  min-height: 46px; max-width: 34ch; padding: 0 12px;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 14px/1 var(--sans); cursor: pointer;
+}
+
+/* The primary action is the ink, not an accent — design.md §9. */
+.cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 46px; padding: 0 20px;
+  background: var(--edition-ink); color: var(--paper);
+  border: 1px solid var(--edition-ink); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
+}
+.cta:hover { background: #2A333B; border-color: #2A333B; }
+
+/* The ground window is a desktop no-op. On a phone it is the hole the county
+   shows through, and it takes whatever height the plates have not claimed. */
+.gw { display: none; }
+
+/* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
+
+/* Below about 820px of stage the gutter and the chrome are the cheapest
+   height to give back, before --fit has to touch the type at all. */
+@media (min-width: 900px) and (max-height: 820px) {
+  :root { --gutter: 13px; --chrome-h: 66px; }
+  .chrome { padding: 0 var(--gutter) 10px; }
+}
+
+/* ══ NARROW ═════════════════════════════════════════════════════════════ */
+
+@media (max-width: 899px) {
+  :root {
+    --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px;
+    /* a phone is not a short desktop: start from 14px, not 13px */
+    --fs-base: clamp(14px, 3.6vw, 15.5px);
+  }
+
+  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
+     app.js does not run the --fit search on a narrow window at all (see
+     fitScreen), so --fit is 1 here and these are the real rendered sizes.
+     The floors are belt-and-braces for very short viewports. Nothing on a
+     phone renders below 11px, and nothing carrying a sentence below 14px. */
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+
+  .world { inset: -5% -9%; }
+
+  /* The deck stops at the controls rather than scrolling underneath them:
+     a floating bar over running text is unreadable, and it puts body copy on
+     an unknown background. The ground still runs behind the bar to the edge. */
+  .deck { inset: 0 0 var(--chrome-h) 0; }
+
+  /* One screenful, top to bottom. Plates take the height they need, the
+     county window takes what is left, and app.js lowers --fit if the sum
+     would still be more than the phone has. */
+  .screen {
+    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: var(--gutter) var(--gutter) 8px;
+  }
+  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
+
+  .gw { display: block; flex: 1 1 0; min-height: 0; }
+  /* on the two screens where the drawing IS the argument, the window keeps a
+     floor and --fit pays for it out of the type */
+  .gw--map { flex: 1 0 auto; min-height: min(20vh, 150px); }
+
+  /* The exchange table becomes stacked cards. It never scrolls sideways. */
+  .xchg-head { display: none; }
+  .xr {
+    grid-template-columns: 1fr;
+    gap: calc(var(--fs) * .2);
+    padding: calc(var(--fs) * .45) 0 calc(var(--fs) * .45) calc(var(--fs) * .6);
+  }
+  .xr-cell::before {
+    display: block;
+    font: 600 var(--t-lab)/1.6 var(--sans);
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .xr-avoids::before      { content: "Avoids"; }
+  .xr-contributes::before { content: "Contributes"; }
+
+  /* The loop ring becomes a vertical chain: the svg is dropped and the
+     legend carries it, because a 5-node ring at 320px is a smudge. */
+  .loop { grid-template-columns: 1fr; }
+  .loop svg { display: none; }
+  .loop-legend { gap: calc(var(--fs) * .4); }
+  .loop-item { grid-template-columns: calc(var(--fs) * 1.1) 1fr; }
+
+  .fork { grid-template-columns: 1fr; gap: calc(var(--fs) * .8); }
+  .fork-rule { display: none; }
+
+  .tier { gap: calc(var(--fs) * .45); }
+
+  .rows { grid-template-columns: 1fr; gap: 1px; }
+  .rows dt { margin-top: calc(var(--fs) * .4); }
+
+  .tl-row { grid-template-columns: 5ch calc(var(--fs) * 1.3) 1fr; }
+  .tl-row--human { grid-template-columns: 5ch 1fr; }
+
+
+  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
+  .chrome-r { width: 100%; }
+  .picker { flex: 1 1 auto; min-width: 0; }
+  .picker select { width: 100%; max-width: none; }
+  .cta { padding: 0 14px; font-size: 14px; }
+  /* The label is hidden from SIGHT, not from the accessibility tree.
+     display:none left the button's accessible name as the arrow glyph
+     alone, so it announced as "→" on a phone. */
+  .cta span:first-child {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
+}
+
+/* On a phone shorter than about 740px there is no height to give the window
+   a floor out of; the plates come first and the county takes what is left. */
+@media (max-width: 899px) and (max-height: 739px) {
+  .gw--map { flex: 1 1 0; min-height: 0; }
+}
+
+@media (max-width: 400px) {
+  .layers { gap: calc(var(--fs) * .5); }
+  .cap { white-space: normal; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ══ FIRST MOVE — two components this prototype needs ═══════════════════ */
+
+/* .plate--ask — a quoted utterance, or a question put to the room. The
+   publication has no speech component; this is the smallest one that works:
+   a wash ground and a serif setting, so a spoken line reads differently
+   from the surrounding analysis without a speech bubble. */
+.plate--ask { background: var(--carrier-fill); }
+.said {
+  margin: 0;
+  font: 400 calc(var(--dsp) * var(--fit) * .62)/1.3 var(--serif);
+  letter-spacing: -.012em;
+}
+
+/* .hand — the handoff: what is delegated against what is still the
+   person's. Two columns, because the whole beat of the screen is the line
+   between them. Deliberately NOT a table: it is a boundary, not data. */
+.hand { display: grid; grid-template-columns: 1fr 1px 1fr;
+        gap: 0 calc(var(--fs) * .95); margin: 0; }
+.hand-rule { background: var(--hair); }
+.hand-side { display: grid; gap: calc(var(--fs) * .38); align-content: start; }
+.hand-h {
+  margin: 0 0 calc(var(--fs) * .3);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.hand-side--can  .hand-h { color: var(--public); }
+.hand-side--cant .hand-h { color: var(--alarm); }
+.hand-i {
+  margin: 0; display: grid; grid-template-columns: calc(var(--fs) * 1) 1fr;
+  gap: 0 calc(var(--fs) * .3);
+  font: var(--t-mid)/1.4 var(--sans);
+}
+.hand-side--can  .hand-i::before { content: "✓"; color: var(--public); }
+.hand-side--cant .hand-i::before { content: "—"; color: var(--alarm); }
+
+@media (max-width: 899px) {
+  .hand { grid-template-columns: 1fr; gap: calc(var(--fs) * .8); }
+  .hand-rule { display: none; }
+}
+
+/* ══ GLOBAL TYPE FLOORS (integration) ═══════════════════════════════════
+   Applied by the main thread at integration. The --fit search runs on any
+   short stage, not only a phone: at 1280x720 it drove uppercase labels to
+   under 9px. Floors are therefore global, and the screen scrolls rather
+   than shrinking past legibility. Narrow floors are re-stated after, so a
+   phone keeps the higher minimums. Nothing renders below 11px anywhere. */
+.screen {
+  --t-body: max(13px,   var(--fs));
+  --t-sub:  max(12.5px, calc(var(--fs) * .93));
+  --t-mid:  max(12px,   calc(var(--fs) * .867));
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));
+  --t-lab:  max(11px,   calc(var(--fs) * .667));
+  overflow-y: auto;
+}
+@media (max-width: 899px) {
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+}

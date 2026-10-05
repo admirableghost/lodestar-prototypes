@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backed to Act — an agent operations console</title>
+<meta name="description" content="An invented AI provider's console, in which an invented distributor raises what its purchasing agent may do alone because a mistake is covered. Wholly hypothetical: no real provider, customer or insurer.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- A button, not an anchor. As an anchor to #deck it rewrites the hash, the
+     router reads that as "no screen", and the reader is thrown back to screen
+     1 — the opposite of skipping to content. -->
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+
+<!-- ═══════════════ THE GROUND ═══════════════
+     Not a map. The full-bleed ground is the console itself: a dark field, a
+     faint dot grid, one activity trace, and one horizontal authority line
+     that physically rises when the boundary is moved on screen 2. Drawn in
+     SVG, deliberately quiet — nothing on it is readable and nothing needs to
+     be. Every word on this page sits on an opaque plate. -->
+<div class="world" id="world">
+  <svg id="field" preserveAspectRatio="xMidYMid slice" role="img"
+       aria-label="A quiet dark console field: a faint dot grid, a trace of the agent's work running left to right, and a horizontal authority line that sits low while the agent may only draft and rises when it is permitted to act."></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+
+<!-- ═══════════════ THE PROVIDER'S CHROME ═══════════════
+     NEW COMPONENT, and the only one this prototype adds to the inherited
+     system. It exists because of the hard constraint: this must read as
+     another company's software, with insurance appearing inside it as a
+     backing condition. A persistent vendor bar carrying a wordmark, the
+     tenant workspace and a live authority state does that in one strip,
+     where a plate full of sentences would not. It carries labels only — no
+     sentence, no argument — so it is chrome, not a fifth text plate. -->
+<header class="cbar">
+  <p class="cbar-brand">Halden<span class="cbar-sub">Agent Operations</span></p>
+  <p class="cbar-tenant">Workspace <span class="cbar-slash">/</span> Calder Supply Co. <span class="cbar-slash">/</span> agent rpl&#8209;01 · replenishment</p>
+  <p class="cbar-state" id="cbar-state"><span class="cbar-dot" id="cbar-dot" aria-hidden="true"></span><span id="cbar-state-txt">Autonomy · Draft only</span></p>
+</header>
+
+<!-- ONE BEAT PER SCREEN.
+     1 the work and the person it waits on · 2 the boundary moving · 3 the
+     agent acting inside it, and the one case that comes back. Everything
+     else belongs in the walkthrough, not on the glass. -->
+<main class="deck" id="deck">
+
+<!-- ══════ 1 · THE TASK ══════════════════════════════════════════════════ -->
+<section class="screen" data-screen="1" data-label="The task" data-cam="queue" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">01 / The task · workspace: Calder Supply Co.</p>
+    <h1 class="display display--xl" tabindex="-1"><span>It can do the work.</span><span>It cannot spend</span><span>the money.</span></h1>
+    <p class="body">The replenishment agent drafts every restock order in seconds. Every one of them waits for a buyer.</p>
+    <p class="note">Invented company and figures.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:5/1/9/7">
+    <p class="eyebrow">Authority · as currently set</p>
+    <div class="auth auth--locked" data-level="0">
+      <div class="auth-track"><div class="auth-fill"></div></div>
+      <ol class="auth-stops">
+        <li class="auth-stop" data-on="1">Draft only<span class="auth-sub">Where it sits</span></li>
+        <li class="auth-stop">Act within cover<span class="auth-sub">No cover attached</span></li>
+        <li class="auth-stop auth-stop--off">Act without limit<span class="auth-sub">Not offered</span></li>
+      </ol>
+    </div>
+    <p class="body body--tight">Nobody at Calder will let software commit money it cannot answer for. So the level sits at the bottom, and the queue grows.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/7/9/13">
+    <p class="eyebrow">Approval queue · waiting on a person</p>
+    <p class="fig">23 drafted<span class="fig-unit">none placed</span></p>
+    <ul class="q" id="q">
+      <li class="q-row"><span class="q-badge">Held</span><p class="q-what">Copper fittings · Branch 7</p><p class="q-val">$8,420</p><p class="q-wait">31 h</p></li>
+      <li class="q-row"><span class="q-badge">Held</span><p class="q-what">Condenser fan motors · 3 branches</p><p class="q-val">$14,960</p><p class="q-wait">26 h</p></li>
+      <li class="q-row"><span class="q-badge">Held</span><p class="q-what">Valve bodies · Branch 2</p><p class="q-val">$9,750</p><p class="q-wait">19 h</p></li>
+      <li class="q-row"><span class="q-badge">Held</span><p class="q-what">Flexible connectors · Branch 11</p><p class="q-val">$2,180</p><p class="q-wait">14 h</p></li>
+      <li class="q-row"><span class="q-badge">Held</span><p class="q-what">Thermostats · Branch 4</p><p class="q-val">$5,310</p><p class="q-wait">9 h</p></li>
+      <li class="q-row q-row--more"><p class="q-what">and 18 more, the oldest drafted on Friday</p></li>
+    </ul>
+    <p class="note note--rule">One buyer clears this queue by hand. The drafting was never the bottleneck.</p>
+  </div>
+
+</section>
+
+<!-- ══════ 2 · THE AUTHORITY ═════════════════════════════════════════════ -->
+<section class="screen" data-screen="2" data-label="The authority" data-cam="boundary" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">02 / The authority</p>
+    <h2 class="display display--xl" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
+    <p class="body">With a policy attached, Calder raises what the agent may do alone — and sets the number it may not pass.</p>
+    <p class="econ">Halden charges for autonomy. The cover is what lets it sell the tier.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/7/7">
+    <p class="eyebrow">Autonomy level <span class="illus">Calder sets this</span></p>
+    <div class="auth" id="auth" data-level="0">
+      <div class="auth-track"><div class="auth-fill"></div></div>
+      <div class="auth-stops">
+        <button class="auth-stop" type="button" data-set="0" aria-pressed="true">Draft only<span class="auth-sub">Every order waits</span></button>
+        <button class="auth-stop" type="button" data-set="1" aria-pressed="false">Act within cover<span class="auth-sub">Cover attached</span></button>
+        <button class="auth-stop auth-stop--off" type="button" disabled aria-pressed="false">Act without limit<span class="auth-sub">Not offered</span></button>
+      </div>
+    </div>
+    <p class="grant" id="grant"><span class="grant-mark" aria-hidden="true">○</span><span id="grant-txt">Not granted. The agent drafts; a buyer commits.</span></p>
+  </div>
+
+  <div class="plate" style="grid-area:1/7/9/13">
+    <p class="eyebrow">What the agent may do unsupervised</p>
+
+    <div class="limit" id="limit" data-on="0">
+      <p class="limit-lab">Spend limit, set by Calder</p>
+      <p class="limit-fig"><span id="limit-fig">$0</span><span class="limit-unit" id="limit-unit">nothing may be committed</span></p>
+      <p class="limit-2" id="limit-2">No weekly ceiling, because there is no authority to ceiling.</p>
+    </div>
+
+    <ul class="perms" id="perms">
+      <li class="perm"><p class="perm-what">Reorder a stocked part up to its set level</p><span class="perm-badge">Needs a buyer</span></li>
+      <li class="perm"><p class="perm-what">Split one order across approved suppliers</p><span class="perm-badge">Needs a buyer</span></li>
+      <li class="perm"><p class="perm-what">Accept a price within 4% of the last agreed price</p><span class="perm-badge">Needs a buyer</span></li>
+      <li class="perm"><p class="perm-what">Cancel and replace an order it duplicated itself</p><span class="perm-badge">Needs a buyer</span></li>
+      <li class="perm perm--back"><p class="perm-what">Single&#8209;source parts, any new supplier, anything over the limit</p><span class="perm-badge perm-badge--back">Returns to a buyer</span></li>
+    </ul>
+    <p class="note">Invented company and figures.</p>
+  </div>
+
+  <!-- Equal weight, deliberately. What the customer keeps is as large and as
+       early as what the policy takes. -->
+  <div class="plate" style="grid-area:7/1/9/7">
+    <div class="split">
+      <div class="split-col split-col--cov">
+        <p class="split-head">Covered mistake</p>
+        <p class="split-sub">Paid by an insurance partner</p>
+        <ul class="split-list">
+          <li>Wrong part, wrong quantity, duplicate order</li>
+          <li>Restocking, return freight, unsellable stock</li>
+          <li>Only while the agent stayed inside the boundary</li>
+        </ul>
+      </div>
+      <div class="split-rule" aria-hidden="true"></div>
+      <div class="split-col split-col--own">
+        <p class="split-head">Calder's own risk</p>
+        <p class="split-sub">Not covered, whatever the agent does</p>
+        <ul class="split-list">
+          <li>The demand forecast Calder supplied</li>
+          <li>Prices and terms Calder pre&#8209;negotiated</li>
+          <li>A supplier that fails, or fails to deliver</li>
+          <li>Anything a buyer approved by hand</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════ 3 · THE ACTION ════════════════════════════════════════════════ -->
+<section class="screen" data-screen="3" data-label="The action" data-cam="run" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/5/6">
+    <p class="eyebrow">03 / The action · Tuesday</p>
+    <h2 class="display display--xl" tabindex="-1"><span>Four placed.</span><span>One came back.</span></h2>
+    <p class="body">A day inside the boundary. The agent committed spend without asking, made one mistake that the cover paid for, and sent one order to a person.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <!-- The one light plate in the deck. Edition ink on paper: the publication
+       speaking once, from outside the vendor's software, at the end. -->
+  <div class="plate plate--note" style="grid-area:6/1/9/6">
+    <p class="eyebrow eyebrow--ink">The takeaway</p>
+    <p class="display display--ask" tabindex="-1">They let it act because a mistake is covered.</p>
+    <p class="note">Wholly hypothetical. Halden and Calder Supply Co. are invented, as are all figures. No real provider, customer or insurer is described.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/7/9/13">
+    <p class="eyebrow">Agent rpl&#8209;01 · acting within cover</p>
+    <div class="run">
+
+      <div class="run-row" data-kind="ok">
+        <p class="run-time">06:40</p>
+        <div class="run-mark" aria-hidden="true"><span class="run-dot"></span></div>
+        <div class="run-body">
+          <p class="run-who">PO&#8209;4471 · Copper fittings, Branch 7<span class="run-kind">Placed</span></p>
+          <p class="run-what">$8,420 · inside the limit · no person involved</p>
+        </div>
+      </div>
+
+      <div class="run-row" data-kind="ok">
+        <p class="run-time">09:02</p>
+        <div class="run-mark" aria-hidden="true"><span class="run-dot"></span></div>
+        <div class="run-body">
+          <p class="run-who">PO&#8209;4472 · Condenser fan motors, 3 branches<span class="run-kind">Placed</span></p>
+          <p class="run-what">$14,960 · split across two approved suppliers</p>
+        </div>
+      </div>
+
+      <div class="run-row" data-kind="ok">
+        <p class="run-time">11:18</p>
+        <div class="run-mark" aria-hidden="true"><span class="run-dot"></span></div>
+        <div class="run-body">
+          <p class="run-who">PO&#8209;4473 · Valve bodies, Branch 2<span class="run-kind">Placed</span></p>
+          <p class="run-what">$9,750 · price 2% above the last agreed</p>
+        </div>
+      </div>
+
+      <div class="run-row" data-kind="cov">
+        <p class="run-time">15:41</p>
+        <div class="run-mark" aria-hidden="true"><span class="run-dot run-dot--cov"></span></div>
+        <div class="run-body">
+          <p class="run-who">PO&#8209;4473 · wrong valve body, 300 units<span class="run-kind run-kind--cov">Covered mistake</span></p>
+          <p class="run-what">$6,240 restocking and freight. The agent chose wrong inside the boundary, so the claim is the insurer's and Calder is not out of pocket.</p>
+        </div>
+      </div>
+
+      <div class="run-row run-row--human">
+        <p class="run-time">16:55</p>
+        <div class="run-body">
+          <p class="run-who">PO&#8209;4475 · Control boards, single source<span class="run-kind run-kind--esc">Returned to a person</span></p>
+          <p class="run-what">$31,500 · over the $25,000 per&#8209;order limit, and the only supplier who makes the board.</p>
+          <p class="run-to"><span class="strong">Dana Ruiz, head of purchasing</span> — the same person who granted the authority now decides this one.</p>
+        </div>
+      </div>
+
+    </div>
+    <p class="run-sum">Committed without a buyer: <span class="strong">$33,130</span>. One mistake, covered. One order returned.</p>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ═══════════════ CHROME ═══════════════
+     Prev icon button · content-labelled picker · ink-pill next. On this stock
+     the "ink" pill is paper on the console, because the ink IS the surface. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">Grant the authority</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

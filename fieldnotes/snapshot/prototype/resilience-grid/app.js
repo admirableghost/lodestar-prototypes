@@ -682,9 +682,10 @@
       s.push('<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (st.hard ? 11 : 9) +
              '" fill="' + (st.hard ? INK : PAPER) + '" stroke="' + (st.hard ? INK : RULE) +
              '" stroke-width="1.6"/>');
-      s.push('<text x="' + x.toFixed(1) + '" y="' + (y + 3.4).toFixed(1) +
-             '" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="700" fill="' +
-             (st.hard ? PAPER : RULE) + '">' + st.n + "</text>");
+      /* No numerals in the ring. They rendered at 9px — the only text in the
+         publication under the 11px floor — and they duplicated the legend
+         beside them, which already reads "01 Observe". The filled/hollow
+         node now carries the state on its own. */
     });
     host.innerHTML =
       '<defs>' +

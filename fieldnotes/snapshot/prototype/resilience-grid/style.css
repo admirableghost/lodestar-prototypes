@@ -194,13 +194,23 @@ body {
      of --fs; on a narrow one they take hard minimums (see the narrow block)
      because --fit used to drive labels to 6.4px and notes to 7.7px, which
      is not small type, it is unreadable type. */
-  --t-body: var(--fs);                   /* running copy            */
-  --t-sub:  calc(var(--fs) * .93);       /* stat lines              */
-  --t-mid:  calc(var(--fs) * .867);      /* names, timeline actions */
-  --t-sec:  calc(var(--fs) * .8);        /* notes, asides, chips    */
-  --t-lab:  calc(var(--fs) * .667);      /* uppercase labels        */
+  /* Floors are GLOBAL, not mobile-only. An earlier pass floored only below
+     899px and a 1280x720 presentation window still shrank uppercase labels
+     to 8.7px, because --fit runs on any short stage, not just a phone.
+     Nothing in this publication renders below 11px on any viewport. */
+  --t-body: max(13px,   var(--fs));              /* running copy            */
+  --t-sub:  max(12.5px, calc(var(--fs) * .93));  /* stat lines              */
+  --t-mid:  max(12px,   calc(var(--fs) * .867)); /* names, timeline actions */
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));   /* notes, asides, chips    */
+  --t-lab:  max(11px,   calc(var(--fs) * .667)); /* uppercase labels        */
 
   font-size: var(--fs);
+
+  /* Last resort on a stage too short to hold the composition at legible
+     type: scroll. The brief is explicit — scrolling beats microscopic
+     typography. --fit still absorbs the first part of the squeeze through
+     padding and gaps, which do not take floors. */
+  overflow-y: auto;
 }
 .screen[hidden] { display: none; }
 .screen > * { min-width: 0; }

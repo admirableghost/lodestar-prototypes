@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OpenCover — the buyer is not a person</title>
+<meta name="description" content="A hypothetical motor policy bought by a household's assistant: priorities and permissions set once by a person, an offer published as machine-readable data with explicit exclusions and verifiable service commitments, and a relationship that is re-chosen continuously rather than renewed by default.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
+     router read that as "no screen", and the user was thrown back to screen 1
+     — the opposite of skipping to content. It now moves focus to the heading
+     of whatever screen is open. -->
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+
+<!-- ═══════════════ THE GROUND ═══════════════
+     Not a place. This prototype has no territory — its subject is published
+     terms — so the ground is a register: a ruled field carrying three
+     records, with the camera moving between them. What the person stated,
+     the three offers read as data, and the performance ledger that re-opens
+     the market. Drawn once in a 1600 x 1000 world; see app.js. -->
+<div class="world" id="world">
+  <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
+       aria-label="A ruled register sheet carrying three records: at the upper left, the priorities and permission stated by a person; at the centre, three offer documents side by side with the middle one outlined as selected; along the lower band, a performance ledger of met and missed service commitments. Arrows run from the stated record to the offers to the ledger, and a heavier arrow returns from the ledger to the offers."></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="pins" id="pins" aria-hidden="true"></div>
+
+<!-- ONE THOUGHT PER SCREEN.
+     1 — the person sets priorities and permissions, once, and grants them.
+     2 — an offer rendered as data, and the comparison scored against those
+         priorities rather than against price.
+     3 — the commitments checked against performance, and what a miss allows.
+     Everything else is voiceover. -->
+<main class="deck" id="deck">
+
+<!-- ══════ 1 · WHAT THE PERSON SETS ══════ -->
+<section class="screen" data-screen="1" data-label="What the person sets" data-cam="set" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/8">
+    <p class="eyebrow">OpenCover · a household motor policy · hypothetical</p>
+    <h1 class="display display--xl" tabindex="-1"><span>Set once.</span><span>Never shopped again.</span></h1>
+    <p class="body">The household states what matters and what the assistant may do without asking. After that, buying is a machine reading terms.</p>
+    <p class="note">Invented insurers, invented prices, invented commitments. Hypothetical throughout; no real insurer, policy or assistant is described.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/7">
+    <p class="eyebrow">Stated priorities · four, in order</p>
+    <div class="recs" id="prios"></div>
+  </div>
+
+  <div class="plate" style="grid-area:4/7/9/13">
+    <p class="eyebrow eyebrow--utility">Permission boundary</p>
+    <div class="perm">
+      <div class="perm-col perm-col--may">
+        <p class="perm-h">May act alone</p>
+        <ul class="perm-l">
+          <li>Compare the whole market, at any time</li>
+          <li>Renew the current policy, if the terms have not changed</li>
+          <li>Switch insurer, if the offer meets every priority above and costs no more than 200 USD a year above the cheapest offer on the market</li>
+        </ul>
+      </div>
+      <div class="perm-col perm-col--ask">
+        <p class="perm-h">Must come back to me</p>
+        <ul class="perm-l">
+          <li>Any offer that fails one of the four priorities</li>
+          <li>Any excess above the stated cap</li>
+          <li>Removing or restricting a named driver</li>
+          <li>Anything beyond the 200 USD a year limit</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grant" id="grant-box" data-on="0">
+      <p class="grant-state"><span class="tag" id="grant-tag">Not granted</span><span id="grant-said">The assistant may compare. It may not buy.</span></p>
+      <button class="cta cta--inline" type="button" id="grant">Grant this permission</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════ 2 · THE OFFER AS DATA ══════ -->
+<section class="screen" data-screen="2" data-label="The offer as data" data-cam="offers" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">02 / The offer as data</p>
+    <h2 class="display" tabindex="-1"><span>The buyer reads the policy.</span><span>The buyer is not a person.</span></h2>
+    <p class="body">Covered perils, exclusions and service commitments, published so they can be read without being interpreted. The assistant scores them against the stated priorities.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/7">
+    <p class="eyebrow">Three offers · ranked by <span class="illus" id="rank-name">stated priorities</span></p>
+    <div class="recs" id="cmp"></div>
+    <p class="verdict" id="verdict"></p>
+    <div class="chips">
+      <button class="chipbtn" type="button" id="rank-prio" aria-pressed="true" aria-controls="cmp doc">Rank by my priorities</button>
+      <button class="chipbtn" type="button" id="rank-price" aria-pressed="false" aria-controls="cmp doc">Rank by price</button>
+    </div>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/9/13">
+    <p class="eyebrow">The top-ranked offer, as published · <span class="illus">invented</span></p>
+    <div class="doc" id="doc"></div>
+  </div>
+
+</section>
+
+<!-- ══════ 3 · AFTER THE PURCHASE ══════ -->
+<section class="screen" data-screen="3" data-label="After the purchase" data-cam="after" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow">03 / After the purchase</p>
+    <h2 class="display display--xl" tabindex="-1"><span>Renewal stops</span><span>being a date.</span></h2>
+    <p class="body">Commitments are checked against what actually happened. A missed one re-opens the market.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true"></div>
+
+  <div class="plate plate--carrier" style="grid-area:4/1/7/6">
+    <p class="eyebrow eyebrow--carrier">What the assistant may do now</p>
+    <p class="grant-state"><span class="tag" id="branch-tag">Needs you</span></p>
+    <p class="body" id="branch-said"></p>
+    <button class="cta cta--inline" type="button" id="branch-go" data-goto="1">Set the permission</button>
+  </div>
+
+  <div class="plate" style="grid-area:7/1/9/6">
+    <p class="eyebrow">The question</p>
+    <p class="display display--ask" tabindex="-1">What must an insurer publish, and keep proving, to be chosen again?</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/7/9/13">
+    <p class="eyebrow">Commitments, checked against performance · first eleven months</p>
+    <div class="recs" id="led"></div>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ═══════════════ CHROME ═══════════════
+     Small controls in the bottom gutter. No bar: the register runs behind
+     them to all four edges. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">See the offer as data</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

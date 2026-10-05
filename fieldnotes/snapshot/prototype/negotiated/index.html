@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Negotiated Neighborhood — Thorn Lane</title>
+<meta name="description" content="A hypothetical street of sixty households negotiating one insurance contract together: a participation threshold, financed improvements, conditional cover and independent verification. Invented throughout.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
+     router read that as "no screen", and the user was thrown back to screen 1
+     — the opposite of skipping to content. Inherited from resilience-grid. -->
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+
+<!-- ═══════════════ THE GROUND ═══════════════
+     Thorn Lane, invented: sixty parcels in two rows of thirty either side of
+     one road, cut into a slope with open ground behind both rows. It is not an
+     illustration inside the page; it is the page.
+
+     The smallest object this ground resolves is ONE HOUSEHOLD, and you can
+     count them. That is the whole difference from the regional prototype,
+     where the smallest object is a settlement cluster: this street is
+     negotiating a single contract, and the contract turns on how many of these
+     sixty rectangles are filled. See app.js. -->
+<div class="world" id="world">
+  <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Plan of Thorn Lane"></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="pins" id="pins" aria-hidden="true"></div>
+
+<!-- ONE THOUGHT PER SCREEN.
+     1 acting alone fails · 2 the conditional offer · 3 the agreement.
+     Empty space is the street showing through, and is deliberate. -->
+<main class="deck" id="deck">
+
+<!-- ══════ 1 · ONE HOUSEHOLD CANNOT MOVE ITS OWN PRICE ══════ -->
+<section class="screen" data-screen="1" data-label="Acting alone" data-cam="street" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">Negotiated Neighborhood · Thorn Lane · hypothetical</p>
+    <h1 class="display display--xl" tabindex="-1"><span>She did the work.</span><span>The street</span><span>set the price.</span></h1>
+    <p class="body">No. 31 has the roof, the vents and the cleared ground. She is quoted what the other fifty-nine are quoted.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/4/13">
+    <p class="eyebrow">Renewal, this season</p>
+    <div class="qs">
+      <div class="q q--done">
+        <p class="q-who">No. 31<span class="q-tag">Work done</span></p>
+        <p class="q-state"><span class="q-glyph" aria-hidden="true">✕</span>No offer</p>
+      </div>
+      <div class="q">
+        <p class="q-who">The other 59<span class="q-tag q-tag--none">No work</span></p>
+        <p class="q-state"><span class="q-glyph" aria-hidden="true">✕</span>No offer</p>
+      </div>
+    </div>
+    <p class="body">What prices her is next door, and next door to that.</p>
+    <p class="note">Invented street, invented households, invented figures throughout. No real insurer, place or policy.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
+
+</section>
+
+<!-- ══════ 2 · THE CONDITIONAL OFFER — the central screen ══════ -->
+<section class="screen" data-screen="2" data-label="The conditional offer" data-cam="commit" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/3/7">
+    <p class="eyebrow">01 / The offer</p>
+    <h2 class="display display--xl" tabindex="-1"><span>The offer exists.</span><span>It is conditional</span><span>on the street.</span></h2>
+  </div>
+
+  <!-- The hero control. The threshold IS the product, so it is the only thing
+       on this screen the viewer can move. -->
+  <div class="plate" style="grid-area:3/1/6/7">
+    <p class="eyebrow">Households committed · <span class="illus">drag to see the street fill</span></p>
+    <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60</span></p>
+    <div class="thr-rail">
+      <input type="range" id="thr-range" min="0" max="60" step="1" value="41"
+             aria-describedby="thr-gap" aria-label="Households committed, out of sixty">
+      <span class="thr-tick" aria-hidden="true"><i></i>48 needed</span>
+    </div>
+    <div class="offer" id="offer" data-state="closed">
+      <p class="offer-word"><span class="offer-glyph" aria-hidden="true">○</span><span id="offer-state">Not available</span></p>
+      <p class="offer-line" id="offer-line">Seven more households and the carrier writes the street as one risk.</p>
+    </div>
+    <p class="leg"><span class="leg-i leg-i--in"><i aria-hidden="true"></i>Committed</span><span class="leg-i leg-i--out"><i aria-hidden="true"></i>Not yet</span></p>
+  </div>
+
+  <!-- Before the terms in the source, so that on a phone the street — which
+       is what the slider above just changed — comes next, and the clauses
+       follow it. On the desktop grid both are placed explicitly. -->
+  <div class="gw" aria-hidden="true" style="grid-area:6/1/9/13"></div>
+
+  <div class="plate" style="grid-area:1/8/6/13">
+    <p class="eyebrow">What the offer is made of</p>
+    <div class="terms">
+      <div class="term term--house">
+        <p class="term-h">Each household does</p>
+        <p class="term-l">Class A roof, ember-resistant vents, five metres cleared to the boundary.</p>
+      </div>
+      <div class="term term--fund">
+        <p class="term-h">Who pays for it</p>
+        <p class="term-l">A resilience fund pays the contractors. Repaid on the property bill over twelve years — the charge stays with the house, not the owner. <span class="strong">Nobody pays cash to sign.</span></p>
+      </div>
+      <div class="term term--carrier">
+        <p class="term-h">Cover holds while</p>
+        <p class="term-l">48 parcels stay in, and every one of them passes before each season.</p>
+      </div>
+      <div class="term term--survey">
+        <p class="term-h">Verified by</p>
+        <p class="term-l">An independent surveyor. Reports to the carrier and the fund — not only to the household.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════ 3 · WHAT EVERYONE SIGNED ══════ -->
+<section class="screen" data-screen="3" data-label="The agreement" data-cam="signed" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">02 / The agreement</p>
+    <h2 class="display display--xl" tabindex="-1"><span>What everyone</span><span>actually signed.</span></h2>
+    <p class="body">The product was never the premium. It was the forty-eighth signature.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/9/13">
+    <p class="eyebrow">One contract, five parties</p>
+    <div class="sign">
+      <div class="sr sr--house">
+        <p class="sr-who">The households<span class="sr-n" id="sign-n">51 of 60</span></p>
+        <p class="sr-what">Do the work, carry the charge on the bill, keep the ground clear. Any one may leave at renewal.</p>
+      </div>
+      <div class="sr sr--carrier">
+        <p class="sr-who">The carrier</p>
+        <p class="sr-what">Writes the street as one risk, at one price, for three years — while the count holds.</p>
+      </div>
+      <div class="sr sr--fund">
+        <p class="sr-who">The fund</p>
+        <p class="sr-what">Pays the contractors now. Recovers on the bills, and never from the carrier.</p>
+      </div>
+      <div class="sr sr--survey">
+        <p class="sr-who">The surveyor</p>
+        <p class="sr-what">Inspects every parcel each season and reports to all three. Its fee is fixed before it inspects.</p>
+      </div>
+      <div class="sr sr--broker">
+        <p class="sr-who">The broker<span class="sr-n sr-n--paid">Paid a placement fee</span></p>
+        <p class="sr-what">Assembled it.</p>
+        <p class="sr-why">Held the carrier's terms and the fund's rate open for eleven months and paid for the first surveys before anyone signed. At forty-seven, that was their loss.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/9/7"></div>
+
+</section>
+
+</main>
+
+<!-- ═══════════════ CHROME ═══════════════
+     Small plates in the bottom gutter. No bar: the street runs behind them to
+     all four edges. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">See the offer</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

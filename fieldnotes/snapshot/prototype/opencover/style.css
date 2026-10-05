@@ -1,0 +1,663 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   OpenCover · insurance written to be read by the customer's machine
+   Three screens: what the person sets, the offer as data, what happens after.
+
+   Forked from prototype/resilience-grid/style.css. Everything structural is
+   inherited unchanged — the one-unit sizing with its five text roles and
+   per-screen --fit, the plate rules, the 12 x 8 screen grid, the narrow
+   flex-column fallback, the chrome, the focus ring. Component CSS that this
+   concept does not use (the gauge, the layer rails, the event timeline, the
+   value exchange, the loop ring, the fork) has been removed rather than
+   carried dead; nothing inherited has been redefined.
+
+   STOCK — Fieldnotes shared later-edition paper #FBF9F1, new ink #44415C.
+   Violet-slate: 9.24 : 1 on the paper, 7.86 : 1 on the wash. Cool enough to
+   read as machine terms and far enough from Resilience Grid's #36414A to be
+   a different edition on a shelf. No webfonts, no images, no external
+   request.
+
+   THE ONE RULE that makes a full-bleed ground readable: every word sits on
+   an opaque plate. Nothing is ever set on the ground, on the veil, or on a
+   gradient. Every contrast figure below is measured against --paper and
+   never against white.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --paper:        #FBF9F1;
+  --edition-ink:  #44415C;   /*  9.24 : 1 on paper, 7.86 on wash */
+  --edition-wash: #E6E7E7;
+  --wash-2:       #D8DBDC;   /* bar tracks and badges — carries UPPERCASE only */
+
+  --ink-soft:     #5C6872;   /*  5.42 on paper; >= 4.60 on every 13% fill */
+  --rule:         #8A959C;   /*  2.90 — hairlines and strokes, NEVER type */
+  --hair:         #DCDDD8;
+
+  /* ── the actor set, inherited unchanged ────────────────────────────────
+     Re-cast for this concept rather than recoloured: --utility is the
+     person, --carrier is the assistant acting, --public is a commitment
+     met, --alarm is a commitment missed or a priority failed, --vendor is
+     something held and waiting. --fire and --capital are unused here and
+     kept so the six prototypes share one palette file. */
+  --carrier:  #2F5E7C;   /* 6.61 — the assistant acting            */
+  --utility:  #5B4E7A;   /* 7.08 — the person                      */
+  --fire:     #9E4A14;   /* 5.79 */
+  --public:   #2F5A44;   /* 7.47 — a commitment met                */
+  --vendor:   #7A5A17;   /* 6.03 — held, waiting on a human        */
+  --capital:  #8A3450;   /* 7.41 */
+  --alarm:    #A33322;   /* 6.52 — missed, excluded, failed        */
+
+  /* 13% alpha of the same value — one number per hue, not a second tint */
+  --carrier-fill: #E4EBEF;
+  --utility-fill: #EAE8F0;
+  --fire-fill:    #F6E8DC;
+  --public-fill:  #E6EDE7;
+  --vendor-fill:  #F1EBDC;
+  --capital-fill: #F3E4E9;
+  --alarm-fill:   #F4E4E0;
+
+  --r-s: 3px; --r-m: 6px; --r-l: 10px;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans:  Arial, Helvetica, sans-serif;
+
+  --plate-shadow: 0 0 0 1px rgba(68,65,92,.11), 0 14px 34px -20px rgba(68,65,92,.55);
+
+  /* ── the one unit ──────────────────────────────────────────────────────
+     Height-led, because the deck does not scroll on desktop: a 720px window
+     gets 13px body copy and a 1080px window gets 15px, continuously in
+     between. --fit is a per-screen multiplier app.js lowers only when a
+     screen's own content would still leave the stage. */
+  --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
+  --fit: 1;
+  --fs: var(--fs-base);
+
+  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
+  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
+  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
+  --rowsz:  clamp(14px, 0.75vw + 0.85vh, 21px);
+
+  --gutter: 18px;
+  --chrome-h: 76px;
+  --grid-gap: calc(var(--fs-base) * .93);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+
+/* Plates set their own `display`, which outranks the user-agent rule for
+   [hidden]. Without this a hidden screen still paints — and on a full-bleed
+   layout it paints straight on top of the one that should show. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #E0E2DE;
+  color: var(--edition-ink);
+  font: var(--fs-base)/1.5 var(--sans);
+  overflow: hidden;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+.skip {
+  position: fixed; left: 16px; top: 12px; z-index: 60;
+  width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  background: var(--edition-ink); color: var(--paper);
+  border-radius: var(--r-m); text-decoration: none;
+  font: 600 14px/1 var(--sans); cursor: pointer;
+}
+.skip:focus {
+  width: auto; height: auto; overflow: visible;
+  clip: auto; clip-path: none; padding: 12px 14px;
+}
+/* the heading receives focus from the skip button; it must not draw a ring
+   when it is reached by a mouse click on the page */
+.display:focus { outline: none; }
+.display:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
+
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--edition-ink);
+  outline-offset: 2px;
+  border-radius: var(--r-s);
+}
+
+/* ══ THE GROUND ═════════════════════════════════════════════════════════ */
+
+/* Inset past every edge, so the register is cropped by the viewport rather
+   than framed by it: 1440 x 900 renders it at roughly 122% x 116%. */
+.world { position: fixed; inset: -8% -11%; z-index: 0; }
+.world svg { display: block; width: 100%; height: 100%; }
+
+/* Per-screen wash. No text ever sits on it — every word is on an opaque
+   plate — so this only sets how loudly the ground speaks. */
+.veil {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  transition: background .45s cubic-bezier(.4,0,.2,1);
+  background: radial-gradient(130% 100% at 50% 45%,
+              rgba(251,249,241,0) 38%, rgba(224,226,222,.55) 100%);
+}
+.veil[data-veil="soft"] {
+  background: radial-gradient(135% 105% at 50% 45%,
+              rgba(251,249,241,0) 44%, rgba(216,219,220,.60) 100%);
+}
+.veil[data-veil="hard"] {
+  background: linear-gradient(180deg, rgba(249,248,240,.50), rgba(220,223,222,.64));
+}
+
+/* map pins — opaque plates, projected onto the ground by script */
+.pins { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.pin {
+  position: absolute; transform: translate(-50%, -50%);
+  background: var(--paper);
+  border-radius: var(--r-s);
+  box-shadow: 0 0 0 1px rgba(68,65,92,.22), 0 6px 16px -10px rgba(68,65,92,.6);
+  padding: 4px 9px;
+  font: 600 max(11px, calc(var(--fs-base) * .667))/1.5 var(--sans);
+  letter-spacing: .13em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.pin--ink     { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(68,65,92,.6); }
+.pin--alarm   { color: var(--alarm);   box-shadow: 0 0 0 1.5px var(--alarm),   0 6px 16px -10px rgba(68,65,92,.6); }
+.pin--utility { color: var(--utility); box-shadow: 0 0 0 1.5px var(--utility), 0 6px 16px -10px rgba(68,65,92,.6); }
+.pin--carrier { color: var(--carrier); box-shadow: 0 0 0 1.5px var(--carrier), 0 6px 16px -10px rgba(68,65,92,.6); }
+.pin--grey    { color: var(--ink-soft);box-shadow: 0 0 0 1.5px var(--rule),    0 6px 16px -10px rgba(68,65,92,.6); }
+
+/* ══ THE DECK ═══════════════════════════════════════════════════════════ */
+
+/* The deck covers the whole viewport above the ground, so it has to be
+   transparent to the pointer as well as to the eye. Plates switch pointer
+   events back on. */
+.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+.screen {
+  position: absolute; inset: 0;
+  padding: var(--gutter) var(--gutter) var(--chrome-h);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  pointer-events: none;
+  align-items: start;
+
+  --fs: calc(var(--fs-base) * var(--fit));
+  --pad-y: calc(var(--fs) * 1.07);
+  --pad-x: calc(var(--fs) * 1.20);
+
+  /* ── the five text roles ──────────────────────────────────────────────
+     Inherited unchanged in structure and multiplier, so every font-size in
+     this file still resolves through one of five names and a floor can be
+     applied in one place.
+
+     ONE ADDITION, and it is a floor, not a redesign: the reference
+     implementation applies its minimums only below 900px, which lets --fit
+     drive uppercase labels under 11px on a short desktop window. The build
+     contract says nothing renders below 11px ANYWHERE, so each role now
+     carries a desktop floor as well. The floors below sit under the mobile
+     ones in the narrow block, which still override them. */
+  --t-body: max(12.5px, var(--fs));                   /* running copy            */
+  --t-sub:  max(12px,   calc(var(--fs) * .93));       /* figures, prices         */
+  --t-mid:  max(11.5px, calc(var(--fs) * .867));      /* names, values           */
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));        /* notes, keys, marks      */
+  --t-lab:  max(11px,   calc(var(--fs) * .667));      /* uppercase labels        */
+
+  font-size: var(--fs);
+}
+.screen[hidden] { display: none; }
+.screen > * { min-width: 0; }
+
+.plate, .chipbtn, .cta, .iconbtn, .picker, select { pointer-events: auto; }
+
+/* A plate is as tall as what it holds. It is never handed a height it then
+   has to hide the remainder of. */
+.plate {
+  background: var(--paper);
+  border-radius: var(--r-l);
+  box-shadow: var(--plate-shadow);
+  padding: var(--pad-y) var(--pad-x);
+  display: flex; flex-direction: column; justify-content: flex-start;
+}
+.plate--wash    { background: var(--edition-wash); }
+.plate--carrier { background: var(--carrier-fill); }
+.plate--alarm   { background: var(--alarm-fill); }
+.plate--tight   { padding: calc(var(--fs) * .8) calc(var(--fs) * .95); }
+
+/* ══ TYPE ═══════════════════════════════════════════════════════════════ */
+
+.eyebrow {
+  margin: 0 0 calc(var(--fs) * .6);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.eyebrow--carrier { color: var(--carrier); }
+.eyebrow--utility { color: var(--utility); }
+.eyebrow--public  { color: var(--public); }
+.eyebrow--vendor  { color: var(--vendor); }
+.eyebrow--alarm   { color: var(--alarm); }
+.eyebrow--ink     { color: var(--edition-ink); }
+
+.display {
+  margin: 0 0 calc(var(--fs) * .8);
+  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
+  letter-spacing: -.028em;
+  text-wrap: balance;
+}
+.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
+/* The closing provocation of the whole set. It wraps on its own, so no
+   authored line breaks — it is a question, not a headline. */
+.display--ask {
+  font-size: calc(var(--dsp) * var(--fit) * 1.06);
+  letter-spacing: -.026em; line-height: 1.12;
+}
+.display--ask span { display: inline; }
+.display span { display: block; }
+.display:last-child { margin-bottom: 0; }
+
+.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
+.body:last-child { margin-bottom: 0; }
+.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft); }
+.note + .note { margin-top: calc(var(--fs) * .35); }
+.strong { color: var(--edition-ink); font-weight: 700; }
+
+/* the standing illustrative mark */
+.illus {
+  display: inline-block; margin: 0;
+  font: 600 var(--t-lab)/1.6 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+}
+
+/* ══ .tag — a state as a WORD ═══════════════════════════════════════════
+   Inherited idiom (resilience-grid's .tl-kind / .layer-state), promoted to
+   a shared component because this prototype has eight states across three
+   screens. Never a tint alone: a tag is a word, in a filled box, and it
+   survives greyscale on its own. */
+.tag {
+  display: inline-block;
+  padding: 1px 6px; border-radius: var(--r-s);
+  background: var(--wash-2); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.tag--ok   { background: var(--public-fill); color: var(--public); }
+.tag--bad  { background: var(--alarm-fill);  color: var(--alarm); }
+.tag--hold { background: var(--vendor-fill); color: var(--vendor); }
+.tag--sel  { background: var(--edition-ink); color: var(--paper); }
+
+/* ══ .rec — ONE record row, used three times ════════════════════════════
+   NEW. A stated priority (screen 1), an offer in the comparison (screen 2)
+   and a service commitment under audit (screen 3) are the same object seen
+   at three moments: a machine key, a human line, a state. Writing them as
+   one component is what keeps three screens from needing three tables.
+
+   State is carried by the left border, the ground tint, a tag word and a
+   glyph — never by fading the type. */
+.recs { display: grid; gap: calc(var(--fs) * .45); margin: 0; }
+.rec {
+  border-left: 4px solid var(--rule);
+  border-radius: var(--r-s);
+  padding: calc(var(--fs) * .4) calc(var(--fs) * .5) calc(var(--fs) * .4) calc(var(--fs) * .7);
+  transition: border-color .3s linear, background .3s linear;
+}
+.rec--sel  { border-left-color: var(--edition-ink); background: var(--edition-wash); }
+.rec--out  { border-left-color: var(--alarm); }
+.rec--met  { border-left-color: var(--public); }
+.rec--miss { border-left-color: var(--alarm); background: var(--alarm-fill); }
+.rec--set  { border-left-color: var(--utility); }
+
+.rec-top {
+  margin: 0; display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: calc(var(--fs) * .25) calc(var(--fs) * .6);
+}
+.rec-name { font: 600 var(--t-mid)/1.4 var(--sans); }
+.rec-n {
+  font: var(--t-sub)/1.4 var(--sans); font-variant-numeric: tabular-nums;
+  margin-left: auto; white-space: nowrap;
+}
+.rec-k {
+  margin: calc(var(--fs) * .15) 0 0;
+  font: var(--t-sec)/1.45 var(--sans); font-variant-numeric: tabular-nums;
+  color: var(--ink-soft); word-break: break-word;
+}
+.rec-said { margin: calc(var(--fs) * .15) 0 0; font: var(--t-sec)/1.42 var(--sans); }
+.rec-said .strong { color: var(--edition-ink); }
+
+/* ── .marks — the four priority verdicts on one offer, or the run of
+   checks on one commitment. A glyph, then a word, then the value. */
+.marks {
+  display: flex; flex-wrap: wrap; margin: calc(var(--fs) * .3) 0 0;
+  gap: calc(var(--fs) * .25) calc(var(--fs) * .3);
+}
+.mark {
+  display: inline-flex; align-items: baseline; gap: .4em;
+  background: var(--edition-wash); border-radius: var(--r-s);
+  padding: 1px calc(var(--fs) * .45);
+  font: var(--t-sec)/1.5 var(--sans);
+}
+.mark-g { font-weight: 700; font-size: 1.02em; }
+.mark--ok  { background: var(--public-fill); }
+.mark--ok  .mark-g { color: var(--public); }
+.mark--bad { background: var(--alarm-fill); color: var(--alarm); font-weight: 700; }
+.mark-v { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.mark--bad .mark-v { color: var(--alarm); font-weight: 400; }
+
+/* ── .chk — one performance check, filled or hollow-and-crossed ──────── */
+.chks { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .25);
+        margin: calc(var(--fs) * .3) 0 0; align-items: center; }
+.chk {
+  display: inline-grid; place-items: center;
+  width: calc(var(--fs) * 1.3); height: calc(var(--fs) * 1.3);
+  min-width: 17px; min-height: 17px;
+  border: 1.5px solid var(--public); border-radius: var(--r-s);
+  background: var(--public); color: var(--paper);
+  font: 700 max(11px, var(--t-lab))/1 var(--sans);
+}
+.chk--miss { background: var(--paper); color: var(--alarm);
+             border: 2px solid var(--alarm); }
+.chks-l { font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft);
+          margin: 0 0 0 calc(var(--fs) * .2); }
+
+/* the assistant's conclusion, under the comparison */
+.verdict {
+  margin: calc(var(--fs) * .6) 0 calc(var(--fs) * .6);
+  padding-left: calc(var(--fs) * .8);
+  border-left: 2px solid var(--edition-ink);
+  font: var(--t-body)/1.45 var(--sans);
+}
+.verdict .strong { color: var(--edition-ink); }
+.verdict--bad { border-left-color: var(--alarm); }
+.verdict--bad .strong { color: var(--alarm); }
+
+/* ══ .doc — THE STRUCTURED OFFER ════════════════════════════════════════
+   NEW, and the component the whole prototype turns on.
+
+   WHY IT EXISTS. The argument is that an offer whose reader is a machine
+   has to publish what a brochure is free to leave out: the exclusions as
+   plainly as the inclusions, the absent commitment as an explicit null
+   rather than a silence, and a remedy attached to every promise. None of
+   the inherited components can show that, because all of them show a
+   conclusion. This one shows the record the conclusion was drawn from.
+
+   WHY IT IS NOT A CODE BLOCK. A dark terminal panel would say "developer
+   tool" and let the room file the idea under engineering. It is set in the
+   publication's own Arial with tabular numerals, on the publication's own
+   paper, with the hairline-and-plate language of every other component —
+   because the claim is that this document is the PRODUCT, legible to the
+   person in the room as well as to the thing that buys for them.
+
+   The key column is deliberately a machine key (lowercase, dotted) and the
+   value column deliberately plain English where plain English is what the
+   term says. Both are true of the same line; that is the point. */
+.doc {
+  font-variant-numeric: tabular-nums;
+  border-top: 2px solid var(--edition-ink);
+}
+.doc-head {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: calc(var(--fs) * .3) calc(var(--fs) * .6);
+  margin: 0; padding: calc(var(--fs) * .45) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.doc-id { font: 600 var(--t-sec)/1.4 var(--sans); word-break: break-word; }
+.doc-meta { font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft); margin-left: auto; }
+
+.doc-sec { margin: calc(var(--fs) * .55) 0 0; }
+.doc-h {
+  margin: 0 0 calc(var(--fs) * .2);
+  padding-bottom: calc(var(--fs) * .15);
+  border-bottom: 1px solid var(--hair);
+  font: 600 var(--t-lab)/1.5 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+}
+.doc-h--out { color: var(--alarm); border-bottom-color: var(--alarm); }
+.doc-h--com { color: var(--carrier); border-bottom-color: var(--carrier); }
+
+.dl { margin: 0; }
+.kv {
+  display: grid; grid-template-columns: 19ch 1fr;
+  gap: 0 calc(var(--fs) * .7); align-items: baseline;
+  padding: calc(var(--fs) * .21) 0;
+  border-bottom: 1px solid var(--hair);
+}
+.kv:last-child { border-bottom: 0; }
+.kv dt {
+  font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft);
+  word-break: break-word;
+}
+.kv dd {
+  margin: 0; font: var(--t-mid)/1.45 var(--sans);
+  font-variant-numeric: tabular-nums;
+}
+/* an exclusion is marked by FORM — a cross, a word and a colour, so it
+   still reads as an exclusion in greyscale */
+.kv--out dt { color: var(--alarm); font-weight: 700; }
+.kv--out dt::before { content: "\00D7  "; }
+.kv--out dd { color: var(--alarm); }
+/* an absent commitment is printed, not omitted */
+.nul {
+  display: inline-block; margin-right: .5em;
+  padding: 0 5px; border: 1px dashed var(--rule); border-radius: var(--r-s);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans);
+  letter-spacing: .08em; color: var(--ink-soft); background: var(--paper);
+}
+.kv--null dd { color: var(--ink-soft); }
+.kv-rem { display: block; color: var(--carrier); font-size: var(--t-sec); }
+.kv-rem::before { content: "\21B3  "; }
+
+/* ══ .perm — the permission boundary, screen 1 ══════════════════════════
+   NEW, and small. Two columns because a boundary has two sides; a single
+   list would read as a feature list and lose the whole idea. */
+.perm { display: grid; grid-template-columns: 1fr 1fr;
+        gap: 0 calc(var(--fs) * .95); margin: 0 0 calc(var(--fs) * .7); }
+.perm-h {
+  margin: 0 0 calc(var(--fs) * .35);
+  padding-bottom: calc(var(--fs) * .2);
+  border-bottom: 1px solid var(--hair);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.perm-col--may .perm-h { color: var(--carrier); border-bottom-color: var(--carrier); }
+.perm-col--ask .perm-h { color: var(--utility); border-bottom-color: var(--utility); }
+.perm-l { margin: 0; padding: 0; list-style: none;
+          display: grid; gap: calc(var(--fs) * .35); align-content: start; }
+.perm-l li {
+  font: var(--t-sec)/1.4 var(--sans);
+  display: grid; grid-template-columns: calc(var(--fs) * .9) 1fr;
+  gap: 0 calc(var(--fs) * .25);
+}
+.perm-col--may li::before { content: "\2713"; color: var(--carrier); font-weight: 700; }
+.perm-col--ask li::before { content: "\25C6"; color: var(--utility); font-size: .8em; line-height: 1.75; }
+
+/* ── .grant — the visible commitment of screen 1 ─────────────────────── */
+.grant {
+  margin-top: auto; padding-top: calc(var(--fs) * .6);
+  border-top: 2px solid var(--hair);
+}
+.grant[data-on="1"] { border-top-color: var(--utility); }
+.grant-state {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: calc(var(--fs) * .2) calc(var(--fs) * .5);
+  margin: 0 0 calc(var(--fs) * .5);
+  font: var(--t-sec)/1.45 var(--sans);
+}
+.cta--inline {
+  align-self: flex-start; min-height: 40px; padding: 0 16px;
+  font-size: var(--t-body);
+}
+
+/* ══ CHROME ═════════════════════════════════════════════════════════════ */
+
+.chips { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .4); margin: 0; }
+.chipbtn {
+  min-height: 34px; padding: 0 calc(var(--fs) * .8);
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  font: 600 var(--t-sec)/1 var(--sans); cursor: pointer;
+}
+.chipbtn:hover { background: var(--edition-wash); }
+.chipbtn[aria-pressed="true"] {
+  background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper);
+}
+
+.chrome {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+  height: var(--chrome-h);
+  padding: 0 var(--gutter) var(--gutter);
+  display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
+  pointer-events: none;
+}
+.chrome-r { display: flex; align-items: center; gap: 8px; }
+.iconbtn {
+  width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 16px/1 var(--sans); cursor: pointer;
+}
+.iconbtn:hover { background: var(--edition-wash); }
+/* A disabled control still has to be legible: ink-soft on wash is 4.6 : 1,
+   and the flat wash fill is what says "off", not a pale grey glyph. */
+.iconbtn[disabled] {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair); cursor: default;
+}
+.iconbtn[disabled]:hover { background: var(--edition-wash); }
+
+.picker select {
+  min-height: 46px; max-width: 34ch; padding: 0 12px;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 14px/1 var(--sans); cursor: pointer;
+}
+
+/* The primary action is the ink, not an accent — design.md §9. */
+.cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 46px; padding: 0 20px;
+  background: var(--edition-ink); color: var(--paper);
+  border: 1px solid var(--edition-ink); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
+}
+/* the same ink, driven down — not a second hue */
+.cta:hover { background: #36334A; border-color: #36334A; }
+
+/* The ground window is a desktop no-op. On a phone it is the hole the
+   register shows through, and it takes whatever height the plates have not
+   claimed. */
+.gw { display: none; }
+
+/* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
+
+/* Below about 820px of stage the gutter and the chrome are the cheapest
+   height to give back, before --fit has to touch the type at all. */
+@media (min-width: 900px) and (max-height: 820px) {
+  :root { --gutter: 13px; --chrome-h: 66px; }
+  .chrome { padding: 0 var(--gutter) 10px; }
+}
+
+/* ══ NARROW ═════════════════════════════════════════════════════════════ */
+
+@media (max-width: 899px) {
+  :root {
+    --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px;
+    /* a phone is not a short desktop: start from 14px, not 13px */
+    --fs-base: clamp(14px, 3.6vw, 15.5px);
+  }
+
+  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
+     app.js does not run the --fit search on a narrow window at all (see
+     fitScreen), so --fit is 1 here and these are the real rendered sizes.
+     Nothing on a phone renders below 11px, and nothing carrying a sentence
+     below 14px. */
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+
+  .world { inset: -5% -9%; }
+
+  /* The deck stops at the controls rather than scrolling underneath them:
+     a floating bar over running text is unreadable, and it puts body copy on
+     an unknown background. The ground still runs behind the bar to the edge. */
+  .deck { inset: 0 0 var(--chrome-h) 0; }
+
+  /* One column, top to bottom. Plates take the height they need, the
+     register window takes what is left, and the screen scrolls. */
+  .screen {
+    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: var(--gutter) var(--gutter) 8px;
+  }
+  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
+
+  .gw { display: block; flex: 1 1 0; min-height: 0; }
+
+  /* The offer document keeps its two columns — a key over its value reads
+     as two unrelated lines — but the key column narrows to what a dotted
+     key actually needs at this size. */
+  .kv { grid-template-columns: 13ch 1fr; gap: 0 calc(var(--fs) * .5); }
+
+  /* A boundary with two sides stacks rather than squeezing: at 360px two
+     columns of this list wrap to one word a line. */
+  .perm { grid-template-columns: 1fr; gap: calc(var(--fs) * .7); }
+
+  .rec-n { margin-left: 0; }
+
+  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
+  .chrome-r { width: 100%; }
+  .picker { flex: 1 1 auto; min-width: 0; }
+  .picker select { width: 100%; max-width: none; }
+  .cta { padding: 0 14px; font-size: 14px; }
+  .cta--inline { padding: 0 16px; font-size: var(--t-body); }
+  /* The label is hidden from SIGHT, not from the accessibility tree.
+     display:none left the button's accessible name as the arrow glyph
+     alone, so it announced as "→" on a phone. */
+  .chrome .cta span:first-child {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .kv { grid-template-columns: 11.5ch 1fr; }
+  .mark { white-space: normal; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ══ GLOBAL TYPE FLOORS (integration) ═══════════════════════════════════
+   Applied by the main thread at integration. The --fit search runs on any
+   short stage, not only a phone: at 1280x720 it drove uppercase labels to
+   under 9px. Floors are therefore global, and the screen scrolls rather
+   than shrinking past legibility. Narrow floors are re-stated after, so a
+   phone keeps the higher minimums. Nothing renders below 11px anywhere. */
+.screen {
+  --t-body: max(13px,   var(--fs));
+  --t-sub:  max(12.5px, calc(var(--fs) * .93));
+  --t-mid:  max(12px,   calc(var(--fs) * .867));
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));
+  --t-lab:  max(11px,   calc(var(--fs) * .667));
+  overflow-y: auto;
+}
+@media (max-width: 899px) {
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+}

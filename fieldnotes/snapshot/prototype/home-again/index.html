@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Again — a rebuild arranged in advance</title>
+<meta name="description" content="A hypothetical household whose insurer holds a replacement plan, reserved builder capacity and a named recovery lead before any loss — and is plain about what stays conditional. The claim is complete when they are home, not when they are paid.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
+     router read that as "no screen", and the user was thrown back to screen 1
+     — the opposite of skipping to content. It now moves focus to the heading
+     of whatever screen is open. -->
+<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+
+<!-- ═══════════════ THE GROUND ═══════════════
+     Resilience Grid's ground is a county. This one is ONE HOUSE AND ITS LOT,
+     drawn in the same technique — plain SVG, no images, no external request —
+     with a per-screen camera over a single world. Screen 1 is the intact
+     house; screen 2 pulls back far enough to show that the neighbours exist;
+     screen 3 is the same house with the rebuild running. -->
+<div class="world" id="world">
+  <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
+       aria-label="Schematic elevation of one house on its lot: a gabled house with a porch, a side deck and a detached garage, with neighbouring lots either side. On the last screen the house is a frame inside scaffolding, with a stack of materials on the ground beside it."></svg>
+</div>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="pins" id="pins" aria-hidden="true"></div>
+
+<!-- ONE THOUGHT PER SCREEN.
+     1 — this work happened before anything burned.
+     2 — here is the commitment, and here is exactly what stays conditional.
+     3 — what actually happens, as five beats.
+     All screen copy lives in these sections so it can be swapped without
+     touching layout. Empty space is the lot showing through, deliberately. -->
+<main class="deck" id="deck">
+
+<!-- ══════ 1 · BEFORE THE LOSS ══════════════════════════════════════════ -->
+<section class="screen" data-screen="1" data-label="Before the loss" data-cam="house" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">Home Again · the Rennick household · Calder Reach</p>
+    <h1 class="display display--xl" tabindex="-1"><span>The rebuild was arranged</span><span>while nothing was wrong.</span></h1>
+    <p class="body">Not a sum insured. A plan for this house, a builder held in the region, and a person who already has their name.</p>
+    <p class="note">Hypothetical throughout. Invented household, invented region, invented builder. No real insurer, product or price is described.</p>
+  </div>
+
+  <div class="gw gw--map" style="grid-area:1/8/4/13" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/7">
+    <p class="eyebrow">The replacement plan · for this house</p>
+    <ul class="spec">
+      <li>Footprint, roofline and the detached garage, as surveyed</li>
+      <li>Timber frame and finishes, room by room</li>
+      <li>Kitchen and both bathrooms, fixture for fixture</li>
+      <li id="spec-std"
+          data-std-0="Rebuilt as it stood, with nothing changed"
+          data-std-1="Rebuilt to current code, where the old house predates it"
+          data-std-2="Code, plus an ember&#8209;resistant roof, screened vents and a cleared edge">Code, plus an ember&#8209;resistant roof, screened vents and a cleared edge</li>
+    </ul>
+    <p class="eyebrow" style="margin-top:.9em">Rebuild standard · <span class="illus">the household chooses</span></p>
+    <div class="chips" role="group" aria-label="Rebuild standard">
+      <button class="chipbtn" type="button" data-std="0" aria-pressed="false">As it stood</button>
+      <button class="chipbtn" type="button" data-std="1" aria-pressed="false">To current code</button>
+      <button class="chipbtn" type="button" data-std="2" aria-pressed="true">Code plus hardening</button>
+    </div>
+    <p class="note" id="std-note" style="margin-top:.6em">Chosen now, priced now, and re&#8209;costed every year — not argued after a fire.</p>
+  </div>
+
+  <div class="plate" style="grid-area:4/8/9/13">
+    <p class="eyebrow">Also held, in advance</p>
+
+    <p class="lead-name">Ardren &amp; Sons</p>
+    <p class="lead-role">Builder, Calder Reach. One slot in their book is held against this plan.</p>
+    <div class="slots" role="img" aria-label="Eight builder slots: one held for this household, three held for other households, four open.">
+      <span class="slot" data-slot="mine"></span>
+      <span class="slot" data-slot="held"></span>
+      <span class="slot" data-slot="held"></span>
+      <span class="slot" data-slot="held"></span>
+      <span class="slot" data-slot="open"></span>
+      <span class="slot" data-slot="open"></span>
+      <span class="slot" data-slot="open"></span>
+      <span class="slot" data-slot="open"></span>
+    </div>
+    <p class="slot-key">
+      <span class="sk sk--mine" aria-hidden="true"></span>This household
+      <span class="sk sk--held" aria-hidden="true"></span>Held for others
+      <span class="sk sk--open" aria-hidden="true"></span>Open
+    </p>
+
+    <p class="lead-name lead-name--2">Marta Ives</p>
+    <p class="lead-role">Recovery lead. She holds the plan today, she is the one who calls, and she does not change at the claim.</p>
+  </div>
+
+</section>
+
+<!-- ══════ 2 · WHAT IS ACTUALLY PROMISED ════════════════════════════════ -->
+<section class="screen" data-screen="2" data-label="What is promised" data-cam="lot" data-veil="">
+
+  <div class="plate" style="grid-area:1/1/4/7">
+    <p class="eyebrow">02 / The commitment</p>
+    <h2 class="display display--xl" tabindex="-1"><span>Here is the promise.</span><span>Here is what stays</span><span>conditional.</span></h2>
+    <p class="body">The conditions sit on the card, beside the promise. Not underneath it.</p>
+  </div>
+
+  <div class="gw gw--map" style="grid-area:1/7/4/13" aria-hidden="true"></div>
+
+  <div class="plate" style="grid-area:4/1/9/7">
+    <p class="eyebrow">What the carrier commits to deliver</p>
+    <div class="cm" id="cm">
+
+      <div class="cm-row" data-state="held">
+        <p class="cm-what">Rebuild this house to the plan on file, at the standard chosen<span class="cm-state">Committed</span></p>
+      </div>
+
+      <div class="cm-row" data-state="held">
+        <p class="cm-what">A temporary home in Calder Reach from the first night<span class="cm-state">Committed</span></p>
+      </div>
+
+      <div class="cm-row" data-state="held">
+        <p class="cm-what">Marta Ives, or a named replacement, running the rebuild<span class="cm-state">Committed</span></p>
+      </div>
+
+      <div class="cm-row" data-falls="1" data-state="held">
+        <p class="cm-what">The reserved builder released to this address within days<span class="cm-state">Committed</span></p>
+        <p class="cm-fall">The slot is honoured in order of loss. Weeks, not days — and no larger payment moves it forward.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="plate" style="grid-area:4/8/9/13">
+    <p class="eyebrow">What it is conditional on</p>
+    <div class="cond">
+
+      <div class="cond-row" data-met="1">
+        <p class="cond-what">The plan is current<span class="cond-state">Met</span></p>
+        <p class="cond-why">Reviewed with the household each year. A plan nobody confirmed is not a plan.</p>
+      </div>
+
+      <div class="cond-row" data-met="x">
+        <p class="cond-what">The loss is covered by the policy<span class="cond-state">Assessed at the time</span></p>
+        <p class="cond-why">This does not change. An excluded cause is still an excluded cause.</p>
+      </div>
+
+      <div class="cond-row" id="cond-cap" data-met="1">
+        <p class="cond-what">Regional capacity is not exhausted<span class="cond-state">Met</span></p>
+        <p class="cond-why">One builder's book is finite. A whole region claiming at once is the case this cannot absorb.</p>
+        <div class="slots slots--sm" id="cap-slots" role="img" aria-label="Eight builder slots: one held for this household, three held for other households, four open.">
+          <span class="slot" data-slot="mine"></span>
+          <span class="slot" data-slot="held"></span>
+          <span class="slot" data-slot="held"></span>
+          <span class="slot" data-slot="held"></span>
+          <span class="slot" data-slot="open"></span>
+          <span class="slot" data-slot="open"></span>
+          <span class="slot" data-slot="open"></span>
+          <span class="slot" data-slot="open"></span>
+        </div>
+        <p class="note" id="cap-cap-normal">Four slots still open in Calder Reach.</p>
+        <p class="note" id="cap-cap-event" hidden>Every slot claimed in one week. The queue is the constraint, and money does not shorten it.</p>
+      </div>
+
+    </div>
+    <div class="tl-controls">
+      <button class="tl-play" type="button" id="event-toggle" aria-pressed="false">Show a regional event</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════ 3 · THE FIRST DAYS AFTER ═════════════════════════════════════ -->
+<section class="screen" data-screen="3" data-label="The first days" data-cam="rebuild" data-veil="soft">
+
+  <div class="plate" style="grid-area:1/1/4/6">
+    <p class="eyebrow">03 / The first days</p>
+    <h2 class="display display--xl" tabindex="-1"><span>Nothing here</span><span>is being decided.</span><span>It was decided.</span></h2>
+  </div>
+
+  <div class="gw gw--map" style="grid-area:4/1/6/7" aria-hidden="true"></div>
+
+  <div class="plate plate--carrier" style="grid-area:6/1/9/6">
+    <p class="eyebrow eyebrow--carrier">The whole idea</p>
+    <p class="display display--ask" tabindex="-1">The claim is not complete when the money is paid. It is complete when they are home again.</p>
+  </div>
+
+  <div class="plate" style="grid-area:1/8/9/13">
+    <p class="eyebrow">Day 0 → week 6 · <span class="illus">invented sequence</span></p>
+    <div class="tl" id="tl">
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">Day 0</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Marta Ives calls<span class="tl-kind">Contact</span></p>
+          <p class="tl-what">The lead they already had, by name. No claim number is issued to them.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">Day 1</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Temporary home<span class="tl-kind">Living</span></p>
+          <p class="tl-what">A house in Calder Reach, held on the same arrangement. Same schools, same road to work.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">Day 3</p>
+        <div class="tl-mark"><span class="tl-dot"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">Cover confirmed<span class="tl-kind">Condition</span></p>
+          <p class="tl-what">The loss is covered. This is the gate, and it is the only one that is argued.</p>
+        </div>
+      </div>
+
+      <div class="tl-row" data-on="0">
+        <p class="tl-time">Day 4</p>
+        <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
+        <div class="tl-body">
+          <p class="tl-who">The builder is released<span class="tl-kind">Capacity</span></p>
+          <p class="tl-what">Ardren &amp; Sons' held slot is released to this address, and closes to new work.</p>
+        </div>
+      </div>
+
+      <div class="tl-row tl-row--home" data-on="0">
+        <p class="tl-time">Week 6</p>
+        <div class="tl-body">
+          <p class="tl-who">The plan becomes a schedule</p>
+          <p class="tl-what">The drawings on file turn into dated work, with a date to be back in the house.</p>
+          <p class="tl-decide">Everything above was bought before the fire. <span class="strong">Only the third step is a claim.</span></p>
+        </div>
+      </div>
+
+    </div>
+    <div class="tl-controls">
+      <button class="tl-play" type="button" id="tl-play">Replay from the start</button>
+      <button class="tl-play" type="button" id="tl-all">Show all steps</button>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ═══════════════ CHROME ═══════════════
+     Small plates in the bottom gutter. No bar: the ground runs behind them
+     to all four edges. -->
+<div class="chrome">
+  <div class="chrome-r">
+    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <label class="picker">
+      <span class="sr-only">Choose a screen</span>
+      <select id="picker"></select>
+    </label>
+    <button class="cta" type="button" id="next">
+      <span id="next-label">What is promised</span> <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

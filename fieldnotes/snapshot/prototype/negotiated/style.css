@@ -1,0 +1,604 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Negotiated Neighborhood · Thorn Lane
+   One street of sixty households negotiating one insurance contract.
+
+   Forked from prototype/resilience-grid/style.css. Everything structural is
+   inherited unchanged — the ground-is-the-page layout, the one-unit sizing
+   with its five text roles and mobile floors, the plate rules, the chrome,
+   the skip button, the focus ring, the narrow block. Only the ink, the
+   content components and the mobile stack order are new.
+
+   STOCK — Fieldnotes shared later-edition paper #FBF9F1, new ink #3C5648.
+   Green, so the street cannot be mistaken for the cool-graphite region
+   prototype on a shelf or in a screenshot. No webfonts, no images, no
+   external request.
+
+   THE ONE RULE that makes a full-bleed drawing readable: every word sits on
+   an opaque plate. Nothing is ever set on the ground, on the veil, or on a
+   gradient. Every contrast figure below is measured against --paper or
+   --edition-wash and never against white.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --paper:        #FBF9F1;
+  --edition-ink:  #3C5648;   /*  7.61 : 1 on paper, 6.48 on the wash */
+  --edition-wash: #E6E7E7;
+  --wash-2:       #D8DBDC;   /* bar tracks only — carries no text */
+
+  --ink-soft:     #5A6B60;   /*  5.37 on paper; 4.57 on the wash */
+  --rule:         #8A959C;   /*  hairlines and strokes, NEVER type */
+  --hair:         #DCDDD8;
+
+  /* ── the five parties ───────────────────────────────────────────────────
+     Households are the ink itself, because the street is the subject. The
+     other four are lifted unchanged from the sibling prototype's measured
+     set, so the publication keeps one semantic palette. */
+  --carrier:  #2F5E7C;   /* 6.61 — the insurer                       */
+  --fund:     #8A3450;   /* 7.41 — the resilience lender             */
+  --survey:   #7A5A17;   /* 6.03 — the independent surveyor          */
+  --broker:   #5B4E7A;   /* 7.08 — the party that assembled the deal */
+  --alarm:    #A33322;   /* 6.52 — no offer, threshold not met       */
+
+  /* ~13% alpha of the same value — one number per hue, not a second tint */
+  --carrier-fill: #E4EBEF;
+  --fund-fill:    #F3E4E9;
+  --survey-fill:  #F1EBDC;
+  --broker-fill:  #EAE8F0;
+  --alarm-fill:   #F4E4E0;
+  --ink-fill:     #E5EBE6;
+
+  --r-s: 3px; --r-m: 6px; --r-l: 10px;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans:  Arial, Helvetica, sans-serif;
+
+  --plate-shadow: 0 0 0 1px rgba(60,86,72,.11), 0 14px 34px -20px rgba(60,86,72,.55);
+
+  /* ── the one unit ──────────────────────────────────────────────────────
+     Height-led, because the deck does not scroll on desktop: a 720px window
+     gets 13px body copy and a 1080px window gets 15px, continuously in
+     between. --fit is a per-screen multiplier app.js lowers only when a
+     screen's own content would still leave the stage. Inherited verbatim. */
+  --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
+  --fit: 1;
+  --fs: var(--fs-base);
+
+  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
+  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
+  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
+  --rowsz:  clamp(14px, 0.75vw + 0.85vh, 21px);
+
+  --gutter: 18px;
+  --chrome-h: 76px;
+  --grid-gap: calc(var(--fs-base) * .93);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+
+/* Plates set their own `display`, which outranks the user-agent rule for
+   [hidden]. Without this a hidden screen still paints — and on a full-bleed
+   layout it paints straight on top of the one that should show. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #E1E3DC;
+  color: var(--edition-ink);
+  font: var(--fs-base)/1.5 var(--sans);
+  overflow: hidden;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+.skip {
+  position: fixed; left: 16px; top: 12px; z-index: 60;
+  width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  background: var(--edition-ink); color: var(--paper);
+  border-radius: var(--r-m); text-decoration: none;
+  font: 600 14px/1 var(--sans); cursor: pointer;
+}
+.skip:focus {
+  width: auto; height: auto; overflow: visible;
+  clip: auto; clip-path: none; padding: 12px 14px;
+}
+/* the heading receives focus from the skip button; it must not draw a ring
+   when it is reached by a mouse click on the page */
+.display:focus { outline: none; }
+.display:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
+
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--edition-ink);
+  outline-offset: 2px;
+  border-radius: var(--r-s);
+}
+
+/* ══ THE GROUND ═════════════════════════════════════════════════════════ */
+
+/* Inset past every edge, so Thorn Lane is cropped by the viewport rather
+   than framed by it. */
+.world { position: fixed; inset: -8% -11%; z-index: 0; }
+.world svg { display: block; width: 100%; height: 100%; }
+
+/* Per-screen wash. No text ever sits on it — every word is on an opaque
+   plate — so this only sets how loudly the street speaks. */
+.veil {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  transition: background .45s cubic-bezier(.4,0,.2,1);
+  background: radial-gradient(130% 100% at 50% 45%,
+              rgba(251,249,241,0) 38%, rgba(225,227,220,.55) 100%);
+}
+.veil[data-veil="soft"] {
+  background: radial-gradient(135% 105% at 50% 45%,
+              rgba(251,249,241,0) 44%, rgba(216,220,214,.60) 100%);
+}
+
+/* map pins — opaque plates, projected onto the ground by script */
+.pins { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.pin {
+  position: absolute; transform: translate(-50%, -50%);
+  background: var(--paper);
+  border-radius: var(--r-s);
+  box-shadow: 0 0 0 1px rgba(60,86,72,.22), 0 6px 16px -10px rgba(60,86,72,.6);
+  padding: 4px 9px;
+  font: 600 max(10px, calc(var(--fs-base) * .667))/1.5 var(--sans);
+  letter-spacing: .13em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.pin--ink    { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(60,86,72,.6); }
+.pin--alarm  { color: var(--alarm);  box-shadow: 0 0 0 1.5px var(--alarm),  0 6px 16px -10px rgba(60,86,72,.6); }
+.pin--broker { color: var(--broker); box-shadow: 0 0 0 1.5px var(--broker), 0 6px 16px -10px rgba(60,86,72,.6); }
+.pin--grey   { color: var(--ink-soft); box-shadow: 0 0 0 1.5px var(--rule), 0 6px 16px -10px rgba(60,86,72,.6); }
+
+/* ══ THE DECK ═══════════════════════════════════════════════════════════ */
+
+.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+.screen {
+  position: absolute; inset: 0;
+  padding: var(--gutter) var(--gutter) var(--chrome-h);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  pointer-events: none;
+  align-items: start;
+
+  --fs: calc(var(--fs-base) * var(--fit));
+  --pad-y: calc(var(--fs) * 1.07);
+  --pad-x: calc(var(--fs) * 1.20);
+
+  /* ── the five text roles ──────────────────────────────────────────────
+     Every font-size in this file resolves through one of these, so a floor
+     can be applied in one place. Inherited unchanged. */
+  --t-body: var(--fs);                   /* running copy            */
+  --t-sub:  calc(var(--fs) * .93);       /* stat lines              */
+  --t-mid:  calc(var(--fs) * .867);      /* names, row actions      */
+  --t-sec:  calc(var(--fs) * .8);        /* notes, asides, chips    */
+  --t-lab:  calc(var(--fs) * .667);      /* uppercase labels        */
+
+  font-size: var(--fs);
+}
+.screen[hidden] { display: none; }
+.screen > * { min-width: 0; }
+
+.plate, .cta, .iconbtn, .picker, select, input[type="range"] { pointer-events: auto; }
+
+/* A plate is as tall as what it holds. It is never handed a height it then
+   has to hide the remainder of. */
+.plate {
+  background: var(--paper);
+  border-radius: var(--r-l);
+  box-shadow: var(--plate-shadow);
+  padding: var(--pad-y) var(--pad-x);
+  display: flex; flex-direction: column; justify-content: flex-start;
+}
+.plate--wash  { background: var(--edition-wash); }
+.plate--tight { padding: calc(var(--fs) * .8) calc(var(--fs) * .95); }
+
+/* ══ TYPE ═══════════════════════════════════════════════════════════════ */
+
+.eyebrow {
+  margin: 0 0 calc(var(--fs) * .6);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.eyebrow--carrier { color: var(--carrier); }
+.eyebrow--fund    { color: var(--fund); }
+.eyebrow--survey  { color: var(--survey); }
+.eyebrow--broker  { color: var(--broker); }
+.eyebrow--alarm   { color: var(--alarm); }
+.eyebrow--ink     { color: var(--edition-ink); }
+
+.display {
+  margin: 0 0 calc(var(--fs) * .8);
+  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
+  letter-spacing: -.028em;
+  text-wrap: balance;
+}
+.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
+.display span { display: block; }
+.display:last-child { margin-bottom: 0; }
+
+.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
+.body:last-child { margin-bottom: 0; }
+.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft); }
+.note + .note { margin-top: calc(var(--fs) * .35); }
+.strong { color: var(--edition-ink); font-weight: 700; }
+
+/* the standing mark for an invented figure the viewer can move */
+.illus {
+  display: inline-block; margin: 0;
+  font: 600 var(--t-lab)/1.6 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+}
+
+/* ══ NEW · 1 — .qs, the two quotes ══════════════════════════════════════
+   Screen 1's whole argument in one object: two households in opposite
+   states of preparation, and one outcome. The rows are deliberately
+   identical below the name, because that identity IS the beat. State is
+   carried by the left border, the badge word and the glyph; no text is
+   ever faded. */
+
+.qs { display: grid; gap: calc(var(--fs) * .5); margin: 0 0 calc(var(--fs) * .7); }
+.q {
+  border-left: 4px solid var(--rule);
+  border-radius: var(--r-s);
+  padding: calc(var(--fs) * .45) calc(var(--fs) * .7);
+  background: var(--edition-wash);
+}
+.q--done { border-left-color: var(--edition-ink); }
+.q-who {
+  margin: 0 0 calc(var(--fs) * .25);
+  font: 600 var(--t-sub)/1.35 var(--sans);
+  display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--fs) * .45);
+}
+.q-tag {
+  padding: 1px 6px; border-radius: var(--r-s);
+  background: var(--edition-ink); color: var(--paper);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.6 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase;
+}
+/* "No work" must not read as the privileged state, so it is an outline
+   badge rather than a filled one — a different FORM, not a paler ink. */
+.q-tag--none {
+  background: transparent; color: var(--ink-soft);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.q-state {
+  margin: 0; display: flex; align-items: center; gap: calc(var(--fs) * .4);
+  font: 700 var(--t-body)/1.3 var(--sans); color: var(--alarm);
+}
+.q-glyph { font-size: .9em; }
+
+/* ══ NEW · 2 — .thr, the threshold, and .offer, its consequence ═════════
+   The one control in the deck. The product is the threshold, so the
+   threshold is the only movable thing, and the offer below it has exactly
+   two states. */
+
+.thr-fig {
+  margin: 0 0 calc(var(--fs) * .2);
+  font: 400 calc(var(--figsz) * var(--fit) * 1.25)/1 var(--serif);
+  letter-spacing: -.025em; font-variant-numeric: tabular-nums;
+}
+.thr-of { font: var(--t-sub)/1 var(--sans); letter-spacing: 0; color: var(--ink-soft); }
+
+.thr-rail { position: relative; padding-bottom: calc(var(--fs) * 1.9); margin: 0 0 calc(var(--fs) * .6); }
+/* The threshold is marked ON the track, at 48 of 60, so the viewer can see
+   what they are dragging toward before they reach it. The 11px terms are
+   half the thumb, so the tick lands on the thumb's centre and not on the
+   track's edge. */
+.thr-tick {
+  position: absolute; left: calc(11px + (100% - 22px) * 0.8); top: calc(var(--fs) * 1.85);
+  transform: translateX(-50%);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--edition-ink);
+  white-space: nowrap;
+}
+.thr-tick i {
+  position: absolute; left: 50%; top: calc(var(--fs) * -1.55); width: 2px; height: calc(var(--fs) * 1.35);
+  background: var(--edition-ink);
+}
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 34px; background: transparent; cursor: pointer; margin: 0;
+  display: block;
+}
+/* --p is set by app.js so the track fills behind the thumb: how far the
+   street has come, and how far is left, without reading the number. */
+input[type="range"] { --p: 0%; }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px; border: 1px solid var(--rule);
+  background: linear-gradient(to right,
+    var(--edition-ink) 0 var(--p), var(--wash-2) var(--p) 100%);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px; background: var(--wash-2); border-radius: 3px; border: 1px solid var(--rule);
+}
+input[type="range"]::-moz-range-progress {
+  height: 6px; background: var(--edition-ink); border-radius: 3px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; margin-top: -9px;
+  background: var(--edition-ink); border: 2px solid var(--paper);
+  border-radius: 50%; box-shadow: 0 0 0 1px var(--edition-ink);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  background: var(--edition-ink); border: 2px solid var(--paper);
+  border-radius: 50%; box-shadow: 0 0 0 1px var(--edition-ink);
+}
+
+/* NO TEXT FADING between the two states. The closed offer is not a dimmed
+   open one: it is a different ground, a different border, a different
+   glyph and a different word, all at full contrast. It survives greyscale. */
+.offer {
+  border-left: 4px solid var(--alarm);
+  border-radius: var(--r-s);
+  background: var(--alarm-fill);
+  padding: calc(var(--fs) * .5) calc(var(--fs) * .8);
+  margin: 0 0 calc(var(--fs) * .55);
+  transition: background .3s linear, border-color .3s linear;
+}
+.offer[data-state="open"] {
+  border-left-color: var(--edition-ink);
+  background: var(--ink-fill);
+}
+.offer-word {
+  margin: 0 0 calc(var(--fs) * .2);
+  display: flex; align-items: center; gap: calc(var(--fs) * .45);
+  font: 700 max(15px, calc(var(--fs) * 1.13))/1.25 var(--sans);
+  color: var(--alarm);
+}
+.offer[data-state="open"] .offer-word { color: var(--edition-ink); }
+.offer-glyph { font-size: 1em; line-height: 1; }
+.offer-line { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
+
+.leg { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .9); margin: 0; }
+.leg-i {
+  display: inline-flex; align-items: center; gap: calc(var(--fs) * .4);
+  font: 600 var(--t-lab)/1.5 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+}
+.leg-i i {
+  width: calc(var(--fs) * .85); height: calc(var(--fs) * .85); border-radius: 50%;
+}
+.leg-i--in  i { background: var(--edition-ink); }
+.leg-i--out i { background: var(--paper); box-shadow: inset 0 0 0 2px var(--rule); }
+
+/* ══ NEW · 3 — .terms, what the offer is made of ════════════════════════
+   Four clauses, each a label and one sentence. Colour-coded to the party
+   that carries it, so screen 3's cast is already introduced here. */
+
+.terms { display: grid; gap: calc(var(--fs) * .55); margin: 0; }
+.term { border-left: 4px solid var(--rule); padding-left: calc(var(--fs) * .7); }
+.term--house   { border-left-color: var(--edition-ink); }
+.term--fund    { border-left-color: var(--fund); }
+.term--carrier { border-left-color: var(--carrier); }
+.term--survey  { border-left-color: var(--survey); }
+.term-h {
+  margin: 0 0 calc(var(--fs) * .15);
+  font: 600 var(--t-lab)/1.4 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.term--house   .term-h { color: var(--edition-ink); }
+.term--fund    .term-h { color: var(--fund); }
+.term--carrier .term-h { color: var(--carrier); }
+.term--survey  .term-h { color: var(--survey); }
+.term-l { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
+
+/* ══ NEW · 4 — .sign, the agreement ═════════════════════════════════════
+   Five parties, five commitments. The broker's row carries one extra line,
+   because the screen has to make a fee feel earned rather than asserted,
+   and the only thing that does that is what they were exposed to. */
+
+.sign { display: grid; gap: calc(var(--fs) * .55); margin: 0; }
+.sr { border-left: 4px solid var(--rule); padding-left: calc(var(--fs) * .75); }
+.sr--house   { border-left-color: var(--edition-ink); }
+.sr--carrier { border-left-color: var(--carrier); }
+.sr--fund    { border-left-color: var(--fund); }
+.sr--survey  { border-left-color: var(--survey); }
+.sr--broker  { border-left-color: var(--broker); }
+.sr-who {
+  margin: 0 0 calc(var(--fs) * .18);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: calc(var(--fs) * .45);
+  font: 600 var(--t-sub)/1.35 var(--sans);
+}
+.sr--carrier .sr-who { color: var(--carrier); }
+.sr--fund    .sr-who { color: var(--fund); }
+.sr--survey  .sr-who { color: var(--survey); }
+.sr--broker  .sr-who { color: var(--broker); }
+.sr-n {
+  padding: 1px 6px; border-radius: var(--r-s);
+  background: var(--edition-wash); color: var(--edition-ink);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.6 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.sr-n--paid { background: var(--broker-fill); color: var(--broker); }
+.sr-what { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
+/* the earned line — set apart by a rule and a diamond, the publication's
+   mark for "this is the evidence, not the claim" */
+.sr-why {
+  margin: calc(var(--fs) * .3) 0 0;
+  padding-left: calc(var(--fs) * .7);
+  border-left: 2px solid var(--broker);
+  font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft);
+}
+.sr-why::before { content: "◆ "; color: var(--broker); font-size: .85em; }
+
+/* ══ CHROME ═════════════════════════════════════════════════════════════ */
+
+.chrome {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+  height: var(--chrome-h);
+  padding: 0 var(--gutter) var(--gutter);
+  display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
+  pointer-events: none;
+}
+.chrome-r { display: flex; align-items: center; gap: 8px; }
+.iconbtn {
+  width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 16px/1 var(--sans); cursor: pointer;
+}
+.iconbtn:hover { background: var(--edition-wash); }
+/* A disabled control still has to be legible: ink-soft on the wash is
+   4.57 : 1, and the flat wash fill is what says "off", not a pale glyph. */
+.iconbtn[disabled] {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair); cursor: default;
+}
+.iconbtn[disabled]:hover { background: var(--edition-wash); }
+
+.picker select {
+  min-height: 46px; max-width: 34ch; padding: 0 12px;
+  background: var(--paper); color: var(--edition-ink);
+  border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 14px/1 var(--sans); cursor: pointer;
+}
+
+/* The primary action is the ink, not an accent. */
+.cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 46px; padding: 0 20px;
+  background: var(--edition-ink); color: var(--paper);
+  border: 1px solid var(--edition-ink); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
+}
+.cta:hover { background: #31473B; border-color: #31473B; }
+
+/* ── .gw, the ground window ───────────────────────────────────────────
+   In the sibling prototype this is a phone-only device: the hole the ground
+   shows through under the stacked plates. A STREET needs it on the desktop
+   too, and that is the one component change this concept genuinely
+   required. A county tolerates being centred behind plates; sixty parcels
+   you are meant to COUNT do not — they have to land in the clear band, not
+   half under the copy. So .gw is now a real, invisible grid cell on every
+   width, and app.js aims the camera at its box. It paints nothing and
+   takes no pointer events, so it changes no layout but its own. It is the
+   one grid child that must STRETCH: .screen sets align-items:start so a
+   plate is only as tall as its copy, and a window collapsed to zero height
+   is a window the camera cannot aim at. */
+.gw { display: block; pointer-events: none; min-height: 0; align-self: stretch; }
+
+/* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) and (max-height: 820px) {
+  :root { --gutter: 13px; --chrome-h: 66px; }
+  .chrome { padding: 0 var(--gutter) 10px; }
+}
+
+/* ══ NARROW ═════════════════════════════════════════════════════════════ */
+
+@media (max-width: 899px) {
+  :root {
+    --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px;
+    /* a phone is not a short desktop: start from 14px, not 13px */
+    --fs-base: clamp(14px, 3.6vw, 15.5px);
+  }
+
+  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
+     app.js does not run the --fit search on a narrow window at all (see
+     fitScreen), so --fit is 1 here and these are the real rendered sizes.
+     Nothing on a phone renders below 11px, and nothing carrying a sentence
+     below 14px. */
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+
+  .world { inset: -5% -9%; }
+
+  /* The deck stops at the controls rather than scrolling underneath them:
+     a floating bar over running text is unreadable. The street still runs
+     behind the bar to the edge. */
+  .deck { inset: 0 0 var(--chrome-h) 0; }
+
+  /* One screenful, top to bottom. Plates take the height they need and the
+     street window takes what is left. */
+  .screen {
+    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: var(--gutter) var(--gutter) 8px;
+  }
+  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
+
+  /* On a phone the street is the hole left under the plates, and it keeps a
+     floor on every screen: the parcels committing are the argument of the
+     central screen, and a 90px smear is not a street. The floor is generous
+     because the street is drawn flat here, not stood on its end, so its
+     whole depth has to fit in this band. */
+  .gw { flex: 1 0 auto; min-height: min(27vh, 215px); }
+
+  .q-who { gap: calc(var(--fs) * .4); }
+
+  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
+  .chrome-r { width: 100%; }
+  .picker { flex: 1 1 auto; min-width: 0; }
+  .picker select { width: 100%; max-width: none; }
+  .cta { padding: 0 14px; font-size: 14px; }
+  /* The label is hidden from SIGHT, not from the accessibility tree.
+     display:none left the button's accessible name as the arrow glyph
+     alone, so it announced as "→" on a phone. */
+  .cta span:first-child {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
+}
+
+/* On a phone shorter than about 740px there is no height to give the window
+   a floor out of; the plates come first and the street takes what is left. */
+@media (max-width: 899px) and (max-height: 739px) {
+  .gw { flex: 1 1 0; min-height: 0; }
+}
+
+@media (max-width: 400px) {
+  .terms { gap: calc(var(--fs) * .45); }
+  .sign  { gap: calc(var(--fs) * .45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ══ GLOBAL TYPE FLOORS (integration) ═══════════════════════════════════
+   Applied by the main thread at integration. The --fit search runs on any
+   short stage, not only a phone: at 1280x720 it drove uppercase labels to
+   under 9px. Floors are therefore global, and the screen scrolls rather
+   than shrinking past legibility. Narrow floors are re-stated after, so a
+   phone keeps the higher minimums. Nothing renders below 11px anywhere. */
+.screen {
+  --t-body: max(13px,   var(--fs));
+  --t-sub:  max(12.5px, calc(var(--fs) * .93));
+  --t-mid:  max(12px,   calc(var(--fs) * .867));
+  --t-sec:  max(11.5px, calc(var(--fs) * .8));
+  --t-lab:  max(11px,   calc(var(--fs) * .667));
+  overflow-y: auto;
+}
+@media (max-width: 899px) {
+  .screen {
+    --t-body: max(14px,   var(--fs));
+    --t-sub:  max(13.5px, calc(var(--fs) * .93));
+    --t-mid:  max(13px,   calc(var(--fs) * .867));
+    --t-sec:  max(12.5px, calc(var(--fs) * .8));
+    --t-lab:  max(11px,   calc(var(--fs) * .667));
+  }
+}
