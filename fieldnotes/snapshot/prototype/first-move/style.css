@@ -952,3 +952,21 @@ input[type="range"] { height: 44px; }
   }
   .cta { padding: 0 18px; }
 }
+
+/* ══ IPAD GESTURE CLEARANCE (integration) ═════════════════════════════════
+   iPad is the primary device and the chrome is fixed to the bottom edge, so
+   prev / picker / next ended ~11px from it — inside the home-indicator strip,
+   under the one button a facilitator taps on every screen. env() alone is not
+   enough: a desktop browser and some iPad configurations report a 0 inset, so
+   the clearance takes whichever is larger. Everything that reserves room for
+   the chrome has to grow by the same amount or the content slides under it. */
+:root { --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px)); }
+.chrome {
+  height: calc(var(--chrome-h) + var(--gesture-safe));
+  padding-bottom: calc(var(--gutter) + var(--gesture-safe));
+}
+.screen { padding-bottom: calc(var(--chrome-h) + var(--gesture-safe)); }
+.deck   { bottom: 0; }
+@media (max-width: 899px) {
+  .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
+}
