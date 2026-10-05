@@ -99,17 +99,23 @@ pull)
   ;;
 
 status)
-  echo "Drive mount   : $MOUNT"
+  # `xargs -n1 basename` splits on the spaces in "My Drive/Prototype Review"
+  # and prints fragments of the path as if they were filenames. Loop instead.
+  names() { local p out=""; shopt -s nullglob
+    for p in "$@"; do out+="$(basename "$p") "; done
+    printf '%s' "${out:-—}"; }
+
+  echo "Drive mount    : $MOUNT"
   echo "Bundle in Drive: $DEST"
   if [ -d "$DEST" ]; then
-    echo "  iterations  : $(ls -d "$DEST"/iteration-* 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\n' ' ')"
-    echo "  files       : $(find "$DEST" -type f 2>/dev/null | wc -l | tr -d ' ')"
-    echo "  reviews/    : $(ls "$DEST/reviews"/*.md 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\n' ' ')"
+    echo "  iterations   : $(names "$DEST"/iteration-*)"
+    echo "  files        : $(find "$DEST" -type f ! -name '.DS_Store' 2>/dev/null | wc -l | tr -d ' ')"
+    echo "  reviews/     : $(names "$DEST"/reviews/*.md)"
   else
     echo "  not pushed yet — run: $0 push"
   fi
-  echo "Local source  : $SRC"
-  echo "  iterations  : $(ls -d "$SRC"/iteration-* 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\n' ' ')"
+  echo "Local source   : $SRC"
+  echo "  iterations   : $(names "$SRC"/iteration-*)"
   ;;
 
 *)
