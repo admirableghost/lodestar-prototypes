@@ -1043,3 +1043,114 @@ input[type="range"] { height: 44px; }
     transparent 100%);
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
+/* ══ ITERATION-003 · THE AUTHORITY BOUNDARY ════════════════════════════
+   The one object this prototype is made of, repeated on all three screens.
+
+   Work rises as bars. Authority is a horizontal line. A bar that clears the
+   line is something the agent may do alone; a bar that reaches it is capped
+   and waits for a person. The line is the only thing that changes — between
+   screens, and on the last screen under the room's own hand — so the whole
+   argument is spatial and nothing has to be read in a table. */
+
+.bnd {
+  position: relative; z-index: 3; align-self: stretch;
+  --line: 42%;
+  padding-bottom: calc(var(--x-gap) * 3.2);
+}
+/* the protected zone: everything beneath the line */
+.bnd-zone {
+  position: absolute; left: 0; right: 0; bottom: calc(var(--x-gap) * 3.2);
+  height: var(--line);
+  background: color-mix(in srgb, var(--cover, #8FBEE4) 13%, transparent);
+  border-top: 0; transition: height .55s cubic-bezier(.4,0,.2,1);
+}
+.bnd-line {
+  position: absolute; left: 0; right: 0; margin: 0;
+  bottom: calc(var(--line) + var(--x-gap) * 3.2);
+  border-top: 2px solid var(--cover, #8FBEE4);
+  transition: bottom .55s cubic-bezier(.4,0,.2,1);
+}
+.bnd-line span {
+  position: absolute; right: 0; top: calc(var(--x-gap) * -1.5);
+  font: 600 var(--x-label)/1 var(--sans);
+  letter-spacing: .2em; text-transform: uppercase; color: var(--cover, #8FBEE4);
+}
+.bnd-tasks {
+  position: absolute; inset: 0 0 0 0;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: clamp(14px, 3vw, 52px); align-items: end;
+  padding: 0 clamp(8px, 3vw, 64px) calc(var(--x-gap) * 3.2);
+}
+.bt { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.bt-bar {
+  display: block; width: 100%; border-radius: 3px 3px 0 0;
+  height: var(--h); transition: height .55s cubic-bezier(.4,0,.2,1), background .3s linear;
+  background: var(--line-2, #2E3741);
+}
+/* clears the line: the agent acts, and the bar is solid cover-blue */
+.bt[data-state="acts"] .bt-bar { background: var(--cover, #8FBEE4); }
+/* reaches the line: capped, hatched, and stopped */
+.bt[data-state="stops"] .bt-bar {
+  background: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--alarm, #F3977A) 55%, transparent) 0 6px,
+    transparent 6px 12px);
+  box-shadow: inset 0 2px 0 0 var(--alarm, #F3977A);
+}
+.bt[data-state="stops"]::after {
+  content: "Human required";
+  position: absolute; left: 0; right: 0; bottom: calc(var(--h) + 8px);
+  text-align: center; white-space: nowrap;
+  font: 600 var(--x-label)/1 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--alarm, #F3977A);
+}
+.bt-l {
+  position: absolute; left: 0; right: 0; top: calc(100% + 10px);
+  font: var(--x-label)/1.35 var(--sans); color: var(--paper);
+  text-align: center;
+}
+.bnd--sm { padding-bottom: calc(var(--x-gap) * 3.2); }
+
+/* screen 2's control and its one annotation */
+.bnd-ctrl { z-index: 3; align-self: start; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .7); align-items: flex-start; }
+.bnd-ctrl .xchoice button { border-color: var(--paper); color: var(--paper); }
+.bnd-ctrl .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
+.bnd-said { margin: 0; max-width: 30ch; font: var(--x-lede)/1.4 var(--sans); color: var(--paper); }
+
+/* screen 3's evidence: three numerals, not a log */
+.ev { z-index: 3; align-self: center; display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(var(--x-gap) * 1.2); }
+.ev-n { margin: 0; font: 400 clamp(44px, 3.4vw + 3.4vh, 92px)/1 var(--serif); color: var(--paper); letter-spacing: -.03em; }
+.ev-i--cov .ev-n { color: var(--cover, #8FBEE4); }
+.ev-i--esc .ev-n { color: var(--alarm, #F3977A); }
+.ev-l { margin: calc(var(--x-gap) * .3) 0 0; max-width: 17ch; font: var(--x-label)/1.4 var(--sans); color: var(--paper); }
+
+/* the decision — the climax, sized like one */
+.dec { z-index: 3; align-self: end; display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--x-gap) * .6) calc(var(--x-gap) * 1.1); }
+.dec-q { margin: 0; flex: 0 0 auto; font: 400 clamp(19px, .9vw + 1.4vh, 28px)/1.2 var(--serif); color: var(--paper); }
+.dec .xchoice button { border-color: var(--paper); color: var(--paper); }
+.dec .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
+.dec-said { margin: 0; flex: 1 1 26ch; font: var(--x-label)/1.45 var(--sans); color: var(--paper); }
+.bta-micro { z-index: 3; align-self: end; }
+
+@media (max-width: 899px) {
+  .bnd-tasks { gap: 8px; padding-left: 0; padding-right: 0; }
+  .bt-l { font-size: 11.5px; }
+  .ev { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .5); }
+}
+
+/* The space ABOVE the line is meaningful — it is what the agent may not reach
+   — but it was swallowing half the screen. The stage starts higher and the
+   zone carries a faint ceiling so the gap reads as bounded, not empty. */
+.bnd-zone { border-bottom: 0; }
+.bnd::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0;
+  height: 1px; background: color-mix(in srgb, var(--paper) 14%, transparent);
+}
+.bta-micro { text-align: right; }
+
+/* The deck is pointer-events:none so the ground stays visible beneath it;
+   .plate used to re-enable them. The new composition has no plates, so every
+   interactive container has to turn them back on itself — without this the
+   boundary control and the decision are simply dead to touch. */
+.bnd-ctrl, .dec, .bnd { pointer-events: auto; }
+.bnd-zone, .bnd-line, .bnd-tasks { pointer-events: none; }
