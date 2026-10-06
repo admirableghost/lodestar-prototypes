@@ -194,62 +194,118 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   /* ══════════════════════════════════════════════════════════════════════
-     PREFERENCE → REASONING → CHOICE
+     ONE SOURCE OF TRUTH
 
-     Three offers, three things she might care most about. The agent scores
-     each offer against the active preference and the best fit changes in
-     front of the room. The scores are the only data here, so the ranking
-     the viewer sees is the ranking the rule produces.
+     Every screen reads this table. Eligibility is a HARD filter drawn from
+     the customer's own standing instructions, so an offer that breaks one is
+     never bought however cheap it is — which is the whole argument. The
+     preference then only decides WHICH TERM is shown and why the eligible
+     offer won; it never overrides eligibility.
+
+     Nothing is scored. Where an offer publishes no commitment, that absence
+     is shown as an absence and never treated as a zero or a promise.
      ══════════════════════════════════════════════════════════════════════ */
 
   var OC = [
-    { id: "meridian",   name: "Meridian",
-      price: 42, excl: 92, service: 88,
-      why: { price: "1,340 a year \u2014 not the cheapest",
-             excl:  "No exclusion she would meet",
-             service: "Settles in five days, with a remedy" } },
-    { id: "candlewick", name: "Candlewick",
-      price: 95, excl: 30, service: 44,
-      why: { price: "1,185 a year \u2014 the cheapest",
-             excl:  "Excludes drivers under 25",
-             service: "Publishes no settlement time" } },
-    { id: "pell",       name: "Pell & Roe",
-      price: 28, excl: 66, service: 70,
-      why: { price: "1,420 a year",
-             excl:  "Caps the excess higher than she asked",
-             service: "Settles in ten days" } }
+    { id: "meridian", name: "Meridian Mutual", price: "1,340.00", num: 1340,
+      excess: "450.00 USD", driver: "Every named driver, no age condition",
+      settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true,
+      eligible: true, bar: null,
+      why: { price:  "the lowest price she can actually buy",
+             excl:   "no exclusion that reaches her household",
+             settle: "the only published settlement time with a remedy behind it" } },
+    { id: "candlewick", name: "Candlewick Direct", price: "1,185.00", num: 1185,
+      excess: "500.00 USD", driver: "Drivers under 25 excluded",
+      settle: "No settlement time published", settlePublished: false,
+      eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep." },
+    { id: "pell", name: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
+      excess: "900.00 USD", driver: "Every named driver",
+      settle: "10 working days", settlePublished: true,
+      eligible: false, bar: "The excess is 900 USD, twice the 500 she capped." }
   ];
-  var PREF_LABEL = { price: "price", excl: "fewest exclusions", service: "fastest settlement" };
+
+  var TERM = {
+    price:  { label: "Annual price",        get: function (o) { return o.price + " USD"; } },
+    excl:   { label: "Who is covered",      get: function (o) { return o.driver; } },
+    settle: { label: "Settlement commitment", get: function (o) { return o.settle; } }
+  };
+  var PREF_SAID = { price: "price", excl: "fewest exclusions", settle: "fastest settlement" };
   var pref = "excl";
 
-  function paintRank() {
-    var rank = document.getElementById("rank");
-    if (!rank) { return; }
-    var best = OC.reduce(function (a, b) { return a[pref] >= b[pref] ? a : b; });
-    OC.forEach(function (o) {
-      var el = rank.querySelector('[data-o="' + o.id + '"]');
-      if (!el) { return; }
-      el.querySelector(".rk-bar span").style.width = o[pref] + "%";
-      el.querySelector(".rk-why").textContent = o.why[pref];
-      el.dataset.best = o === best ? "1" : "0";
-    });
+  function bought() {
+    /* the cheapest ELIGIBLE offer; eligibility is never traded away */
+    return OC.filter(function (o) { return o.eligible; })
+             .reduce(function (a, b) { return a.num <= b.num ? a : b; });
+  }
+
+  function paintCompare() {
+    var host = document.getElementById("cmp");
+    if (!host) { return; }
+    var t = TERM[pref], win = bought();
+    host.innerHTML = OC.map(function (o) {
+      var val = t.get(o);
+      var unp = (pref === "settle" && !o.settlePublished);
+      return '<div class="of" data-win="' + (o === win ? "1" : "0") +
+             '" data-ok="' + (o.eligible ? "1" : "0") + '">' +
+             '<p class="of-co">' + o.name + '</p>' +
+             '<p class="of-k">' + t.label + '</p>' +
+             '<p class="of-v' + (unp ? " of-v--none" : "") + '">' + val + '</p>' +
+             (o.eligible
+               ? '<p class="of-t">' + (o === win ? "Chosen \u2014 " + o.why[pref] : "Eligible") + '</p>'
+               : '<p class="of-t of-t--no">Cannot be bought \u2014 ' + o.bar + '</p>') +
+             '</div>';
+    }).join("");
+
     var v = document.getElementById("verdict");
     if (v) {
-      v.innerHTML = "On " + PREF_LABEL[pref] + ", the agent buys <b>" + best.name +
-        "</b> \u2014 inside the rules she set, without asking.";
+      v.innerHTML = "On " + PREF_SAID[pref] + ", the agent buys <b>" + win.name +
+        "</b> \u2014 " + win.why[pref] + ".";
+    }
+    var perm = document.getElementById("permit");
+    if (perm) {
+      perm.textContent = "Inside her standing instructions, so it buys without asking. "
+        + "The cheaper offer is outside them, and no price difference changes that.";
     }
     Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
     });
-    var gate = document.getElementById("gate-r");
-    if (gate) { gate.textContent = "re-shops, and switches"; }
-    say("Ranked by " + PREF_LABEL[pref] + ". The agent buys " + best.name + ".");
+    paintPerformance();
+    say("Ranked on " + PREF_SAID[pref] + ". The agent buys " + win.name + ".");
+  }
+
+  /* ── screen 3 reads the SAME table, for whichever offer was bought ─── */
+  function paintPerformance() {
+    var o = bought();
+    var held = document.getElementById("held");
+    if (held) {
+      held.innerHTML = "Holding <b>" + o.name + "</b> at " + o.price +
+        " USD a year, bought inside her instructions.";
+    }
+    var pp = document.getElementById("pp");
+    if (pp) {
+      pp.innerHTML =
+        '<div class="pp-i"><p class="of-k">It promised</p>' +
+        '<p class="pp-v">' + o.settle + '</p></div>' +
+        '<div class="pp-arrow" aria-hidden="true"></div>' +
+        '<div class="pp-i pp-i--obs"><p class="of-k">What happened</p>' +
+        '<p class="pp-v pp-v--miss">9 working days on the third claim</p></div>';
+    }
+    var r = document.getElementById("resp"), rs = document.getElementById("resp-sub");
+    if (r) {
+      r.innerHTML = "Because the commitment was published, the remedy applied itself \u2014 " +
+        "<b>200.00 USD</b>, with no claim made for it.";
+    }
+    if (rs) {
+      /* honest: a breach does not hand the agent a better market */
+      rs.textContent = "The agent may re-shop inside the same instructions. Today neither "
+        + "alternative clears them, so it keeps the cover and records the miss.";
+    }
   }
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
-    b.addEventListener("click", function () { pref = b.dataset.pref; paintRank(); });
+    b.addEventListener("click", function () { pref = b.dataset.pref; paintCompare(); });
   });
-  paintRank();
+  paintCompare();
 
   /* Restored: the world palette and its frame sat inside the state block the
      recomposition replaced, and renderWorld below is still its consumer. */

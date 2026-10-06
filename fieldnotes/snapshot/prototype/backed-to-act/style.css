@@ -1044,6 +1044,56 @@ input[type="range"] { height: 44px; }
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
 
+/* ══ ITERATION-003 · contrast and collision corrections ═════════════════
+   Taking the cards away put this type onto the ground, where --ink-soft
+   measured 4.38:1 — below AA. Level-3 type now uses the edition ink and
+   earns its quietness from size and letterspacing instead of from being
+   paler. */
+.xeyebrow, .xmicro { color: var(--edition-ink); }
+.xlede { color: color-mix(in srgb, var(--edition-ink) 88%, var(--paper)); }
+/* The scrim pulled itself up by a negative margin and sat on the line
+   above it. It lifts the type in place instead. */
+.xhead--scrim { margin: 0; }
+
+/* This prototype's ground is a dark console. With the plate gone the ink
+   headline measured 1.34:1 — invisible. On this stock the display type is
+   paper, not ink. */
+.xhead .xd, .xhead .xeyebrow, .xhead .xlede, .xhead .note, .xhead .econ { color: var(--paper); }
+.xmicro { color: var(--paper); }
+
+/* Scrim padding was extending the headline box into the row below it. */
+.xhead--scrim { padding-bottom: 0; }
+/* Legacy Level-3 classes now sit on the ground too, so they take the ink. */
+.xhead .note, .xhead .display--ask, .xask .display--ask,
+.xblock .lead-role, .xblock .note { color: var(--edition-ink); }
+
+/* On the dark console the narrow breakpoint was giving the headline a PAPER
+   background while the text had already been set to paper — paper on paper,
+   1:1. The console ground is dark at every width, so it keeps no background. */
+@media (max-width: 899px) { .xhead { background: none; } }
+
+/* Ordering fix: the shared correction above set .xhead .note to edition ink,
+   which on this dark console measured 1.34:1. The console override has to be
+   the last word on this stock. */
+.xhead .xd, .xhead .xeyebrow, .xhead .xlede,
+.xhead .note, .xhead .econ, .xmicro { color: var(--paper); }
+
+/* The scrim was painted on the element itself, so its padding grew the box
+   and the detector saw it overlapping whatever sat in the next row. It is a
+   lighting effect, not a layout object, so it moves to a pseudo-element that
+   bleeds past the box without occupying space. */
+.xhead--scrim { position: relative; padding: 0; background: none; }
+.xhead--scrim > * { position: relative; z-index: 1; }
+.xhead--scrim::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  inset: -2.2vh -14vw -2.2vh -3vw;
+  background: radial-gradient(118% 120% at 20% 50%,
+    var(--paper) 0%, var(--paper) 48%,
+    color-mix(in srgb, var(--paper) 68%, transparent) 74%,
+    transparent 100%);
+}
+.wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
 /* ══ ITERATION-003 · THE AUTHORITY BOUNDARY ════════════════════════════
    The one object this prototype is made of, repeated on all three screens.
 
@@ -1154,3 +1204,169 @@ input[type="range"] { height: 44px; }
    boundary control and the decision are simply dead to touch. */
 .bnd-ctrl, .dec, .bnd { pointer-events: auto; }
 .bnd-zone, .bnd-line, .bnd-tasks { pointer-events: none; }
+
+/* ══ REVISION 02 · TWO ZONES, FIVE EQUAL ACTIONS ═══════════════════════
+   Permission is carried by WHICH ZONE an action sits in — nothing else.
+   Every action object is the same size, because no quantity is defined and
+   a bar of differing height implied one. The divider is heavy and labelled
+   on both sides so the separation survives greyscale and needs no legend. */
+
+.zones {
+  pointer-events: auto; z-index: 3; align-self: stretch;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 0; align-items: stretch;
+}
+.zone { display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55);
+  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 1.3); min-width: 0; }
+.zone--ask { background: color-mix(in srgb, var(--paper) 5%, transparent); }
+.zone-h {
+  margin: 0 0 calc(var(--x-gap) * .3);
+  font: 600 var(--x-label)/1.3 var(--sans);
+  letter-spacing: .17em; text-transform: uppercase; color: var(--paper);
+}
+.zone--ask .zone-h { color: var(--alarm, #F3977A); }
+.zone-b { display: flex; flex-direction: column; gap: calc(var(--x-gap) * .5); }
+.zone-rule { width: 3px; background: var(--paper); opacity: .5; }
+
+/* one action, one size, wherever it sits */
+.act {
+  border: 1.5px solid color-mix(in srgb, var(--paper) 46%, transparent);
+  border-radius: var(--r-m);
+  padding: calc(var(--x-gap) * .62) calc(var(--x-gap) * .8);
+  background: color-mix(in srgb, var(--paper) 7%, transparent);
+  transition: box-shadow .35s linear, border-color .35s linear;
+}
+.act-n { margin: 0; font: var(--x-lede)/1.3 var(--sans); color: var(--paper); }
+.act-c, .act-x {
+  margin: calc(var(--x-gap) * .3) 0 0;
+  font: var(--x-label)/1.4 var(--sans);
+}
+.act-c { color: var(--cover, #8FBEE4); }   /* what the POLICY covers */
+.act-x { color: var(--alarm, #F3977A); }   /* a hard exception, never permitted */
+.zone--may .act { border-color: var(--cover, #8FBEE4); }
+.zone--ask .act { border-style: dashed; }
+.act--hard { border-color: var(--alarm, #F3977A) !important; border-style: solid !important; }
+/* the moment an action changes zone */
+.act--moved { box-shadow: 0 0 0 3px var(--cover, #8FBEE4); }
+
+/* a proposed widening is dashed and clearly NOT the active boundary */
+.zones[data-proposed="1"] .zone--may { outline: 2px dashed var(--paper); outline-offset: -4px; }
+.zones[data-proposed="1"] .zone--may .zone-h::after {
+  content: " · proposed"; color: var(--paper); opacity: .8; letter-spacing: .1em;
+}
+
+/* screen 2's control */
+.auth2 { pointer-events: auto; z-index: 3; align-self: start;
+  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .6); align-items: flex-start; }
+.auth2 .xchoice button { border-color: var(--paper); color: var(--paper); }
+.auth2 .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
+.auth2-said { margin: 0; max-width: 34ch; font: var(--x-lede)/1.4 var(--sans); color: var(--paper); }
+
+/* screen 3 · outcome accounting, then the decision as the focal event */
+.out { pointer-events: auto; z-index: 3; align-self: center;
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: calc(var(--x-gap) * 1.4); }
+.out-n { margin: 0; font: 400 clamp(38px, 2.6vw + 2.6vh, 72px)/1 var(--serif);
+  color: var(--paper); letter-spacing: -.03em; }
+.out-i--esc .out-n { color: var(--alarm, #F3977A); }
+.out-l { margin: calc(var(--x-gap) * .2) 0 0; font: var(--x-lede)/1.3 var(--sans); color: var(--paper); }
+.out-s { margin: calc(var(--x-gap) * .35) 0 0; padding-left: calc(var(--x-gap) * .7);
+  border-left: 2px solid var(--cover, #8FBEE4);
+  font: var(--x-label)/1.45 var(--sans); color: var(--paper); max-width: 34ch; }
+.out-i--esc .out-s { border-left-color: var(--alarm, #F3977A); }
+.out-s b { color: var(--cover, #8FBEE4); font-weight: 400; }
+
+.dec { pointer-events: auto; z-index: 3; align-self: center;
+  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .75); align-items: flex-start; }
+.dec-q { margin: 0; font: 400 clamp(26px, 1.5vw + 2.1vh, 46px)/1.12 var(--serif);
+  color: var(--paper); letter-spacing: -.02em; }
+.dec .xchoice button { border-color: var(--paper); color: var(--paper);
+  min-height: 56px; font-size: clamp(17px, .6vw + 1vh, 22px); }
+.dec .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
+.dec-said { margin: 0; max-width: 62ch; font: var(--x-lede)/1.45 var(--sans); color: var(--paper); }
+.zones--sm .act-c, .zones--sm .act-x { display: none; }
+.zones--sm .act { padding: calc(var(--x-gap) * .4) calc(var(--x-gap) * .6); }
+.zones--sm .act-n { font-size: var(--x-label); }
+.zones--sm .zone { padding: calc(var(--x-gap) * .5) calc(var(--x-gap) * .9); }
+.zones--sm .zone-b { flex-direction: row; flex-wrap: wrap; }
+
+@media (max-width: 899px) {
+  .zones { grid-template-columns: 1fr; }
+  .zone-rule { width: auto; height: 3px; }
+  .out { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .8); }
+  .zones--sm .zone-b { flex-direction: column; }
+}
+
+/* ══ REVISION 02 · ART DIRECTION ═══════════════════════════════════════
+   A cinematic world rather than a terminal. Deep navy-charcoal base with a
+   luminous cool field behind the agent's zone and a warm one behind the
+   human's, so the two halves of the composition are lit differently before
+   a single word is read. Depth comes from three planes: an atmospheric
+   gradient behind, the drawn field in the middle, the action objects in
+   front with real shadow. */
+
+:root {
+  --stage-deep:  #10161C;
+  --stage-navy:  #16202B;
+  --cool:        #6FC3E8;
+  --warm:        #F0945F;
+}
+body { background: var(--stage-deep); }
+
+/* the environment: a wide cool glow on the agent's side, a warm one on the
+   human's, and a deep vignette so the composition has a horizon */
+.world::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(78% 108% at 22% 62%, color-mix(in srgb, var(--cool) 17%, transparent) 0%, transparent 62%),
+    radial-gradient(66% 96% at 86% 46%, color-mix(in srgb, var(--warm) 13%, transparent) 0%, transparent 60%),
+    radial-gradient(130% 120% at 50% 0%, transparent 44%, rgba(6,10,14,.78) 100%),
+    linear-gradient(170deg, var(--stage-navy) 0%, var(--stage-deep) 72%);
+}
+
+/* the zones become lit volumes, not boxes */
+.zone { position: relative; }
+.zone--may {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--cool) 11%, transparent) 0%, transparent 78%);
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--cool) 34%, transparent);
+}
+.zone--ask {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--warm) 10%, transparent) 0%, transparent 78%);
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--warm) 30%, transparent);
+}
+.zone--may .zone-h { color: var(--cool); }
+.zone--ask .zone-h { color: var(--warm); }
+
+/* the divider reads as a real edge with light falling off it */
+.zone-rule {
+  width: 2px; opacity: 1;
+  background: linear-gradient(180deg, transparent 0%,
+    color-mix(in srgb, var(--cool) 60%, transparent) 18%,
+    color-mix(in srgb, var(--warm) 60%, transparent) 82%, transparent 100%);
+  box-shadow: 0 0 22px 2px rgba(111,195,232,.16);
+}
+
+/* action objects sit in FRONT of the field, with weight */
+.act {
+  background: linear-gradient(180deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.025) 100%);
+  border-color: color-mix(in srgb, var(--paper) 26%, transparent);
+  box-shadow: 0 14px 28px -20px rgba(0,0,0,.95);
+  backdrop-filter: blur(2px);
+}
+.zone--may .act {
+  border-color: color-mix(in srgb, var(--cool) 62%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cool) 16%, transparent),
+              0 16px 30px -20px rgba(0,0,0,.95);
+}
+.zone--ask .act { border-color: color-mix(in srgb, var(--warm) 52%, transparent); }
+.act--hard { border-color: var(--warm) !important; }
+.act-c { color: var(--cool); }
+.act-x { color: var(--warm); }
+.act--moved { box-shadow: 0 0 0 3px var(--cool), 0 0 36px 2px rgba(111,195,232,.42); }
+
+.out-i--esc .out-n { color: var(--warm); }
+.out-s { border-left-color: var(--cool); }
+.out-s b { color: var(--cool); }
+.out-i--esc .out-s { border-left-color: var(--warm); }
+.zones[data-proposed="1"] .zone--may { outline-color: color-mix(in srgb, var(--cool) 70%, transparent); }

@@ -37,104 +37,126 @@
 <main class="deck" id="deck">
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     ONE METAPHOR, THREE STATES.
+     TWO ZONES, FIVE ACTIONS.
 
-     Every screen is the same composition: work rises as bars against a
-     horizontal line of authority. A bar that clears the line is something
-     the agent may do alone; a bar that hits it stops and waits for a person.
-     Nothing else is on the glass. The line moves between screens, and on the
-     last screen the room moves it — which is the whole argument, made
-     spatially instead of in a permissions table.
+     The earlier version drew the actions as bars of differing height, which
+     implied a quantity nobody had defined and let a permitted bar and a
+     blocked bar both sit below the line. The actions are now equal objects
+     that live in one of two named zones. Position is the only thing that
+     carries permission, and the thing that moves between screens is an
+     action, not a measurement.
+
+     Permission and cover are deliberately separate: the customer decides
+     what the agent may do, and the policy covers a named set of mistakes
+     inside that. One does not imply the other.
      ══════════════════════════════════════════════════════════════════════ -->
+  <template id="acts">
+    <div class="act" data-act="compare"><p class="act-n">Compare suppliers</p></div>
+    <div class="act" data-act="draft"><p class="act-n">Draft order</p></div>
+    <div class="act" data-act="recommend"><p class="act-n">Recommend quantity</p></div>
+    <div class="act" data-act="place"><p class="act-n">Place order</p><p class="act-c">Covered: wrong part, wrong quantity, duplicate order</p></div>
+    <div class="act act--hard" data-act="newsup"><p class="act-n">New supplier, over the limit</p><p class="act-x">Always needs a person</p></div>
+  </template>
 
-<!-- ══════ 1 · WITHOUT COVER ══════ -->
-<section class="screen" data-screen="1" data-label="Without cover" data-cam="queue" data-veil="soft">
+<!-- ══════ 1 · WITHOUT AUTHORISATION ══════ -->
+<section class="screen" data-screen="1" data-label="Without authorisation" data-cam="queue" data-veil="soft">
 
   <div class="xhead" style="grid-area:1/1/4/8">
-    <p class="xeyebrow">01 / Without cover</p>
+    <p class="xeyebrow">01 / Without authorisation</p>
     <h1 class="display xd" tabindex="-1"><span>It can do the work.</span><span>It cannot spend</span><span>the money.</span></h1>
   </div>
 
-  <div class="bnd" id="bnd1" style="grid-area:4/1/9/13" data-line="42">
-    <div class="bnd-zone" aria-hidden="true"></div>
-    <p class="bnd-line" aria-hidden="true"><span>Authority</span></p>
-    <div class="bnd-tasks">
-      <div class="bt" data-h="20"><span class="bt-bar"></span><span class="bt-l">Compare<br>suppliers</span></div>
-      <div class="bt" data-h="30"><span class="bt-bar"></span><span class="bt-l">Draft the<br>order</span></div>
-      <div class="bt" data-h="38"><span class="bt-bar"></span><span class="bt-l">Recommend<br>a quantity</span></div>
-      <div class="bt" data-h="58"><span class="bt-bar"></span><span class="bt-l">Place the<br>order</span></div>
-      <div class="bt" data-h="86"><span class="bt-bar"></span><span class="bt-l">New supplier,<br>over the limit</span></div>
+  <p class="xmicro bta-micro" style="grid-area:2/9/4/13">Invented company and figures.</p>
+
+  <div class="zones" id="z1" style="grid-area:4/1/9/13">
+    <div class="zone zone--may">
+      <p class="zone-h">Agent may act</p>
+      <div class="zone-b" data-zone="may"></div>
+    </div>
+    <div class="zone-rule" aria-hidden="true"></div>
+    <div class="zone zone--ask">
+      <p class="zone-h">Needs your approval</p>
+      <div class="zone-b" data-zone="ask"></div>
     </div>
   </div>
 
-  <p class="xmicro bta-micro" style="grid-area:2/9/3/13">Invented company and figures.</p>
-
 </section>
 
-<!-- ══════ 2 · WITH COVER ══════ -->
-<section class="screen" data-screen="2" data-label="Cover moves the line" data-cam="boundary" data-veil="">
+<!-- ══════ 2 · THE CUSTOMER AUTHORISES ══════ -->
+<section class="screen" data-screen="2" data-label="The customer authorises" data-cam="boundary" data-veil="">
 
   <div class="xhead" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">02 / With cover</p>
+    <p class="xeyebrow">02 / The customer authorises</p>
     <h2 class="display xd" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
   </div>
 
-  <div class="bnd-ctrl" style="grid-area:1/8/4/13">
+  <div class="auth2" style="grid-area:1/8/4/13">
+    <p class="zone-h">Calder sets the autonomy level</p>
     <div class="xchoice" role="group" aria-label="Autonomy level">
       <button type="button" id="lv0" aria-pressed="true">Draft only</button>
       <button type="button" id="lv1" aria-pressed="false">Act within cover</button>
     </div>
-    <p class="bnd-said" id="bnd-said">A mistake it makes inside the line is the insurer&rsquo;s, not the distributor&rsquo;s.</p>
+    <p class="auth2-said" id="bnd-said">Specified purchasing mistakes are covered. You still decide what the agent may do.</p>
   </div>
 
-  <div class="bnd" id="bnd2" style="grid-area:3/1/9/13" data-line="42">
-    <div class="bnd-zone" aria-hidden="true"></div>
-    <p class="bnd-line" aria-hidden="true"><span>Authority</span></p>
-    <div class="bnd-tasks">
-      <div class="bt" data-h="20"><span class="bt-bar"></span><span class="bt-l">Compare<br>suppliers</span></div>
-      <div class="bt" data-h="30"><span class="bt-bar"></span><span class="bt-l">Draft the<br>order</span></div>
-      <div class="bt" data-h="38"><span class="bt-bar"></span><span class="bt-l">Recommend<br>a quantity</span></div>
-      <div class="bt" data-h="58"><span class="bt-bar"></span><span class="bt-l">Place the<br>order</span></div>
-      <div class="bt" data-h="86"><span class="bt-bar"></span><span class="bt-l">New supplier,<br>over the limit</span></div>
+  <div class="zones" id="z2" style="grid-area:4/1/9/13">
+    <div class="zone zone--may">
+      <p class="zone-h">Agent may act</p>
+      <div class="zone-b" data-zone="may"></div>
+    </div>
+    <div class="zone-rule" aria-hidden="true"></div>
+    <div class="zone zone--ask">
+      <p class="zone-h">Needs your approval</p>
+      <div class="zone-b" data-zone="ask"></div>
     </div>
   </div>
 
 </section>
 
-<!-- ══════ 3 · THE EVIDENCE ══════ -->
-<section class="screen" data-screen="3" data-label="The evidence" data-cam="run" data-veil="soft">
+<!-- ══════ 3 · THE EVIDENCE AND THE NEXT DECISION ══════ -->
+<section class="screen" data-screen="3" data-label="What you would allow next" data-cam="run" data-veil="soft">
 
-  <div class="xhead" style="grid-area:1/1/4/6">
-    <p class="xeyebrow">03 / A day inside the line</p>
-    <h2 class="display xd" tabindex="-1"><span>Four placed.</span><span>One came back.</span></h2>
+  <div class="xhead xhead--s" style="grid-area:1/1/3/6">
+    <p class="xeyebrow">03 / A day inside the boundary</p>
+    <h2 class="display xd" tabindex="-1"><span>Three placed.</span><span>One came back.</span></h2>
   </div>
 
-  <div class="ev" style="grid-area:1/6/4/13">
-    <div class="ev-i"><p class="ev-n">4</p><p class="ev-l">Placed, no person involved</p></div>
-    <div class="ev-i ev-i--cov"><p class="ev-n">1</p><p class="ev-l">Covered mistake, paid by the insurer</p></div>
-    <div class="ev-i ev-i--esc"><p class="ev-n">1</p><p class="ev-l">Returned to a person</p></div>
-  </div>
-
-  <div class="bnd bnd--sm" id="bnd3" style="grid-area:4/1/8/13" data-line="70">
-    <div class="bnd-zone" aria-hidden="true"></div>
-    <p class="bnd-line" aria-hidden="true"><span>Authority</span></p>
-    <div class="bnd-tasks">
-      <div class="bt" data-h="20"><span class="bt-bar"></span><span class="bt-l">Compare<br>suppliers</span></div>
-      <div class="bt" data-h="30"><span class="bt-bar"></span><span class="bt-l">Draft the<br>order</span></div>
-      <div class="bt" data-h="38"><span class="bt-bar"></span><span class="bt-l">Recommend<br>a quantity</span></div>
-      <div class="bt" data-h="58"><span class="bt-bar"></span><span class="bt-l">Place the<br>order</span></div>
-      <div class="bt" data-h="86"><span class="bt-bar"></span><span class="bt-l">New supplier,<br>over the limit</span></div>
+  <!-- The counters are not three additive totals. The covered mistake is one
+       OF the three placed orders (PO-4473 in the source scenario), so it is
+       shown nested under them rather than beside them. -->
+  <div class="out" style="grid-area:1/6/3/13">
+    <div class="out-i">
+      <p class="out-n">3</p>
+      <p class="out-l">orders placed, no person involved</p>
+      <p class="out-s">including <b>1 covered mistake</b> — the insurer paid the restocking</p>
+    </div>
+    <div class="out-i out-i--esc">
+      <p class="out-n">1</p>
+      <p class="out-l">sent for approval</p>
+      <p class="out-s">over the limit, and a new supplier</p>
     </div>
   </div>
 
-  <div class="dec" style="grid-area:8/1/9/13">
-    <p class="dec-q">After this, what should happen to the line?</p>
-    <div class="xchoice" role="group" aria-label="What should happen to the autonomy boundary?">
+  <div class="dec" style="grid-area:3/1/7/13">
+    <p class="dec-q">What would you let the agent do next?</p>
+    <div class="xchoice" role="group" aria-label="What would you let the agent do next?">
       <button type="button" data-choice="keep"   aria-pressed="false">Keep it</button>
       <button type="button" data-choice="narrow" aria-pressed="false">Narrow it</button>
       <button type="button" data-choice="expand" aria-pressed="false">Expand it</button>
     </div>
     <p class="dec-said" id="dec-said" hidden></p>
+  </div>
+
+  <div class="zones zones--sm" id="z3" style="grid-area:7/1/9/13">
+    <div class="zone zone--may">
+      <p class="zone-h">Agent may act</p>
+      <div class="zone-b" data-zone="may"></div>
+    </div>
+    <div class="zone-rule" aria-hidden="true"></div>
+    <div class="zone zone--ask">
+      <p class="zone-h">Needs your approval</p>
+      <div class="zone-b" data-zone="ask"></div>
+    </div>
   </div>
 
 </section>

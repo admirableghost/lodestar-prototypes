@@ -912,119 +912,118 @@ input[type="range"] { height: 44px; }
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
 
-/* ══ ITERATION-003 · THE OFFER AS A STRUCTURED OBJECT ═══════════════════
-   The old screens were a document viewer and a comparison grid, which is
-   exactly the thing this concept argues against. The product is now five
-   explicit fields, and the same five labels carry through all three
-   screens: published, reasoned over, then checked. */
 
-.obj, .rank, .perf, .gate, .pref, .oc-verdict, .oc-micro { pointer-events: auto; z-index: 3; }
+/* ══ REVISION 02 · AGENT-READABLE PRODUCT, ART-DIRECTED ════════════════
+   Brighter and cooler than the Opening, which it answers: a pale lavender
+   paper, cobalt for the insurer's published commitments, violet for the
+   customer's own instructions, mint for a kept promise and clay for a
+   missed one. The offer is deliberately a CARD — it is a document the
+   insurer publishes, and pretending otherwise was the earlier mistake. */
 
-/* ── screen 1 · the published offer ─────────────────────────────────── */
-.obj {
-  align-self: center;
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  gap: clamp(16px, 2.4vw, 46px);
-  border-top: 2px solid var(--edition-ink);
-  padding-top: calc(var(--x-gap) * 1.1);
+:root {
+  --oc-paper:  #F6F5FA;
+  --oc-ink:    #262338;
+  --oc-cobalt: #2E4BC6;
+  --oc-violet: #6B4FA8;
+  --oc-mint:   #1F7A63;
+  --oc-clay:   #B4432A;
+  --oc-line:   #D8D6E4;
 }
-.obj-f { position: relative; padding-top: calc(var(--x-gap) * .5); }
-.obj-f::before {                      /* the field marker — this is published */
-  content: ""; position: absolute; top: calc(var(--x-gap) * -1.1 - 2px); left: 0;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--edition-ink); transform: translateY(-50%);
+body { background: var(--oc-paper); }
+.world::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(62% 80% at 16% 20%, rgba(46,75,198,.10) 0%, transparent 62%),
+    radial-gradient(58% 76% at 88% 78%, rgba(107,79,168,.10) 0%, transparent 60%),
+    linear-gradient(168deg, #FBFAFE 0%, var(--oc-paper) 58%, #EFEDF6 100%);
 }
-.obj-f--out::before { background: var(--paper); box-shadow: inset 0 0 0 2px var(--alarm); }
-.obj-f--key::before { background: var(--carrier, #2F5E7C); }
-.obj-k {
-  margin: 0 0 calc(var(--x-gap) * .45);
-  font: 600 var(--x-label)/1.3 var(--sans);
-  letter-spacing: .15em; text-transform: uppercase; color: var(--ink-soft);
-}
-.obj-f--key .obj-k { color: var(--carrier, #2F5E7C); }
-.obj-v {
-  margin: 0; font: 400 clamp(26px, 1.3vw + 1.9vh, 42px)/1.05 var(--serif);
-  letter-spacing: -.02em; color: var(--edition-ink);
-}
-.obj-v--s { font-size: clamp(17px, .55vw + 1vh, 23px); line-height: 1.3; }
-.obj-u { display: block; margin-top: .35em; font: 600 var(--x-label)/1 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.obj-f--out .obj-v { color: var(--alarm); }
+.xhead .xd, .pf-v, .instr-h { color: var(--oc-ink); }
 
-/* ── screen 2 · preference, reasoning, choice ───────────────────────── */
-.pref { align-self: start; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .6); align-items: flex-start; }
-.rank { align-self: center; display: grid; gap: calc(var(--x-gap) * 1.05); }
-.rk { display: grid; grid-template-columns: minmax(0,8.5ch) 1fr minmax(0,30ch); gap: calc(var(--x-gap) * .9); align-items: center; }
-.rk-n { margin: 0; font: 400 clamp(19px, .8vw + 1.3vh, 28px)/1 var(--serif); color: var(--ink-soft); letter-spacing: -.015em; transition: color .3s linear; }
-.rk-bar { height: clamp(16px, 2.2vh, 30px); background: color-mix(in srgb, var(--edition-ink) 8%, transparent); border-radius: 2px; }
-.rk-bar span { display: block; height: 100%; width: 0; border-radius: 2px;
-  background: color-mix(in srgb, var(--edition-ink) 26%, transparent); transition: width .5s cubic-bezier(.4,0,.2,1), background .3s linear; }
-.rk-why { margin: 0; font: var(--x-label)/1.35 var(--sans); color: var(--ink-soft); }
-.rk[data-best="1"] .rk-n { color: var(--edition-ink); }
-.rk[data-best="1"] .rk-bar span { background: var(--edition-ink); }
-.rk[data-best="1"] .rk-why { color: var(--edition-ink); }
-.oc-verdict {
-  align-self: end; margin: 0;
-  font: 400 clamp(19px, .85vw + 1.35vh, 28px)/1.25 var(--serif);
-  color: var(--edition-ink); max-width: 60ch;
+/* ── the offer: one document object with real weight ─────────────────── */
+.card {
+  pointer-events: auto; z-index: 3; align-self: stretch;
+  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .7);
+  padding: calc(var(--x-gap) * 1.15) calc(var(--x-gap) * 1.35);
+  background: #FFFFFF; border-radius: 10px;
+  border-top: 5px solid var(--oc-cobalt);
+  box-shadow: 0 1px 0 0 var(--oc-line), 0 36px 60px -40px rgba(38,35,56,.55);
 }
-.oc-verdict b { font-weight: 400; color: var(--carrier, #2F5E7C); }
+.card-h { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; margin: 0; }
+.card-co { margin: 0; font: 400 clamp(21px, .9vw + 1.4vh, 30px)/1 var(--serif); color: var(--oc-ink); letter-spacing: -.015em; }
+.card-id { margin: 0; font: 600 var(--x-label)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-cobalt); }
+.card-price { display: flex; align-items: baseline; gap: .55em; }
+.card-n { margin: 0; font: 400 clamp(38px, 2.2vw + 2.6vh, 64px)/1 var(--serif); color: var(--oc-ink); letter-spacing: -.03em; }
+.card-u { margin: 0; font: 600 var(--x-label)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-ink); opacity: .72; }
+.card-rows { margin: 0; display: grid; grid-template-columns: minmax(0,13ch) 1fr; gap: calc(var(--x-gap) * .5) calc(var(--x-gap) * .9); }
+.card-rows dt { font: 600 var(--x-label)/1.4 var(--sans); letter-spacing: .13em; text-transform: uppercase; color: var(--oc-ink); opacity: .76; }
+.card-rows dd { margin: 0; font: var(--x-lede)/1.42 var(--sans); color: var(--oc-ink); }
+.card-rows .is-out { color: var(--oc-clay); opacity: 1; }
+.card-rows .is-key { color: var(--oc-cobalt); opacity: 1; }
 
-/* ── screen 3 · promise against performance ─────────────────────────── */
-.perf { align-self: center; display: grid; gap: calc(var(--x-gap) * 1.1); }
-.pf { display: grid; grid-template-columns: 1fr auto; gap: calc(var(--x-gap) * .8); align-items: baseline;
-  border-bottom: 1px solid var(--hair); padding-bottom: calc(var(--x-gap) * .6); }
-.pf .obj-k { margin: 0; }
-.pf-v { margin: 0; font: 400 clamp(21px, .9vw + 1.5vh, 32px)/1 var(--serif); color: var(--edition-ink); letter-spacing: -.015em; }
-.pf--miss .pf-v { color: var(--alarm); }
-.pf--miss .obj-k { color: var(--alarm); }
+/* the hairline that ties the customer's note to the insurer's document */
+.tie { z-index: 2; align-self: center; height: 2px; background:
+  linear-gradient(90deg, var(--oc-cobalt), var(--oc-violet)); opacity: .5; }
 
-/* ── the bookend ────────────────────────────────────────────────────────
-   Opening closed on a solid ink bar the delegated work could not cross.
-   The same bar returns, open, with the agent passing through it. */
-.gate { align-self: center; display: grid; grid-template-columns: 1fr auto 1fr; gap: calc(var(--x-gap) * 1.2); align-items: center; }
-.gate-l, .gate-r { margin: 0; font: 400 clamp(19px, .85vw + 1.35vh, 30px)/1.2 var(--serif); color: var(--edition-ink); letter-spacing: -.015em; }
-.gate-l { text-align: right; }
-.gate-bar {
-  position: relative; width: clamp(54px, 5vw, 86px); min-height: clamp(96px, 15vh, 150px);
-  display: grid; place-items: center;
-  border: 2px dashed var(--edition-ink); border-radius: 3px;
-  background: repeating-linear-gradient(90deg, transparent 0 7px,
-    color-mix(in srgb, var(--edition-ink) 6%, transparent) 7px 14px);
+/* ── the customer's own instructions, visibly not the insurer's ─────── */
+.instr {
+  pointer-events: auto; z-index: 3; align-self: stretch;
+  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55);
+  padding: calc(var(--x-gap) * 1.05) calc(var(--x-gap) * 1.2);
+  border-left: 5px solid var(--oc-violet); border-radius: 0 10px 10px 0;
+  background: linear-gradient(180deg, rgba(107,79,168,.07) 0%, rgba(107,79,168,.02) 100%);
 }
-.gate-bar span {
-  font: 600 var(--x-label)/1.75 var(--sans); letter-spacing: .2em;
-  text-transform: uppercase; color: var(--edition-ink); text-align: center;
-}
-.gate::after {                 /* the path straight through the old wall */
-  content: ""; position: absolute; left: 0; right: 0; top: 50%;
-  border-top: 2px solid var(--carrier, #2F5E7C); z-index: -1;
-}
-.gate { position: relative; }
-.oc-micro { align-self: start; text-align: right; }
+.instr-h { margin: 0; font: 600 var(--x-label)/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--oc-violet); }
+.instr-s { margin: 0; font: var(--x-label)/1.4 var(--sans); color: var(--oc-ink); opacity: .78; }
+.instr-l { margin: 0; padding-left: 1.1em; display: grid; gap: calc(var(--x-gap) * .35); }
+.instr-l li { font: var(--x-lede)/1.38 var(--sans); color: var(--oc-ink); }
+.instr-p { margin: auto 0 0; padding-top: calc(var(--x-gap) * .6); border-top: 1px solid var(--oc-line);
+  font: var(--x-label)/1.45 var(--sans); color: var(--oc-violet); }
+
+/* ── screen 2 · the actual term, and whether it can be bought at all ── */
+.pref { pointer-events: auto; z-index: 3; align-self: start; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55); align-items: flex-start; }
+.pref .xchoice button { border-color: var(--oc-cobalt); color: var(--oc-cobalt); }
+.pref .xchoice button[aria-pressed="true"] { background: var(--oc-cobalt); color: #fff; }
+.cmp { pointer-events: auto; z-index: 3; align-self: center; display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(var(--x-gap) * 1.1); }
+.of { padding: calc(var(--x-gap) * .95) calc(var(--x-gap) * 1.05); border-radius: 10px;
+  background: #FFFFFF; box-shadow: 0 1px 0 0 var(--oc-line), 0 22px 44px -34px rgba(38,35,56,.5);
+  border-top: 4px solid var(--oc-line); display: flex; flex-direction: column; gap: calc(var(--x-gap) * .35); }
+.of[data-win="1"] { border-top-color: var(--oc-cobalt); box-shadow: 0 0 0 2px var(--oc-cobalt), 0 26px 48px -32px rgba(46,75,198,.6); }
+.of[data-ok="0"] { background: #FBFAFC; border-top-color: var(--oc-clay); }
+.of-co { margin: 0; font: 400 clamp(18px, .7vw + 1.2vh, 25px)/1.1 var(--serif); color: var(--oc-ink); }
+.of-k { margin: 0; font: 600 var(--x-label)/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-ink); opacity: .7; }
+.of-v { margin: 0; font: var(--x-lede)/1.35 var(--sans); color: var(--oc-ink); }
+.of-v--none { color: var(--oc-clay); font-style: italic; }
+.of-t { margin: auto 0 0; padding-top: calc(var(--x-gap) * .45); border-top: 1px solid var(--oc-line);
+  font: var(--x-label)/1.45 var(--sans); color: var(--oc-cobalt); }
+.of-t--no { color: var(--oc-clay); }
+.buy { pointer-events: auto; z-index: 3; align-self: end; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .35); }
+.buy-v { margin: 0; font: 400 clamp(21px, .95vw + 1.5vh, 32px)/1.22 var(--serif); color: var(--oc-ink); max-width: 64ch; }
+.buy-v b { font-weight: 400; color: var(--oc-cobalt); }
+.buy-p { margin: 0; font: var(--x-label)/1.45 var(--sans); color: var(--oc-ink); opacity: .82; max-width: 72ch; }
+
+/* ── screen 3 · promise against performance, as the main event ──────── */
+.held { pointer-events: auto; z-index: 3; align-self: start; margin: 0;
+  font: var(--x-lede)/1.42 var(--sans); color: var(--oc-ink); }
+.held b { font-weight: 400; color: var(--oc-cobalt); }
+.pp { pointer-events: auto; z-index: 3; align-self: center;
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: calc(var(--x-gap) * 1.2); align-items: center; }
+.pp-i { padding: calc(var(--x-gap) * 1.05) calc(var(--x-gap) * 1.2); border-radius: 10px; background: #FFFFFF;
+  box-shadow: 0 1px 0 0 var(--oc-line), 0 24px 46px -34px rgba(38,35,56,.5); border-top: 4px solid var(--oc-mint); }
+.pp-i--obs { border-top-color: var(--oc-clay); }
+.pp-v { margin: calc(var(--x-gap) * .35) 0 0; font: 400 clamp(21px, 1vw + 1.6vh, 34px)/1.15 var(--serif); color: var(--oc-mint); letter-spacing: -.015em; }
+.pp-v--miss { color: var(--oc-clay); }
+.pp-arrow { width: clamp(42px, 5vw, 86px); height: 2px; background: var(--oc-ink); opacity: .35; position: relative; }
+.pp-arrow::after { content: ""; position: absolute; right: 0; top: -4px; border: 5px solid transparent; border-left-color: var(--oc-ink); opacity: .55; }
+.resp { pointer-events: auto; z-index: 3; align-self: end; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .35); }
+.resp-t { margin: 0; font: 400 clamp(21px, .95vw + 1.5vh, 32px)/1.22 var(--serif); color: var(--oc-ink); max-width: 66ch; }
+.resp-t b { font-weight: 400; color: var(--oc-mint); }
+.resp-s { margin: 0; font: var(--x-label)/1.45 var(--sans); color: var(--oc-ink); opacity: .82; max-width: 72ch; }
+.oc-micro { z-index: 3; align-self: start; text-align: right; color: var(--oc-ink); }
 
 @media (max-width: 899px) {
-  .obj { grid-template-columns: 1fr 1fr; gap: calc(var(--x-gap) * .8); }
-  .rk { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .3); }
-  .gate { grid-template-columns: 1fr; justify-items: center; }
-  .gate-l { text-align: center; }
-  .gate-bar { width: 100%; min-height: 54px; }
+  .card-rows { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .2); }
+  .cmp, .pp { grid-template-columns: 1fr; }
+  .pp-arrow { width: 2px; height: 32px; justify-self: center; }
+  .tie { display: none; }
   .oc-micro { text-align: left; }
 }
-/* The path runs BEHIND the words, so each end breaks the line rather than
-   being struck through by it. */
-.gate-l, .gate-r { position: relative; background: var(--paper); padding: 0 .5em; }
-.gate { align-self: center; }
-.perf { align-self: start; margin-top: calc(var(--x-gap) * 1.2); }
-/* Field labels sit on the ground now, where --ink-soft measured 4.38:1. */
-.obj-k, .rk-why { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-.obj-u, .pf .obj-k { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-/* Every Level-3 class in the new composition sits on the ground; none of
-   them may use the old soft ink, which measures below AA there. */
-.rk-n, .gate-l, .gate-r, .obj-v--s { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
-.rk[data-best="1"] .rk-n { color: var(--edition-ink); }
-/* The name column was too narrow, so the bar started underneath the name and
-   struck it through. Give the names their own measured column. */
-.rk { grid-template-columns: minmax(12ch, 14ch) 1fr minmax(0, 26ch); }
-.rk-n { white-space: nowrap; }
-.rank { align-self: center; gap: calc(var(--x-gap) * 1.3); }

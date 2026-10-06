@@ -275,63 +275,91 @@
   ];
 
   /* ══════════════════════════════════════════════════════════════════════
-     THE AUTHORITY BOUNDARY
+     PERMISSION AS POSITION
 
-     One function drives all three screens. Each bar carries the height its
-     work needs; the line carries how much authority exists. Whether a bar
-     acts or stops is then just a comparison, so the rule the viewer infers
-     from the picture is literally the rule the code applies.
+     Five equal actions, two named zones. An action is permitted because of
+     the zone it sits in — there is no height, no score and no legend. The
+     same five objects exist on all three screens, so what the viewer tracks
+     between screens is an action moving, not a measurement changing.
+
+     Two ideas kept deliberately separate:
+       PERMISSION — what the customer lets the agent do.
+       COVER      — the named mistakes the policy pays for inside that.
+     Authorising an action does not insure it, and buying cover authorises
+     nothing on its own.
      ══════════════════════════════════════════════════════════════════════ */
 
-  function paintBoundary(el, line) {
-    if (!el) { return; }
-    el.style.setProperty("--line", line + "%");
-    el.dataset.line = String(line);
-    Array.prototype.forEach.call(el.querySelectorAll(".bt"), function (bt) {
-      var h = +bt.dataset.h;
-      var acts = h <= line;
-      bt.style.setProperty("--h", (acts ? h : line) + "%");
-      bt.dataset.state = acts ? "acts" : "stops";
+  var LAYOUT = {
+    none:    { may: ["compare", "draft", "recommend"], ask: ["place", "newsup"] },
+    bounded: { may: ["compare", "draft", "recommend", "place"], ask: ["newsup"] }
+  };
+
+  function fillZones(id, mode, proposed) {
+    var host = document.getElementById(id);
+    var tpl  = document.getElementById("acts");
+    if (!host || !tpl) { return; }
+    var plan = LAYOUT[mode] || LAYOUT.none;
+    var prev = {};
+    Array.prototype.forEach.call(host.querySelectorAll(".act"), function (a) {
+      var box = a.parentNode;
+      prev[a.dataset.act] = box && box.dataset ? box.dataset.zone : null;
     });
+    ["may", "ask"].forEach(function (z) {
+      var box = host.querySelector('[data-zone="' + z + '"]');
+      if (!box) { return; }
+      box.innerHTML = "";
+      plan[z].forEach(function (k) {
+        var src = tpl.content.querySelector('[data-act="' + k + '"]');
+        if (!src) { return; }
+        var node = src.cloneNode(true);
+        /* an action that just changed zone is marked, so the move is seen */
+        if (prev[k] && prev[k] !== z) { node.className += " act--moved"; }
+        box.appendChild(node);
+      });
+    });
+    host.dataset.proposed = proposed ? "1" : "0";
   }
 
-  var LINE_LOW = 42, LINE_COVER = 70;
-  paintBoundary(document.getElementById("bnd1"), LINE_LOW);
+  fillZones("z1", "none");
 
-  var bnd2 = document.getElementById("bnd2");
   var lv0 = document.getElementById("lv0"), lv1 = document.getElementById("lv1");
   var said2 = document.getElementById("bnd-said");
   function setCover(on) {
-    paintBoundary(bnd2, on ? LINE_COVER : LINE_LOW);
+    fillZones("z2", on ? "bounded" : "none");
     if (lv0) { lv0.setAttribute("aria-pressed", String(!on)); }
     if (lv1) { lv1.setAttribute("aria-pressed", String(on)); }
     if (said2) {
-      said2.innerHTML = on
-        ? "A mistake it makes inside the line is the insurer&rsquo;s, not the distributor&rsquo;s."
-        : "Without cover the line sits at the bottom, and every order waits for a buyer.";
+      said2.textContent = on
+        ? "Calder has authorised bounded purchasing. Specified purchasing mistakes are covered \u2014 wrong part, wrong quantity, duplicate order. You still decide what the agent may do."
+        : "Specified purchasing mistakes are covered. You still decide what the agent may do.";
     }
-    say(on ? "Cover attached. The agent may place orders inside the line."
-           : "Draft only. Every order waits for a person.");
+    say(on ? "Authorised. Place order moves into the agent's zone; the new-supplier exception stays with you."
+           : "Not authorised. Placing an order stays with a person.");
   }
   if (lv0) { lv0.addEventListener("click", function () { setCover(false); }); }
   if (lv1) { lv1.addEventListener("click", function () { setCover(true); }); }
   setCover(false);
 
-  var bnd3 = document.getElementById("bnd3");
+  /* A FORWARD preference. It never edits the day that already happened, and
+     an expansion is PROPOSED, not granted — granting it would need an
+     approval and a protection review this pass does not pretend to show. */
   var decSaid = document.getElementById("dec-said");
   var DEC = {
-    keep:   { line: 70, t: "The line stays. The cover paid for the one mistake it was bought for." },
-    narrow: { line: 46, t: "Fewer orders placed alone \u2014 and the covered mistake would have waited for a buyer too." },
-    expand: { line: 92, t: "More placed alone, including the one that came back. That is the insurer\u2019s exposure to price, not the distributor\u2019s alone." }
+    keep:   { mode: "bounded", prop: false,
+      t: "The boundary stays where Calder set it. The covered mistake was the kind the policy names, and the order over the limit still came to a person." },
+    narrow: { mode: "none", prop: false,
+      t: "Placing orders goes back to a buyer. The three already placed are unchanged \u2014 this is about what happens next." },
+    expand: { mode: "bounded", prop: true,
+      t: "Proposed expansion \u2014 approval and protection review required. The new-supplier exception stays with a person until both are given." }
   };
-  paintBoundary(bnd3, LINE_COVER);
+  fillZones("z3", "bounded");
   Array.prototype.forEach.call(document.querySelectorAll(".dec [data-choice]"), function (b) {
     b.addEventListener("click", function () {
       var d = DEC[b.dataset.choice];
       Array.prototype.forEach.call(document.querySelectorAll(".dec [data-choice]"), function (o) {
         o.setAttribute("aria-pressed", String(o === b));
       });
-      paintBoundary(bnd3, d.line);
+      fillZones("z3", d.mode, d.prop);
       if (decSaid) { decSaid.textContent = d.t; decSaid.hidden = false; }
       say(b.textContent.trim() + ". " + d.t);
     });
@@ -506,7 +534,7 @@
        returning to it resets the deck and the walkthrough can be run again;
        screen 3 is the world after it, so arriving there grants it if the
        viewer skipped the control. Screen 2 keeps whatever the viewer set. */
-    if (n === 1) { setCover(false); }
+    if (n === 1) { setCover(false); fillZones("z1", "none"); }
 
     fitScreen(sc);
     redraw();
