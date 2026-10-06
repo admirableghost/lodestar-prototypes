@@ -1,918 +1,480 @@
 /* ══════════════════════════════════════════════════════════════════════════
    Home Again · the Rennick household · Calder Reach
-   No framework, no build step, no external request. Three files.
+   Five screens. No framework, no build step, no external request.
 
-   Forked from prototype/resilience-grid/app.js. The camera, the pin
-   projection, the per-screen --fit search, the navigation and the boot are
-   that file's machinery, inherited deliberately and changed only where the
-   concept required it.
+   Built out from the approved opening frame (design-study frame 02) and its
+   browser proof: the same scene vocabulary — a solid cut-paper home, its
+   replacement plan as amber construction linework on the same footprint, one
+   ground plane, one path — carried through five compositions.
 
-   THE GROUND
-   Resilience Grid draws a county. This draws ONE HOUSE AND ITS LOT, in the
-   same technique: a single world, 1800 x 1000, in schematic elevation, with
-   each screen a camera move over it.
+     1  a way home, arranged        the home and its prepared plan
+     2  choose the replacement      the plan in front, the standard chosen
+     3  reserve the recovery        people and capacity attached to the plan
+     4  activate the arrangements   a covered event; the plan becomes the job
+     5  home again                  the plan resolved into a lived-in home
 
-     screen 1  the intact house, close
-     screen 2  pulled back far enough that the neighbours are in frame —
-               which is the whole reason capacity is finite
-     screen 3  the same house as a frame inside scaffolding, with the
-               materials stacked on the ground beside it
+   ONE STATE. { screen, std, event } is the only source of truth. Every
+   drawing and every label is a function of it, so a choice made on screen 2
+   is what screen 5 shows, and a regional event shown on screen 4 is still
+   constraining screen 5.
 
-   It is a ground, not an illustration: no texture, no shading, no detail
-   below the level of "a window", and nothing in it is clickable.
+   CALLOUTS. Labels that belong to things in the drawing are authored once as
+   data. In landscape they are drawn into the scene as SVG text beside the
+   thing they name. In portrait the drawing is small and the labels would
+   fight each other, so the same data reflows into an HTML legend under the
+   scene — the label text never shrinks, and nothing is hidden.
 
-   WHAT IS INVENTED
-   All of it. The Rennick household, Calder Reach, Ardren & Sons, Marta Ives,
-   the regional capacity state and the day-by-day sequence on screen 3 are
-   invented, and screen 1 says so. No real insurer, product, builder or price
-   is described anywhere, and no statistic is cited.
+   WHAT IS INVENTED. All of it: the household, the town, the builder, the
+   recovery lead. No real insurer, provider, price, count or date appears.
+   The commitments and their conditions are the ones the previous version
+   carried; nothing new has been promised to make the story tidier.
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  var W = 1800, H = 1000, GROUND = 790;
+  var svg = document.getElementById("scene");
+  var root = document.documentElement;
+  var body = document.body;
 
-  var INK      = "#5A4632",
-      PAPER    = "#FBF9F1",
-      RULE     = "#8A959C",
-      FIRE     = "#9E4A14",
-      PUBLIC   = "#2F5A44",
-      ALARM    = "#A33322";
+  var PAPER = "#F3EBD7", INK = "#16150F", AMBER = "#C98D1C", SUN = "#E7A525",
+      SAGE = "#8C9A84", SAGE2 = "#6F7F68", GROUND = "#E3D7BA", PATH = "#EDE2C6",
+      GARAGE = "#3A372F", MUTED = "#5A554A", BLOCK = "#6B675E", WARN = "#A8502A",
+      LIT = "#F2CF7A", SLAB = "#CFC4A6";
 
-  /* ══════════════════════════════════════════════════════════════════════
-     WORLD GEOMETRY — one lot
-     ══════════════════════════════════════════════════════════════════════ */
+  var S = { screen: 1, std: 2, event: false };
+  var STD_NAME = ["As it stood", "To current code", "Code plus hardening"];
+  var STD_LINE = ["Rebuilt as it stood, with nothing changed",
+                  "To current code, where the old house predates it",
+                  "Code, plus an ember-resistant roof, screened vents and a cleared edge"];
+  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", assess: "Assessed at the time", constrained: "Constrained", falls: "Falls back" };
 
-  var HOUSE = { l: 620, r: 980, t: 566, apexX: 800, apexY: 415,
-                eaveL: 588, eaveR: 1012, eaveY: 572 };
-  var GARAGE = { l: 1080, r: 1290, t: 652, apexX: 1185, apexY: 598,
-                 eaveL: 1056, eaveR: 1314, eaveY: 658 };
-  var NEIGHBOURS = [
-    { cx: 180,  w: 250, h: 150 },
-    { cx: 1612, w: 240, h: 145 }
-  ];
-  var LOT_EDGES = [372, 1356];
-  var TREES = [[300, 92], [205, 58], [1430, 78]];
+  var scale = 1, portrait = false, legend = [];
+  function px(n) { return n / scale; }
+  function n1(v) { return (Math.round(v * 10) / 10).toString(); }
 
-  /* A background treeline, so the lot has a neighbourhood around it rather
-     than ending in blank paper. The camera frame is always far wider than
-     the subject — `slice` on a world inset past all four edges — so the
-     planting has to run well beyond the lot in both directions. */
-  var BACKTREES = (function () {
-    var a = [], x, seed = 7;
-    for (x = -2600; x < 4400; x += 196) {
-      seed = (seed * 1103515245 + 12345) % 2147483648;
-      if (x > 230 && x < 1500) { continue; }   /* the lot itself stays open */
-      a.push([x + (seed % 70) - 35, 30 + (seed % 23)]);
-    }
-    return a;
-  })();
-
-  /* ══════════════════════════════════════════════════════════════════════
-     CAMERAS — one per screen
-     ══════════════════════════════════════════════════════════════════════ */
-
-  /* A camera is "this rectangle of the world must be visible". Where on the
-     glass it lands is not decided here — it is decided by the ground window
-     (see aimWindow), which is the hole the plates leave. */
-  var CAM = {
-    house:   { x: 545, y: 395, w: 520,  h: 435 },
-    lot:     { x: 30,  y: 400, w: 1740, h: 430 },
-    rebuild: { x: 540, y: 430, w: 800,  h: 500 }
-  };
-  /* On a phone the window is a wide horizontal strip rather than a block,
-     so each view is pulled wider and shallower. */
-  var CAM_N = {
-    house:   { x: 500, y: 400, w: 620,  h: 420 },
-    lot:     { x: 20,  y: 420, w: 1760, h: 400 },
-    rebuild: { x: 500, y: 450, w: 880,  h: 480 }
-  };
-
-  var narrow = false;
-  function isNarrow() { return window.matchMedia("(max-width: 899px)").matches; }
-
-  var svg = document.getElementById("plan");
-  var vb = null, camTimer = 0;
-
-  function n2(v) { return (Math.round(v * 10) / 10).toString(); }
-
-  function rect(x, y, w, h, fill, stroke, sw, dash) {
-    return '<rect x="' + n2(x) + '" y="' + n2(y) + '" width="' + n2(w) + '" height="' + n2(h) +
-           '" fill="' + (fill || "none") + '"' +
-           (stroke ? ' stroke="' + stroke + '" stroke-width="' + (sw || 1) + '"' : "") +
-           (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
-  }
-  function line(x1, y1, x2, y2, stroke, sw, dash, op) {
-    return '<line x1="' + n2(x1) + '" y1="' + n2(y1) + '" x2="' + n2(x2) + '" y2="' + n2(y2) +
-           '" stroke="' + stroke + '" stroke-width="' + (sw || 1) + '"' +
-           (dash ? ' stroke-dasharray="' + dash + '"' : "") +
-           (op != null ? ' opacity="' + op + '"' : "") + ' stroke-linecap="round"/>';
-  }
-
-  /* a tree: a trunk and three masses. The only organic thing in the drawing,
-     and the background planting is the same glyph turned down. */
-  function tree(cx, r, faint) {
-    var s = [];
-    s.push('<g opacity="' + (faint ? ".55" : "1") + '">');
-    s.push('<g opacity="' + (faint ? ".26" : ".44") + '">' +
-           rect(cx - r * 0.06 - 3, GROUND - r * 0.95, r * 0.12 + 6, r * 0.95, PUBLIC) + "</g>");
-    s.push('<g fill="' + PUBLIC + '" opacity="' + (faint ? ".11" : ".17") + '">');
-    s.push('<circle cx="' + n2(cx) + '" cy="' + n2(GROUND - r * 1.38) + '" r="' + n2(r * 0.80) + '"/>');
-    s.push('<circle cx="' + n2(cx - r * 0.54) + '" cy="' + n2(GROUND - r * 1.00) + '" r="' + n2(r * 0.56) + '"/>');
-    s.push('<circle cx="' + n2(cx + r * 0.56) + '" cy="' + n2(GROUND - r * 1.06) + '" r="' + n2(r * 0.52) + '"/>');
-    s.push("</g></g>");
-    return s.join("");
-  }
-
-  /* a neighbouring house: the same glyph as the subject, two thirds the
-     size and without its detail. In a regional event it loses its roof. */
-  function neighbour(nb, lost) {
-    var l = nb.cx - nb.w / 2, r = nb.cx + nb.w / 2, t = GROUND - nb.h, s = [];
-    if (lost) {
-      s.push(rect(l, t + 26, nb.w, nb.h - 26, PAPER, ALARM, 2, "9 7"));
-      for (var i = 0; i < 5; i++) {
-        var x = l + 18 + i * ((nb.w - 36) / 4);
-        s.push(line(x, GROUND, x + 22, GROUND - 34 - (i % 2) * 16, ALARM, 2, null, 0.8));
-      }
-      s.push(line(l - 14, GROUND, r + 14, GROUND, ALARM, 2.4, null, 0.75));
-      return s.join("");
-    }
-    s.push(rect(l, t, nb.w, nb.h, PAPER, INK, 2));
-    s.push('<path d="M' + n2(l - 18) + " " + n2(t + 6) + "L" + n2(nb.cx) + " " + n2(t - nb.w * 0.34) +
-           "L" + n2(r + 18) + " " + n2(t + 6) + "L" + n2(r + 18) + " " + n2(t + 20) +
-           "L" + n2(nb.cx) + " " + n2(t - nb.w * 0.34 + 14) + "L" + n2(l - 18) + " " + n2(t + 20) +
-           'Z" fill="' + INK + '" opacity=".72"/>');
-    s.push(rect(l + 0.18 * nb.w, t + 0.3 * nb.h, nb.w * 0.2, nb.h * 0.26, PAPER, INK, 2));
-    s.push(rect(nb.cx + 0.14 * nb.w, GROUND - nb.h * 0.52, nb.w * 0.16, nb.h * 0.52, PAPER, INK, 2));
-    return s.join("");
-  }
-
-  function window_(x, y, w, h) {
-    return rect(x, y, w, h, PAPER, INK, 2) +
-           line(x + w / 2, y, x + w / 2, y + h, INK, 1.4) +
-           line(x, y + h / 2, x + w, y + h / 2, INK, 1.4);
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     DRAWING THE LOT
-       o.phase       — "intact" | "rebuild"
-       o.standard    — 0 as it stood · 1 to current code · 2 code plus hardening
-       o.neighbours  — draw the lots either side
-       o.lost        — a regional event: the neighbours are gone too
-       o.progress    — rebuild progress, 0..1 (cleared / scaffold / framed)
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function renderLot(o) {
+  /* ── primitives ──────────────────────────────────────────────────────── */
+  function text(x, y, str, size, o) {
     o = o || {};
-    var s = [], i, t, x, y;
+    return '<text x="' + n1(x) + '" y="' + n1(y) + '" font-size="' + n1(px(size)) +
+           '" font-family="Bricolage,Helvetica,Arial,sans-serif" font-weight="' + (o.w || 400) +
+           '" text-anchor="' + (o.anc || "start") + '" fill="' + (o.fill || INK) +
+           (o.ls ? '" letter-spacing="' + n1(px(o.ls)) : "") +
+           (o.op != null ? '" opacity="' + o.op : "") + '">' + str + '</text>';
+  }
+  function line(x1, y1, x2, y2, stroke, w, o) {
+    o = o || {};
+    return '<line x1="' + n1(x1) + '" y1="' + n1(y1) + '" x2="' + n1(x2) + '" y2="' + n1(y2) +
+           '" stroke="' + stroke + '" stroke-width="' + n1(w) +
+           (o.dash ? '" stroke-dasharray="' + o.dash : "") +
+           (o.op != null ? '" opacity="' + o.op : "") + '" stroke-linecap="round"/>';
+  }
+  function rect(x, y, w, h, fill, o) {
+    o = o || {};
+    return '<rect x="' + n1(x) + '" y="' + n1(y) + '" width="' + n1(w) + '" height="' + n1(h) +
+           '" fill="' + fill + '"' + (o.stroke ? ' stroke="' + o.stroke + '" stroke-width="' + (o.sw || 2) + '"' : "") +
+           (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") +
+           (o.op != null ? ' opacity="' + o.op + '"' : "") + (o.rx ? ' rx="' + o.rx + '"' : "") +
+           (o.filter ? ' filter="' + o.filter + '"' : "") + "/>";
+  }
+  function leader(x1, y1, x2, y2, c, dash) { return line(x1, y1, x2, y2, c || INK, 1.6, { op: .7, dash: dash }); }
 
-    s.push('<defs>' +
-      '<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">' +
-        '<stop offset="0" stop-color="#EFEDE4"/><stop offset="1" stop-color="#F7F5EC"/></linearGradient>' +
-      '</defs>');
+  /* a state word drawn as a mark + text, never colour alone */
+  function mark(x, y, kind, anc) {
+    var s = [], w = px(9), c = kind === "constrained" || kind === "falls" ? WARN : (kind === "assess" ? MUTED : INK);
+    var mx = anc === "end" ? x - px(6) - w : x;
+    if (kind === "agreed") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2) + '" fill="' + c + '"/>'); }
+    else if (kind === "reserved") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2 - px(1)) + '" fill="none" stroke="' + c + '" stroke-width="' + n1(px(2)) + '"/>'); }
+    else if (kind === "assess") { s.push(line(mx, y - px(4), mx + w, y - px(4), c, px(2.4))); }
+    else { s.push(rect(mx, y - px(8.5), w, w, "url(#warnhatch)", { stroke: c, sw: px(1.6) })); }
+    var tx = anc === "end" ? mx - px(6) : mx + w + px(6);
+    s.push(text(tx, y, STATE_WORD[kind].toUpperCase(), 11.5, { w: 700, ls: 1.1, anc: anc || "start", fill: c }));
+    return s.join("");
+  }
 
-    /* ── sky, hills, ground ──
-       Drawn far past the world's nominal 1800 x 1000, because the camera
-       frame is always much larger than the subject: at the closest camera
-       the visible viewBox is about 2500 units wide, and at the widest it is
-       over 4000. Anything short of that showed a hard rectangular edge
-       where the drawing stopped and the page background began. */
-    s.push(rect(-9000, -9000, 20000, 20000, "url(#sky)"));
-    s.push('<path d="M-9000 700Q200 646 560 702Q900 746 1240 674Q1540 618 2200 690Q4000 736 9000 700L9000 ' +
-           (GROUND + 2) + 'L-9000 ' + (GROUND + 2) + 'Z" fill="#ECEAE0"/>');
-    s.push(rect(-9000, GROUND, 20000, 9000, "#F3F1E6"));
-    s.push(line(-9000, GROUND, 9000, GROUND, RULE, 1.8, null, 0.5));
+  /* A callout: { x, y, anc, title, state, note:[...], lead:[x1,y1,x2,y2,colour,dash] }.
+     Landscape draws it; portrait collects it for the legend. */
+  function callout(c) {
+    if (portrait) { legend.push(c); return ""; }
+    var s = [], y = c.y;
+    if (c.lead) { s.push(leader.apply(null, c.lead)); }
+    if (c.eyebrow) { s.push(text(c.x, y, c.eyebrow, 11.5, { w: 700, ls: 1.2, fill: c.ebFill || AMBER, anc: c.anc })); y += px(22); }
+    if (c.title) { s.push(text(c.x, y, c.title, 14, { w: 700, anc: c.anc })); y += px(22); }
+    if (c.state) { s.push(mark(c.x, y, c.state, c.anc)); y += px(20); }
+    (c.note || []).forEach(function (n) { s.push(text(c.x, y, n, 12.5, { fill: MUTED, anc: c.anc })); y += px(17); });
+    return s.join("");
+  }
 
-    /* ── the planting around the lot ── */
-    BACKTREES.forEach(function (tr) { s.push(tree(tr[0], tr[1], true)); });
-
-    /* ── the neighbours, behind the lot boundary ── */
-    if (o.neighbours) {
-      NEIGHBOURS.forEach(function (nb) { s.push(neighbour(nb, !!o.lost)); });
-      LOT_EDGES.forEach(function (ex) {
-        s.push(line(ex, 686, ex, 872, RULE, 1.6, "8 10", 0.65));
+  /* ══════════════════════════════════════════════════════════════════════
+     THE PROPERTY — one geometry, drawn two ways
+     ══════════════════════════════════════════════════════════════════════ */
+  function features(std, asPlan, edge) {
+    var s = [], i, t, x, y, col = asPlan ? AMBER : PAPER;
+    if (std >= 1) {
+      s.push('<path d="M470 452 L665 338 L860 452" fill="none" stroke="' + col + '" stroke-width="' + (asPlan ? 1.6 : 1.4) +
+             '" opacity="' + (asPlan ? ".9" : ".55") + '"' + (asPlan ? ' stroke-dasharray="6 5"' : "") + '/>');
+    }
+    if (std >= 2) {
+      for (i = 1; i <= 6; i++) {
+        t = i / 7;
+        x = 450 + 215 * t; y = 448 - 126 * t; s.push(line(x, y, x + 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
+        x = 665 + 215 * t; y = 322 + 126 * t; s.push(line(x, y, x - 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
+      }
+      [600, 820].forEach(function (vx) {
+        s.push(rect(vx, 566, 26, 16, asPlan ? "none" : INK, { stroke: col, sw: 2 }));
+        s.push(line(vx + 8.5, 566, vx + 8.5, 582, col, 1.3)); s.push(line(vx + 17, 566, vx + 17, 582, col, 1.3));
       });
+      /* the cleared edge is a ground feature: only drawn when the thing it
+         belongs to is standing on the ground */
+      if (edge !== false) { s.push('<path d="M400 640 Q665 668 1030 640" fill="none" stroke="' + (asPlan ? AMBER : SAGE2) + '" stroke-width="2.6" stroke-dasharray="11 9" opacity=".85"/>'); }
     }
+    return s.join("");
+  }
 
-    /* ── trees ── */
-    TREES.forEach(function (tr) { s.push(tree(tr[0], tr[1])); });
-
-    /* ── the deck, to the west of the house ── */
-    if (o.phase === "intact") {
-      s.push(rect(452, 736, 160, 14, PAPER, INK, 2));
-      [458, 528, 598].forEach(function (px) { s.push(rect(px, 750, 8, GROUND - 750, INK)); });
-      s.push(line(452, 698, 612, 698, INK, 3));
-      [462, 502, 542, 582, 606].forEach(function (px) { s.push(line(px, 698, px, 736, INK, 2.2)); });
-    } else {
-      s.push(rect(452, 762, 160, 10, "#E9E6DA", RULE, 1.4, "7 6"));
+  function home(o) {
+    o = o || {}; var s = [], win = o.lit ? LIT : PAPER;
+    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") + '" opacity="' + (o.op == null ? 1 : o.op) + '">');
+    if (o.tree !== false) {
+      s.push(rect(392, 520, 16, 84, INK));
+      s.push('<circle cx="400" cy="470" r="86" fill="' + SAGE2 + '"/><circle cx="372" cy="492" r="62" fill="' + SAGE + '"/><circle cx="434" cy="455" r="58" fill="' + SAGE + '"/>');
     }
-
-    /* ── the detached garage ── */
-    if (o.phase === "intact") {
-      s.push(rect(GARAGE.l, GARAGE.t, GARAGE.r - GARAGE.l, GROUND - GARAGE.t, PAPER, INK, 2));
-      s.push('<path d="M' + GARAGE.eaveL + " " + GARAGE.eaveY + "L" + GARAGE.apexX + " " + GARAGE.apexY +
-             "L" + GARAGE.eaveR + " " + GARAGE.eaveY + "L" + GARAGE.eaveR + " " + (GARAGE.eaveY + 14) +
-             "L" + GARAGE.apexX + " " + (GARAGE.apexY + 14) + "L" + GARAGE.eaveL + " " + (GARAGE.eaveY + 14) +
-             'Z" fill="' + INK + '"/>');
-      s.push(rect(1108, 692, 154, GROUND - 692, PAPER, INK, 2));
-      [716, 740, 764].forEach(function (gy) { s.push(line(1108, gy, 1262, gy, INK, 1.4)); });
-    } else {
-      s.push(rect(GARAGE.l, 762, GARAGE.r - GARAGE.l, 10, "#E9E6DA", RULE, 1.4, "7 6"));
-    }
-
-    /* ── the house ── */
-    if (o.phase === "intact") {
-      /* chimney first, so the roof buries its base */
-      s.push(rect(886, 432, 34, 72, PAPER, INK, 2));
-      s.push(rect(878, 424, 50, 13, INK));
-      /* gable, body, roof */
-      s.push('<path d="M' + HOUSE.eaveL + " " + HOUSE.eaveY + "L" + HOUSE.apexX + " " + HOUSE.apexY +
-             "L" + HOUSE.eaveR + " " + HOUSE.eaveY + 'Z" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>');
-      s.push(rect(HOUSE.l, HOUSE.t, HOUSE.r - HOUSE.l, GROUND - HOUSE.t, PAPER, INK, 2));
-      s.push('<path d="M' + HOUSE.eaveL + " " + HOUSE.eaveY + "L" + HOUSE.apexX + " " + HOUSE.apexY +
-             "L" + HOUSE.eaveR + " " + HOUSE.eaveY + "L" + HOUSE.eaveR + " " + (HOUSE.eaveY + 15) +
-             "L" + HOUSE.apexX + " " + (HOUSE.apexY + 15) + "L" + HOUSE.eaveL + " " + (HOUSE.eaveY + 15) +
-             'Z" fill="' + INK + '"/>');
-      s.push(window_(660, 620, 64, 78));
-      s.push(window_(886, 620, 64, 78));
-      s.push(window_(772, 468, 56, 58));
-      /* porch, door, steps */
-      s.push(rect(738, 646, 142, 12, INK));
-      s.push(rect(744, 658, 8, GROUND - 658, INK));
-      s.push(rect(868, 658, 8, GROUND - 658, INK));
-      s.push(rect(780, 672, 58, GROUND - 672, PAPER, INK, 2));
-      s.push('<circle cx="828" cy="738" r="3.4" fill="' + INK + '"/>');
-      s.push(rect(766, GROUND, 86, 11, PAPER, INK, 1.6));
-      s.push(rect(754, GROUND + 11, 110, 11, PAPER, INK, 1.6));
-
-      /* ── what the chosen rebuild standard looks like on the house ──
-         The household's choice is not only a list item: at "code plus
-         hardening" the drawing itself gains sheathing, screened vents and
-         a cleared edge. */
-      if (o.standard >= 1) {
-        s.push('<path d="M598 580L800 430L1002 580" fill="none" stroke="' + RULE + '" stroke-width="1.4"/>');
-      }
-      if (o.standard >= 2) {
-        for (i = 1; i <= 6; i++) {
-          t = i / 7;
-          x = HOUSE.eaveL + (HOUSE.apexX - HOUSE.eaveL) * t;
-          y = HOUSE.eaveY + (HOUSE.apexY - HOUSE.eaveY) * t;
-          s.push(line(x, y, x + 5.4, y + 7.2, PAPER, 2, null, 0.85));
-          x = HOUSE.apexX + (HOUSE.eaveR - HOUSE.apexX) * t;
-          y = HOUSE.apexY + (HOUSE.eaveY - HOUSE.apexY) * t;
-          s.push(line(x, y, x - 5.4, y + 7.2, PAPER, 2, null, 0.85));
-        }
-        [634, 940].forEach(function (vx) {
-          s.push(rect(vx, 580, 26, 16, PAPER, FIRE, 2));
-          s.push(line(vx + 8.5, 580, vx + 8.5, 596, FIRE, 1.4));
-          s.push(line(vx + 17, 580, vx + 17, 596, FIRE, 1.4));
-        });
-        s.push('<path d="M428 848Q800 896 1184 848" fill="none" stroke="' + PUBLIC +
-               '" stroke-width="2.6" stroke-dasharray="11 9" opacity=".8"/>');
-      }
-    } else {
-      /* ── the rebuild ──────────────────────────────────────────────────
-         Three states, driven by the timeline on screen 3: a cleared slab,
-         then scaffold, then the frame and the materials. */
-      var p = o.progress == null ? 1 : o.progress;
-
-      s.push(rect(610, 778, 380, 22, "#E9E6DA", RULE, 1.6));
-      if (p < 0.34) {
-        s.push(rect(HOUSE.l, HOUSE.t, HOUSE.r - HOUSE.l, GROUND - HOUSE.t, "none", RULE, 1.6, "10 9"));
-      }
-
-      if (p >= 0.55) {
-        /* the frame */
-        s.push(rect(HOUSE.l, HOUSE.t, HOUSE.r - HOUSE.l, GROUND - HOUSE.t, PAPER, INK, 2));
-        for (x = HOUSE.l + 40; x < HOUSE.r; x += 40) {
-          s.push(line(x, HOUSE.t, x, GROUND, INK, 1.4, null, 0.5));
-        }
-        s.push(line(HOUSE.l, 678, HOUSE.r, 678, INK, 2));
-        s.push('<path d="M' + HOUSE.eaveL + " " + HOUSE.eaveY + "L" + HOUSE.apexX + " " + HOUSE.apexY +
-               "L" + HOUSE.eaveR + " " + HOUSE.eaveY + 'Z" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>');
-        s.push(line(658, 520, 942, 520, INK, 2));
-        s.push(line(HOUSE.apexX, HOUSE.apexY, HOUSE.apexX, HOUSE.eaveY, INK, 2));
-      }
-
-      if (p >= 0.34) {
-        /* the scaffold */
-        var STD = [566, 706, 894, 1034], LIFT = [700, 604, 508];
-        s.push('<g opacity=".72">');
-        STD.forEach(function (sx) {
-          s.push(line(sx, 800, sx, 466, INK, 2.6));
-          s.push(rect(sx - 11, 800, 22, 8, INK));
-        });
-        LIFT.forEach(function (ly) { s.push(line(566, ly, 1034, ly, INK, 2.2)); });
-        s.push(line(566, 700, 706, 604, INK, 1.6));
-        s.push(line(894, 700, 706, 604, INK, 1.6));
-        s.push(line(894, 604, 1034, 508, INK, 1.6));
-        s.push(line(566, 466, 1034, 466, INK, 2.2));
-        s.push("</g>");
-      }
-
-      if (p >= 0.85) {
-        /* the materials, stacked on the ground where the driveway meets it */
-        [[1040, 886, 264, 34], [1056, 852, 232, 34], [1072, 818, 200, 32]].forEach(function (b) {
-          s.push(rect(b[0], b[1], b[2], b[3], "#F6E8DC", FIRE, 1.8));
-          s.push(line(b[0], b[1] + b[3] / 2, b[0] + b[2], b[1] + b[3] / 2, FIRE, 1.2, null, 0.7));
-          s.push(line(b[0] + b[2] * 0.25, b[1], b[0] + b[2] * 0.25, b[1] + b[3], FIRE, 1.6, null, 0.8));
-          s.push(line(b[0] + b[2] * 0.75, b[1], b[0] + b[2] * 0.75, b[1] + b[3], FIRE, 1.6, null, 0.8));
-        });
-        s.push(line(998, 922, 1026, 810, FIRE, 2.4));
-        s.push(line(1010, 922, 1038, 810, FIRE, 2.4));
-      }
-    }
-
-    /* ── the walk up to the door ── */
-    s.push('<path d="M796 ' + GROUND + 'L862 ' + GROUND + 'L934 1010L704 1010Z" fill="' + PAPER +
-           '" stroke="' + RULE + '" stroke-width="1.4" opacity=".9"/>');
-
-    /* ── the front fence, in the foreground ──
-       An elevation drawing is empty below its ground line by construction,
-       and the camera always leaves a deep band of it. One post-and-rail
-       frontage, drawn in the same hairlines as the house, makes that band
-       the front of the lot rather than blank paper. It opens for the walk. */
-    s.push('<g opacity=".5">');
-    [888, 910].forEach(function (ry) {
-      s.push(line(-3200, ry, 676, ry, INK, 2.2));
-      s.push(line(962, ry, 5000, ry, INK, 2.2));
-    });
-    for (x = -3200; x < 5000; x += 66) {
-      if (x > 676 && x < 962) { continue; }
-      s.push(rect(x, 872, 6, 62, INK));
-    }
+    s.push(rect(470, 448, 390, 152, INK));
+    s.push('<polygon points="450,448 665,322 880,448" fill="' + INK + '"/>');
+    s.push('<polyline points="450,448 665,322 880,448" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
+    s.push(rect(770, 352, 30, 70, INK)); s.push(rect(766, 348, 38, 8, INK));
+    s.push(rect(478, 492, 130, 8, PAPER, { op: .9 })); s.push(rect(490, 500, 7, 100, PAPER, { op: .9 })); s.push(rect(596, 500, 7, 100, PAPER, { op: .9 }));
+    s.push(rect(525, 516, 40, 84, o.lit ? LIT : PAPER)); s.push(rect(525, 506, 40, 7, PAPER));
+    s.push('<circle cx="556" cy="560" r="2.4" fill="' + INK + '"/>');
+    s.push(rect(640, 500, 60, 56, win)); s.push(rect(740, 500, 60, 56, win));
+    s.push(line(670, 500, 670, 556, INK, 3) + line(640, 528, 700, 528, INK, 3) + line(770, 500, 770, 556, INK, 3) + line(740, 528, 800, 528, INK, 3));
+    s.push(rect(860, 500, 130, 100, GARAGE));
+    s.push(line(876, 528, 974, 528, PAPER, 2, { op: .5 }) + line(876, 552, 974, 552, PAPER, 2, { op: .5 }) + line(876, 576, 974, 576, PAPER, 2, { op: .5 }));
+    s.push('<path d="M470 600 L1000 600 L1040 626 L430 626 Z" fill="' + INK + '" opacity=".12"/>');
+    s.push(features(o.std == null ? S.std : o.std, false));
     s.push("</g>");
+    return s.join("");
+  }
 
-    svg.innerHTML = s.join("");
+  function plan(o) {
+    o = o || {}; var s = [];
+    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
+           '" fill="none" stroke="' + AMBER + '" stroke-width="3" stroke-linejoin="round" opacity="' + (o.op == null ? 1 : o.op) + '">');
+    s.push('<polygon points="450,448 665,322 880,448" fill="url(#hatch)" stroke="none"/><polygon points="450,448 665,322 880,448"/>');
+    s.push(rect(470, 448, 390, 152, "none", { stroke: AMBER, sw: 3 }) + rect(860, 500, 130, 100, "none", { stroke: AMBER, sw: 3 }) + rect(770, 352, 30, 70, "none", { stroke: AMBER, sw: 3 }));
+    s.push(line(665, 322, 665, 600, AMBER, 2, { dash: "3 7" }) + line(470, 520, 860, 520, AMBER, 2, { op: .8 }));
+    if (o.ticks !== false) { s.push(line(1012, 448, 1012, 600, AMBER, 2) + line(1004, 448, 1020, 448, AMBER, 2) + line(1004, 600, 1020, 600, AMBER, 2)); }
+    if (o.openings) {
+      s.push(rect(525, 516, 40, 84, "none", { stroke: AMBER, sw: 2 }) + rect(640, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) +
+             rect(740, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) + rect(478, 492, 130, 8, "none", { stroke: AMBER, sw: 2 }));
+    }
+    s.push(features(o.std == null ? S.std : o.std, true, o.edge));
+    s.push("</g>");
+    return s.join("");
+  }
+
+  function figure(x, y, o) {
+    o = o || {}; var s = [], k = o.k || 1, c = o.fill || INK;
+    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')" opacity="' + (o.op == null ? 1 : o.op) + '">');
+    s.push('<circle cx="0" cy="-66" r="10" fill="' + c + '"/><path d="M-13 -52 L13 -52 L17 -6 L9 -6 L9 0 L-9 0 L-9 -6 L-17 -6 Z" fill="' + c + '"/>');
+    if (o.case_) { s.push(rect(18, -22, 14, 20, c, { rx: 2 })); }
+    if (o.board) { s.push(rect(-32, -40, 14, 18, PAPER, { stroke: c, sw: 2 })); }
+    s.push("</g>");
+    return s.join("");
+  }
+  function smallHome(x, y, o) {
+    o = o || {}; var s = [], k = o.k || 0.46, c = o.fill || INK;
+    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')">');
+    s.push(rect(0, 100, 240, 120, c) + '<polygon points="-14,100 120,22 254,100" fill="' + c + '"/>' + rect(100, 150, 40, 70, PAPER));
+    s.push(rect(32, 130, 44, 40, o.lit ? LIT : PAPER) + rect(164, 130, 44, 40, o.lit ? LIT : PAPER));
+    s.push("</g>");
+    return s.join("");
+  }
+  function timber(x, y, o) {
+    o = o || {}; var s = [], c = o.off ? MUTED : INK;
+    s.push('<g opacity="' + (o.off ? .5 : 1) + '">');
+    [[0, 36, 220, 22], [14, 12, 192, 22], [28, -12, 164, 22]].forEach(function (b) {
+      s.push(rect(x + b[0], y + b[1], b[2], b[3], PATH, { stroke: c, sw: 2 }));
+      s.push(line(x + b[0] + b[2] * .25, y + b[1], x + b[0] + b[2] * .25, y + b[1] + b[3], c, 1.4, { op: .8 }));
+      s.push(line(x + b[0] + b[2] * .75, y + b[1], x + b[0] + b[2] * .75, y + b[1] + b[3], c, 1.4, { op: .8 }));
+    });
+    s.push("</g>");
+    return s.join("");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     CAMERA  (inherited)
+     THE FIVE SCENES
      ══════════════════════════════════════════════════════════════════════ */
-
-  function setVB(c) {
-    svg.setAttribute("viewBox", c.x + " " + c.y + " " + c.w + " " + c.h);
-    vb = c;
+  function defs() {
+    return '<defs>' +
+      '<filter id="grain" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="g"/><feBlend in="SourceGraphic" in2="g" mode="multiply"/></filter>' +
+      '<filter id="rough" x="-4%" y="-6%" width="108%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>' +
+      '<filter id="speckle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .09  0 0 0 0 .08  0 0 0 0 .06  0 0 0 .18 0" result="s"/><feBlend in="SourceGraphic" in2="s" mode="multiply"/></filter>' +
+      '<pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="' + AMBER + '" stroke-width="1.2" opacity=".55"/></pattern>' +
+      '<pattern id="warnhatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="' + WARN + '" stroke-width="2"/></pattern>' +
+      '<radialGradient id="warm" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="' + SUN + '" stop-opacity=".34"/><stop offset="1" stop-color="' + SUN + '" stop-opacity="0"/></radialGradient>' +
+      '</defs>';
   }
-
-  /* Turn "this region must be visible" into a viewBox for an SVG that is
-     bigger than the viewport and uses `slice`. Both axes resolve to the same
-     scale, so slice crops the lot and never the subject. `fit` is the box on
-     the glass the subject has to land in.
-
-     GENERALISED FROM THE REFERENCE. Resilience-grid offsets the camera on
-     the vertical axis only, and only on a phone, because a county that is
-     half behind a plate is still a county. One house is not: if the subject
-     lands under a plate there is nothing on the ground to look at. So `fit`
-     now carries cx and w as well, and the desktop path uses it too. Passing
-     { cx: vpW/2, w: vpW } reproduces the inherited behaviour exactly. */
-  function viewBoxFor(view, fit) {
-    var el = document.getElementById("world").getBoundingClientRect();
-    var vpW = window.innerWidth, vpH = window.innerHeight;
-    var fw = fit ? fit.w : vpW, fh = fit ? fit.h : vpH;
-    var scale = Math.min(fw / view.w, fh / view.h);
-    var vbW = el.width / scale, vbH = el.height / scale;
-    var wcx = view.x + view.w / 2 + (fit ? (vpW / 2 - fit.cx) / scale : 0);
-    var wcy = view.y + view.h / 2 + (fit ? (vpH / 2 - fit.cy) / scale : 0);
-    return { x: wcx - vbW / 2, y: wcy - vbH / 2, w: vbW, h: vbH };
-  }
-
-  /* The hole the plates leave, measured rather than assumed. Each screen
-     declares it as a .gw with its own grid area (desktop) or as the flex
-     child that takes the leftover height (phone). */
-  function aimWindow() {
-    var sc = screens && screens[current - 1];
-    if (!sc) { return null; }
-    var gw = sc.querySelector(".gw");
-    if (gw) {
-      var g = gw.getBoundingClientRect();
-      var top = Math.max(0, g.top), bot = Math.min(window.innerHeight, g.bottom);
-      var lef = Math.max(0, g.left), rig = Math.min(window.innerWidth, g.right);
-      if (bot - top > 90 && rig - lef > 90) {
-        return { cx: (lef + rig) / 2, cy: (top + bot) / 2, w: rig - lef, h: bot - top };
-      }
+  function sky(o) {
+    o = o || {}; var s = ['<g filter="url(#speckle)">'];
+    s.push(rect(-900, -600, 3000, 2100, PAPER));
+    s.push('<polygon points="620,-600 1900,-600 1900,330 740,230" fill="' + SAGE + '" opacity=".20"/><polygon points="300,-600 700,-600 520,250" fill="' + BLOCK + '" opacity=".14"/>');
+    if (o.dusk) { s.push('<polygon points="-900,-600 1900,-600 1900,420 -900,520" fill="' + BLOCK + '" opacity=".16"/>'); }
+    if (o.sun !== false) {
+      var sx = o.sunX || 1120, sy = o.sunY || 100, sr = o.sunR || 162;
+      if (o.warm) { s.push('<ellipse cx="' + sx + '" cy="' + (sy + 80) + '" rx="' + (sr * 3.2) + '" ry="' + (sr * 1.6) + '" fill="url(#warm)"/>'); }
+      s.push('<circle cx="' + sx + '" cy="' + sy + '" r="' + sr + '" fill="' + SUN + '" opacity=".92" filter="url(#grain)"/>');
+      s.push('<polygon points="880,-600 1900,-600 1040,300" fill="' + BLOCK + '" opacity=".12"/>');
     }
-    if (!narrow) { return null; }
-    /* phone fallback: aim below whatever the plates have claimed */
-    var bottom = 0;
-    Array.prototype.forEach.call(sc.children, function (p) {
-      if (p.classList.contains("gw")) { return; }
-      var r = p.getBoundingClientRect();
-      if (r.height > 4 && r.top < window.innerHeight * 0.85) { bottom = Math.max(bottom, r.bottom); }
+    s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + GROUND + '"/>');
+    if (o.warm) { s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + SUN + '" opacity=".10"/>'); }
+    s.push('<path d="M-900 640 Q590 548 2100 640" fill="none" stroke="' + INK + '" stroke-width="1.4" opacity=".35"/></g>');
+    return s.join("");
+  }
+  function path(tx) { tx = tx || 0; return '<path d="M' + (545 + tx) + ' 600 Q' + (520 + tx) + ' 690 300 820 L440 820 Q' + (560 + tx) + ' 690 ' + (585 + tx) + ' 600 Z" fill="' + PATH + '"/>'; }
+  function block(x, y, w, h) { return '<g class="block-wide" filter="url(#rough)">' + rect(x, y, w, h, BLOCK, { rx: 3, filter: "url(#grain)" }) + "</g>"; }
+  function footprint(x1, x2, y) { return line(x1, y, x2, y, AMBER, 2.4, { dash: "12 9" }); }
+
+  /* ── 1 · the approved frame ──────────────────────────────────────────── */
+  function scene1() {
+    /* exactly the approved frame: the home as it stands today carries no
+       hardening, and the plan behind it is the plain drawing — the standard
+       is chosen on the next screen */
+    var s = [sky()];
+    s.push(plan({ tx: 100, ty: -180, std: 0 }));
+    s.push(footprint(484, 1070, 626)); s.push(path(70)); s.push(home({ tx: 70, std: 0 }));
+    s.push('<line id="lead-plan" x1="1090" y1="420" x2="1090" y2="446" stroke="' + AMBER + '" stroke-width="2"/>');
+    s.push('<text id="anno-plan-1" class="anno" x="1128" y="468" text-anchor="end" font-size="' + n1(px(15)) + '">Your replacement plan,</text>');
+    s.push('<text id="anno-plan-2" class="anno" x="1128" y="488" text-anchor="end" font-size="' + n1(px(15)) + '">agreed in advance</text>');
+    s.push(leader(1095, 632, 1095, 652)); s.push(text(1128, 670, "Your home today", 15, { anc: "end" }));
+    s.push(block(56, 82, 556, 304));
+    return s.join("");
+  }
+
+  /* ── 2 · the plan in front, the standard chosen ──────────────────────── */
+  function scene2() {
+    var s = [sky({ sunX: 1140, sunY: 80, sunR: 140 })];
+    s.push('<g opacity=".42">' + home({ tx: -210, ty: 270, k: .62, std: 0, tree: false }) + "</g>");
+    s.push(callout({ x: 126, y: 664, title: "Your home today" }));
+    s.push(footprint(440, 1040, 626)); s.push(path(60));
+    s.push(plan({ tx: 60, openings: true, ticks: false }));
+    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN", title: STD_NAME[S.std], note: [STD_LINE[S.std]] }));
+    if (S.std >= 1) { s.push(callout({ x: 606, y: 282, title: S.std >= 2 ? "Ember-resistant roof, to code" : "Built to current code", lead: [640, 372, 640, 292, AMBER] })); }
+    if (S.std >= 2) {
+      s.push(callout({ x: 700, y: 712, title: "Screened vents", lead: [673, 584, 700, 696, AMBER] }));
+      s.push(callout({ x: 1122, y: 712, anc: "end", title: "Cleared edge", lead: [1040, 650, 1080, 696, AMBER] }));
+    }
+    if (S.std === 0) { s.push(callout({ x: 1122, y: 380, anc: "end", note: ["Nothing is added to the drawing."] })); }
+    s.push(block(56, 82, 520, 248));
+    return s.join("");
+  }
+
+  /* ── 3 · people and capacity around the plan ─────────────────────────── */
+  function scene3() {
+    var s = [sky({ sunX: 1120, sunY: 90, sunR: 130 })];
+    s.push(footprint(520, 1040, 626)); s.push(path(60));
+    s.push(plan({ tx: 60, openings: true, ticks: false, op: .95 }));
+    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN · " + STD_NAME[S.std].toUpperCase(), state: "agreed" }));
+    /* builder capacity on the lot's edge, tied to the plan */
+    /* builder capacity in the left column under the headline, tied to the
+       plan's wall — the reading copy below stays clear of it */
+    s.push(timber(140, 492));
+    s.push(callout({ x: 140, y: 368, title: "Ardren &amp; Sons · builder, Calder Reach", state: "reserved",
+                     note: ["Builders to this standard are scarce here."], lead: [362, 502, 528, 520, AMBER, "4 5"] }));
+    /* the recovery lead, named now, on the path */
+    s.push(figure(660, 712, { board: true }));
+    s.push(callout({ x: 684, y: 690, title: "Marta Ives · recovery lead", state: "agreed", note: ["Named now, not at the claim."] }));
+    /* a temporary home, further along the road */
+    s.push(smallHome(1040, 560, { lit: false }));
+    s.push(callout({ x: 1136, y: 684, anc: "end", title: "Temporary home in Calder Reach", state: "agreed", note: ["From the first night."] }));
+    s.push(block(56, 82, 560, 248));
+    return s.join("");
+  }
+
+  /* ── 4 · a covered event; the plan becomes the instruction ───────────── */
+  function scene4() {
+    var ev = S.event, s = [sky({ sun: false, dusk: true })];
+    /* the neighbour on the left is always there — the reason capacity is
+       finite. In a regional event a second lot appears on the right, lost
+       too, cropped by the frame the way the board crops its collage. */
+    var lots = ev ? [[20, "Also lost", "middle", 95], [1060, "Also waiting", "end", 110]] : [[20, "Also insured", "middle", 95]];
+    lots.forEach(function (p) {
+      if (ev) {
+        s.push(rect(p[0] + 20, 536, 150, 64, "none", { stroke: WARN, sw: 2, dash: "9 7" }));
+        s.push(line(p[0] + 40, 600, p[0] + 60, 566, WARN, 2, { op: .8 }) + line(p[0] + 110, 600, p[0] + 128, 570, WARN, 2, { op: .8 }));
+      } else { s.push('<g opacity=".45">' + smallHome(p[0] + 24, 500, { k: .42 }) + "</g>"); }
+      s.push(callout({ x: p[0] + p[3], y: 644, anc: p[2], note: [p[1]] }));
     });
-    bottom = Math.max(0, Math.min(bottom + 12, window.innerHeight - 180));
-    return { cx: window.innerWidth / 2, w: window.innerWidth,
-             cy: (bottom + window.innerHeight) / 2, h: window.innerHeight - bottom };
+    /* the loss, restrained: the house is gone to a cleared slab */
+    s.push(rect(530, 586, 460, 16, SLAB, { stroke: INK, sw: 1.6 }));
+    [560, 640, 760, 870].forEach(function (x, i) { s.push(line(x, 586, x + 26, 560 - (i % 2) * 14, INK, 2, { op: .55 })); });
+    s.push(rect(940, 586, 110, 16, SLAB, { stroke: INK, sw: 1.6 }));
+    /* the plan, held above the site; the instruction arrow down to it */
+    s.push(plan({ tx: 70, ty: -186, ticks: false, edge: false }));
+    s.push(line(735, 420, 735, 560, AMBER, 2.4, { dash: "6 6" }) + '<polygon points="727,556 743,556 735,574" fill="' + AMBER + '"/>');
+    s.push(callout({ x: 718, y: 506, anc: "end", eyebrow: "THE PLAN BECOMES THE REBUILD INSTRUCTION", title: STD_NAME[S.std], note: ["Cover for this event is assessed at the time."] }));
+    /* the actions, unfolding in the scene */
+    s.push(figure(660, 712, { board: true }));
+    s.push(callout({ x: 684, y: 690, title: "Marta contacts the household", note: ["Coordinates the arrangements.", "Permits and site clearance addressed first."] }));
+    s.push(smallHome(300, 590, { lit: true }));
+    s.push(callout({ x: 420, y: 700, title: "Temporary living, first night", state: "agreed" }));
+    s.push(timber(860, 522, { off: ev }));
+    if (ev) { s.push(callout({ x: 1130, y: 436, anc: "end", title: "Reserved start", state: "falls", note: ["Honoured in order of loss. Weeks, not days —", "and no larger payment moves it forward."] })); }
+    else { s.push(callout({ x: 1130, y: 436, anc: "end", title: "Builder released under the agreed conditions", state: "reserved" })); }
+    s.push(callout({ x: 58, y: 690, eyebrow: "REGIONAL CAPACITY", ebFill: MUTED, state: ev ? "constrained" : "reserved",
+                     note: [ev ? "A whole region is claiming at once." : "Builders in Calder Reach are still taking new work."] }));
+    s.push(block(56, 82, 596, 248));
+    return s.join("");
   }
 
-  function moveCamera(name, instant) {
-    var cam = (narrow && CAM_N[name]) || CAM[name] || CAM.house;
-    var target = viewBoxFor(cam, aimWindow());
-    if (!vb || instant || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVB(target); placePins(); return;
+  /* ── 5 · the plan resolved into the home ─────────────────────────────── */
+  function scene5() {
+    /* normal: a low warm sun behind the solid home. Constrained: the sun
+       stays high and small, so the plan's amber linework never sits on it. */
+    var ev = S.event, s = [ev ? sky({ sunX: 1130, sunY: 90, sunR: 120 }) : sky({ sunX: 1010, sunY: 420, sunR: 170, warm: true })];
+    if (!ev) {
+      s.push('<g opacity=".22">' + plan({ tx: 70, ticks: false }) + "</g>");
+      s.push(path(70)); s.push(home({ tx: 70, lit: true }));
+      s.push(figure(700, 760, { case_: true, k: .9 }));
+    } else {
+      s.push(footprint(484, 1070, 626)); s.push(rect(530, 586, 460, 16, SLAB, { stroke: INK, sw: 1.6 }));
+      s.push(plan({ tx: 70, ticks: false, openings: true })); s.push(path(70));
+      s.push(figure(690, 712, { board: true }));
+      s.push(callout({ x: 714, y: 700, title: "Marta Ives still runs the recovery." }));
+      s.push(smallHome(1040, 580, { lit: true }));
+      s.push(callout({ x: 1136, y: 700, anc: "end", title: "Temporary living holds." }));
+      /* the state word and mark only: the copy beneath carries the sentence */
+      s.push(callout({ x: 58, y: 632, eyebrow: "REGIONAL CAPACITY", ebFill: MUTED, state: "constrained" }));
     }
-    var from = vb, t0 = performance.now(), DUR = 540;
-    cancelAnimationFrame(camTimer);
-    (function step(now) {
-      var u = Math.min(1, (now - t0) / DUR);
-      var e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
-      setVB({
-        x: from.x + (target.x - from.x) * e, y: from.y + (target.y - from.y) * e,
-        w: from.w + (target.w - from.w) * e, h: from.h + (target.h - from.h) * e
-      });
-      placePins();
-      if (u < 1) { camTimer = requestAnimationFrame(step); }
-    })(t0);
+    s.push(block(56, 82, 596, 304));
+    return s.join("");
+  }
+  var SCENES = [scene1, scene2, scene3, scene4, scene5];
+
+  /* ══════════════════════════════════════════════════════════════════════
+     CAMERA — landscape fits the 1180×820 frame; portrait frames the
+     property per screen and the page stacks and scrolls.
+     ══════════════════════════════════════════════════════════════════════ */
+  var REGION = {
+    1: [{ x: 440, y: 40, w: 740, h: 720 }, { x: 330, y: 40, w: 850, h: 720 }],
+    2: [{ x: 330, y: 250, w: 850, h: 520 }, { x: 240, y: 230, w: 940, h: 560 }],
+    3: [{ x: 90, y: 290, w: 1090, h: 500 }, { x: 90, y: 270, w: 1090, h: 520 }],
+    4: [{ x: 300, y: 230, w: 900, h: 560 }, { x: 240, y: 210, w: 960, h: 600 }],
+    5: [{ x: 380, y: 240, w: 780, h: 560 }, { x: 300, y: 220, w: 860, h: 600 }]
+  };
+  function layout() {
+    var W = window.innerWidth, H = window.innerHeight;
+    portrait = W < 900 || W / H < 1.05;
+    body.classList.toggle("portrait", portrait);
+    if (!portrait) {
+      var s = Math.min(W / 1180, H / 820), ox = (W - 1180 * s) / 2, oy = (H - 820 * s) / 2;
+      scale = s;
+      svg.setAttribute("viewBox", n1(-ox / s) + " " + n1(-oy / s) + " " + n1(W / s) + " " + n1(H / s));
+      svg.style.height = "";
+      root.style.setProperty("--s", s.toFixed(4)); root.style.setProperty("--sf", Math.max(s, 0.94).toFixed(4));
+      root.style.setProperty("--ox", ox.toFixed(1) + "px"); root.style.setProperty("--oy", oy.toFixed(1) + "px");
+    } else {
+      var r = REGION[S.screen][W < 600 ? 0 : 1];
+      svg.setAttribute("viewBox", r.x + " " + r.y + " " + r.w + " " + r.h);
+      svg.style.height = (W * r.h / r.w).toFixed(1) + "px";
+      scale = W / r.w;
+    }
+  }
+  function annoPlan() {
+    var p1 = document.getElementById("anno-plan-1"), p2 = document.getElementById("anno-plan-2"), ld = document.getElementById("lead-plan");
+    if (!p1 || !portrait) { return; }
+    var u = px(14);
+    p2.setAttribute("x", 765); p2.setAttribute("y", n1(142 - u * 1.4)); p2.setAttribute("text-anchor", "middle");
+    p1.setAttribute("x", 765); p1.setAttribute("y", n1(142 - u * 2.65)); p1.setAttribute("text-anchor", "middle");
+    ld.setAttribute("x1", 765); ld.setAttribute("y1", 142); ld.setAttribute("x2", 765); ld.setAttribute("y2", n1(142 - u));
+  }
+  /* the legend: the same callouts, as readable HTML, under the scene */
+  function paintLegend() {
+    var ul = document.querySelector('.screen[data-screen="' + S.screen + '"] .legend');
+    if (!ul) { return; }
+    ul.innerHTML = "";
+    ul.hidden = !portrait || !legend.length;
+    legend.forEach(function (c) {
+      var li = document.createElement("li");
+      var h = "";
+      if (c.eyebrow) { h += '<span class="lg-eb">' + c.eyebrow + "</span>"; }
+      if (c.title) { h += '<span class="lg-t">' + c.title + "</span>"; }
+      if (c.state) { h += '<span class="lg-s lg-s--' + c.state + '">' + STATE_WORD[c.state] + "</span>"; }
+      (c.note || []).forEach(function (n) { h += '<span class="lg-n">' + n + "</span>"; });
+      li.innerHTML = h; ul.appendChild(li);
+    });
+  }
+  function draw() {
+    layout(); legend = [];
+    svg.innerHTML = defs() + SCENES[S.screen - 1]();
+    annoPlan(); paintLegend();
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     PINS — opaque label plates projected onto the ground
+     SCREENS, CONTROLS, NAVIGATION
      ══════════════════════════════════════════════════════════════════════ */
-
-  var pinHost = document.getElementById("pins");
-
-  function pinSet(n) {
-    if (n === 1) {
-      /* anchored below the ground line, not above the ridge: a pin hung off
-         the roof apex of the closest camera lands off the top of the
-         viewport, and the collision guard then hides the one label the
-         screen most needs. */
-      var a = [{ cls: "ink",  label: "This house, as surveyed", wx: 800,  wy: 822, dy: 0 },
-               { cls: "grey", label: "Detached garage",         wx: 1185, wy: 598, dy: -34 }];
-      if (standard >= 2) {
-        a.push({ cls: "fire",   label: "Screened vents", wx: 647,  wy: 588, dy: 0 });
-        a.push({ cls: "public", label: "Cleared edge",   wx: 500,  wy: 866, dy: 0 });
-      }
-      return a;
-    }
-    if (n === 2) {
-      return [{ cls: "ink",  label: "This household", wx: 800, wy: 822, dy: 0 },
-              { cls: eventOn ? "alarm" : "grey",
-                label: eventOn ? "Also lost" : "Also insured", wx: 180, wy: 640, dy: -42 },
-              { cls: eventOn ? "alarm" : "grey",
-                label: eventOn ? "Also waiting" : "Neighbouring lots", wx: 1612, wy: 645, dy: -42 }];
-    }
-    return [{ cls: "fire", label: "Reserved builder on site", wx: 800,  wy: 415, dy: -44 },
-            { cls: "grey", label: "Materials released",       wx: 1172, wy: 790, dy: -16 }];
-  }
-
-  function buildPins(n) {
-    pinHost.innerHTML = "";
-    pinSet(n).forEach(function (p) {
-      var el = document.createElement("span");
-      el.className = "pin pin--" + p.cls;
-      el.textContent = p.label;
-      el.dataset.wx = p.wx; el.dataset.wy = p.wy; el.dataset.dy = p.dy || 0;
-      pinHost.appendChild(el);
-    });
-    placePins();
-  }
-
-  /* A pin is hidden when it would land under a plate or the chrome — an
-     opaque label half-under an opaque plate is the defect, not the fix. */
-  function placePins() {
-    if (!vb) { return; }
-    var el = document.getElementById("world").getBoundingClientRect();
-    var sx = el.width / vb.w, sy = el.height / vb.h;
-    var sc = screens && screens[current - 1];
-    var boxes = sc ? Array.prototype.map.call(
-      sc.querySelectorAll(".plate"), function (p) { return p.getBoundingClientRect(); }) : [];
-    boxes = boxes.concat(Array.prototype.map.call(
-      document.querySelectorAll(".chrome button, .chrome select"),
-      function (p) { return p.getBoundingClientRect(); }));
-
-    Array.prototype.forEach.call(pinHost.children, function (p) {
-      var x = el.left + (+p.dataset.wx - vb.x) * sx;
-      var y = el.top + (+p.dataset.wy - vb.y) * sy + (+p.dataset.dy);
-      p.style.left = x + "px";
-      p.style.top = y + "px";
-      var r = p.getBoundingClientRect();
-      /* A pin must be WHOLLY inside the viewport. Testing only for "not
-         entirely off-screen" left labels hanging half off the left edge on
-         a phone, which is a clipped label, not a placed one. */
-      var hit = r.left < 4 || r.right > window.innerWidth - 4 ||
-                r.top < 4 || r.bottom > window.innerHeight - 4;
-      for (var i = 0; i < boxes.length && !hit; i++) {
-        var b = boxes[i];
-        if (r.left < b.right + 6 && r.right > b.left - 6 &&
-            r.top < b.bottom + 6 && r.bottom > b.top - 6) { hit = true; }
-      }
-      p.style.visibility = hit ? "hidden" : "visible";
-    });
-  }
-
-  /* One polite live region for state changes that are not screen changes —
-     a rebuild standard chosen, the regional event shown, the replay started.
-     The screen announcer (#announce) handles navigation, so the two never
-     overwrite each other mid-sentence. */
-  var statusEl = document.getElementById("state-status");
-  function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 1 — the household chooses a rebuild standard
-     This is the visible commitment: the thing that was decided in advance,
-     decided on the glass. It rewrites one line of the plan and changes the
-     house in the drawing.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  var standard = 2;
-  var stdBtns = Array.prototype.slice.call(document.querySelectorAll("[data-std]"));
-  var specStd = document.getElementById("spec-std");
-
-  function paintStd() {
-    stdBtns.forEach(function (b) {
-      b.setAttribute("aria-pressed", +b.dataset.std === standard ? "true" : "false");
-    });
-    /* getAttribute, not dataset: `data-std-0` does not camel-case to
-       `std0` — a hyphen is only eaten before an ASCII letter, so the
-       dataset key is literally "std-0" and dataset.std0 is undefined.
-       That silently emptied the line this whole control exists to change. */
-    if (specStd) { specStd.textContent = specStd.getAttribute("data-std-" + standard) || ""; }
-    if (current === 1) { renderLot({ phase: "intact", standard: standard }); buildPins(1); }
-    refit();
-  }
-
-  stdBtns.forEach(function (b) {
-    b.addEventListener("click", function () {
-      standard = +b.dataset.std;
-      paintStd();
-      say("Rebuild standard set to " + b.textContent.trim() + ". " +
-          (specStd ? specStd.textContent.trim() : ""));
-    });
-  });
-
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — the one condition that money cannot satisfy
-     The toggle is the honesty of the screen: it shows what the commitment
-     becomes when the region claims at once. Three of the four promises are
-     unaffected. The fourth — the builder — is the one that was scarce, and
-     a larger settlement does not restore it.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  var eventOn = false;
-  var evBtn   = document.getElementById("event-toggle");
-  var condCap = document.getElementById("cond-cap");
-  var capState = document.getElementById("cap-state");
-  var capWord  = document.getElementById("cap-state-word");
-  var capNormal = document.getElementById("cap-cap-normal");
-  var capEvent  = document.getElementById("cap-cap-event");
-  var fallRows = Array.prototype.slice.call(document.querySelectorAll(".cm-row[data-falls]"));
-
-  function paintEvent() {
-    if (condCap) {
-      condCap.dataset.met = eventOn ? "0" : "1";
-      var cs = condCap.querySelector(".cond-state");
-      if (cs) { cs.textContent = eventOn ? "Not met" : "Met"; }
-    }
-    fallRows.forEach(function (r) {
-      r.dataset.state = eventOn ? "falls" : "held";
-      var st = r.querySelector(".cm-state");
-      if (st) { st.textContent = eventOn ? "Falls back" : "Committed"; }
-    });
-    // The capacity state is a WORD, not a quantity. Nothing here is countable,
-    // so the condition can change without implying a regional total.
-    if (capState) { capState.dataset.cap = eventOn ? "constrained" : "available"; }
-    if (capWord)  { capWord.textContent  = eventOn ? "Constrained" : "Available"; }
-    if (capNormal) { capNormal.hidden = eventOn; }
-    if (capEvent)  { capEvent.hidden = !eventOn; }
-    if (evBtn) {
-      evBtn.setAttribute("aria-pressed", eventOn ? "true" : "false");
-      evBtn.textContent = eventOn ? "Return to normal conditions" : "Show a regional event";
-    }
-    if (current === 2) {
-      renderLot({ phase: "intact", standard: standard, neighbours: true, lost: eventOn });
-      buildPins(2);
-    }
-    refit();
-  }
-
-  if (evBtn) {
-    evBtn.addEventListener("click", function () {
-      eventOn = !eventOn;
-      paintEvent();
-      say(eventOn
-        ? "Regional event shown. Three commitments unchanged; the reserved builder falls back to the queue."
-        : "Normal conditions restored. All four commitments held.");
-    });
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 3 — the first days, as five beats
-     Not a claims workflow. Five rows and a replay, and the ground behind
-     them moves from a cleared slab to scaffold to a frame.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  var tlRows = [];
-  var tlStep = 0, tlTimer = null;
-
-  function paintTl() {
-    tlRows.forEach(function (r, i) { r.dataset.on = i < tlStep ? "1" : "0"; });
-    /* The control says exactly what pressing it will do. */
-    var btn = document.getElementById("tl-play");
-    if (btn) {
-      btn.textContent = tlTimer ? "Pause"
-                      : tlStep >= tlRows.length ? "Replay from the start"
-                      : tlStep === 0 ? "Play the first days"
-                      : "Resume";
-    }
-    var all = document.getElementById("tl-all");
-    if (all) { all.disabled = !tlTimer && tlStep >= tlRows.length; }
-    if (current === 3) {
-      renderLot({
-        phase: "rebuild", standard: standard,
-        progress: tlStep >= 5 ? 1 : tlStep >= 4 ? 0.6 : 0.2
-      });
-      buildPins(3);
-    }
-    refit();
-  }
-
-  function tlStop() { clearInterval(tlTimer); tlTimer = null; }
-
-  /* Play / Pause / Resume / Replay, in one control that is always labelled
-     with the action it performs. */
-  function tlRun() {
-    if (tlTimer) {
-      tlStop(); paintTl();
-      say("Replay paused at step " + tlStep + " of " + tlRows.length + ".");
-      return;
-    }
-    var restarting = tlStep >= tlRows.length;
-    if (restarting) { tlStep = 0; }
-    tlTimer = setInterval(function () {
-      tlStep++;
-      if (tlStep >= tlRows.length) {
-        tlStep = tlRows.length; tlStop();
-        say("Replay complete. All " + tlRows.length + " steps shown.");
-      }
-      paintTl();
-    }, 1250);
-    tlStep++;
-    paintTl();
-    say(restarting ? "Replaying the first days from the start." : "Replay resumed.");
-  }
-
-  function tlShowAll() {
-    tlStop();
-    tlStep = tlRows.length;
-    paintTl();
-    say("All " + tlRows.length + " steps shown.");
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     PER-SCREEN DRAW
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function drawFor(n) {
-    if (n === 1) { renderLot({ phase: "intact", standard: standard }); }
-    else if (n === 2) { renderLot({ phase: "intact", standard: standard, neighbours: true, lost: eventOn }); }
-    else { paintTl(); }
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     FIT — inherited verbatim.
-     A plate is never given a height it then has to clip; instead the whole
-     composition gives way. Do not weaken this.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  var FIT_FLOOR = 0.74;
-
-  /* The ground window is excluded: it must stretch to its whole grid area,
-     because that area IS the measurement the camera aims at. */
-  function anchorPlates() {
-    Array.prototype.forEach.call(
-      // Only CARDS get pinned to the top or bottom of their band. The
-      // executive compositions place their own hero objects, and an inline
-      // align-self written here would silently beat their stylesheet.
-      document.querySelectorAll(".screen > .plate[style*='grid-area']"), function (el) {
-        var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
-        if (!m) { return; }
-        el.style.alignSelf = (+m[2] === 9 && +m[1] > 1) ? "end" : "start";
-      });
-  }
-
-  function stageBox(sc) {
-    var r = sc.getBoundingClientRect(), cs = getComputedStyle(sc);
-    return {
-      top: r.top + parseFloat(cs.paddingTop), bottom: r.bottom - parseFloat(cs.paddingBottom),
-      left: r.left + parseFloat(cs.paddingLeft), right: r.right - parseFloat(cs.paddingRight)
-    };
-  }
-
-  function spills(sc) {
-    if (narrow) { return sc.scrollHeight > sc.clientHeight + 1; }
-
-    var box = stageBox(sc), rects = [], bad = false, i, j;
-    Array.prototype.forEach.call(sc.children, function (el) {
-      var r = el.getBoundingClientRect();
-      if (r.width < 2 || r.height < 2) { return; }
-      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 ||
-          r.left < box.left - 1 || r.right > box.right + 1) { bad = true; }
-      rects.push(r);
-    });
-    /* two opaque plates over one another is the same defect as a cut line:
-       one of them is unreadable */
-    for (i = 0; i < rects.length && !bad; i++) {
-      for (j = i + 1; j < rects.length; j++) {
-        if (rects[i].left < rects[j].right - 1 && rects[i].right > rects[j].left + 1 &&
-            rects[i].top < rects[j].bottom - 1 && rects[i].bottom > rects[j].top + 1) {
-          bad = true; break;
-        }
-      }
-    }
-    /* and anything inside a plate that its own box is hiding. A 1px box is
-       the visually-hidden idiom and is not a defect. */
-    if (!bad) {
-      Array.prototype.forEach.call(sc.querySelectorAll("*"), function (el) {
-        if (bad) { return; }
-        if (el.clientWidth <= 1 || el.clientHeight <= 1) { return; }
-        if (!el.textContent || !el.textContent.trim()) { return; }
-        var cs = getComputedStyle(el);
-        if (cs.overflowY !== "visible" && el.scrollHeight > el.clientHeight + 2) { bad = true; }
-        if (cs.overflowX !== "visible" && el.scrollWidth > el.clientWidth + 2) { bad = true; }
-      });
-    }
-    return bad;
-  }
-
-  function fitScreen(sc) {
-    if (!sc || sc.hidden) { return; }
-    sc.style.setProperty("--fit", "1");
-
-    /* NARROW NEVER SHRINKS.
-       The --fit search exists so a desktop composition stays inside a stage
-       that does not scroll. A phone screen DOES scroll, so running the search
-       there bought nothing and cost everything: it drove uppercase labels to
-       6.4px and notes to 7.7px. Below 900px the type holds its size and the
-       screen scrolls. */
-    if (narrow) { return; }
-
-    if (!spills(sc)) { return; }
-
-    var lo = FIT_FLOOR, hi = 1, best = FIT_FLOOR, mid, i;
-    for (i = 0; i < 7; i++) {
-      mid = (lo + hi) / 2;
-      sc.style.setProperty("--fit", mid.toFixed(4));
-      if (spills(sc)) { hi = mid; } else { lo = mid; best = mid; }
-    }
-    sc.style.setProperty("--fit", best.toFixed(4));
-    /* Reflow is not perfectly monotonic — one word rewrapping can undo a
-       step — so verify, and step down if the search landed on a bad value. */
-    for (i = 0; i < 8 && best > FIT_FLOOR && spills(sc); i++) {
-      best = Math.max(FIT_FLOOR, best - 0.025);
-      sc.style.setProperty("--fit", best.toFixed(4));
-    }
-  }
-
-  var fitPending = null;
-  function refit() {
-    cancelAnimationFrame(fitPending);
-    fitPending = requestAnimationFrame(function () {
-      fitScreen(screens && screens[current - 1]);
-      placePins();
-    });
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     NAVIGATION
-     ══════════════════════════════════════════════════════════════════════ */
-
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
   var total = screens.length;
-  var picker = document.getElementById("picker");
-  var announce = document.getElementById("announce");
-  var prevBtn = document.getElementById("prev");
-  var nextBtn = document.getElementById("next");
-  var nextLabel = document.getElementById("next-label");
-  var current = 1;
+  var NEXT = ["Choose your rebuild", "Reserve the recovery", "Activate the arrangements", "Home again", "Start again"];
+  var prevBtn = document.getElementById("prev"), nextBtn = document.getElementById("next");
+  var nextLabel = document.getElementById("next-label"), where = document.getElementById("where");
+  var announce = document.getElementById("announce"), status = document.getElementById("state-status");
+  function say(m) { if (status) { status.textContent = m; } }
+  var stdBtns = Array.prototype.slice.call(document.querySelectorAll("[data-std]"));
+  var stdWord = Array.prototype.slice.call(document.querySelectorAll("[data-std-word]"));
+  var evBtn = document.getElementById("event-toggle");
+  var evWord = Array.prototype.slice.call(document.querySelectorAll("[data-ev-word]"));
+  var branch = Array.prototype.slice.call(document.querySelectorAll("[data-branch]"));
 
-  var CTA = ["What is promised", "The first days", "Back to the beginning"];
-
-  screens.forEach(function (sc, i) {
-    var o = document.createElement("option");
-    o.value = String(i + 1);
-    o.textContent = (i + 1) + " of " + total + " · " + sc.dataset.label;
-    picker.appendChild(o);
+  function paintControls() {
+    stdBtns.forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.std === S.std ? "true" : "false"); });
+    stdWord.forEach(function (e) { e.textContent = STD_NAME[S.std]; });
+    if (evBtn) { evBtn.setAttribute("aria-pressed", S.event ? "true" : "false"); evBtn.textContent = S.event ? "Return to normal conditions" : "Show a regional event"; }
+    evWord.forEach(function (e) { e.textContent = S.event ? "Constrained" : "Available"; });
+    branch.forEach(function (e) { e.hidden = (e.dataset.branch === "event") !== S.event; });
+  }
+  stdBtns.forEach(function (b) {
+    b.addEventListener("click", function () { S.std = +b.dataset.std; paintControls(); draw(); say("Rebuild standard set to " + STD_NAME[S.std] + ". " + STD_LINE[S.std] + "."); });
   });
-
-  anchorPlates();
-  tlRows = Array.prototype.slice.call(document.querySelectorAll("#tl .tl-row"));
-  /* The sequence starts FULLY REVEALED. An unplayed stepper reads as a
-     disabled panel, and a reviewer who never presses the button would see
-     the last screen greyed out. The replay is an enhancement on a legible
-     default, not a gate in front of one. */
-  tlStep = tlRows.length;
-  var tlPlay = document.getElementById("tl-play");
-  if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
-  var tlAll = document.getElementById("tl-all");
-  if (tlAll) { tlAll.addEventListener("click", tlShowAll); }
+  if (evBtn) {
+    evBtn.addEventListener("click", function () {
+      S.event = !S.event; paintControls(); draw();
+      say(S.event ? "Regional event shown. Capacity constrained. Three commitments unchanged; the reserved start falls back to the queue." : "Normal conditions restored. All four commitments held.");
+    });
+  }
+  function reset() { S.std = 2; S.event = false; paintControls(); show(1); say("Journey reset. Code plus hardening, normal conditions."); }
+  var restart = document.getElementById("restart");
+  if (restart) { restart.addEventListener("click", reset); }
 
   function show(n, push) {
-    n = ((n - 1 + total) % total) + 1;
-    current = n;
-    var sc = screens[n - 1];
-    screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
-    picker.value = String(n);
-    prevBtn.disabled = n === 1;
-    nextLabel.textContent = CTA[n - 1];
-
-    document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
-
-    /* leaving screen 3 stops the clock, so it is not still running behind a
-       screen that does not show it */
-    if (n !== 3) { tlStop(); }
-
-    drawFor(n);
-    /* fit before the camera moves: on a phone the camera aims at whatever
-       height the plates have left over, so it needs the settled layout */
-    fitScreen(sc);
-    moveCamera(sc.dataset.cam);
-    buildPins(n);
-
-    /* Headlines are authored as one span per line, so textContent would run
-       the lines together. Join the spans with a space instead. */
-    var h = sc.querySelector(".display");
-    var spans = h ? h.querySelectorAll("span") : [];
-    var said = h
-      ? (spans.length
-          ? Array.prototype.map.call(spans, function (x) { return x.textContent.trim(); }).join(" ")
-          : h.textContent)
-      : sc.dataset.label;
-    announce.textContent = "Screen " + n + " of " + total + ". " +
-      said.replace(/\s+/g, " ").trim();
-
-    if (push !== false) {
-      try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }
-    }
+    n = Math.max(1, Math.min(total, n));
+    S.screen = n;
+    screens.forEach(function (sc, i) { sc.hidden = (i + 1 !== n); });
+    body.setAttribute("data-screen", String(n));
+    prevBtn.disabled = n === 1; nextLabel.textContent = NEXT[n - 1]; where.textContent = n + " of " + total;
+    paintControls(); draw(); window.scrollTo(0, 0);
+    var h = screens[n - 1].querySelector("h1, h2");
+    announce.textContent = "Screen " + n + " of " + total + ". " + (h ? h.textContent.replace(/\s+/g, " ").trim() : "");
+    if (push !== false) { try { history.replaceState(null, "", "#b/" + n); } catch (e) { /* file:// */ } }
   }
-
-  prevBtn.addEventListener("click", function () { show(current - 1); });
-  nextBtn.addEventListener("click", function () { show(current + 1); });
-  picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
-
-  document.addEventListener("click", function (e) {
-    var t = e.target.closest ? e.target.closest("[data-goto]") : null;
-    if (t) { show(parseInt(t.dataset.goto, 10)); }
-  });
-
+  prevBtn.addEventListener("click", function () { show(S.screen - 1); });
+  nextBtn.addEventListener("click", function () { if (S.screen === total) { reset(); return; } show(S.screen + 1); });
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
-    if (tag === "select" || tag === "input" || tag === "button") { return; }
-    if (e.key === "ArrowRight") { show(current + 1); }
-    if (e.key === "ArrowLeft") { show(current - 1); }
+    if (tag === "select" || tag === "input" || tag === "button" || tag === "a") { return; }
+    if (e.key === "ArrowRight" && S.screen < total) { show(S.screen + 1); }
+    if (e.key === "ArrowLeft") { show(S.screen - 1); }
   });
-
-  /* ══════════════════════════════════════════════════════════════════════
-     BOOT
-     ══════════════════════════════════════════════════════════════════════ */
-
-  var relayout;
-  window.addEventListener("resize", function () {
-    clearTimeout(relayout);
-    relayout = setTimeout(function () {
-      var was = narrow;
-      narrow = isNarrow();
-      /* The window is the stage. Every screen is re-fitted to the new one,
-         not just the visible one, so a resize can never leave a hidden
-         screen holding a scale that was right for a different window. */
-      screens.forEach(function (s) {
-        var h = s.hidden;
-        if (h) { s.hidden = false; }
-        fitScreen(s);
-        if (h) { s.hidden = true; }
-      });
-      if (was !== narrow) { drawFor(current); }
-      moveCamera(screens[current - 1].dataset.cam, true);
-      placePins();
-    }, 140);
-  });
-
-  /* Skip button: move focus to the open screen's heading, without touching
-     the hash. Every .display carries tabindex="-1" so it can receive focus. */
-  var skip = document.getElementById("skip");
-  if (skip) {
-    skip.addEventListener("click", function () {
-      var sc = screens[current - 1];
-      var h = sc && (sc.querySelector(".display") || sc.querySelector(".eyebrow"));
-      if (h) { h.focus(); h.scrollIntoView({ block: "start" }); }
-    });
-  }
-
+  /* #b/1..5 now; the old three-screen #s/1..3 map to the beat with the same
+     idea — 1 before the loss → 1, 2 what is promised → 3, 3 the first days → 4 */
   function fromHash() {
-    var m = /#s\/(\d+)/.exec(location.hash);
-    return m ? parseInt(m[1], 10) : null;
+    var m = /#b\/(\d)/.exec(location.hash); if (m) { return +m[1]; }
+    var o = /#s\/(\d)/.exec(location.hash); if (o) { return { 1: 1, 2: 3, 3: 4 }[+o[1]] || 1; }
+    return null;
   }
-  window.addEventListener("hashchange", function () {
-    /* An unrecognised hash means something else on the page used one — it is
-       not a request to go to screen 1. */
-    var n = fromHash();
-    if (n !== null && n !== current) { show(n, false); }
-  });
+  window.addEventListener("hashchange", function () { var n = fromHash(); if (n !== null && n !== S.screen) { show(n, false); } });
+  var pending; window.addEventListener("resize", function () { clearTimeout(pending); pending = setTimeout(draw, 90); });
+  var skip = document.getElementById("skip");
+  if (skip) { skip.addEventListener("click", function () { var h = screens[S.screen - 1].querySelector("h1, h2"); if (h) { h.focus(); } }); }
 
-  narrow = isNarrow();
-  paintStd();
-  paintEvent();
   show(fromHash() || 1, false);
-  moveCamera(screens[current - 1].dataset.cam, true);
 })();
