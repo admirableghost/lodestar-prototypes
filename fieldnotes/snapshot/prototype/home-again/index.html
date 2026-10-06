@@ -65,17 +65,33 @@
   </section>
 
   <!-- ══════ 4 · ACTIVATE THE ARRANGEMENTS ══════ -->
-  <section class="screen" data-screen="4" data-label="Activate the arrangements" hidden>
-    <header class="head head--2">
+  <!-- Screen 4 is laid out in flow — head, one bounded scene, foot — because
+       a headline backing drawn in the scene at a fixed width cannot promise
+       to contain text sized for reading. Here the backing IS the headline's
+       own box, and each illustrated subject has its own wrapping label area. -->
+  <section class="screen screen--4" data-screen="4" data-label="Activate the arrangements" hidden>
+    <header class="head head--flow">
       <p class="eyebrow">HOME AGAIN · AFTER A COVERED EVENT</p>
-      <h2 class="headline headline--s" tabindex="-1"><span>When the loss happens,</span><span>the arrangements</span><span>are already there.</span></h2>
+      <h2 class="headline headline--fit" tabindex="-1">The plan becomes action.</h2>
     </header>
-    <section class="copy copy--controls">
-      <button class="toggle" type="button" id="event-toggle" aria-pressed="false">Show a regional event</button>
-      <p class="caveat" data-branch="normal">Marta coordinates the arrangements. Cover is assessed at the time; approvals and exceptions still need decisions.</p>
-      <p class="caveat" data-branch="event" hidden>Three commitments are unchanged. The reserved start falls back to the queue — honoured in order of loss, and no larger payment moves it forward.</p>
+    <div class="scene4-wrap">
+      <div class="scene4" id="scene4-box">
+        <svg id="scene4" viewBox="0 0 1180 430" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="The recovery lead stands between two paths: one to a temporary home, one to the rebuild site where the agreed plan stands on the cleared slab. In a regional event the path to the site is barred and the builder's materials wait before it."></svg>
+        <p class="s4-label s4-label--marta" id="s4-marta"><b>Marta coordinates</b><span>the recovery lead named in advance</span></p>
+        <p class="s4-label s4-label--temp" id="s4-temp"><b>Temporary living arranged</b><span>From the first night.</span><em class="s4-state" data-kind="agreed">Agreed</em></p>
+        <p class="s4-label s4-label--site" id="s4-site"><b>Rebuild follows the agreed plan</b><span id="s4-site-detail">Code plus hardening · Ardren &amp; Sons</span><em class="s4-state" id="s4-site-state" data-kind="released">Released under the agreed conditions</em></p>
+      </div>
+    </div>
+    <section class="copy copy--flow s4-foot">
+      <p class="caveat s4-cond">Cover is assessed at the time. Approvals, permits and site clearance still apply.</p>
+      <div class="s4-cap">
+        <p class="s4-capstate">Regional capacity <em class="s4-state" id="s4-cap" data-kind="available">Available</em></p>
+        <button class="toggle" type="button" id="event-toggle" aria-pressed="false">Show a regional event</button>
+      </div>
+      <p class="caveat s4-cons" data-branch="event" hidden>The reserved start falls back to the queue — honoured in order of loss, and no larger payment moves it forward. Temporary living and Marta’s coordination continue.</p>
+      <ul class="legend" hidden></ul>
     </section>
-    <section class="copy copy--legend"><ul class="legend" hidden></ul></section>
   </section>
 
   <!-- ══════ 5 · HOME AGAIN ══════ -->

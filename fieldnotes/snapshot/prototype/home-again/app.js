@@ -46,7 +46,7 @@
   var STD_LINE = ["Rebuilt as it stood, with nothing changed",
                   "To current code, where the old house predates it",
                   "Code, plus an ember-resistant roof, screened vents and a cleared edge"];
-  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", assess: "Assessed at the time", constrained: "Constrained", falls: "Falls back" };
+  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", assess: "Assessed at the time", constrained: "Constrained", falls: "Queued" };
 
   var scale = 1, portrait = false, legend = [];
   function px(n) { return n / scale; }
@@ -224,9 +224,12 @@
       s.push('<circle cx="' + sx + '" cy="' + sy + '" r="' + sr + '" fill="' + SUN + '" opacity=".92" filter="url(#grain)"/>');
       s.push('<polygon points="880,-600 1900,-600 1040,300" fill="' + BLOCK + '" opacity=".12"/>');
     }
-    s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + GROUND + '"/>');
-    if (o.warm) { s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + SUN + '" opacity=".10"/>'); }
-    s.push('<path d="M-900 640 Q590 548 2100 640" fill="none" stroke="' + INK + '" stroke-width="1.4" opacity=".35"/></g>');
+    if (o.ground !== false) {
+      s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + GROUND + '"/>');
+      if (o.warm) { s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + SUN + '" opacity=".10"/>'); }
+      s.push('<path d="M-900 640 Q590 548 2100 640" fill="none" stroke="' + INK + '" stroke-width="1.4" opacity=".35"/>');
+    }
+    s.push("</g>");
     return s.join("");
   }
   function path(tx) { tx = tx || 0; return '<path d="M' + (545 + tx) + ' 600 Q' + (520 + tx) + ' 690 300 820 L440 820 Q' + (560 + tx) + ' 690 ' + (585 + tx) + ' 600 Z" fill="' + PATH + '"/>'; }
@@ -289,40 +292,76 @@
     return s.join("");
   }
 
-  /* ── 4 · a covered event; the plan becomes the instruction ───────────── */
-  function scene4() {
-    var ev = S.event, s = [sky({ sun: false, dusk: true })];
-    /* the neighbour on the left is always there — the reason capacity is
-       finite. In a regional event a second lot appears on the right, lost
-       too, cropped by the frame the way the board crops its collage. */
-    var lots = ev ? [[20, "Also lost", "middle", 95], [1060, "Also waiting", "end", 110]] : [[20, "Also insured", "middle", 95]];
-    lots.forEach(function (p) {
-      if (ev) {
-        s.push(rect(p[0] + 20, 536, 150, 64, "none", { stroke: WARN, sw: 2, dash: "9 7" }));
-        s.push(line(p[0] + 40, 600, p[0] + 60, 566, WARN, 2, { op: .8 }) + line(p[0] + 110, 600, p[0] + 128, 570, WARN, 2, { op: .8 }));
-      } else { s.push('<g opacity=".45">' + smallHome(p[0] + 24, 500, { k: .42 }) + "</g>"); }
-      s.push(callout({ x: p[0] + p[3], y: 644, anc: p[2], note: [p[1]] }));
-    });
-    /* the loss, restrained: the house is gone to a cleared slab */
-    s.push(rect(530, 586, 460, 16, SLAB, { stroke: INK, sw: 1.6 }));
-    [560, 640, 760, 870].forEach(function (x, i) { s.push(line(x, 586, x + 26, 560 - (i % 2) * 14, INK, 2, { op: .55 })); });
-    s.push(rect(940, 586, 110, 16, SLAB, { stroke: INK, sw: 1.6 }));
-    /* the plan, held above the site; the instruction arrow down to it */
-    s.push(plan({ tx: 70, ty: -186, ticks: false, edge: false }));
-    s.push(line(735, 420, 735, 560, AMBER, 2.4, { dash: "6 6" }) + '<polygon points="727,556 743,556 735,574" fill="' + AMBER + '"/>');
-    s.push(callout({ x: 718, y: 506, anc: "end", eyebrow: "THE PLAN BECOMES THE REBUILD INSTRUCTION", title: STD_NAME[S.std], note: ["Cover for this event is assessed at the time."] }));
-    /* the actions, unfolding in the scene */
-    s.push(figure(660, 712, { board: true }));
-    s.push(callout({ x: 684, y: 690, title: "Marta contacts the household", note: ["Coordinates the arrangements.", "Permits and site clearance addressed first."] }));
-    s.push(smallHome(300, 590, { lit: true }));
-    s.push(callout({ x: 420, y: 700, title: "Temporary living, first night", state: "agreed" }));
-    s.push(timber(860, 522, { off: ev }));
-    if (ev) { s.push(callout({ x: 1130, y: 436, anc: "end", title: "Reserved start", state: "falls", note: ["Honoured in order of loss. Weeks, not days —", "and no larger payment moves it forward."] })); }
-    else { s.push(callout({ x: 1130, y: 436, anc: "end", title: "Builder released under the agreed conditions", state: "reserved" })); }
-    s.push(callout({ x: 58, y: 690, eyebrow: "REGIONAL CAPACITY", ebFill: MUTED, state: ev ? "constrained" : "reserved",
-                     note: [ev ? "A whole region is claiming at once." : "Builders in Calder Reach are still taking new work."] }));
-    s.push(block(56, 82, 596, 248));
-    return s.join("");
+  /* ── 4 · the plan becomes action ─────────────────────────────────────────
+     The page-wide scene carries only the dusk paper; the recovery scene is
+     its own bounded SVG inside the screen's flow layout (see paintScene4),
+     so its labels can live in wrapping HTML areas beside the artwork. */
+  function scene4() { return sky({ sun: false, dusk: true, ground: false }); }
+
+  function paintScene4() {
+    var box = document.getElementById("scene4-box"), s4 = document.getElementById("scene4");
+    if (!box || !s4) { return; }
+    var ev = S.event, s = [];
+    s.push('<defs><pattern id="hatch4" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="' + AMBER + '" stroke-width="1.2" opacity=".55"/></pattern>' +
+           '<pattern id="warnhatch4" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="' + WARN + '" stroke-width="2"/></pattern></defs>');
+    /* ground */
+    s.push(rect(-400, 300, 2000, 400, GROUND) + line(-400, 300, 1600, 300, INK, 1.2, { op: .35 }));
+    /* in a regional event the neighbouring lots are lost too — secondary context, no captions */
+    if (ev) {
+      [[20], [1050]].forEach(function (p) {
+        s.push(rect(p[0], 250, 110, 50, "none", { stroke: WARN, sw: 2, dash: "8 6" }));
+        s.push(line(p[0] + 18, 300, p[0] + 34, 272, WARN, 2, { op: .8 }) + line(p[0] + 78, 300, p[0] + 92, 276, WARN, 2, { op: .8 }));
+      });
+    }
+    /* the two coordination paths, from the lead to each arrangement */
+    var L = "M560 304 Q430 352 318 304", R = "M620 304 Q750 352 858 304";
+    s.push('<path d="' + L + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"/>');
+    s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (ev ? ' opacity=".55"' : "") + '/>');
+    s.push('<path d="' + L + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"/>');
+    s.push('<path d="' + R + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"' + (ev ? ' opacity=".45"' : "") + '/>');
+    s.push('<polygon points="318,296 304,304 318,312" fill="' + AMBER + '"/>');
+    if (!ev) { s.push('<polygon points="858,296 872,304 858,312" fill="' + AMBER + '"/>'); }
+    /* the temporary home, lit */
+    s.push('<g id="s4-subj-temp">' + smallHome(185, 196, { k: .48, lit: true }) + "</g>");
+    /* the recovery lead */
+    s.push('<g id="s4-subj-marta">' + figure(590, 302, { board: true, k: 1.15 }) + "</g>");
+    /* the rebuild site: a cleared slab with the agreed plan standing on it as the instruction */
+    s.push('<g id="s4-subj-site">');
+    s.push(rect(830, 292, 262, 14, SLAB, { stroke: INK, sw: 1.6 }));
+    [850, 905, 975, 1040].forEach(function (x, i) { s.push(line(x, 292, x + 18, 274 - (i % 2) * 8, INK, 1.8, { op: .5 })); });
+    s.push(plan({ tx: 597, ty: 40, k: .42, ticks: false, edge: false, openings: true }).split("url(#hatch)").join("url(#hatch4)"));
+    s.push("</g>");
+    if (ev) {
+      /* the barred path: the reserved start waits in the queue before it */
+      s.push(rect(728, 312, 11, 40, "url(#warnhatch4)", { stroke: WARN, sw: 1.6 }));
+      s.push('<g transform="translate(610,330) scale(.55)">' + timber(0, 0, { off: true }) + "</g>");
+    } else {
+      s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0) + "</g>");
+    }
+    s4.innerHTML = s.join("");
+    /* labels and states, from the one state */
+    var det = document.getElementById("s4-site-detail"), st = document.getElementById("s4-site-state"), cap = document.getElementById("s4-cap");
+    if (det) { det.textContent = STD_NAME[S.std] + " · Ardren & Sons"; }
+    if (st) { st.dataset.kind = ev ? "queued" : "released"; st.textContent = ev ? "Reserved start queued" : "Released under the agreed conditions"; }
+    if (cap) { cap.dataset.kind = ev ? "constrained" : "available"; cap.textContent = ev ? "Constrained" : "Available"; }
+    /* the bounded scene: fit the box to the room the flow leaves it */
+    /* the box frames the artwork band only (design y 140–430), so the scene
+       never carries an empty sky above the subjects */
+    if (!portrait) {
+      var wrap = box.parentNode, h = wrap.clientHeight, w = wrap.clientWidth;
+      var bw = Math.min(w, h * 1180 / 290), bh = bw * 290 / 1180;
+      box.style.width = bw + "px"; box.style.height = bh + "px";
+      s4.setAttribute("viewBox", "0 140 1180 290");
+    } else {
+      box.style.width = "100%"; box.style.height = (window.innerWidth * 290 / 820) + "px";
+      s4.setAttribute("viewBox", "180 140 820 290");
+      legend = Array.prototype.map.call(document.querySelectorAll(".s4-label"), function (p) {
+        var em = p.querySelector("em");
+        /* the legend carries the label's own state wording, never a remapped one */
+        return { title: p.querySelector("b").textContent, note: [p.querySelector("span").textContent],
+                 state: em ? em.dataset.kind : null, stateText: em ? em.textContent : null };
+      });
+    }
   }
 
   /* ── 5 · the plan resolved into the home ─────────────────────────────── */
@@ -397,7 +436,7 @@
       var h = "";
       if (c.eyebrow) { h += '<span class="lg-eb">' + c.eyebrow + "</span>"; }
       if (c.title) { h += '<span class="lg-t">' + c.title + "</span>"; }
-      if (c.state) { h += '<span class="lg-s lg-s--' + c.state + '">' + STATE_WORD[c.state] + "</span>"; }
+      if (c.state) { h += '<span class="lg-s lg-s--' + c.state + '">' + (c.stateText || STATE_WORD[c.state]) + "</span>"; }
       (c.note || []).forEach(function (n) { h += '<span class="lg-n">' + n + "</span>"; });
       li.innerHTML = h; ul.appendChild(li);
     });
@@ -405,6 +444,7 @@
   function draw() {
     layout(); legend = [];
     svg.innerHTML = defs() + SCENES[S.screen - 1]();
+    if (S.screen === 4) { paintScene4(); }
     annoPlan(); paintLegend();
   }
 
