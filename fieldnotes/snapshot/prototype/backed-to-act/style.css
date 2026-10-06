@@ -1370,3 +1370,153 @@ body { background: var(--stage-deep); }
 .out-s b { color: var(--cool); }
 .out-i--esc .out-s { border-left-color: var(--warm); }
 .zones[data-proposed="1"] .zone--may { outline-color: color-mix(in srgb, var(--cool) 70%, transparent); }
+
+/* ══ REVISION 03 · ART DIRECTION ═══════════════════════════════════════
+   Semantics are frozen: zone membership still carries permission and the
+   DOM is untouched. What changes is that the boundary stops being a rule
+   between two panels and becomes a threshold in a deep field — a seam with
+   width, light falloff and territory either side of it. Action objects stop
+   being outlined boxes and become lit tiles floating in that space. */
+
+/* ── the field ──────────────────────────────────────────────────────── */
+.world::after {
+  background:
+    radial-gradient(84% 120% at 20% 56%, rgba(90,190,235,.22) 0%, transparent 58%),
+    radial-gradient(70% 104% at 88% 44%, rgba(245,150,95,.17) 0%, transparent 56%),
+    radial-gradient(150% 100% at 50% 118%, rgba(120,205,245,.10) 0%, transparent 52%),
+    radial-gradient(130% 128% at 50% -8%, transparent 36%, rgba(4,7,11,.86) 100%),
+    linear-gradient(168deg, #14202C 0%, #0C1218 64%, #080C11 100%);
+}
+/* fine grain, so the dark reads as atmosphere rather than flat fill */
+.veil {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
+  mix-blend-mode: screen;
+}
+
+/* ── the threshold: a seam, not a border ───────────────────────────── */
+.zones { position: relative; }
+.zone { background: none !important; box-shadow: none !important; }
+.zone--may  { padding-right: calc(var(--x-gap) * 2.4); }
+.zone--ask  { padding-left:  calc(var(--x-gap) * 2.4); }
+.zone-rule {
+  width: 1px; background: none; position: relative; overflow: visible;
+  box-shadow: none;
+}
+.zone-rule::before {           /* the luminous core of the threshold */
+  content: ""; position: absolute; inset: 6% -1px 6% -1px;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(140,215,250,.95) 16%,
+    rgba(190,235,255,1) 50%, rgba(250,180,125,.95) 84%, transparent 100%);
+  filter: blur(.3px);
+}
+.zone-rule::after {            /* its falloff into the field */
+  content: ""; position: absolute; inset: 0 -62px; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(110,200,240,.16) 0%, transparent 46%),
+    linear-gradient(270deg, rgba(245,165,110,.14) 0%, transparent 46%);
+  filter: blur(14px);
+}
+/* territory, laid under each side rather than drawn around it */
+.zone--may::before, .zone--ask::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1;
+}
+.zone--may::before { background: linear-gradient(90deg, transparent 0%, rgba(96,190,232,.10) 86%); }
+.zone--ask::before { background: linear-gradient(270deg, transparent 0%, rgba(240,150,95,.09) 86%); }
+
+.zone-h {
+  font-size: calc(var(--x-label) * 1.05); letter-spacing: .24em;
+  text-shadow: 0 0 22px rgba(0,0,0,.7);
+}
+.zone--may .zone-h { color: #8FD8F6; }
+.zone--ask .zone-h { color: #F9B183; }
+
+/* ── action objects: lit tiles, no outline as the primary device ───── */
+.act {
+  border: 0; border-radius: 10px;
+  padding: calc(var(--x-gap) * .72) calc(var(--x-gap) * .95);
+  background: linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,.16),
+    0 20px 40px -26px rgba(0,0,0,1);
+  backdrop-filter: blur(3px);
+}
+.zone--may .act {
+  background: linear-gradient(165deg, rgba(120,205,245,.20) 0%, rgba(80,160,200,.07) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgba(180,230,255,.34),
+    0 0 0 1px rgba(130,210,245,.26),
+    0 26px 48px -28px rgba(0,0,0,1),
+    0 0 46px -14px rgba(120,205,245,.42);
+}
+.zone--ask .act {
+  background: linear-gradient(165deg, rgba(245,165,110,.16) 0%, rgba(190,110,70,.05) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,205,165,.26),
+    0 0 0 1px rgba(245,165,110,.22),
+    0 26px 48px -28px rgba(0,0,0,1);
+}
+/* the hard exception reads as held back, not merely warm */
+.act--hard {
+  background: linear-gradient(165deg, rgba(245,150,95,.09) 0%, rgba(140,80,50,.05) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,195,155,.2),
+    0 0 0 1px rgba(249,177,131,.5),
+    0 26px 48px -28px rgba(0,0,0,1) !important;
+}
+.act-n { font-size: calc(var(--x-lede) * 1.04); }
+.act-c { color: #7FE3C4; }     /* cover is its own idea, so its own hue */
+.act-x { color: #F9B183; }
+
+/* the crossing — the memorable moment, and still legible when static */
+@keyframes cross-in {
+  0%   { transform: translateX(var(--from, 40px)); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.zone--may .act--moved { --from: 46px; }
+.zone--ask .act--moved { --from: -46px; }
+.act--moved {
+  animation: cross-in .62s cubic-bezier(.22,.9,.3,1) both;
+  box-shadow:
+    inset 0 1px 0 0 rgba(200,240,255,.5),
+    0 0 0 1px rgba(150,225,255,.6),
+    0 0 64px -10px rgba(140,215,250,.6),
+    0 26px 48px -28px rgba(0,0,0,1);
+}
+@media (prefers-reduced-motion: reduce) { .act--moved { animation: none; } }
+
+/* proposed territory: a dashed field, unmistakably not the active one */
+.zones[data-proposed="1"] .zone--may::before {
+  background: linear-gradient(90deg, transparent 0%, rgba(150,225,255,.05) 86%);
+}
+.zones[data-proposed="1"] .zone--may {
+  outline: 1.5px dashed rgba(150,225,255,.6); outline-offset: -6px;
+}
+
+/* ── screen 3 · one outcome, not KPI tiles ─────────────────────────── */
+.out { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .5); }
+.out-i { display: grid; grid-template-columns: auto 1fr; gap: 0 calc(var(--x-gap) * .9); align-items: baseline; }
+.out-n { font-size: clamp(42px, 2.4vw + 2.8vh, 76px); color: #CFE9F7; text-shadow: 0 0 40px rgba(120,205,245,.35); }
+.out-i--esc .out-n { color: #F9B183; text-shadow: 0 0 40px rgba(245,165,110,.3); }
+.out-l { grid-column: 2; font-size: var(--x-lede); }
+.out-s { grid-column: 2; border-left: 0; padding-left: 0; opacity: .9; }
+.out-s b { color: #7FE3C4; }
+
+.dec-q { text-shadow: 0 0 36px rgba(0,0,0,.6); }
+.dec .xchoice button {
+  border: 0; border-radius: 10px; padding: 0 calc(var(--x-gap) * 1.25);
+  background: linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%);
+  box-shadow: inset 0 1px 0 0 rgba(255,255,255,.2), 0 20px 38px -26px rgba(0,0,0,1);
+}
+.dec .xchoice button[aria-pressed="true"] {
+  background: linear-gradient(165deg, rgba(150,225,255,.95) 0%, rgba(110,195,235,.9) 100%);
+  color: #0B1218;
+  box-shadow: 0 0 56px -12px rgba(140,215,250,.7), 0 20px 38px -26px rgba(0,0,0,1);
+}
+/* The band between the decision and the field was dead rather than held.
+   The decision sits at the top of its band and the field takes the rest, so
+   the eye runs outcome → question → the territory it changes. */
+.dec { align-self: start; }
+.zones--sm { align-self: stretch; }
+.zones--sm .zone { justify-content: flex-start; padding-top: calc(var(--x-gap) * .9); }
