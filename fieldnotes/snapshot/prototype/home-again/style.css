@@ -66,9 +66,12 @@ body:not(.portrait) .headline--s { font-size: calc(50px * var(--sf)); line-heigh
 body:not(.portrait) .headline--4 { font-size: calc(46px * var(--sf)); line-height: calc(56px * var(--sf)); padding-top: calc(16px * var(--s)); }
 body:not(.portrait) .copy { left: calc(var(--ox) + 58px * var(--s)); top: calc(var(--oy) + 684px * var(--s)); max-width: calc(560px * var(--s)); }
 body:not(.portrait) .copy--controls { top: calc(var(--oy) + 356px * var(--s)); max-width: calc(500px * var(--s)); }
-body:not(.portrait) [data-screen="3"] .copy { top: calc(var(--oy) + 586px * var(--s)); max-width: calc(450px * var(--s)); }
-body:not(.portrait) [data-screen="3"] .support { font-size: calc(16px * var(--sf)); line-height: calc(23px * var(--sf)); }
-body:not(.portrait) [data-screen="3"] .caveat { font-size: calc(15px * var(--sf)); }
+/* screen 3: a smaller headline block gives the three arrangements the room;
+   the copy sits in a band under the ground plane, clear of the horizon line */
+body:not(.portrait) .headline--3 { font-size: calc(42px * var(--sf)); line-height: calc(50px * var(--sf)); padding-top: calc(16px * var(--s)); }
+body:not(.portrait) [data-screen="3"] .copy { top: calc(var(--oy) + 724px * var(--s)); max-width: calc(730px * var(--s)); }
+body:not(.portrait) [data-screen="3"] .support { font-size: calc(15px * var(--sf)); line-height: calc(21px * var(--sf)); }
+body:not(.portrait) [data-screen="3"] .caveat { font-size: calc(14px * var(--sf)); margin-top: 4px; }
 /* ── screen 4 · flow layout: head / bounded scene / foot ───────────────── */
 body[data-screen="4"] .screen--4 { position: relative; z-index: 1; display: flex; flex-direction: column; }
 body:not(.portrait)[data-screen="4"] .screen--4 { height: 100vh; padding: calc(40px * var(--s)) calc(56px * var(--s)) 0; }
@@ -98,8 +101,8 @@ body:not(.portrait)[data-screen="4"] .head--flow, body:not(.portrait)[data-scree
 .s4-label span { color: var(--muted); font-size: .9em; }
 /* the scene box frames the artwork band (design y 140–430); ground is at 55% */
 .s4-label--marta { left: 50%; top: 1%; width: 24%; transform: translateX(-50%); text-align: center; }
-.s4-label--temp  { left: 4%;  top: 60%; width: 25%; }
-.s4-label--site  { left: 69%; top: 60%; width: 29%; }
+.s4-label--temp  { left: 4%;  top: 64%; width: 25%; }
+.s4-label--site  { left: 72%; top: 64%; width: 26%; }   /* clear of the path's arrival at the slab */
 .s4-state { font-style: normal; font-size: .78em; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; margin-top: 2px; }
 .s4-state::before { content: "● "; }
 .s4-state[data-kind="available"]::before { content: "○ "; }

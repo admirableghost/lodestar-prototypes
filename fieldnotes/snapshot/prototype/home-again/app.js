@@ -259,36 +259,51 @@
     s.push(callout({ x: 126, y: 664, title: "Your home today" }));
     s.push(footprint(440, 1040, 626)); s.push(path(60));
     s.push(plan({ tx: 60, openings: true, ticks: false }));
-    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN", title: STD_NAME[S.std], note: [STD_LINE[S.std]] }));
-    if (S.std >= 1) { s.push(callout({ x: 606, y: 282, title: S.std >= 2 ? "Ember-resistant roof, to code" : "Built to current code", lead: [640, 372, 640, 292, AMBER] })); }
+    /* the standard's name only: its features are labelled where they sit on
+       the drawing, so the describing sentence no longer runs across the roof */
+    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN", title: STD_NAME[S.std] }));
+    if (S.std >= 1) {
+      s.push(callout({ x: 606, y: 282, title: S.std >= 2 ? "Ember-resistant roof, to code" : "Built to current code",
+                       note: S.std >= 2 ? [] : ["Where the old house predates it."], lead: [640, 372, 640, 292, AMBER] }));
+    }
     if (S.std >= 2) {
       s.push(callout({ x: 700, y: 712, title: "Screened vents", lead: [673, 584, 700, 696, AMBER] }));
       s.push(callout({ x: 1122, y: 712, anc: "end", title: "Cleared edge", lead: [1040, 650, 1080, 696, AMBER] }));
     }
-    if (S.std === 0) { s.push(callout({ x: 1122, y: 380, anc: "end", note: ["Nothing is added to the drawing."] })); }
+    /* as it stood: the one note sits where the feature callout sits in the
+       other states — above the roof, never across it */
+    if (S.std === 0) { s.push(callout({ x: 606, y: 282, note: ["Nothing is added to the drawing."] })); }
     s.push(block(56, 82, 520, 248));
     return s.join("");
   }
 
-  /* ── 3 · people and capacity around the plan ─────────────────────────── */
+  /* ── 3 · the arrangements are the subject; the plan is their anchor ────
+     The plan is reduced and set top-centre. Three commitment groups stand on
+     the ground beneath it, each in its own column with its own illustration,
+     primary label, name and state, and each tied back to the one plan by a
+     light dashed leader — coordinated arrangements, not a sequence. */
   function scene3() {
     var s = [sky({ sunX: 1120, sunY: 90, sunR: 130 })];
-    s.push(footprint(520, 1040, 626)); s.push(path(60));
-    s.push(plan({ tx: 60, openings: true, ticks: false, op: .95 }));
-    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN · " + STD_NAME[S.std].toUpperCase(), state: "agreed" }));
-    /* builder capacity on the lot's edge, tied to the plan */
-    /* builder capacity in the left column under the headline, tied to the
-       plan's wall — the reading copy below stays clear of it */
-    s.push(timber(140, 492));
-    s.push(callout({ x: 140, y: 368, title: "Ardren &amp; Sons · builder, Calder Reach", state: "reserved",
-                     note: ["Builders to this standard are scarce here."], lead: [362, 502, 528, 520, AMBER, "4 5"] }));
-    /* the recovery lead, named now, on the path */
-    s.push(figure(660, 712, { board: true }));
-    s.push(callout({ x: 684, y: 690, title: "Marta Ives · recovery lead", state: "agreed", note: ["Named now, not at the claim."] }));
-    /* a temporary home, further along the road */
-    s.push(smallHome(1040, 560, { lit: false }));
-    s.push(callout({ x: 1136, y: 684, anc: "end", title: "Temporary home in Calder Reach", state: "agreed", note: ["From the first night."] }));
-    s.push(block(56, 82, 560, 248));
+    s.push(footprint(690, 1004, 420));
+    s.push(plan({ tx: 427, ty: 70, k: .58, openings: true, ticks: false, edge: false }));
+    s.push(callout({ x: 1004, y: 236, anc: "end", eyebrow: "REPLACEMENT PLAN · " + STD_NAME[S.std].toUpperCase(), state: "agreed" }));
+    /* ties from the plan's base to each arrangement */
+    s.push(leader(760, 422, 236, 520, AMBER, "5 6"));
+    s.push(leader(846, 422, 586, 492, AMBER, "5 6"));
+    s.push(leader(934, 422, 936, 480, AMBER, "5 6"));
+    /* A · builder capacity, reserved */
+    s.push(timber(100, 540));
+    s.push(callout({ x: 58, y: 620, title: "Builder capacity reserved", state: "reserved",
+                     note: ["Ardren &amp; Sons, Calder Reach.", "Under the agreed conditions; scarce at this standard."] }));
+    /* B · recovery lead, named in advance */
+    s.push(figure(586, 598, { board: true, k: 1.2 }));
+    s.push(callout({ x: 430, y: 620, title: "Recovery lead named", state: "agreed",
+                     note: ["Marta Ives. Named now, not at the claim."] }));
+    /* C · temporary living, agreed */
+    s.push(smallHome(880, 480, { k: .5, lit: false }));
+    s.push(callout({ x: 800, y: 620, title: "Temporary living agreed", state: "agreed",
+                     note: ["Calder Reach, from the first night.", "Arranged now; used after a covered event."] }));
+    s.push(block(56, 82, 520, 196));
     return s.join("");
   }
 
@@ -314,13 +329,15 @@
       });
     }
     /* the two coordination paths, from the lead to each arrangement */
-    var L = "M560 304 Q430 352 318 304", R = "M620 304 Q750 352 858 304";
+    /* the right-hand path is routed to the foundation itself — it arrives at
+       the slab's near edge, above the caption's reading area, never into it */
+    var L = "M560 304 Q430 352 318 304", R = "M620 304 Q740 346 826 288";
     s.push('<path d="' + L + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"/>');
     s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (ev ? ' opacity=".55"' : "") + '/>');
     s.push('<path d="' + L + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"/>');
     s.push('<path d="' + R + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"' + (ev ? ' opacity=".45"' : "") + '/>');
     s.push('<polygon points="318,296 304,304 318,312" fill="' + AMBER + '"/>');
-    if (!ev) { s.push('<polygon points="858,296 872,304 858,312" fill="' + AMBER + '"/>'); }
+    if (!ev) { s.push('<polygon points="824,278 840,290 822,298" fill="' + AMBER + '"/>'); }
     /* the temporary home, lit */
     s.push('<g id="s4-subj-temp">' + smallHome(185, 196, { k: .48, lit: true }) + "</g>");
     /* the recovery lead */
@@ -395,7 +412,7 @@
   var REGION = {
     1: [{ x: 440, y: 40, w: 740, h: 720 }, { x: 330, y: 40, w: 850, h: 720 }],
     2: [{ x: 330, y: 250, w: 850, h: 520 }, { x: 240, y: 230, w: 940, h: 560 }],
-    3: [{ x: 90, y: 290, w: 1090, h: 500 }, { x: 90, y: 270, w: 1090, h: 520 }],
+    3: [{ x: 60, y: 230, w: 1120, h: 400 }, { x: 60, y: 220, w: 1120, h: 420 }],
     4: [{ x: 300, y: 230, w: 900, h: 560 }, { x: 240, y: 210, w: 960, h: 600 }],
     5: [{ x: 380, y: 240, w: 780, h: 560 }, { x: 300, y: 220, w: 860, h: 600 }]
   };
