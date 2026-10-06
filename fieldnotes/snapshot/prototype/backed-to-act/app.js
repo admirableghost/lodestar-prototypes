@@ -68,6 +68,404 @@
   })();
 
   /* the queue, screen 1: work piling up behind the line it cannot cross */
+  var QUEUE = (function () {
+    var r = rng(515), a = [], i;
+    for (i = 0; i < 23; i++) {
+      a.push([150 + (i % 6) * 26, 846 - Math.floor(i / 6) * 22, 70 + r() * 130]);
+    }
+    return a;
+  })();
+
+  /* screen 3 · five events. Four sit inside the boundary; the fifth is above
+     the authority line, with a dashed stem back down to it. */
+  var EVENTS = [
+    { x: 780,  y: 772, over: false },
+    { x: 960,  y: 796, over: false },
+    { x: 1140, y: 760, over: false },
+    { x: 1320, y: 784, over: false },
+    { x: 1430, y: 600, over: true  }
+  ];
+
+  function smooth(pts) {
+    var d = "M" + pts[0][0] + " " + pts[0][1].toFixed(1), i, p, c, mx, my;
+    for (i = 1; i < pts.length; i++) {
+      p = pts[i - 1]; c = pts[i];
+      mx = (p[0] + c[0]) / 2; my = (p[1] + c[1]) / 2;
+      d += "Q" + p[0] + " " + p[1].toFixed(1) + " " + mx + " " + my.toFixed(1);
+    }
+    return d + "L" + pts[pts.length - 1][0] + " " + pts[pts.length - 1][1].toFixed(1);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     DRAWING THE FIELD
+       opts.queue  — the held work, screen 1
+       opts.events — the day's five actions, screen 3
+     ══════════════════════════════════════════════════════════════════════ */
+
+  function renderField(opts) {
+    opts = opts || {};
+    var s = [];
+
+    s.push('<defs>' +
+      '<pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">' +
+        '<circle cx="1.4" cy="1.4" r="1.4" fill="' + LINE + '"/></pattern>' +
+      '<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="' + CONSOLE + '" stop-opacity="0"/>' +
+        '<stop offset="1" stop-color="#171C22" stop-opacity=".9"/></linearGradient>' +
+      "</defs>");
+
+    s.push('<rect x="-400" y="-400" width="' + (W + 800) + '" height="' + (H + 800) +
+           '" fill="' + CONSOLE + '"/>');
+    s.push('<rect x="-400" y="-400" width="' + (W + 800) + '" height="' + (H + 800) +
+           '" fill="url(#dots)" opacity=".85"/>');
+
+    /* a few long verticals, so the field has a direction */
+    for (var vx = 0; vx <= W; vx += 200) {
+      s.push('<line x1="' + vx + '" y1="-400" x2="' + vx + '" y2="' + (H + 400) +
+             '" stroke="' + LINE + '" stroke-width="1" opacity=".55"/>');
+    }
+
+    /* the trace */
+    s.push('<path d="' + smooth(TRACE) + '" fill="none" stroke="' + LINE2 +
+           '" stroke-width="1.8" opacity=".5"/>');
+
+
+    /* ── THE AUTHORITY LINE ── the permission boundary, as a line that moves */
+    var c = opts.events ? COVER : (authY > 790 ? HOLD : ACT);
+    s.push('<line x1="-400" y1="' + authY.toFixed(1) + '" x2="' + (W + 400) + '" y2="' + authY.toFixed(1) +
+           '" stroke="' + c + '" stroke-width="1.6" stroke-dasharray="16 12" opacity=".40"/>');
+    s.push('<rect x="-400" y="' + authY.toFixed(1) + '" width="' + (W + 800) + '" height="' + (H + 400) +
+           '" fill="' + c + '" opacity=".045"/>');
+
+    /* the day's events: four inside the boundary, one above it */
+    if (opts.events) {
+      EVENTS.forEach(function (e) {
+        if (e.over) {
+          s.push('<circle cx="' + e.x + '" cy="' + e.y + '" r="13" fill="none" stroke="' + ESC +
+                 '" stroke-width="2.4" opacity=".62"/>');
+          s.push('<line x1="' + e.x + '" y1="' + (e.y + 13) + '" x2="' + e.x + '" y2="' + authY.toFixed(1) +
+                 '" stroke="' + ESC + '" stroke-width="1.4" stroke-dasharray="4 6" opacity=".45"/>');
+        } else {
+          s.push('<rect x="' + (e.x - 6) + '" y="' + (e.y - 6) + '" width="12" height="12" rx="2" fill="' +
+                 ACT + '" opacity=".55"/>');
+        }
+      });
+    }
+
+    /* seat the field into the bottom of the frame, below everything the
+       field actually says anything with */
+    s.push('<rect x="-400" y="900" width="' + (W + 800) + '" height="700" fill="url(#fade)"/>');
+
+    svg.innerHTML = s.join("");
+  }
+
+  function tweenAuth(target, instant) {
+    cancelAnimationFrame(authTimer);
+    if (instant || reduced()) { authY = target; redraw(); return; }
+    var from = authY, t0 = performance.now(), DUR = 620;
+    (function step(now) {
+      var u = Math.min(1, (now - t0) / DUR);
+      var e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      authY = from + (target - from) * e;
+      redraw();
+      if (u < 1) { authTimer = requestAnimationFrame(step); }
+    })(t0);
+  }
+
+  function redraw() {
+    renderField({ queue: current === 1, events: current === 3 });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     CAMERA  (inherited from resilience-grid/app.js)
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var CAM = {
+    queue:    { x: 60,  y: 380, w: 1180, h: 600 },
+    boundary: { x: 120, y: 240, w: 1360, h: 700 },
+    run:      { x: 180, y: 200, w: 1340, h: 680 }
+  };
+  var CAM_N = {
+    queue:    { x: 80,  y: 560, w: 1100, h: 420 },
+    boundary: { x: 200, y: 300, w: 1200, h: 520 },
+    run:      { x: 240, y: 240, w: 1200, h: 520 }
+  };
+
+  var narrow = false;
+  function isNarrow() { return window.matchMedia("(max-width: 899px)").matches; }
+
+  function setVB(c) {
+    svg.setAttribute("viewBox", c.x + " " + c.y + " " + c.w + " " + c.h);
+    vb = c;
+  }
+
+  function viewBoxFor(view, fit) {
+    var el = document.getElementById("world").getBoundingClientRect();
+    var vpW = window.innerWidth, vpH = window.innerHeight;
+    var scale = Math.min(vpW / view.w, (fit ? fit.h : vpH) / view.h);
+    var vbW = el.width / scale, vbH = el.height / scale;
+    var wcx = view.x + view.w / 2;
+    var wcy = view.y + view.h / 2 + (fit ? (vpH / 2 - fit.cy) / scale : 0);
+    return { x: wcx - vbW / 2, y: wcy - vbH / 2, w: vbW, h: vbH };
+  }
+
+  function narrowFit() {
+    if (!narrow) { return null; }
+    var sc = screens && screens[current - 1];
+    if (!sc) { return null; }
+    var gw = sc.querySelector(".gw");
+    if (gw) {
+      var g = gw.getBoundingClientRect();
+      var top = Math.max(0, g.top), bot = Math.min(window.innerHeight, g.bottom);
+      if (bot - top > 110) { return { cy: (top + bot) / 2, h: bot - top }; }
+    }
+    return null;
+  }
+
+  function moveCamera(name, instant) {
+    var cam = (narrow && CAM_N[name]) || CAM[name] || CAM.boundary;
+    var target = viewBoxFor(cam, narrowFit());
+    if (!vb || instant || reduced()) { setVB(target); return; }
+    var from = vb, t0 = performance.now(), DUR = 540;
+    cancelAnimationFrame(camTimer);
+    (function step(now) {
+      var u = Math.min(1, (now - t0) / DUR);
+      var e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      setVB({
+        x: from.x + (target.x - from.x) * e, y: from.y + (target.y - from.y) * e,
+        w: from.w + (target.w - from.w) * e, h: from.h + (target.h - from.h) * e
+      });
+      if (u < 1) { camTimer = requestAnimationFrame(step); }
+    })(t0);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE AUTHORITY — the one interaction in the deck
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* One polite live region for state changes that are not screen changes.
+     The screen announcer (#announce) handles navigation; this handles the
+     boundary moving, so the two never overwrite each other mid-sentence. */
+  var statusEl = document.getElementById("state-status");
+  function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
+
+  var level = 0;
+
+  /* Every string the boundary changes, in one place, so the copy can be
+     swapped without touching the layout. */
+  var AUTHORITY = [
+    {
+      bar:   "Autonomy · Draft only",
+      grant: "Not granted. The agent drafts; a buyer commits.",
+      mark:  "○",
+      fig:   "$0",
+      unit:  "nothing may be committed",
+      week:  "No weekly ceiling, because there is no authority to ceiling.",
+      badge: "Needs a buyer"
+    },
+    {
+      bar:   "Autonomy · Act within cover",
+      grant: "Granted by Dana Ruiz, head of purchasing, Calder Supply Co. Cover attached by an insurance partner, 06:12.",
+      mark:  "◆",
+      fig:   "$25,000",
+      unit:  "per order, no person involved",
+      week:  "$180,000 per week across all 22 branches. Past either number, it stops.",
+      badge: "Agent acts"
+    }
+  ];
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE AUTHORITY BOUNDARY
+
+     One function drives all three screens. Each bar carries the height its
+     work needs; the line carries how much authority exists. Whether a bar
+     acts or stops is then just a comparison, so the rule the viewer infers
+     from the picture is literally the rule the code applies.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  function paintBoundary(el, line) {
+    if (!el) { return; }
+    el.style.setProperty("--line", line + "%");
+    el.dataset.line = String(line);
+    Array.prototype.forEach.call(el.querySelectorAll(".bt"), function (bt) {
+      var h = +bt.dataset.h;
+      var acts = h <= line;
+      bt.style.setProperty("--h", (acts ? h : line) + "%");
+      bt.dataset.state = acts ? "acts" : "stops";
+    });
+  }
+
+  var LINE_LOW = 42, LINE_COVER = 70;
+  paintBoundary(document.getElementById("bnd1"), LINE_LOW);
+
+  var bnd2 = document.getElementById("bnd2");
+  var lv0 = document.getElementById("lv0"), lv1 = document.getElementById("lv1");
+  var said2 = document.getElementById("bnd-said");
+  function setCover(on) {
+    paintBoundary(bnd2, on ? LINE_COVER : LINE_LOW);
+    if (lv0) { lv0.setAttribute("aria-pressed", String(!on)); }
+    if (lv1) { lv1.setAttribute("aria-pressed", String(on)); }
+    if (said2) {
+      said2.innerHTML = on
+        ? "A mistake it makes inside the line is the insurer&rsquo;s, not the distributor&rsquo;s."
+        : "Without cover the line sits at the bottom, and every order waits for a buyer.";
+    }
+    say(on ? "Cover attached. The agent may place orders inside the line."
+           : "Draft only. Every order waits for a person.");
+  }
+  if (lv0) { lv0.addEventListener("click", function () { setCover(false); }); }
+  if (lv1) { lv1.addEventListener("click", function () { setCover(true); }); }
+  setCover(false);
+
+  var bnd3 = document.getElementById("bnd3");
+  var decSaid = document.getElementById("dec-said");
+  var DEC = {
+    keep:   { line: 70, t: "The line stays. The cover paid for the one mistake it was bought for." },
+    narrow: { line: 46, t: "Fewer orders placed alone \u2014 and the covered mistake would have waited for a buyer too." },
+    expand: { line: 92, t: "More placed alone, including the one that came back. That is the insurer\u2019s exposure to price, not the distributor\u2019s alone." }
+  };
+  paintBoundary(bnd3, LINE_COVER);
+  Array.prototype.forEach.call(document.querySelectorAll(".dec [data-choice]"), function (b) {
+    b.addEventListener("click", function () {
+      var d = DEC[b.dataset.choice];
+      Array.prototype.forEach.call(document.querySelectorAll(".dec [data-choice]"), function (o) {
+        o.setAttribute("aria-pressed", String(o === b));
+      });
+      paintBoundary(bnd3, d.line);
+      if (decSaid) { decSaid.textContent = d.t; decSaid.hidden = false; }
+      say(b.textContent.trim() + ". " + d.t);
+    });
+  });
+
+  function anchorPlates() {
+    Array.prototype.forEach.call(
+      // Only CARDS get pinned to the top or bottom of their band. The
+      // executive compositions place their own hero objects, and an inline
+      // align-self written here would silently beat their stylesheet.
+      document.querySelectorAll(".screen > .plate[style*='grid-area']"), function (el) {
+        var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
+        if (!m) { return; }
+        el.style.alignSelf = (+m[2] === 9 && +m[1] > 1) ? "end" : "start";
+      });
+  }
+
+  function stageBox(sc) {
+    var r = sc.getBoundingClientRect(), cs = getComputedStyle(sc);
+    return {
+      top: r.top + parseFloat(cs.paddingTop), bottom: r.bottom - parseFloat(cs.paddingBottom),
+      left: r.left + parseFloat(cs.paddingLeft), right: r.right - parseFloat(cs.paddingRight)
+    };
+  }
+
+  function spills(sc) {
+    if (narrow) { return sc.scrollHeight > sc.clientHeight + 1; }
+
+    var box = stageBox(sc), rects = [], bad = false, i, j;
+    Array.prototype.forEach.call(sc.children, function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) { return; }
+      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 ||
+          r.left < box.left - 1 || r.right > box.right + 1) { bad = true; }
+      rects.push(r);
+    });
+    /* two opaque plates over one another is the same defect as a cut line:
+       one of them is unreadable */
+    for (i = 0; i < rects.length && !bad; i++) {
+      for (j = i + 1; j < rects.length; j++) {
+        if (rects[i].left < rects[j].right - 1 && rects[i].right > rects[j].left + 1 &&
+            rects[i].top < rects[j].bottom - 1 && rects[i].bottom > rects[j].top + 1) {
+          bad = true; break;
+        }
+      }
+    }
+    /* and anything inside a plate that its own box is hiding. A 1px box is
+       the visually-hidden idiom and is not a defect. */
+    if (!bad) {
+      Array.prototype.forEach.call(sc.querySelectorAll("*"), function (el) {
+        if (bad) { return; }
+        if (el.clientWidth <= 1 || el.clientHeight <= 1) { return; }
+        if (!el.textContent || !el.textContent.trim()) { return; }
+        var cs = getComputedStyle(el);
+        if (cs.overflowY !== "visible" && el.scrollHeight > el.clientHeight + 2) { bad = true; }
+        if (cs.overflowX !== "visible" && el.scrollWidth > el.clientWidth + 2) { bad = true; }
+      });
+    }
+    return bad;
+  }
+
+  function fitScreen(sc) {
+    if (!sc || sc.hidden) { return; }
+    sc.style.setProperty("--fit", "1");
+
+    /* NARROW NEVER SHRINKS.
+       The --fit search exists so a desktop composition stays inside a stage
+       that does not scroll. A phone screen DOES scroll, so running the search
+       there buys nothing and costs everything: it drove uppercase labels to
+       6.4px across the whole set. Below 900px the type holds its size and the
+       screen scrolls. */
+    if (narrow) { return; }
+
+    if (!spills(sc)) { return; }
+
+    var lo = FIT_FLOOR, hi = 1, best = FIT_FLOOR, mid, i;
+    for (i = 0; i < 7; i++) {
+      mid = (lo + hi) / 2;
+      sc.style.setProperty("--fit", mid.toFixed(4));
+      if (spills(sc)) { hi = mid; } else { lo = mid; best = mid; }
+    }
+    sc.style.setProperty("--fit", best.toFixed(4));
+    /* Reflow is not perfectly monotonic — one word rewrapping can undo a
+       step — so verify, and step down if the search landed on a bad value. */
+    for (i = 0; i < 8 && best > FIT_FLOOR && spills(sc); i++) {
+      best = Math.max(FIT_FLOOR, best - 0.025);
+      sc.style.setProperty("--fit", best.toFixed(4));
+    }
+  }
+
+  var fitPending = null;
+  function refit() {
+    cancelAnimationFrame(fitPending);
+    fitPending = requestAnimationFrame(function () {
+      fitScreen(screens && screens[current - 1]);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     NAVIGATION
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 3 — the closing decision
+
+     A workshop beat, not a settings control. It changes no limit and writes
+     no state into the story: the point is that the room has just seen what
+     the cover absorbed, and now has to say whether that evidence moves what
+     they would let the software do. Nothing is preselected, and each answer
+     opens an argument rather than confirming a setting.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var CHOICE = {
+    keep:   "The boundary stays. The cover paid for exactly the kind of mistake it was bought for, and a buyer still saw the order that needed one.",
+    narrow: "A tighter boundary means fewer orders placed without a person — and the covered mistake would have waited for one too.",
+    expand: "A wider boundary asks the insurer to price a larger loss, not just the business to tolerate one. The limit is theirs to move, not Calder's alone."
+  };
+
+  (function () {
+    var said = document.getElementById("choice-said");
+    var btns = Array.prototype.slice.call(document.querySelectorAll(".choice-btn"));
+    if (!said || !btns.length) { return; }
+
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.dataset.choice;
+        btns.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+        said.textContent = CHOICE[k];
+        said.hidden = false;
+        var status = document.getElementById("state-status");
+        if (status) { status.textContent = b.textContent.trim() + ". " + CHOICE[k]; }
+      });
+    });
+  }());
 
 
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
@@ -104,8 +502,10 @@
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
 
-    /* Returning to screen 1 resets the walkthrough: the line drops back and
-       the deck can be run again. Screens 2 and 3 keep what the room set. */
+    /* The story's authority state. Screen 1 is the world before the grant, so
+       returning to it resets the deck and the walkthrough can be run again;
+       screen 3 is the world after it, so arriving there grants it if the
+       viewer skipped the control. Screen 2 keeps whatever the viewer set. */
     if (n === 1) { setCover(false); }
 
     fitScreen(sc);
