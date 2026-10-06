@@ -1084,3 +1084,23 @@ input[type="range"] { height: 44px; }
 .gauge-stop, .note, .eyebrow, .illus, .aside, .tl-time, .tl-who, .cap, .layer-what, .rows dd {
   color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
 }
+/* The strip no longer carries the explanation — the map does. It keeps the
+   replay control and a compact trace of the steps, and nothing else. */
+.tl-min { padding: calc(var(--x-gap) * .45) calc(var(--x-gap) * .8); }
+.tl-min .tl-row { opacity: .55; }
+.tl-min .tl-row[data-on="1"] { opacity: 1; }
+.tl-min .tl-kind, .tl-min .tl-what { display: none; }
+.tl-min .tl-time { font-size: var(--x-label); }
+.tl-min .tl-who { font-size: var(--x-label); }
+/* screen 5: the capacity words were too quiet at iPad distance */
+.gauge-stop { font-size: max(12.5px, var(--x-label)); letter-spacing: .1em; }
+.gauge-stop[data-on="1"] { color: var(--edition-ink); font-weight: 700; }
+/* screen 2: the layer strip steps back without changing how it behaves */
+.wf-chips { background: color-mix(in srgb, var(--paper) 78%, transparent); box-shadow: none; }
+.wf-chips .chipbtn { font-size: var(--x-label); }
+.tl-min { padding: calc(var(--x-gap) * .4) calc(var(--x-gap) * .7); }
+.tl-min .tl { gap: calc(var(--x-gap) * .22) calc(var(--x-gap) * .7); }
+.tl-min .tl-row { background: none; border: 0; padding: 0; }
+.tl-min .eyebrow { font-size: max(11px, calc(var(--x-label) * .9)); }
+.plate--carrier.plate--thin .rows dt, .plate--carrier.plate--thin .rows dd { font-size: var(--x-label); }
+.rows dt, .rows--legend dt { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }

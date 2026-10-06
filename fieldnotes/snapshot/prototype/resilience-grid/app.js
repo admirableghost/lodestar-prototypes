@@ -125,7 +125,7 @@
   var CAM = {
     county:  { x: 40,  y: 110, w: 1520, h: 820 },
     network: { x: 90,  y: 100, w: 1420, h: 790 },
-    ignite:  { x: 740, y: 230, w: 540,  h: 560 },
+    ignite:  { x: 620, y: 240, w: 900,  h: 620 },
     flows:   { x: 120, y: 180, w: 1380, h: 740 },
     payoff:  { x: 40,  y: 110, w: 1520, h: 820 }
   };
@@ -134,7 +134,7 @@
   var CAM_N = {
     county:  { x: 120, y: 240, w: 1360, h: 700 },
     network: { x: 140, y: 150, w: 1320, h: 760 },
-    ignite:  { x: 760, y: 250, w: 520,  h: 520 },
+    ignite:  { x: 640, y: 260, w: 860,  h: 580 },
     flows:   { x: 160, y: 300, w: 1300, h: 660 },
     payoff:  { x: 120, y: 240, w: 1360, h: 700 }
   };
@@ -439,24 +439,46 @@
 
     /* the event, as five places rather than five rows */
     if (opts.event != null) {
+      /* The five moments, anchored where they happen. Times and kinds are the
+         scenario's own — 14:31 line sensor, 14:33 ridge camera, 14:38 spread
+         model, 14:43 autonomous suppression, 14:47 the duty chief — so the
+         map now carries what the strip used to have to explain. */
       var BEATS = [
-        { x: IGNITION.x,      y: IGNITION.y,       t: "Detect",      c: ALARM },
-        { x: IGNITION.x - 150, y: IGNITION.y - 70, t: "Corroborate", c: ALARM },
-        { x: 800,             y: 520,              t: "Decide",      c: CARRIER },
-        { x: IGNITION.x - 60, y: IGNITION.y + 180, t: "Intervene",   c: FIRE },
-        { x: IGNITION.x + 130, y: IGNITION.y + 300, t: "Verify",     c: PUBLIC }
+        { n: 1, x: IGNITION.x,       y: IGNITION.y,       t: "Detect",      ts: "14:31", c: ALARM,   lx:  18, ly: -14, anc: "start" },
+        { n: 2, x: IGNITION.x + 168, y: IGNITION.y + 36,  t: "Corroborate", ts: "14:33", c: ALARM,   lx:  18, ly: -14, anc: "start" },
+        { n: 3, x: 742,              y: 486,              t: "Decide",      ts: "14:38", c: CARRIER, lx:  18, ly: -14, anc: "start" },
+        { n: 4, x: IGNITION.x - 36,  y: IGNITION.y + 196, t: "Intervene",   ts: "14:43", c: FIRE,    lx:  18, ly: -14, anc: "start" },
+        { n: 5, x: IGNITION.x + 150, y: IGNITION.y + 250, t: "Verify",      ts: "14:47", c: PUBLIC,  lx:  18, ly: -14, anc: "start" }
       ];
       BEATS.forEach(function (b, i) {
         if (i > opts.event) { return; }
+        var running = !!opts.replaying;
+        var live = running && (i === opts.event);
+        var dim  = !running ? 1 : (live ? 1 : .4);
         if (i > 0) {
           var a = BEATS[i - 1];
           s.push('<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
-                 '" stroke="' + b.c + '" stroke-width="2.6" opacity=".6" stroke-dasharray="9 7"/>');
+                 '" stroke="' + b.c + '" stroke-width="2.6" opacity="' + (running ? (live ? .85 : .25) : .6) +
+                 '" stroke-dasharray="10 8"/>');
         }
-        var live = (i === opts.event);
-        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + (live ? 26 : 13) +
-               '" fill="none" stroke="' + b.c + '" stroke-width="' + (live ? 3.4 : 2) + '" opacity="' + (live ? 1 : .6) + '"/>');
-        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="6" fill="' + b.c + '"/>');
+        if (live) {
+          s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="20" fill="none" stroke="' + b.c +
+                 '" stroke-width="2" opacity=".4"/>');
+        }
+        /* a numbered node: the order is readable without the strip */
+        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + (live ? 11 : 9) +
+               '" fill="' + PAPER + '" stroke="' + b.c + '" stroke-width="' + (live ? 4 : 2.6) +
+               '" opacity="' + dim + '"/>');
+        s.push('<text x="' + b.x + '" y="' + (b.y + (live ? 4 : 3.4)) + '" text-anchor="middle" ' +
+               'font-family="Arial,Helvetica,sans-serif" font-size="' + (live ? 23 : 19) +
+               '" font-weight="700" fill="' + b.c + '" opacity="' + dim + '">' + b.n + '</text>');
+        s.push('<text x="' + (b.x + b.lx) + '" y="' + (b.y + b.ly) + '" text-anchor="' + b.anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" ' +
+               'letter-spacing="2" fill="' + b.c + '" opacity="' + dim + '">' +
+               b.t.toUpperCase() + '</text>');
+        s.push('<text x="' + (b.x + b.lx) + '" y="' + (b.y + b.ly + 13) + '" text-anchor="' + b.anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="' + INK +
+               '" opacity="' + (dim * .8) + '">' + b.ts + '</text>');
       });
     }
 
@@ -712,8 +734,6 @@
 
   function paintTl() {
     /* the event is five PLACES on the terrain; the rows only annotate it */
-    renderCounty({ layers: { see: true, act: true }, ignition: 0.45,
-                   event: Math.max(0, Math.min(4, tlStep - 1)) });
     tlRows.forEach(function (r, i) { r.dataset.on = i < tlStep ? "1" : "0"; });
     /* The control says exactly what pressing it will do. It used to read
        "Pause" while stopped and "Replay" while running. */
@@ -729,11 +749,22 @@
       all.disabled = !tlTimer && tlStep >= tlRows.length;
     }
     if (current === 3) {
+      /* The five spatial moments ride the SAME step model the strip uses, so
+         the map and the trace can never disagree. At rest all five are shown;
+         during replay the active one is emphasised and the rest recede. */
+      /* Unless a replay is actually running, the whole sequence is on the map
+         — the static frame has to be understandable on its own. */
+      var last = Math.max(1, tlRows.length - 1);
+      var beat = tlTimer
+               ? Math.max(0, Math.min(4, Math.floor((tlStep - 1) * 5 / last)))
+               : 4;
       renderCounty({
         layers: { see: true, act: tlStep >= 6 },
-        ignition: tlStep === 0 ? null : Math.min(1, (tlStep - 1) / 7),
+        ignition: tlStep === 0 ? 0.45 : Math.min(1, (tlStep - 1) / 7),
         spread: tlStep >= 5,
-        response: tlStep >= 6
+        response: tlStep >= 6,
+        event: beat,
+        replaying: !!tlTimer
       });
     }
     refit();
