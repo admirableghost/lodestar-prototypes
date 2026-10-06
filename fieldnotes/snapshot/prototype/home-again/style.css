@@ -793,8 +793,8 @@ input[type="range"] { height: 44px; }
 
 .screen {
   /* One scale, shared by all six, so the set reads as one presentation. */
-  --x-display: clamp(30px, 2.0vw + 2.6vh, 56px);
-  --x-display-s: clamp(26px, 1.6vw + 2.1vh, 44px);
+  --x-display: clamp(30px, 2.6vw + 3.0vh, 58px);
+  --x-display-s: clamp(26px, 1.9vw + 2.3vh, 46px);
   --x-lede:    clamp(16px, 0.5vw + 0.9vh, 21px);
   --x-state:   clamp(26px, 1.5vw + 2.2vh, 46px);
   --x-label:   clamp(13px, 0.28vw + 0.5vh, 15.5px);
@@ -809,13 +809,19 @@ input[type="range"] { height: 44px; }
 .xhead {
   display: flex; flex-direction: column; justify-content: center;
   gap: calc(var(--x-gap) * .5);
-  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 1.5)
-           calc(var(--x-gap) * 1.1) 0;
-  background: linear-gradient(100deg,
-    var(--paper) 0%, var(--paper) 52%,
-    color-mix(in srgb, var(--paper) 82%, transparent) 74%,
-    transparent 100%);
+  padding: 0; background: none;   /* the page IS the surface — no card, no scrim */
   pointer-events: auto;
+}
+/* Only where the ground is genuinely busy (a map, a dark console) does the
+   headline need help. A feathered radial, never a rectangle with an edge. */
+.xhead--scrim {
+  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 2.2)
+           calc(var(--x-gap) * 1.1) calc(var(--x-gap) * .9);
+  margin: calc(var(--x-gap) * -.9) 0 0 calc(var(--x-gap) * -.9);
+  background: radial-gradient(130% 125% at 18% 45%,
+    var(--paper) 0%, var(--paper) 46%,
+    color-mix(in srgb, var(--paper) 70%, transparent) 72%,
+    transparent 100%);
 }
 .xhead h1, .xhead h2, .xhead .xd {
   margin: 0;
@@ -910,4 +916,29 @@ input[type="range"] { height: 44px; }
   }
   .xhead { padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .8); background: var(--paper); }
   .xanno { position: static; max-width: none; }
+}
+
+/* ══ ITERATION-003 · Home Again ═════════════════════════════════════════
+   The house is the hero. What used to be three competing white cards is now
+   the headline on the page, and two quiet annotation blocks that read as
+   notes attached to the drawing rather than panels in front of it. */
+.xblock {
+  z-index: 3; align-self: end;
+  padding: calc(var(--x-gap) * .8) calc(var(--x-gap) * 1.1);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border-radius: var(--r-m);
+  box-shadow: none;
+}
+.xblock .plan li { font-size: var(--x-lede); }
+.xblock .lead-name { font-size: var(--x-lede); }
+.xblock .lead-role { font-size: var(--x-label); }
+/* the single disclaimer, once, bottom-left of screen 1 */
+.ha-micro { z-index: 3; align-self: end; }
+.ha-micro { max-width: 52ch; }
+.xask .display--ask { font-size: clamp(19px, .85vw + 1.35vh, 28px); }
+/* This ground has strong horizontals exactly where the type sits, so the
+   headline zone needs a feathered lift. A radial, never a rectangle. */
+.ha-micro {
+  padding: calc(var(--x-gap) * .5) calc(var(--x-gap) * 1.6) calc(var(--x-gap) * .5) 0;
+  background: linear-gradient(90deg, var(--paper) 0%, var(--paper) 62%, transparent 100%);
 }

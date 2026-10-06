@@ -42,17 +42,18 @@
 <!-- ══════ 1 · BEFORE THE LOSS ══════════════════════════════════════════ -->
 <section class="screen" data-screen="1" data-label="Before the loss" data-cam="house" data-veil="soft">
 
-  <div class="plate" style="grid-area:1/1/4/7">
-    <p class="eyebrow">Home Again · the Rennick household · Calder Reach</p>
-    <h1 class="display display--xl" tabindex="-1"><span>The rebuild was arranged</span><span>while nothing was wrong.</span></h1>
-    <p class="body">Not a sum insured. A plan for this house, a builder held in the region, and a person who already has their name.</p>
-    <p class="note">Hypothetical throughout. Invented household, invented region, invented builder. No real insurer, product or price is described.</p>
+  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">Home Again · Calder Reach</p>
+    <h1 class="display xd" tabindex="-1"><span>The rebuild was arranged</span><span>while nothing was wrong.</span></h1>
+    <p class="xlede">Not a sum insured. A plan, a builder, and a person who already has their name.</p>
   </div>
 
   <div class="gw gw--map" style="grid-area:1/8/4/13" aria-hidden="true"></div>
 
-  <div class="plate" style="grid-area:4/1/9/7">
-    <p class="eyebrow">The replacement plan · for this house</p>
+  <p class="xmicro ha-micro" style="grid-area:4/1/5/8">Hypothetical throughout. Invented household, region and builder; no real insurer or product is described.</p>
+
+  <div class="xblock" style="grid-area:5/1/9/7">
+    <p class="xeyebrow">The replacement plan</p>
     <ul class="spec">
       <li>Footprint, roofline and the detached garage, as surveyed</li>
       <li>Timber frame and finishes, room by room</li>
@@ -62,28 +63,28 @@
           data-std-1="Rebuilt to current code, where the old house predates it"
           data-std-2="Code, plus an ember&#8209;resistant roof, screened vents and a cleared edge">Code, plus an ember&#8209;resistant roof, screened vents and a cleared edge</li>
     </ul>
-    <p class="eyebrow" style="margin-top:.9em">Rebuild standard · <span class="illus">the household chooses</span></p>
+    <p class="xeyebrow" style="margin-top:1.1em">Rebuild standard · <span class="illus">the household chooses</span></p>
     <div class="chips" role="group" aria-label="Rebuild standard">
       <button class="chipbtn" type="button" data-std="0" aria-pressed="false">As it stood</button>
       <button class="chipbtn" type="button" data-std="1" aria-pressed="false">To current code</button>
       <button class="chipbtn" type="button" data-std="2" aria-pressed="true">Code plus hardening</button>
     </div>
-    <p class="note" id="std-note" style="margin-top:.6em">Chosen now, priced now, and re&#8209;costed every year — not argued after a fire.</p>
+    <p class="note" id="std-note" hidden></p>
   </div>
 
-  <div class="plate" style="grid-area:4/8/9/13">
-    <p class="eyebrow">Also held, in advance</p>
+  <div class="xblock" style="grid-area:5/8/9/13">
+    <p class="xeyebrow">Also held, in advance</p>
 
     <p class="lead-name">Ardren &amp; Sons</p>
-    <p class="lead-role">Builder, Calder Reach. Their book carries this plan before there is anything to build.</p>
+    <p class="lead-role">Builder, Calder Reach</p>
     <!-- No count. A meter with eight cells states a regional capacity nobody
          could know; the reservation is the claim being made, and it is
          qualitative. The word carries the state, not a quantity. -->
     <p class="resv"><span class="resv-mark" aria-hidden="true"></span>Reserved against this plan</p>
-    <p class="note">Builders who can work to this standard are scarce in the region, and most households have no one held in advance.</p>
+    <p class="note">Builders to this standard are scarce here.</p>
 
     <p class="lead-name lead-name--2">Marta Ives</p>
-    <p class="lead-role">Recovery lead. She holds the plan today, she is the one who calls, and she does not change at the claim.</p>
+    <p class="lead-role">Recovery lead · she does not change at the claim</p>
   </div>
 
 </section>
@@ -91,10 +92,9 @@
 <!-- ══════ 2 · WHAT IS ACTUALLY PROMISED ════════════════════════════════ -->
 <section class="screen" data-screen="2" data-label="What is promised" data-cam="lot" data-veil="">
 
-  <div class="plate" style="grid-area:1/1/4/7">
-    <p class="eyebrow">02 / The commitment</p>
-    <h2 class="display display--xl" tabindex="-1"><span>Here is the promise.</span><span>Here is what stays</span><span>conditional.</span></h2>
-    <p class="body">The conditions sit on the card, beside the promise. Not underneath it.</p>
+  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">02 / The commitment</p>
+    <h2 class="display xd" tabindex="-1"><span>Here is the promise.</span><span>Here is what stays</span><span>conditional.</span></h2>
   </div>
 
   <div class="gw gw--map" style="grid-area:1/7/4/13" aria-hidden="true"></div>
@@ -129,17 +129,14 @@
 
       <div class="cond-row" data-met="1">
         <p class="cond-what">The plan is current<span class="cond-state">Met</span></p>
-        <p class="cond-why">Reviewed with the household each year. A plan nobody confirmed is not a plan.</p>
       </div>
 
       <div class="cond-row" data-met="x">
         <p class="cond-what">The loss is covered by the policy<span class="cond-state">Assessed at the time</span></p>
-        <p class="cond-why">This does not change. An excluded cause is still an excluded cause.</p>
       </div>
 
       <div class="cond-row" id="cond-cap" data-met="1">
         <p class="cond-what">Regional capacity is not exhausted<span class="cond-state">Met</span></p>
-        <p class="cond-why">One builder's book is finite. A whole region claiming at once is the case this cannot absorb.</p>
         <!-- A qualitative state, not a count. Eight cells asserted a regional
              capacity nobody could know; what this condition actually turns on
              is whether the region can still absorb the work. The word carries
@@ -163,9 +160,9 @@
 <!-- ══════ 3 · THE FIRST DAYS AFTER ═════════════════════════════════════ -->
 <section class="screen" data-screen="3" data-label="The first days" data-cam="rebuild" data-veil="soft">
 
-  <div class="plate" style="grid-area:1/1/4/6">
-    <p class="eyebrow">03 / The first days</p>
-    <h2 class="display display--xl" tabindex="-1"><span>Nothing here</span><span>is being decided.</span><span>It was decided.</span></h2>
+  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">03 / The first days</p>
+    <h2 class="display xd" tabindex="-1"><span>Nothing here</span><span>is being decided.</span><span>It was decided.</span></h2>
   </div>
 
   <div class="gw gw--map" style="grid-area:4/1/9/7" aria-hidden="true"></div>
@@ -179,7 +176,6 @@
         <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
         <div class="tl-body">
           <p class="tl-who">Marta Ives calls<span class="tl-kind">Contact</span></p>
-          <p class="tl-what">The lead they already had, by name. No claim number is issued to them.</p>
         </div>
       </div>
 
@@ -188,7 +184,6 @@
         <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
         <div class="tl-body">
           <p class="tl-who">Temporary home<span class="tl-kind">Living</span></p>
-          <p class="tl-what">A house in Calder Reach, held on the same arrangement. Same schools, same road to work.</p>
         </div>
       </div>
 
@@ -197,7 +192,6 @@
         <div class="tl-mark"><span class="tl-dot"></span></div>
         <div class="tl-body">
           <p class="tl-who">Cover confirmed<span class="tl-kind">Condition</span></p>
-          <p class="tl-what">The loss is covered. This is the gate, and it is the only one that is argued.</p>
         </div>
       </div>
 
@@ -206,7 +200,6 @@
         <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
         <div class="tl-body">
           <p class="tl-who">The builder is released<span class="tl-kind">Capacity</span></p>
-          <p class="tl-what">Ardren &amp; Sons' held slot is released to this address, and closes to new work.</p>
         </div>
       </div>
 
@@ -214,7 +207,6 @@
         <p class="tl-time">Week 6</p>
         <div class="tl-body">
           <p class="tl-who">The plan becomes a schedule</p>
-          <p class="tl-what">The drawings on file turn into dated work, with a date to be back in the house.</p>
           <p class="tl-decide">Everything above was bought before the fire. <span class="strong">Only the third step is a claim.</span></p>
         </div>
       </div>
@@ -226,8 +218,7 @@
     </div>
   </div>
 
-  <div class="plate plate--carrier" style="grid-area:6/8/9/13">
-    <p class="eyebrow eyebrow--carrier">The whole idea</p>
+  <div class="xask" style="grid-area:7/8/9/13">
     <p class="display display--ask" tabindex="-1">The claim is not complete when the money is paid. It is complete when they are home again.</p>
   </div>
 

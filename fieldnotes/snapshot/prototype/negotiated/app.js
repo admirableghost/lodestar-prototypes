@@ -556,7 +556,10 @@
 
   function anchorPlates() {
     Array.prototype.forEach.call(
-      document.querySelectorAll(".screen > [style*='grid-area']"), function (el) {
+      // Only CARDS get pinned to the top or bottom of their band. The
+      // executive compositions place their own hero objects, and an inline
+      // align-self written here would silently beat their stylesheet.
+      document.querySelectorAll(".screen > .plate[style*='grid-area']"), function (el) {
         if (el.classList.contains("gw")) { return; }
         var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
         if (!m) { return; }
