@@ -84,18 +84,44 @@ pull)
     echo "No reviews/ folder in Drive yet at: $DEST/reviews"; exit 1
   fi
   mkdir -p "$LOCAL_REVIEWS"
-  found=0
+  found=0; stubs=0
   shopt -s nullglob
-  for f in "$DEST/reviews"/*.md; do
+
+  # Readable text the reviewer left.
+  for f in "$DEST/reviews"/*.md "$DEST/reviews"/*.txt "$DEST/reviews"/*.markdown; do
     b=$(basename "$f")
     [ "$b" = "README.md" ] && continue
     cp "$f" "$LOCAL_REVIEWS/$b"
     echo "  pulled   $b"
     found=$((found+1))
   done
-  [ "$found" -eq 0 ] && echo "  nothing yet — the reviewer has not written a review file."
+
+  # A .gdoc is a 182-byte POINTER to a Google Doc, not the document. Globbing
+  # only *.md made this look like an empty inbox when the reviewer had in fact
+  # delivered — a silent false negative that would stall the loop forever.
+  # Fail loudly instead, and print the URL so the content can be retrieved.
+  for f in "$DEST/reviews"/*.gdoc "$DEST/reviews"/*.gsheet "$DEST/reviews"/*.gslides; do
+    b=$(basename "$f")
+    id=$(sed -n 's/.*"doc_id":"\([^"]*\)".*/\1/p' "$f" 2>/dev/null)
+    echo "  UNREADABLE  $b"
+    echo "              Google Docs file — this is a pointer, not text."
+    [ -n "$id" ] && echo "              https://docs.google.com/document/d/$id/edit"
+    stubs=$((stubs+1))
+  done
+
+  if [ "$stubs" -gt 0 ]; then
+    echo
+    echo "  $stubs reviewer file(s) are Google Docs and cannot be read as files."
+    echo "  Fix at the source: in each doc, File > Download > Markdown (.md),"
+    echo "  then put the .md into Drive/$BUNDLE_NAME/reviews/ and re-run pull."
+  fi
+  if [ "$found" -eq 0 ] && [ "$stubs" -eq 0 ]; then
+    echo "  nothing yet — the reviewer has not written a review file."
+  fi
   echo
   echo "Local copy: $LOCAL_REVIEWS"
+  [ "$found" -eq 0 ] && [ "$stubs" -gt 0 ] && exit 3
+  exit 0
   ;;
 
 status)
