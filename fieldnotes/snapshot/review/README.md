@@ -12,7 +12,7 @@ Prototype Review/
 ├── README.md                  this file
 ├── CURRENT_ITERATION.txt      the iteration to review now
 ├── index.json                 every file in the bundle, by URL
-├── iteration-001/
+├── iteration-002/
 │   ├── STATUS.md              READY_FOR_REVIEW + timestamp + commit
 │   ├── BUILD_REPORT.md        what changed, what did not, issues, NDA
 │   ├── READY_FOR_REVIEW.md    the review trigger — exists only when gates pass
@@ -66,12 +66,12 @@ the same number are interaction states.
 ## How to read this bundle
 
 1. `CURRENT_ITERATION.txt` → the folder to review.
-2. `iteration-001/READY_FOR_REVIEW.md` → confirms the gates passed.
-3. `iteration-001/integrated/all-prototypes-contact-sheet-ipad.png` → the whole
+2. `iteration-002/READY_FOR_REVIEW.md` → confirms the gates passed.
+3. `iteration-002/integrated/all-prototypes-contact-sheet-ipad.png` → the whole
    sequence in one image.
 4. Each `NN-…/REVIEW.md` → concept, workshop role, screen-by-screen intent,
    what is factual vs hypothetical, known issues, screenshot filenames.
-5. `iteration-001/BUILD_REPORT.md` → what changed and what is unresolved.
+5. `iteration-002/BUILD_REPORT.md` → what changed and what is unresolved.
 
 ## A limitation of this fallback, stated plainly
 

@@ -67,7 +67,7 @@ folder; nothing in iteration-001 is overwritten.</p></div>
 ├── README.md                  this file
 ├── CURRENT_ITERATION.txt      the iteration to review now
 ├── index.json                 every file in the bundle, by URL
-├── iteration-001/
+├── iteration-002/
 │   ├── STATUS.md              READY_FOR_REVIEW + timestamp + commit
 │   ├── BUILD_REPORT.md        what changed, what did not, issues, NDA
 │   ├── READY_FOR_REVIEW.md    the review trigger — exists only when gates pass
@@ -106,6 +106,6 @@ folder; nothing in iteration-001 is overwritten.</p></div>
 <p>e.g. <code>home-again-01-plan-as-it-stood-ipad-landscape.png</code></p>
 <p>The first frame listed for a screen is its <strong>resting</strong> state; later frames for the same number are interaction states.</p>
 <h2>How to read this bundle</h2>
-<p>1. <code>CURRENT_ITERATION.txt</code> → the folder to review. 2. <code>iteration-001/READY_FOR_REVIEW.md</code> → confirms the gates passed. 3. <code>iteration-001/integrated/all-prototypes-contact-sheet-ipad.png</code> → the whole    sequence in one image. 4. Each <code>NN-…/REVIEW.md</code> → concept, workshop role, screen-by-screen intent,    what is factual vs hypothetical, known issues, screenshot filenames. 5. <code>iteration-001/BUILD_REPORT.md</code> → what changed and what is unresolved.</p>
+<p>1. <code>CURRENT_ITERATION.txt</code> → the folder to review. 2. <code>iteration-002/READY_FOR_REVIEW.md</code> → confirms the gates passed. 3. <code>iteration-002/integrated/all-prototypes-contact-sheet-ipad.png</code> → the whole    sequence in one image. 4. Each <code>NN-…/REVIEW.md</code> → concept, workshop role, screen-by-screen intent,    what is factual vs hypothetical, known issues, screenshot filenames. 5. <code>iteration-002/BUILD_REPORT.md</code> → what changed and what is unresolved.</p>
 <h2>A limitation of this fallback, stated plainly</h2>
 <p>Google Drive is not reachable from the session that produced this bundle, so it is served as a static route. That makes it <strong>readable</strong> by another session but not <strong>writable</strong>: a reviewer cannot save <code>reviews/iteration-001-review.md</code> back here. Those two files have to be carried to the next build session by the human in the loop. With Drive, the loop closes by itself; here it does not.</p></div></body></html>
