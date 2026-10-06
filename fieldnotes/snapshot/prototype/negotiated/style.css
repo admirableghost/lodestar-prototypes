@@ -881,3 +881,5 @@ input[type="range"] { height: 44px; }
 /* the one disclaimer sits on the ground, where the soft ink misses AA */
 .note, .plate--thin .note { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
 .eyebrow, .q-tag, .sr-who { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
+/* every remaining Level-3 class that ended up on the parchment ground */
+.leg-i, .illus, .thr-of, .sr-what { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
