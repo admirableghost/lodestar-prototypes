@@ -255,8 +255,19 @@
   /* ── 2 · the plan in front, the standard chosen ──────────────────────── */
   function scene2() {
     var s = [sky({ sunX: 1140, sunY: 80, sunR: 140 })];
-    s.push('<g opacity=".42">' + home({ tx: -210, ty: 270, k: .62, std: 0, tree: false }) + "</g>");
-    s.push(callout({ x: 126, y: 664, title: "Your home today" }));
+    /* The current home sits below the selection controls, wherever their
+       last row actually ends: the control group is HTML and wraps to two
+       rows at short widths, so its rendered bottom is measured (in design
+       units) and the illustration is placed a clear gap beneath it. */
+    var ty = 270;
+    var ctl = document.querySelector('.screen[data-screen="2"] .copy--controls');
+    if (!portrait && ctl) {
+      var cr = ctl.getBoundingClientRect(), oy = parseFloat(root.style.getPropertyValue("--oy")) || 0;
+      var apexNeeded = (cr.bottom - oy) / scale + 28;      /* 28 design units of clear space */
+      ty = Math.max(270, apexNeeded - 322 * 0.62);          /* the ghost's roof apex is at 322·k + ty */
+    }
+    s.push('<g id="s2-ghost" opacity=".42">' + home({ tx: -210, ty: ty, k: .62, std: 0, tree: false }) + "</g>");
+    s.push(callout({ x: 126, y: ty + 394, title: "Your home today" }));
     s.push(footprint(440, 1040, 626)); s.push(path(60));
     s.push(plan({ tx: 60, openings: true, ticks: false }));
     /* the standard's name only: its features are labelled where they sit on
