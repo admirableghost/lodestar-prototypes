@@ -323,18 +323,36 @@
   fillZones("z1", "none");
 
   var lv0 = document.getElementById("lv0"), lv1 = document.getElementById("lv1");
-  var said2 = document.getElementById("bnd-said");
+
+  /* SCREEN 2 \u00b7 THE DESK.
+     Screen 2 no longer lists five equal actions. It draws one purchase order,
+     one "Prepared" cluster and one exception, and moves THE LINE between them.
+     Which side of the line the order sits on is still read from LAYOUT \u2014 the
+     same table that fills screens 1 and 3 \u2014 so there is one source of truth
+     for what the agent may do. The order object itself never moves; the line
+     does, and the tray plate and the state word follow it. */
+  var desk2    = document.getElementById("desk2");
+  var poState  = document.getElementById("po-state");
+  var lineLab  = document.getElementById("s2-line-lab");
+  function setDesk(mode) {
+    var plan = LAYOUT[mode] || LAYOUT.none;
+    var placeMay = plan.may.indexOf("place") !== -1;
+    if (desk2) { desk2.dataset.place = placeMay ? "may" : "ask"; }
+    if (poState) {
+      poState.dataset.kind = placeMay ? "may" : "ask";
+      poState.textContent  = placeMay ? "Agent may place it" : "Waits for your approval";
+    }
+    if (lineLab) {
+      lineLab.textContent = placeMay ? "the line, moved by Calder" : "the line, set by Calder";
+    }
+  }
+
   function setCover(on) {
-    fillZones("z2", on ? "bounded" : "none");
+    setDesk(on ? "bounded" : "none");
     if (lv0) { lv0.setAttribute("aria-pressed", String(!on)); }
     if (lv1) { lv1.setAttribute("aria-pressed", String(on)); }
-    if (said2) {
-      said2.textContent = on
-        ? "Calder has authorised bounded purchasing. Specified purchasing mistakes are covered \u2014 wrong part, wrong quantity, duplicate order. You still decide what the agent may do."
-        : "Specified purchasing mistakes are covered. You still decide what the agent may do.";
-    }
-    say(on ? "Authorised. Place order moves into the agent's zone; the new-supplier exception stays with you."
-           : "Not authorised. Placing an order stays with a person.");
+    say(on ? "Authorised. The line moves past the purchase order: the agent may place it. The new-supplier exception stays with you."
+           : "Not authorised. The purchase order waits on your side of the line.");
   }
   if (lv0) { lv0.addEventListener("click", function () { setCover(false); }); }
   if (lv1) { lv1.addEventListener("click", function () { setCover(true); }); }
@@ -420,6 +438,12 @@
     }
     return bad;
   }
+
+  /* The lowest --fit the search may settle on. Inherited from
+     resilience-grid/app.js, where it was declared; this fork used it without
+     ever declaring it, so the first screen that spilled threw a
+     ReferenceError mid-search. */
+  var FIT_FLOOR = 0.74;
 
   function fitScreen(sc) {
     if (!sc || sc.hidden) { return; }

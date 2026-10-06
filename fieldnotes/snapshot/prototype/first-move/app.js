@@ -8,9 +8,14 @@
    version makes the argument a PLACE: a dark information field with one
    directional axis running through it.
 
-       screen 1   four policy documents enter the axis, are read, compared
-                  and ranked, and the traces converge into ONE recommendation
+       screen 1   four quotes are read, the two clauses that matter to this
+                  household are pulled out and compared, and ONE quote is
+                  lifted out of the fan as the recommendation — not the
+                  cheapest. The path runs on, quietly, toward the edge.
        screen 2   the same axis continues, and runs into a transaction wall
+
+   Screen 1 is drawn into its own SVG in CSS pixels (see SCREEN 1 below);
+   screen 2 keeps the fitted-camera world it always had.
 
    The axis is the thing the set reuses. OpenCover, the closing bookend, is
    the same axis with the wall rebuilt so the path continues through it. That
@@ -44,9 +49,7 @@
   var BG0 = "#070B16", BG1 = "#0E1530", BG2 = "#19214A";
   var AI = "#5FD8E8", AI_HI = "#C2F6FB", AI_DIM = "#2A5E73";
   var DOC = "#E7E5F3", DOC_LINE = "#8F8CB8", DOC_EDGE = "#B9B6D8";
-  var VIOLET = "#A78BFA", TEAL = "#3FD3B4";
   var AMBER = "#F3A23F", AMBER_HI = "#FFCE86", WARM = "#D9561F";
-  var TXT = "#F3F5FC", TXT_SOFT = "#A9B3D1";
 
   /* ══════════════════════════════════════════════════════════════════════
      LAYOUT — the same beats in two orientations.
@@ -229,114 +232,315 @@
     return s.join("");
   }
 
-  /* A clause label lives INSIDE its document, not beside it.
-     Beside it, a label straddled the boundary between a white sheet and the
-     dark ground, so no single ink could carry it — the sub-line disappeared
-     against the paper. On the sheet, dark ink reads throughout, and it is
-     also where the clause actually is. */
-  function docLabel(d, v, text, sub, ink) {
-    var p = docPt(d, 0.1, v);
-    var s = [];
-    s.push('<text x="' + p.x.toFixed(1) + '" y="' + (p.y - px(12)).toFixed(1) +
-           '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(14).toFixed(1) +
-           '" font-weight="700" letter-spacing="' + px(1.1).toFixed(2) + '" fill="' + ink + '">' +
-           text + '</text>');
-    if (sub) {
-      s.push('<text x="' + p.x.toFixed(1) + '" y="' + (p.y + px(19)).toFixed(1) +
-             '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(12).toFixed(1) +
-             '" fill="#424B6E">' + sub + '</text>');
-    }
-    return s.join("");
-  }
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 1 — four quotes, the comparison that matters, one recommendation
+     ══════════════════════════════════════════════════════════════════════
+     Drawn into its own SVG (#scene1) that sits in the screen's flow, laid
+     out in CSS PIXELS: the viewBox is the element's own box, so a 16px label
+     here is 16px on the glass, on a phone as much as on a 1536 desktop. The
+     world SVG behind it carries only a faint ground for this screen.
 
-  /* a line of type on the dark ground, above or below an object */
-  function groundLabel(x, y, text, size, color, weight) {
-    return '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="middle" ' +
-           'font-family="Arial,Helvetica,sans-serif" font-size="' + px(size).toFixed(1) +
-           '" font-weight="' + (weight || 400) + '" letter-spacing="' + px(size * 0.11).toFixed(2) +
-           '" fill="' + color + '">' + text + '</text>';
-  }
+     The palette is the design study's: charcoal ground, lavender cut-paper
+     quotes, a paper recommendation, cool traces and one warm hatch.
 
-  /* ── SCREEN 1 ───────────────────────────────────────────────────────────
-     step 0..5 — 0 nothing read, 1..4 reading that document, 5 recommended */
-  function screen1(step) {
+     step 0..5 — 0 unread · 1 read · 2 garage exclusion · 3 prior claim ·
+                 4 ranked (cheapest third) · 5 recommended */
+  var S1 = {
+    ground: "#1E242B", paper: "#F3EBD7", cream: "#F3EBD7", muted: "#B4AE9C",
+    doc: "#8F8CB8", rule: "#4A4870", ink: "#16150F",
+    ai: "#2E6E80", aihi: "#6FC3CF", warm: "#A8502A"
+  };
+  var QUOTES = [
+    { k: "A", garage: false, claimAt: 0.28 },
+    { k: "B", garage: true,  claimAt: 0.62 },
+    { k: "C", garage: true,  claimAt: 0.44, cheapest: true },
+    { k: "D", garage: false, claimAt: 0.80, recommended: true }
+  ];
+  var sceneEl = document.getElementById("scene1");
+  var headEl = document.getElementById("s1-head");
+  var footEl = document.getElementById("s1-foot");
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function f1(n) { return (+n).toFixed(1); }
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+  function ground1(W, H) {
     var s = [], i;
-    s.push(field(L.world.w, L.world.h));
-
-    /* `c` lights the clause on the sheet, `ink` sets the label — the same
-       hue driven dark enough to carry type on white paper */
-    var CL = [
-      { v: 0.42, c: VIOLET, ink: "#6D28D9", t: "GARAGE EXCLUSION", sub: "in two of the four" },
-      { v: 0.58, c: TEAL,   ink: "#0E7A66", t: "PRIOR CLAIM",      sub: "rated differently by each" },
-      null, null
-    ];
-
-    /* the reasoning path: one continuous sweep through every document */
-    var pts = [L.entry];
-    for (i = 0; i < L.docs.length; i++) { pts.push(docPt(L.docs[i], 0.46, 0.5)); }
-    pts.push(L.node);
-
-    var shown = Math.min(step, 4);
-    if (shown > 0) {
-      var dpath = "M" + pts[0].x + " " + pts[0].y;
-      for (i = 1; i <= shown; i++) {
-        var p0 = pts[i - 1], p1 = pts[i];
-        dpath += " Q" + ((p0.x + p1.x) / 2 + (L.portrait ? 90 : 10)) + " " +
-                 ((p0.y + p1.y) / 2 - (L.portrait ? 10 : 80)) + " " + p1.x + " " + p1.y;
-      }
-      s.push('<path d="' + dpath + '" fill="none" stroke="' + AI + '" stroke-width="' + px(9).toFixed(1) +
-             '" opacity=".28" filter="url(#glow)" stroke-linecap="round"/>');
-      s.push('<path d="' + dpath + '" fill="none" stroke="url(#ailine)" stroke-width="' + px(3).toFixed(1) +
-             '" stroke-linecap="round"/>');
-    }
-
-    /* documents, back to front, so the fan overlaps correctly */
-    for (i = L.docs.length - 1; i >= 0; i--) {
-      var st = step === 0 ? 0 : (step === i + 1 ? 1 : (step > i + 1 ? 2 : 0));
-      s.push(sheet(L.docs[i], st, null, CL[i] ? CL[i].c : null, CL[i] ? CL[i].v : null));
-    }
-
-    /* the two clause facts, written on the sheet the clause belongs to */
-    for (i = 0; i < 2; i++) {
-      if (step > i + 1) {
-        s.push(docLabel(L.docs[i], CL[i].v, CL[i].t, CL[i].sub, CL[i].ink));
+    seed = 11;
+    s.push('<rect x="0" y="0" width="' + f1(W) + '" height="' + f1(H) + '" fill="' + S1.ground + '"/>');
+    /* the information field, as texture only: faint document silhouettes */
+    s.push('<g opacity=".45">');
+    for (i = 0; i < 110; i++) {
+      var w = (24 + rnd() * 84), h = w * (1.1 + rnd() * 0.5);
+      var x = rnd() * W * 1.1 - W * 0.05, y = rnd() * H * 1.1 - H * 0.05;
+      s.push('<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) +
+             '" fill="' + S1.doc + '" opacity="' + (0.03 + rnd() * 0.07).toFixed(3) + '"/>');
+      if (rnd() > 0.74) {
+        for (var k = 1; k < 4; k++) {
+          var ly = y + h * (k * 0.22 + 0.1);
+          s.push('<line x1="' + f1(x + w * 0.14) + '" y1="' + f1(ly) + '" x2="' + f1(x + w * (0.5 + rnd() * 0.3)) +
+                 '" y2="' + f1(ly) + '" stroke="' + S1.doc + '" stroke-width="1.2" opacity=".16"/>');
+        }
       }
     }
+    s.push('</g>');
+    return s.join("");
+  }
 
-    /* the cheapest quote — on a document that is NOT the one recommended */
-    if (step >= 4) {
-      s.push(docLabel(L.docs[3], 0.14, "CHEAPEST", "ranked third", "#3C4466"));
+  function defs1() {
+    return '<defs>' +
+      '<filter id="s1grain" x="-2%" y="-2%" width="104%" height="104%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="4" result="n"/>' +
+        '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0" result="a"/>' +
+        '<feComposite in="SourceGraphic" in2="a" operator="in" result="g"/>' +
+        '<feBlend in="SourceGraphic" in2="g" mode="multiply"/>' +
+      '</filter>' +
+      '<pattern id="s1hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+        '<line x1="0" y1="0" x2="0" y2="7" stroke="' + S1.warm + '" stroke-width="2"/>' +
+      '</pattern>' +
+      '</defs>';
+  }
+
+  /* ── geometry ──────────────────────────────────────────────────────────
+     Landscape: fan bottom-left under the headline, comparison mid-right,
+     recommendation top-right, foot bottom-right. Portrait: the same three
+     beats as bands, top to bottom. Everything in CSS px. */
+  function geom1(W, H, portrait) {
+    var g = { W: W, H: H, portrait: portrait, rows: {} };
+    var s, SW, SH, k, i;
+    if (!portrait) {
+      var headB = headEl ? headEl.getBoundingClientRect().bottom : H * 0.36;
+      var footT = footEl ? footEl.getBoundingClientRect().top : H - 260;
+      s = clamp(Math.min(W / 1180, H / 820), 0.6, 1.15);
+      var fanTop = Math.max(headB + 48, H * 0.30), fanBottom = H - 56;
+      SH = Math.min(262 * s, fanBottom - fanTop - 24 * s);
+      SW = SH * 0.76;
+      g.s = SW / 200;
+      g.SW = SW; g.SH = SH;
+      g.fan = [];
+      var left = 56 + 12 * g.s;
+      for (k = 0; k < 4; k++) {
+        g.fan.push({ x: left + k * 0.5 * SW, y: fanTop + 8, a: -7.5 + k * 5 });
+      }
+      g.fanExit = { x: left + 2 * SW + 8, y: fanTop + 8 + SH * 0.5 };
+      g.fanMid = fanTop + 8 + SH * 0.5;
+      /* recommendation, top right, with room to its right for the path to run on */
+      g.rec = { x: W - 56 - 64 * g.s - SW, y: 60 + 36, w: SW, h: SH };
+      /* comparison rows in the band between the recommendation and the foot */
+      var bandT = g.rec.y + g.rec.h + 36, bandB = footT - 30;
+      var gap = clamp((bandB - bandT) / 2, 58, 92);
+      var mid = (bandT + bandB) / 2;
+      g.cmp = { x: left + 2.5 * SW + 24 + 60 * g.s, y1: mid - gap / 2, y2: mid + gap / 2 };
+      g.edge = { y: g.rec.y + g.rec.h * 0.5 };
+      g.short = 0.5 * SW < 88;
+      return g;
     }
+    /* portrait: bands */
+    s = clamp(W / 720, 0.5, 1.2);
+    SW = 200 * s; SH = 262 * s;
+    g.s = s; g.SW = SW; g.SH = SH;
+    var labelRoom = 48;
+    var ft = labelRoom + 8;
+    var fl = Math.max(12, (W - (2.5 * SW + 24)) / 2);
+    g.fan = [];
+    for (k = 0; k < 4; k++) {
+      g.fan.push({ x: fl + k * 0.5 * SW, y: ft, a: -7.5 + k * 5 });
+    }
+    /* the path leaves through the bottom edge of the fan, not its side */
+    g.fanExit = { x: fl + 0.9 * SW, y: ft + SH * 0.5 };
+    g.fanMid = ft + SH * 0.5;
+    var fanB = ft + SH + 14 * s;
+    /* on a phone the row label stacks under its tokens instead of beside them */
+    var stack = W < 540;
+    g.cmp = { x: 20, stack: stack, y1: fanB + 56, y2: fanB + 56 + (stack ? 106 : 76) };
+    var recT = g.cmp.y2 + (stack ? 72 : 44) + 48;
+    g.rec = { x: W - SW - 72, y: recT, w: SW, h: SH };
+    g.edge = { y: recT + SH * 0.5 };
+    g.short = 0.5 * SW < 88;
+    g.H = recT + SH + 16;
+    return g;
+  }
 
-    /* convergence: every document's trace folds into one node */
+  /* a point on a sheet after its rotation about its own centre */
+  function sheetPt(sh, SW, SH, u, v) {
+    var cx = sh.x + SW / 2, cy = sh.y + SH / 2, a = sh.a * Math.PI / 180;
+    var dx = sh.x + SW * u - cx, dy = sh.y + SH * v - cy;
+    return { x: cx + dx * Math.cos(a) - dy * Math.sin(a), y: cy + dx * Math.sin(a) + dy * Math.cos(a) };
+  }
+
+  /* one quote. opts: paper (the recommendation), title, marks */
+  function quoteSheet(g, sh, q, o) {
+    var SW = g.SW, SH = g.SH, s = [];
+    var cx = sh.x + SW / 2, cy = sh.y + SH / 2;
+    var fill = o.paper ? S1.paper : S1.doc;
+    s.push('<g transform="rotate(' + sh.a + ' ' + f1(cx) + ' ' + f1(cy) + ')">');
+    s.push('<rect x="' + f1(sh.x) + '" y="' + f1(sh.y) + '" width="' + f1(SW) + '" height="' + f1(SH) +
+           '" fill="' + fill + '" filter="url(#s1grain)"/>');
+    s.push('<rect x="' + f1(sh.x) + '" y="' + f1(sh.y) + '" width="' + f1(SW) + '" height="' + f1(SH) +
+           '" fill="none" stroke="' + (o.paper ? S1.aihi : S1.ground) + '" stroke-width="' + (o.paper ? 3 : 1) +
+           '" opacity="' + (o.paper ? 1 : 0.5) + '"/>');
+    /* title on the exposed right strip, so the sheet in front never clips it */
+    var title = g.short ? q.k : "QUOTE " + q.k;
+    s.push('<text x="' + f1(sh.x + SW - 12) + '" y="' + f1(sh.y + 24) + '" text-anchor="end" font-size="15" ' +
+           'font-weight="700" letter-spacing=".06em" fill="' + S1.ink + '">' + title + '</text>');
+    var top = sh.y + 40, rowH = (SH - 56) / 10, i;
+    for (i = 0; i < 10; i++) {
+      var ly = top + i * rowH, len = SW - 32 - ((i * 37) % 23) * (SW / 100);
+      s.push('<line x1="' + f1(sh.x + 16) + '" y1="' + f1(ly) + '" x2="' + f1(sh.x + 16 + len) + '" y2="' + f1(ly) +
+             '" stroke="' + S1.rule + '" stroke-width="2" opacity=".5"/>');
+    }
+    /* garage exclusion: hatched on the two that carry it */
+    if (o.garage && q.garage) {
+      var gy = top + 3 * rowH;
+      s.push('<rect x="' + f1(sh.x + 10) + '" y="' + f1(gy - 7) + '" width="' + f1(SW - 20) + '" height="14" fill="url(#s1hatch)"/>');
+      s.push('<rect x="' + f1(sh.x + 10) + '" y="' + f1(gy - 7) + '" width="' + f1(SW - 20) + '" height="14" fill="none" stroke="' +
+             S1.warm + '" stroke-width="1.5"/>');
+    }
+    /* prior claim: lit on every quote, the rating mark somewhere different on each */
+    if (o.claim) {
+      var py = top + 7 * rowH;
+      s.push('<rect x="' + f1(sh.x + 10) + '" y="' + f1(py - 7) + '" width="' + f1(SW - 20) + '" height="14" fill="' + S1.ai + '"/>');
+      var mx = sh.x + 16 + (SW - 32) * q.claimAt;
+      s.push('<line x1="' + f1(mx) + '" y1="' + f1(py - 5) + '" x2="' + f1(mx) + '" y2="' + f1(py + 5) +
+             '" stroke="' + S1.paper + '" stroke-width="2.5"/>');
+    }
+    s.push('</g>');
+    return s.join("");
+  }
+
+  /* the slot a quote has left: a flat shade, no outline, no label */
+  function vacatedSlot(g, sh) {
+    var cx = sh.x + g.SW / 2, cy = sh.y + g.SH / 2;
+    return '<rect x="' + f1(sh.x) + '" y="' + f1(sh.y) + '" width="' + f1(g.SW) + '" height="' + f1(g.SH) +
+           '" fill="' + S1.doc + '" opacity=".14" transform="rotate(' + sh.a + ' ' + f1(cx) + ' ' + f1(cy) + ')"/>';
+  }
+
+  /* a row of the comparison: four small tokens, one per quote, then the label */
+  function cmpRow(g, y, kind, title, sub) {
+    var s = [], i, T = 34, gap = 7, x0 = g.cmp.x;
+    for (i = 0; i < 4; i++) {
+      var q = QUOTES[i], x = x0 + i * (T + gap), ty = y - T / 2;
+      var on = kind === "garage" ? q.garage : true;
+      s.push('<rect x="' + f1(x) + '" y="' + f1(ty) + '" width="' + T + '" height="' + T + '" rx="2" fill="' + S1.doc +
+             '" opacity="' + (on ? 1 : 0.38) + '"/>');
+      if (kind === "garage" && on) {
+        s.push('<rect x="' + f1(x + 3) + '" y="' + f1(ty + 18) + '" width="' + (T - 6) + '" height="11" fill="url(#s1hatch)" stroke="' +
+               S1.warm + '" stroke-width="1.2"/>');
+      }
+      if (kind === "claim") {
+        s.push('<rect x="' + f1(x + 3) + '" y="' + f1(ty + 18) + '" width="' + (T - 6) + '" height="11" fill="' + S1.ai + '"/>');
+        var mx = x + 5 + (T - 10) * q.claimAt;
+        s.push('<line x1="' + f1(mx) + '" y1="' + f1(ty + 19) + '" x2="' + f1(mx) + '" y2="' + f1(ty + 28) +
+               '" stroke="' + S1.paper + '" stroke-width="2"/>');
+      }
+      s.push('<text x="' + f1(x + T / 2) + '" y="' + f1(ty + 14) + '" text-anchor="middle" font-size="13.5" font-weight="700" fill="' +
+             S1.ink + '" opacity="' + (on ? 1 : 0.8) + '">' + q.k + '</text>');
+    }
+    var lx = g.cmp.stack ? x0 : x0 + 4 * (T + gap) + 10;
+    var ly = g.cmp.stack ? y + T / 2 + 20 : y - 3;
+    s.push('<text x="' + f1(lx) + '" y="' + f1(ly) + '" font-size="16" font-weight="700" fill="' + S1.cream + '">' + esc(title) + '</text>');
+    s.push('<text x="' + f1(lx) + '" y="' + f1(ly + 19) + '" font-size="15" fill="' + S1.muted + '">' + esc(sub) + '</text>');
+    return s.join("");
+  }
+
+  function scene1(step, g) {
+    var s = [], i, SW = g.SW, SH = g.SH;
+    s.push(defs1());
+
+    /* ── the one path: in from the left, through the four, out to the
+       comparison, up to the recommendation, on toward the edge ─────── */
+    var P = [];
+    var ex = g.fanExit, c1 = { x: g.cmp.x - 14, y: g.cmp.y1 }, c2 = { x: g.cmp.x - 14, y: g.cmp.y2 };
+    var rIn = { x: g.rec.x, y: g.edge.y }, rOut = { x: g.rec.x + g.rec.w, y: g.edge.y };
+    if (step >= 1) {
+      P.push("M-10 " + f1(g.fanMid) + " L" + f1(ex.x) + " " + f1(ex.y));
+    }
+    if (step >= 2) {
+      if (!g.portrait) {
+        /* fan exit → bottom of the column → top of the column */
+        P.push(" C" + f1(ex.x + 40) + " " + f1(ex.y) + " " + f1(c2.x) + " " + f1(c2.y + 30) + " " + f1(c2.x) + " " + f1(c2.y));
+        P.push(" L" + f1(c1.x) + " " + f1(c1.y));
+      } else {
+        /* out through the bottom of the fan → the column → down it */
+        P.push(" C" + f1(ex.x - 10) + " " + f1(ex.y + 120) + " " + f1(c1.x) + " " + f1(c1.y - 70) + " " + f1(c1.x) + " " + f1(c1.y));
+        P.push(" L" + f1(c2.x) + " " + f1(c2.y));
+      }
+    }
     if (step >= 5) {
-      for (i = 0; i < L.docs.length; i++) {
-        var m = docMidRight(L.docs[i]);
-        s.push('<path d="M' + m.x + ' ' + m.y + ' Q' + ((m.x + L.node.x) / 2) + ' ' + m.y + ' ' +
-               L.node.x + ' ' + L.node.y + '" fill="none" stroke="' + AI +
-               '" stroke-width="' + px(1.6).toFixed(1) + '" opacity=".5"/>');
+      var from = g.portrait ? c2 : c1;
+      if (!g.portrait) {
+        P.push(" C" + f1(from.x) + " " + f1(from.y - 90) + " " + f1(rIn.x - 70) + " " + f1(rIn.y) + " " + f1(rIn.x) + " " + f1(rIn.y));
+      } else {
+        /* straight down past the row's label, then across to the recommendation */
+        var drop = g.cmp.stack ? 72 : 30;
+        P.push(" L" + f1(from.x) + " " + f1(from.y + drop));
+        P.push(" C" + f1(from.x) + " " + f1(from.y + drop + 90) + " " + f1(rIn.x - 60) + " " + f1(rIn.y) + " " + f1(rIn.x) + " " + f1(rIn.y));
       }
-      s.push('<circle cx="' + L.node.x + '" cy="' + L.node.y + '" r="' + px(13).toFixed(1) +
-             '" fill="' + AI_HI + '" filter="url(#glow)"/>');
+      P.push(" L" + f1(rOut.x) + " " + f1(rOut.y));
+    }
+    if (P.length) {
+      s.push('<path d="' + P.join("") + '" fill="none" stroke="' + S1.aihi + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>');
+    }
+    /* the quiet callback: the path keeps going, and fades before the edge */
+    if (step >= 5) {
+      s.push('<linearGradient id="s1fade" gradientUnits="userSpaceOnUse" x1="' + f1(rOut.x) + '" y1="0" x2="' + f1(g.W) + '" y2="0">' +
+             '<stop offset="0" stop-color="' + S1.aihi + '" stop-opacity="1"/><stop offset="1" stop-color="' + S1.aihi + '" stop-opacity="0"/></linearGradient>');
+      s.push('<line x1="' + f1(rOut.x) + '" y1="' + f1(rOut.y) + '" x2="' + f1(g.W + 2) + '" y2="' + f1(rOut.y) +
+             '" stroke="url(#s1fade)" stroke-width="3.5"/>');
+    }
+    /* column nodes, where each clause joins the path */
+    if (step >= 2) { s.push('<circle cx="' + f1(c1.x) + '" cy="' + f1(c1.y) + '" r="5" fill="' + S1.aihi + '"/>'); }
+    if (step >= 3) { s.push('<circle cx="' + f1(c2.x) + '" cy="' + f1(c2.y) + '" r="5" fill="' + S1.aihi + '"/>'); }
 
-      /* the one recommendation, upright and lit */
-      var r = L.rec;
-      s.push('<path d="' + docPath(r) + '" fill="' + AI + '" opacity=".20" filter="url(#glow)"/>');
-      s.push('<path d="' + docPath(r) + '" fill="url(#docg)" stroke="' + AI_HI + '" stroke-width="3.4"/>');
-      for (i = 0; i < 11; i++) {
-        var rv = 0.12 + i * 0.07;
-        var ra = docPt(r, 0.1, rv), rb = docPt(r, 0.1 + 0.6 + ((i * 29) % 17) / 60, rv);
-        s.push('<line x1="' + ra.x.toFixed(1) + '" y1="' + ra.y.toFixed(1) + '" x2="' + rb.x.toFixed(1) +
-               '" y2="' + rb.y.toFixed(1) + '" stroke="' + DOC_LINE + '" stroke-width="2.4" opacity=".55"/>');
-      }
-      /* Both lines sit ABOVE the sheet on the dark ground. "not the cheapest"
-         was below it, where the foot's scrim swallowed it — and it is the
-         payoff of the whole screen, so it cannot be the dimmest thing on it. */
-      var rt = docPt(r, 0.5, -0.03);
-      s.push(groundLabel(rt.x, rt.y - px(20), "RECOMMENDED", 17, AI_HI, 700));
-      s.push(groundLabel(rt.x, rt.y, "not the cheapest", 13.5, TXT_SOFT, 400));
+    /* ── the fan, back to front. Quote D stays in its slot until it is
+       recommended; then the slot is left as a flat shade. ────────────── */
+    var o = { garage: step >= 2, claim: step >= 3 };
+    for (i = 3; i >= 0; i--) {
+      if (i === 3 && step >= 5) { s.push(vacatedSlot(g, g.fan[3])); continue; }
+      s.push(quoteSheet(g, g.fan[i], QUOTES[i], o));
+    }
+
+    /* the cheapest quote, labelled on its own sheet's top edge */
+    if (step >= 4) {
+      var tp = sheetPt(g.fan[2], SW, SH, 0.5, 0);
+      var lx0 = Math.min(tp.x - 4, g.W - 8 - 196);   /* never off the right edge */
+      s.push('<line x1="' + f1(tp.x) + '" y1="' + f1(tp.y) + '" x2="' + f1(tp.x) + '" y2="' + f1(tp.y - 16) +
+             '" stroke="' + S1.cream + '" stroke-width="1.6" opacity=".8"/>');
+      s.push('<text x="' + f1(lx0) + '" y="' + f1(tp.y - 24) + '" font-size="16" fill="' + S1.cream +
+             '"><tspan font-weight="700">CHEAPEST</tspan><tspan fill="' + S1.muted + '"> · ranked third</tspan></text>');
+    }
+
+    /* ── the comparison: the two clauses that matter to this household ── */
+    if (step >= 2) { s.push(cmpRow(g, g.cmp.y1, "garage", "GARAGE EXCLUSION", "in two of the four")); }
+    if (step >= 3) { s.push(cmpRow(g, g.cmp.y2, "claim", "PRIOR CLAIM", "rated differently by each")); }
+
+    /* ── the recommendation: Quote D, out of the fan, upright, on paper ── */
+    if (step >= 5) {
+      var r = g.rec;
+      s.push(quoteSheet(g, { x: r.x, y: r.y, a: 0 }, QUOTES[3], { paper: true, garage: true, claim: true }));
+      s.push('<text x="' + f1(r.x) + '" y="' + f1(r.y - 34) + '" font-size="16" font-weight="700" letter-spacing=".06em" fill="' +
+             S1.cream + '">● RECOMMENDED</text>');
+      s.push('<text x="' + f1(r.x) + '" y="' + f1(r.y - 14) + '" font-size="15" fill="' + S1.muted + '">not the cheapest</text>');
     }
     return s.join("");
+  }
+
+  function paintScene1(step) {
+    if (!sceneEl) { return; }
+    var portrait = window.innerWidth < 900;
+    var box = sceneEl.getBoundingClientRect();
+    var W = Math.max(280, Math.round(portrait ? box.width : window.innerWidth));
+    var H = Math.round(window.innerHeight);
+    var g = geom1(W, H, portrait);
+    if (portrait) {
+      sceneEl.style.height = Math.round(g.H) + "px";
+      H = g.H;
+    } else {
+      sceneEl.style.height = "";
+    }
+    sceneEl.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
+    sceneEl.setAttribute("preserveAspectRatio", portrait ? "xMinYMin meet" : "none");
+    sceneEl.innerHTML = scene1(step, g);
   }
 
   /* ── SCREEN 2 ───────────────────────────────────────────────────────────
@@ -467,9 +671,16 @@
   function paintWorld() {
     if (!svg || !worldEl) { return; }
     var r = worldEl.getBoundingClientRect();
+    if (current === 1) {
+      /* screen 1: the world is only the ground; the composition is #scene1 */
+      svg.setAttribute("viewBox", "0 0 " + f1(r.width) + " " + f1(r.height));
+      svg.innerHTML = ground1(r.width, r.height);
+      paintScene1(readStep);
+      return;
+    }
     L = layout(r.width / r.height < 1.05);
     fitView();
-    svg.innerHTML = defs() + (current === 1 ? screen1(readStep) : screen2(hitShown));
+    svg.innerHTML = defs() + screen2(hitShown);
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -481,12 +692,12 @@
   function say(m) { if (statusEl) { statusEl.textContent = m; } }
 
   var STATE = [
-    "Four renewal wordings, unread.",
-    "Reading the first wording.",
-    "Comparing the garage exclusion.",
-    "Weighing the prior claim.",
-    "Ranking all four. The cheapest came third.",
-    "Four documents, every exclusion, in the time it takes to read one."
+    "Four renewal quotes, unread.",
+    "Reading all four, every clause.",
+    "Garage exclusion: found in two of the four.",
+    "Prior claim: rated differently by each.",
+    "Ranked against her needs, not just the price. The cheapest came third.",
+    "Ranked against what her household needs, not just the price."
   ];
 
   function paintRead() {
@@ -592,6 +803,12 @@
     clearTimeout(relayout);
     relayout = setTimeout(paintWorld, 120);
   });
+
+  /* the headline's box changes height once Bricolage arrives, and the fan
+     is laid out under it, so the drawing follows the font */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { paintWorld(); });
+  }
 
   paintRead();
   show(fromHash() || 1, false);

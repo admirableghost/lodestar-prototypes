@@ -86,98 +86,35 @@
 </section>
 
 <!-- ══════ 3 · WHEN THE FIRE STARTS, THE NETWORK ACTS ══════ -->
+<!-- Screen 3 is composed as one left-hand column (headline block, then one
+     quiet plate holding the authority legend, the eight-event trace grouped
+     into its three stages, the replay controls and the disclaimer) so the
+     county's canyon, Mill Creek and the decision point have the right two
+     thirds of the stage to themselves. The eight events are DATA in app.js
+     (S3_EVENTS); the rows under #tl are generated from it, so the map, the
+     trace and the facilitator notes can never disagree. -->
 <section class="screen" data-screen="3" data-label="The moment" data-cam="ignite" data-veil="ignite">
 
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/6">
+  <div class="xhead xhead--scrim s3-head" style="grid-area:1/1/4/6">
     <p class="xeyebrow">02 / The moment</p>
     <h2 class="display xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
   </div>
 
   <div class="gw gw--map" aria-hidden="true"></div>
 
-  <div class="plate plate--carrier plate--tight plate--thin" style="grid-area:1/10/3/13">
-    <dl class="rows rows--legend">
+  <div class="plate plate--thin s3-plate" style="grid-area:4/1/9/5">
+    <dl class="rows rows--legend s3-legend">
       <dt>Agents</dt><dd>Execute bounded, pre&#8209;authorised actions</dd>
       <dt>Humans</dt><dd>Make the consequential decisions</dd>
       <dt>Record</dt><dd>Every action joins the evidence trail</dd>
     </dl>
-    <p class="note" style="margin-top:.5em">Illustrative scenario, not a vendor capability claim.</p>
-  </div>
-
-  <div class="plate plate--thin tl-min" style="grid-area:8/1/9/13">
-    <p class="eyebrow">14:31 → 14:47 · <span class="illus">invented event</span></p>
-    <div class="tl" id="tl">
-
-      <div class="tl-row" data-on="0">
-        <p class="tl-time">14:31</p>
-        <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Line sensor<span class="tl-kind">Detection</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row tl-row--corrob" data-on="0">
-        <p class="tl-time">14:33</p>
-        <div class="tl-mark"><span class="tl-dot"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Ridge camera<span class="tl-kind">Corroboration</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row tl-row--corrob" data-on="0">
-        <p class="tl-time">14:34</p>
-        <div class="tl-mark"><span class="tl-dot"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Satellite pass<span class="tl-kind">Corroboration</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row" data-on="0">
-        <p class="tl-time">14:36</p>
-        <div class="tl-mark"><span class="tl-dot tl-dot--utility"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Utility<span class="tl-kind">Bounded action</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row" data-on="0">
-        <p class="tl-time">14:38</p>
-        <div class="tl-mark"><span class="tl-dot tl-dot--carrier"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Spread model<span class="tl-kind">Model</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row" data-on="0">
-        <p class="tl-time">14:41</p>
-        <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Fire District 3<span class="tl-kind">Bounded action</span></p>
-          
-        </div>
-      </div>
-
-      <div class="tl-row" data-on="0">
-        <p class="tl-time">14:43</p>
-        <div class="tl-mark"><span class="tl-dot tl-dot--fire"></span></div>
-        <div class="tl-body">
-          <p class="tl-who">Autonomous suppression<span class="tl-kind">Bounded action</span></p>
-          
-        </div>
-      </div>
-
-      
-
-    </div>
+    <p class="eyebrow s3-eyebrow">14:31 → 14:47 · <span class="illus">invented event</span></p>
+    <div class="tl s3-tl" id="tl" role="group" aria-label="The eight events, in three stages"></div>
     <div class="tl-controls">
       <button class="tl-play" type="button" id="tl-play">Replay from the start</button>
       <button class="tl-play" type="button" id="tl-all">Show all steps</button>
     </div>
+    <p class="note s3-micro">Illustrative scenario, not a vendor capability claim. Invented county.</p>
   </div>
 
 </section>

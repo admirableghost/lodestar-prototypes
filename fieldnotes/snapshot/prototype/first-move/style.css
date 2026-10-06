@@ -1310,37 +1310,6 @@ body.fm .xhead h1, body.fm .xhead h2, body.fm .xhead .xd { color: var(--paper); 
 body.fm .xeyebrow { color: #7FD8E8; letter-spacing: .22em; }
 body.fm .xlede, body.fm .xmicro { color: var(--ink-soft); }
 
-/* ── screen 1's state line and its one control ──────────────────────────
-   Bottom right, under the recommendation, so the eye runs headline →
-   documents → recommendation → state. Not a panel: text on the field. */
-body.fm .fm-foot {
-  position: relative; z-index: 3; pointer-events: auto;
-  display: flex; flex-direction: column; align-items: flex-end;
-  justify-content: flex-end; gap: calc(var(--x-gap) * .55);
-  text-align: right;
-}
-body.fm .fm-foot::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -8vh -9vw -8vh -16vw;
-  background: radial-gradient(60% 66% at 72% 52%,
-    rgba(7,11,22,.94) 0%, rgba(7,11,22,.86) 42%,
-    rgba(7,11,22,.55) 68%, rgba(7,11,22,.18) 87%, rgba(7,11,22,0) 100%);
-}
-body.fm .fm-foot > * { position: relative; z-index: 1; }
-body.fm .fm-state {
-  margin: 0; max-width: 30ch;
-  font: var(--x-lede)/1.4 var(--sans); color: var(--paper);
-}
-body.fm .fm-run {
-  min-height: 46px; padding: 0 1.15em;
-  border: 1.5px solid #5FD8E8; border-radius: var(--r-m);
-  background: transparent; color: #A9EEF6;
-  font: 600 var(--x-label)/1 var(--sans); letter-spacing: .09em;
-  text-transform: uppercase; cursor: pointer;
-  transition: background .15s linear, color .15s linear;
-}
-body.fm .fm-run:hover, body.fm .fm-run:focus-visible { background: #5FD8E8; color: #06121A; }
-
 /* ── screen 2's closing question ────────────────────────────────────────
    Low and quiet. It is a bridge to the next prototype, not a headline. */
 body.fm .fm-ask {
@@ -1386,12 +1355,129 @@ body.fm :focus-visible { outline: 3px solid #7FD8E8; outline-offset: 2px; }
    app.js, so here the type only has to stop competing with it: scrims become
    solid bands and the foot stops hugging the right edge. */
 @media (max-width: 899px) {
-  body.fm .fm-foot { align-items: flex-start; text-align: left; }
   body.fm .xhead--dark::before,
-  body.fm .fm-foot::before,
   body.fm .fm-ask::before {
     inset: -1.6vh -5vw; border-radius: 10px;
     background: rgba(7,11,22,.90);
   }
-  body.fm .fm-state { max-width: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCREEN 1 · FOUR QUOTES, ONE RECOMMENDATION
+   ══════════════════════════════════════════════════════════════════════════
+   Scoped to .fm-s1 so nothing here reaches screen 2 or the chrome. The
+   palette is the design study's: charcoal ground, cut-paper lavender quotes,
+   a paper recommendation, cool traces, one warm hatch. Type is Bricolage
+   Grotesque, bundled in fonts/.
+
+   The headline backing is the headline's own box — padding around text that
+   wraps naturally — with its grain and rough edge on a pseudo-element, so the
+   text can never outgrow it. The drawing is one SVG laid out in CSS pixels by
+   app.js, which is why its labels are set in px here and stay readable on a
+   phone without any whole-screen scaling.
+
+   Contrast, measured against the ground #1E242B:
+     cream  #F3EBD7  12.8 : 1      muted #B4AE9C  6.9 : 1
+     trace  #6FC3CF   7.6 : 1      cream on block #6B675E  4.9 : 1 (54px bold)
+   ══════════════════════════════════════════════════════════════════════════ */
+@font-face { font-family: "Bricolage"; font-weight: 700; src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
+
+body.fm .fm-s1 {
+  --s1-ground: #1E242B; --s1-cream: #F3EBD7; --s1-muted: #B4AE9C;
+  --s1-block: #6B675E; --s1-trace: #6FC3CF;
+  --s1-font: "Bricolage", "Helvetica Neue", Arial, sans-serif;
+  --s1-nav-w: 500px;   /* the navigation corner, bottom right, stays clear */
+  display: block; padding: 0; gap: 0;
+  font-family: var(--s1-font);
+  overflow: hidden;
+}
+body.fm .fm-s1 > * { position: absolute; pointer-events: auto; }
+
+/* the drawing: full stage, under the type, never a pointer target */
+body.fm .fm-s1 .fm-scene {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
+  display: block; pointer-events: none;
+}
+body.fm .fm-s1 .fm-scene text { font-family: var(--s1-font); }
+
+/* ── the headline group, top left, in flow inside its own box ─────────── */
+body.fm .fm-s1 .fm-s1-head {
+  z-index: 2; left: 56px; top: 40px;
+  width: min(640px, 56vw); display: flex; flex-direction: column;
+}
+body.fm .fm-s1 .fm-s1-eyebrow {
+  margin: 0; font: 400 14px/1.2 var(--s1-font);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--s1-cream);
+}
+body.fm .fm-s1 .fm-s1-headline {
+  position: relative; display: inline-block; align-self: flex-start;
+  max-width: 100%; margin: 14px 0 0;
+  padding: .36em .5em .4em;
+  font: 700 clamp(30px, 2.3vw + 2.2vh, 54px)/1.1 var(--s1-font);
+  letter-spacing: -.021em; color: var(--s1-cream);
+  overflow-wrap: break-word; text-wrap: initial;
+}
+body.fm .fm-s1 .fm-s1-headline span { display: block; }
+body.fm .fm-s1 .fm-s1-headline::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
+  background: var(--s1-block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  filter: url(#rough);
+}
+body.fm .fm-s1 .fm-s1-headline:focus { outline: none; }
+body.fm .fm-s1 .fm-s1-headline:focus-visible { outline: 3px solid var(--s1-trace); outline-offset: 4px; }
+body.fm .fm-s1 .fm-s1-lede {
+  margin: 18px 0 0; max-width: 34ch;
+  font: 400 clamp(17px, .7vw + 1vh, 21px)/1.4 var(--s1-font); color: var(--s1-cream);
+}
+
+/* ── the state line, the one control and the disclosure, bottom right ──── */
+body.fm .fm-s1 .fm-s1-foot {
+  z-index: 2; right: 56px;
+  bottom: calc(var(--chrome-h) + var(--gesture-safe) + 10px);
+  width: min(360px, 36vw);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  text-align: right;
+}
+body.fm .fm-s1 .fm-s1-state {
+  margin: 0; font: 400 clamp(16px, .55vw + 1vh, 19px)/1.35 var(--s1-font); color: var(--s1-cream);
+}
+body.fm .fm-s1 .fm-s1-run {
+  min-height: 46px; min-width: 44px; padding: 0 18px;
+  border: 2px solid var(--s1-cream); border-radius: 3px;
+  background: transparent; color: var(--s1-cream);
+  font: 700 15px/1 var(--s1-font); letter-spacing: .01em; cursor: pointer;
+  transition: background .15s linear, color .15s linear;
+}
+body.fm .fm-s1 .fm-s1-run:hover { background: var(--s1-cream); color: var(--s1-ground); }
+body.fm .fm-s1 .fm-s1-run:focus-visible { outline: 3px solid var(--s1-trace); outline-offset: 3px; }
+body.fm .fm-s1 .fm-s1-micro {
+  margin: 2px 0 0; font: 400 15px/1.4 var(--s1-font); color: var(--s1-muted);
+}
+
+/* ── portrait / narrow: stacked and scrolling ─────────────────────────────
+   Head, drawing, foot, in flow. app.js lays the drawing out in bands for
+   this orientation and sizes the SVG to its content; the labels inside it
+   are still set in CSS pixels, so nothing shrinks with the viewport. */
+@media (max-width: 899px) {
+  body.fm .fm-s1 {
+    display: flex; flex-direction: column; gap: 0;
+    padding: 16px 16px 8px; overflow-y: auto; overflow-x: hidden;
+  }
+  body.fm .fm-s1 > * { position: static; }
+  body.fm .fm-s1 .fm-s1-head { width: auto; max-width: 100%; }
+  body.fm .fm-s1 .fm-s1-headline {
+    font-size: clamp(28px, 7.4vw, 46px); margin-top: 12px;
+    padding: .4em .5em .44em;
+  }
+  body.fm .fm-s1 .fm-s1-lede { font-size: clamp(17px, 4.4vw, 21px); margin-top: 14px; }
+  body.fm .fm-s1 .fm-scene { position: static; width: 100%; height: auto; margin: 18px 0 0; }
+  body.fm .fm-s1 .fm-s1-foot {
+    width: auto; max-width: 46ch; align-items: flex-start; text-align: left;
+    margin: 12px 0 0;
+  }
+  body.fm .fm-s1 .fm-s1-state { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.fm .fm-s1 .fm-s1-run { transition: none; }
 }

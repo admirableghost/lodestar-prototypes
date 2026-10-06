@@ -1,45 +1,33 @@
 /* ══════════════════════════════════════════════════════════════════════════
    Negotiated Neighborhood · Thorn Lane
-   No framework, no build step, no external request. Three files.
+   No framework, no build step, no external request. Three files and a font.
 
    Forked from prototype/resilience-grid/app.js for the navigation, the
-   per-screen --fit search, the camera and the pin projection; the GROUND
-   borrows prototype/micromutual/app.js's street technique — parcels laid out
-   from one column pitch, a house glyph per parcel, a frontage strip per
-   parcel, and a deterministic garden scatter so the street looks like a
-   street and not like noise. Neither file's content, cast or story is reused.
-
-   Micromutual's quarter-turn on a phone is NOT inherited, and that is a
-   decision rather than an omission. Its street is deep — two rows of long
-   lots and a canyon, about 900 world units from back fence to back fence —
-   so standing it on its end is the only way to see a lot at all. This street
-   is deliberately shallow, 424 units from edge to edge, because the count is
-   the subject and a shallow band lets the camera hold many parcels at once.
-   Rotated, it became a 180px ribbon down the middle of a 390px phone. Flat,
-   the same band shows seventeen parcels across the full width. So the phone
-   gets the same landscape world, framed tighter.
+   per-screen --fit search, the camera and the pin projection. The GROUND is
+   the design study's (design-study/remaining-five/03-negotiated): one shallow
+   cut-paper oblique of the street, carried into the browser rather than
+   redrawn — same geometry, same commitment order, same state language.
 
    THE GROUND
-   One invented street: sixty parcels in two rows of thirty either side of one
-   road, cut into a slope, with open ground behind both rows. Drawn once in a
-   single world space 1600 x 1000, and each screen is a camera move over it.
+   One invented street: sixty parcels in two rows of thirty either side of
+   one road, in three blocks of ten a side, cut into a slope with open ground
+   behind. Drawn once, full-bleed, and each screen is a camera move over it.
 
    The smallest object this ground resolves is ONE HOUSEHOLD, and the viewer
-   can count them. That is the concept in the drawing: the contract on screen
-   2 turns on how many of these sixty rectangles are filled, so a rectangle
-   has to be a thing you can point at. A ground whose smallest object were a
-   neighbourhood would be the regional prototype, which this is not.
+   can count them. The contract on screen 2 turns on how many of these sixty
+   houses are filled, so a house has to be a thing you can point at.
 
-   STATE IS NEVER CARRIED BY FADING. A committed parcel differs from an
-   uncommitted one by ground tint, by a solid rather than a broken boundary,
-   by a filled rather than a hollow marker, and by its frontage strip being
-   filled in. All four survive greyscale.
+   STATE IS NEVER CARRIED BY FADING, and colour means participation state
+   only. A committed house is solid green with a solid edge and a filled
+   frontage strip; a house not joined is paper-hollow with a dashed edge and
+   no strip. Both survive greyscale. The one amber in the frame is the
+   collective boundary, and it exists only at or above the threshold.
 
    WHAT IS INVENTED
    All of it. Thorn Lane, its sixty households, no. 31, the threshold of 48,
-   the twelve-year charge on the property bill, the eleven months, the
-   placement fee and every party to the agreement are invented, and screen 1
-   says so. No real insurer, place, product or price appears anywhere.
+   the eleven months, the placement fee and every party to the agreement are
+   invented, and screen 1 says so. No real insurer, place, product or price
+   appears anywhere.
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -51,63 +39,63 @@
   var START = 41;          /* where the street stands on entry */
   var ROSA = 15;           /* no. 31 — upper row, mid-street   */
 
-  var INK   = "#3C5648",
-      PAPER = "#FBF9F1",
-      RULE  = "#8A959C";
+  /* ── palette (the study's) ───────────────────────────────────────────── */
+  var P = "#F3EBD7", INK = "#16150F", MU = "#5A554A",
+      G = "#2F5A44", G2 = "#24473A", F = "#8C9A84", F2 = "#6F7F68",
+      A = "#C98D1C", GROUND = "#E8DDC2", TAR = "#DACCA8", KERB = "#CFC2A0";
+  var PARTY = { carrier: "#2F5E7C", fund: "#8A3450", survey: "#7A5A17", broker: "#5B4E7A" };
 
   /* ══════════════════════════════════════════════════════════════════════
-     WORLD GEOMETRY
-     A shallow street band, deliberately: two rows and a road have to fit in
-     whatever height the plates leave, and a deep lot would force the camera
-     so far out that a parcel stopped being countable.
+     WORLD GEOMETRY — one shallow oblique
+     x runs along the street, D away from the viewer, z up. The study's
+     1180 x 820 frame is the world's reference; the paper, slope and road
+     extend far past it so the viewport crops the ground and never finds
+     its edge.
      ══════════════════════════════════════════════════════════════════════ */
+  var KX = 0.16, KY = 0.5, YB = 582;             /* near edge of the lower lots */
+  function X(x, D) { return x + KX * D; }
+  function Y(D, z) { return YB - KY * D - (z || 0); }
+  function pt(x, D, z) { return X(x, D).toFixed(1) + "," + Y(D, z).toFixed(1); }
 
-  var W = 1600;
-  var ML = 28, GP = 5;
-  var PW = (W - ML * 2 - (PER_ROW - 1) * GP) / PER_ROW;   /* 46.63 */
-  var PH = 158;
-  var ROW_Y = [252, 486];
-  var ROAD_Y = 420, ROAD_H = 56, ROAD_MID = ROAD_Y + ROAD_H / 2;   /* 448 */
-
+  var PITCH = 32, BW = 10 * PITCH, GAP = 34, X0 = 56;   /* blocks: 56–376 · 410–730 · 764–1084 */
+  function bx(b) { return X0 + b * (BW + GAP); }
   function colOf(i) { return i % PER_ROW; }
-  function rowOf(i) { return i < PER_ROW ? 0 : 1; }
-  function px(i) { return ML + colOf(i) * (PW + GP); }
-  function py(i) { return ROW_Y[rowOf(i)]; }
-  function hcx(i) { return px(i) + PW / 2; }
-  /* the house sits toward the road, as a house on a shallow lot does */
-  function hcy(i) { return rowOf(i) === 0 ? ROW_Y[0] + PH - 54 : ROW_Y[1] + 54; }
-  var HW = 28, HH = 22;
+  function hx(i) { var col = colOf(i); return bx(Math.floor(col / 10)) + (col % 10) * PITCH; }
+  var ROAD = [120, 220];                                  /* D of the road */
+  var LOT = { lo: [0, 120], up: [224, 344] };             /* D of the lots either side */
+  var HW = 22, HD = 22, HH = 21, HR = 10;                 /* house: width, depth, wall, ridge */
+  var HD0 = { up: 246, lo: 20 };                          /* both rows face the road */
+  var FAR = -1400, NEAR = 2600;                           /* how far the ground runs */
 
-  /* the five metres cleared to the boundary, read as a frontage strip. It
-     stops short of the neighbour's, so thirty of them in a row do not merge
-     into one band and a gap in the run stays visible. */
-  function stripRect(i) {
-    return { x: px(i) + 3, w: PW - 6, h: 18,
-             y: rowOf(i) === 0 ? ROW_Y[0] + PH - 22 : ROW_Y[1] + 4 };
-  }
-  /* the commitment marker, at the back of the lot away from the road */
-  function markY(i) { return rowOf(i) === 0 ? ROW_Y[0] + 24 : ROW_Y[1] + PH - 24; }
+  /* the collective boundary, in street coordinates */
+  var BND = [[X0 - 20, -16], [bx(2) + BW + 14, -16], [bx(2) + BW + 14, 376], [X0 - 20, 376]];
+
+  /* where a household's pin aims: the ridge of its house */
+  function hcx(i) { var up = i < PER_ROW; return X(hx(i) + PITCH / 2, (up ? HD0.up : HD0.lo) + HD / 2); }
+  function hcy(i) { var up = i < PER_ROW; return Y((up ? HD0.up : HD0.lo) + HD / 2, HH + HR); }
 
   /* ── cameras ──────────────────────────────────────────────────────────
      A camera is the world region that must be VISIBLE, not a raw viewBox.
-     app.js turns it into one at draw time against the screen's own ground
-     window, so the framing stays honest at any window size. */
+     viewBoxFor() turns it into one at draw time against the screen's own
+     ground window, so the framing stays honest at any window size. */
   var CAM = {
-    street: { x: 0, y: 120, w: 1600, h: 760 },
-    commit: { x: 0, y: 120, w: 1600, h: 760 },
-    signed: { x: 0, y: 100, w: 1600, h: 800 }
+    street: { x: 0, y: 282, w: 1180, h: 334 },
+    commit: { x: 0, y: 282, w: 1180, h: 334 },
+    signed: { x: -70, y: 282, w: 1320, h: 360 }
   };
-  /* A phone gets the same landscape world, framed tighter: both rows and the
-     road still, but a run of the street rather than all sixty, because the
-     window under the stacked plates is short. */
+  /* A phone gets the same landscape world, framed tighter: both rows and
+     the road still, but a run of the street rather than all sixty, because
+     the window under the stacked copy is short. A tablet in portrait is
+     wide enough to hold the whole street and keeps the full camera. */
   var CAM_N = {
-    street: { x: 60, y: 150, w: 1480, h: 700 },
-    commit: { x: 60, y: 150, w: 1480, h: 700 },
-    signed: { x: 60, y: 140, w: 1480, h: 720 }
+    street: { x: 330, y: 282, w: 560, h: 334 },
+    commit: { x: 330, y: 282, w: 560, h: 334 },
+    signed: { x: 330, y: 282, w: 560, h: 360 }
   };
 
   var narrow = false;
   function isNarrow() { return window.matchMedia("(max-width: 899px)").matches; }
+  function isPhone() { return window.matchMedia("(max-width: 599px)").matches; }
 
   var svg = document.getElementById("plan");
 
@@ -115,9 +103,9 @@
      WHO COMMITS, AND IN WHAT ORDER
      Not a shuffle. Commitment on a street spreads from a few households to
      the ones beside them, so the order grows outward from five starters and
-     the holdouts end up scattered along the run — which is what makes the
+     the holdouts end up at the ends of the runs — which is what makes the
      frontage strip visibly knit together as the count rises, and what makes
-     the last few signatures look hard to get.
+     the last few signatures look hard to get. The study uses this order.
      ══════════════════════════════════════════════════════════════════════ */
   var ORDER = (function () {
     var seeds = [ROSA, 4, 22, 38, 52], taken = {}, out = [], front = [], guard = 0;
@@ -145,146 +133,170 @@
   var RANK = (function () { var r = []; ORDER.forEach(function (i, n) { r[i] = n; }); return r; })();
 
   var committed = START;
-  function isIn(i) { return RANK[i] < committed; }
 
-  /* ── deterministic planting, so the street looks like a street and not
-        like noise, and redraws identically every time ─────────────────── */
-  var GARDEN = (function () {
-    var out = [];
-    for (var i = 0; i < HOMES; i++) {
-      var seed = (i + 7) * 40503 % 65536, pts = [];
-      for (var n = 0; n < 4; n++) {
-        seed = (seed * 1103515245 + 12345) % 2147483648;
-        var fx = (seed % 1000) / 1000;
-        seed = (seed * 1103515245 + 12345) % 2147483648;
-        var fy = (seed % 1000) / 1000;
-        seed = (seed * 1103515245 + 12345) % 2147483648;
-        pts.push({ fx: fx, fy: fy, r: 3.4 + (seed % 1000) / 1000 * 3.6 });
-      }
-      out.push(pts);
-    }
-    return out;
-  })();
+  /* ── deterministic planting, so the street looks like a street ─────── */
+  var TREES = [[48, 302, 13, 0], [150, 308, 11, 1], [262, 298, 13, 0], [392, 306, 10, 1], [462, 310, 12, 0], [600, 300, 13, 1],
+               [708, 308, 11, 0], [748, 296, 9, 1], [830, 304, 13, 0], [952, 310, 11, 1], [1060, 300, 13, 0],
+               [-80, 306, 12, 1], [-210, 298, 13, 0], [-340, 310, 10, 1], [1190, 304, 12, 0], [1320, 298, 13, 1], [1450, 308, 10, 0]];
+  var SHRUBS = [[393, 58, 7], [392, 92, 5], [747, 66, 8], [748, 100, 5], [32, 70, 7], [1108, 76, 7], [-60, 60, 6], [1180, 96, 6]];
 
   /* ══════════════════════════════════════════════════════════════════════
      DRAWING THE STREET
-       opts.mode   — "quote" (screen 1: nobody has committed yet)
-                     "commit" (screens 2 and 3: every parcel shows its state)
-       opts.done(i)  — this household has already done the work, on its own
-       opts.ring(i)  — ring this parcel
-       opts.alt      — the accessible description
+       opts.mode  — "alone"  (screen 1: nobody has committed; no. 31 did
+                               the work on its own and is ringed)
+                    "commit" (screen 2: every house shows its state)
+                    "signed" (screen 3: the agreement in force, with the
+                               parties that hold it)
+       opts.alt   — the accessible description
      ══════════════════════════════════════════════════════════════════════ */
+
+  function poly(pts, fill, o) {
+    o = o || {};
+    return '<polygon points="' + pts.map(function (p) { return pt(p[0], p[1], p[2]); }).join(" ") +
+      '" fill="' + fill + '"' + (o.st ? ' stroke="' + o.st + '" stroke-width="' + (o.sw || 1.4) + '" stroke-linejoin="round"' : "") +
+      (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") + (o.op != null ? ' opacity="' + o.op + '"' : "") +
+      (o.filter ? ' filter="' + o.filter + '"' : "") + (o.attr ? " " + o.attr : "") + "/>";
+  }
+  function line(x1, y1, x2, y2, c, w, o) {
+    o = o || {};
+    return '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) +
+      '" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round"' +
+      (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") + (o.op != null ? ' opacity="' + o.op + '"' : "") + "/>";
+  }
+
+  function house(i, on, ringed) {
+    var up = i < PER_ROW, x = hx(i) + (PITCH - HW) / 2, d0 = up ? HD0.up : HD0.lo, d1 = d0 + HD;
+    var fillF = on ? G : P, fillS = on ? G2 : P, fillRL = on ? F : P, fillRR = on ? F2 : P;
+    var st = on ? G2 : MU, dash = on ? null : "3 2.5", sw = on ? 1 : 1.5, s = [];
+    s.push('<g data-house="' + (on ? "in" : "out") + '">');
+    /* left roof slope, right roof slope, right wall, near face (gable) */
+    s.push(poly([[x, d0, HH], [x, d1, HH], [x + HW / 2, d1, HH + HR], [x + HW / 2, d0, HH + HR]], fillRL, { st: st, dash: dash, sw: sw }));
+    s.push(poly([[x + HW / 2, d0, HH + HR], [x + HW / 2, d1, HH + HR], [x + HW, d1, HH], [x + HW, d0, HH]], fillRR, { st: st, dash: dash, sw: sw }));
+    s.push(poly([[x + HW, d0, 0], [x + HW, d1, 0], [x + HW, d1, HH], [x + HW, d0, HH]], fillS, { st: st, dash: dash, sw: sw }));
+    s.push(poly([[x, d0, 0], [x + HW, d0, 0], [x + HW, d0, HH], [x + HW / 2, d0, HH + HR], [x, d0, HH]], fillF, { st: st, dash: dash, sw: sw }));
+    if (on && up) { /* a door toward the road, so the upper row reads as fronts */
+      s.push(poly([[x + 8, d0, 0], [x + 14, d0, 0], [x + 14, d0, 9], [x + 8, d0, 9]], P, { op: .85 }));
+    }
+    s.push('</g>');
+    if (ringed) {
+      s.push('<circle cx="' + X(hx(i) + PITCH / 2, d0).toFixed(1) + '" cy="' + Y(d0, 10).toFixed(1) +
+             '" r="26" fill="none" stroke="' + INK + '" stroke-width="1.6"/>');
+    }
+    return s.join("");
+  }
+
+  /* the frontage strip: the cleared metres at the road edge of a committed
+     lot. Below the threshold every strip stops short of its neighbour. At
+     the threshold the committed strips meet, and bridge the block gaps,
+     into continuous runs — broken only where a lot is still out. */
+  function strips(up, isIn, crossed) {
+    var s = [], D0 = up ? LOT.up[0] : LOT.lo[1] - 12, D1 = D0 + 12, base = up ? 0 : PER_ROW;
+    for (var i = base; i < base + PER_ROW; i++) {
+      if (!isIn(i)) { continue; }
+      var col = colOf(i), x0 = hx(i), x1 = x0 + PITCH, inset = crossed ? 0 : 5;
+      if (crossed && col % 10 === 9 && col < PER_ROW - 1 && isIn(i + 1)) { x1 += GAP; }
+      s.push(poly([[x0 + inset, D0], [x1 - inset, D0], [x1 - inset, D1], [x0 + inset, D1]], G));
+    }
+    return s.join("");
+  }
+
+  function tree(x, D, r, dark) {
+    return line(X(x, D), Y(D), X(x, D), Y(D) - r * 1.1, INK, 2, { op: .55 }) +
+      '<circle cx="' + X(x, D).toFixed(1) + '" cy="' + (Y(D) - r * 1.35).toFixed(1) + '" r="' + r + '" fill="' + (dark ? F2 : F) + '"/>';
+  }
+  function shrub(x, D, r) {
+    return '<ellipse cx="' + X(x, D).toFixed(1) + '" cy="' + Y(D).toFixed(1) + '" rx="' + r + '" ry="' + (r * .62).toFixed(1) + '" fill="' + F2 + '" opacity=".8"/>';
+  }
+
+  /* the slope behind the street: a low, planted horizon, deterministic */
+  function horizonPts(y0) {
+    var out = [], x;
+    for (x = FAR; x <= NEAR; x += 60) {
+      out.push(x + " " + (y0 + 9 * Math.sin(x / 95) + 5 * Math.sin(x / 41 + 1.3)).toFixed(1));
+    }
+    return out;
+  }
+  function horizon(y0) { return "M" + horizonPts(y0).join(" L"); }
+  /* the planted band just below the horizon: the top edge forward, the
+     lower edge back */
+  function slopeBand() {
+    return "M" + horizonPts(304).join(" L") + " L" + horizonPts(332).reverse().join(" L") + " Z";
+  }
 
   function renderStreet(opts) {
     opts = opts || {};
-    var s = [];
+    var mode = opts.mode || "commit";
+    var C = mode === "alone" ? 0 : mode === "signed" ? Math.max(committed, NEED) : committed;
+    var crossed = mode !== "alone" && C >= NEED;
+    function isIn(i) { return RANK[i] < C; }
+    var s = [], i;
 
-    /* ── the ground: a parchment plan, not a map tile ───────────────── */
     s.push('<defs>' +
-      '<linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1">' +
-        '<stop offset="0" stop-color="#F6F2E6"/><stop offset="1" stop-color="#EBE6D6"/></linearGradient>' +
-      '<linearGradient id="gjoin" x1="0" y1="0" x2="0" y2="1">' +
-        '<stop offset="0" stop-color="#1F7A63" stop-opacity=".22"/>' +
-        '<stop offset="1" stop-color="#1F7A63" stop-opacity=".07"/></linearGradient>' +
-      '<filter id="glow" x="-40%" y="-40%" width="180%" height="180%">' +
-        '<feGaussianBlur stdDeviation="10" result="b"/>' +
-        '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      '<filter id="grain" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="g"/><feBlend in="SourceGraphic" in2="g" mode="multiply"/></filter>' +
+      '<filter id="rough" x="-4%" y="-6%" width="108%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
       '</defs>');
-    s.push('<rect x="-400" y="-400" width="2400" height="1800" fill="url(#gsky)"/>');
+    /* every mark sits in one untransformed group, so the pin projection can
+       read a single CTM */
+    s.push('<g>');
 
-    /* plot rhythm, very faint — residential texture, never a grid UI */
-    for (var gx = -200; gx < 1900; gx += 64) {
-      s.push('<line x1="' + gx + '" y1="-200" x2="' + gx + '" y2="1200" stroke="#D9D2BE" stroke-width="1" opacity=".5"/>');
+    /* paper, the one ground plane, the slope, the road — all past every edge */
+    s.push('<rect x="' + FAR + '" y="-1400" width="' + (NEAR - FAR) + '" height="3200" fill="' + P + '"/>');
+    var hz = horizon(304);
+    s.push('<path d="' + hz + ' L' + NEAR + ' 606 L' + FAR + ' 606 Z" fill="' + GROUND + '"/>');
+    s.push('<path d="' + hz + '" fill="none" stroke="' + INK + '" stroke-width="1.2" opacity=".28"/>');
+    s.push('<path d="' + slopeBand() + '" fill="' + F + '" opacity=".3"/>');
+    s.push(poly([[FAR, ROAD[0]], [NEAR, ROAD[0]], [NEAR, ROAD[1]], [FAR, ROAD[1]]], TAR, { filter: "url(#grain)" }));
+    s.push(line(X(FAR, 170), Y(170), X(NEAR, 170), Y(170), P, 2, { dash: "22 16", op: .9 }));
+    s.push(line(X(FAR, ROAD[1]), Y(ROAD[1]), X(NEAR, ROAD[1]), Y(ROAD[1]), KERB, 1.6));
+    s.push(line(X(FAR, ROAD[0]), Y(ROAD[0]), X(NEAR, ROAD[0]), Y(ROAD[0]), KERB, 1.6));
+
+    /* six blocks of ten: ground plates */
+    s.push('<g filter="url(#grain)">');
+    for (var b = 0; b < 3; b++) {
+      var x0 = bx(b) - 3, x1 = bx(b) + BW + 3;
+      s.push(poly([[x0, LOT.up[0]], [x1, LOT.up[0]], [x1, LOT.up[1]], [x0, LOT.up[1]]], F, { op: .42 }));
+      s.push(poly([[x0, LOT.lo[0]], [x1, LOT.lo[0]], [x1, LOT.lo[1]], [x0, LOT.lo[1]]], F, { op: .42 }));
+    }
+    s.push('</g>');
+    /* a faint lot line between every pair of neighbours, so a lot is a lot */
+    for (i = 0; i < HOMES; i++) {
+      var col = colOf(i); if (col % 10 === 0) { continue; }
+      var up = i < PER_ROW, lx = hx(i), L = up ? LOT.up : LOT.lo;
+      s.push(line(X(lx, L[0]), Y(L[0]), X(lx, L[1]), Y(L[1]), INK, 1, { op: .14 }));
     }
 
-    /* ── the street itself ──────────────────────────────────────────── */
-    s.push('<rect x="-400" y="' + ST_Y + '" width="2400" height="' + ST_H + '" fill="#E2DCC8"/>');
-    s.push('<line x1="-400" y1="' + (ST_Y + ST_H / 2) + '" x2="2000" y2="' + (ST_Y + ST_H / 2) +
-           '" stroke="#C9C0A6" stroke-width="2" stroke-dasharray="26 20"/>');
-
-    var joinedTo = opts.allJoined ? BLOCKS.length : blocksJoined();
-    var crossed  = opts.allJoined || committed >= NEED;
-
-    /* ── the collective boundary: the threshold EVENT ───────────────── */
+    /* ── the collective boundary: the threshold EVENT, the only amber ── */
     if (crossed) {
-      s.push('<rect x="64" y="128" width="1472" height="744" rx="30" fill="none" ' +
-             'stroke="#C08A2E" stroke-width="5" filter="url(#glow)" opacity=".92"/>');
-      s.push('<rect x="64" y="128" width="1472" height="744" rx="30" fill="#C08A2E" opacity=".05"/>');
-      /* the blocks are now one thing, so they are tied together */
-      for (var t = 0; t < BLOCKS.length - 1; t++) {
-        var a = BLOCKS[t], bq = BLOCKS[t + 1];
-        s.push('<line x1="' + (a.x + a.w / 2) + '" y1="' + (a.y + a.h / 2) +
-               '" x2="' + (bq.x + bq.w / 2) + '" y2="' + (bq.y + bq.h / 2) +
-               '" stroke="#1F7A63" stroke-width="2.5" opacity=".5" stroke-dasharray="10 8"/>');
-      }
+      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' }));
+      s.push(poly(BND, "none", { st: A, sw: 4, attr: 'data-boundary="edge"' }));
     }
 
-    /* ── the blocks ─────────────────────────────────────────────────── */
-    BLOCKS.forEach(function (b, bi) {
-      var full = bi < joinedTo;
-      var part = (bi === joinedTo) ? blockPartial() : (full ? 1 : 0);
-      var lit  = full || part > 0;
+    /* planting behind the upper row (far), the upper row, strips, then the
+       near row and its garden */
+    TREES.forEach(function (t) { s.push(tree(t[0], t[1], t[2], t[3])); });
+    s.push(strips(true, isIn, crossed));
+    for (i = 0; i < PER_ROW; i++) {
+      s.push(house(i, mode === "alone" ? i === ROSA : isIn(i), mode === "alone" && i === ROSA));
+    }
+    s.push(strips(false, isIn, crossed));
+    SHRUBS.forEach(function (t) { s.push(shrub(t[0], t[1], t[2])); });
+    for (i = PER_ROW; i < HOMES; i++) { s.push(house(i, isIn(i), false)); }
 
-      s.push('<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h +
-             '" rx="14" fill="' + (lit ? "url(#gjoin)" : "#E4E0CE") + '" ' +
-             'stroke="' + (full ? "#1F7A63" : lit ? "#4E9B85" : "#C4BCA4") + '" ' +
-             'stroke-width="' + (full ? 3 : 1.6) + '"' + (full ? '' : ' stroke-dasharray="9 7"') + '/>');
-
-      /* the houses: enough to read as a neighbourhood, not as a count */
-      b.homes.forEach(function (h, hi) {
-        var on = full || hi / b.homes.length < part;
-        var prepared = opts.mode === "alone" && bi === 0 && hi === 2;
-        var fill = prepared ? "#1F7A63" : on ? "#4E9B85" : "#CFC8B2";
-        s.push('<g opacity="' + (on || prepared ? 1 : .85) + '">');
-        s.push('<path d="M' + h.x + ' ' + (h.y + 9) + 'L' + (h.x + 13) + ' ' + h.y +
-               'L' + (h.x + 26) + ' ' + (h.y + 9) + 'Z" fill="' + fill + '"/>');
-        s.push('<rect x="' + (h.x + 3) + '" y="' + (h.y + 9) + '" width="20" height="15" fill="' + fill + '"/>');
-        s.push('</g>');
-        if (prepared) {
-          s.push('<circle cx="' + (h.x + 13) + '" cy="' + (h.y + 12) + '" r="30" fill="none" ' +
-                 'stroke="#1F7A63" stroke-width="2.5" opacity=".75"/>');
-          s.push('<circle cx="' + (h.x + 13) + '" cy="' + (h.y + 12) + '" r="46" fill="none" ' +
-                 'stroke="#1F7A63" stroke-width="1.4" opacity=".4"/>');
-        }
-      });
-    });
-
-    /* ── screen 3: the parties that make the agreement hold ─────────── */
-    if (opts.mode === "signed") {
-      PARTIES.forEach(function (q) {
-        s.push('<line x1="800" y1="500" x2="' + q.x + '" y2="' + q.y +
-               '" stroke="' + q.c + '" stroke-width="2.5" opacity=".55"/>');
-        s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="13" fill="' + q.c + '"/>');
-      });
+    /* ── screen 3: the parties that hold the boundary ──────────────── */
+    if (mode === "signed") {
+      var corner = function (k) { return { x: X(BND[k][0], BND[k][1]), y: Y(BND[k][1]) }; };
+      [[PARTY.carrier, 3, -44, -36], [PARTY.fund, 2, 40, -36], [PARTY.survey, 0, -40, 34], [PARTY.broker, 1, 44, 34]]
+        .forEach(function (q) {
+          var c = corner(q[1]), qx = c.x + q[2], qy = c.y + q[3];
+          s.push(line(c.x, c.y, qx, qy, q[0], 2.5, { op: .7 }));
+          s.push('<circle cx="' + qx.toFixed(1) + '" cy="' + qy.toFixed(1) + '" r="11" fill="' + q[0] + '" stroke="' + P + '" stroke-width="2"/>');
+        });
     }
 
+    s.push('</g>');
     svg.innerHTML = s.join("");
+    if (opts.alt) { svg.setAttribute("aria-label", opts.alt); }
   }
-
-  /* six blocks of ten, because a street you can read beats sixty parcels you
-     have to count. The household number stays authoritative in the copy and
-     in the state; the blocks are how the eye follows it. */
-  var ST_Y = 470, ST_H = 60;
-  var BLOCKS = (function () {
-    var out = [], x, i, j;
-    for (i = 0; i < 6; i++) {
-      var top = i < 3;
-      x = 150 + (i % 3) * 440;
-      var y = top ? 190 : 580;
-      var b = { x: x, y: y, w: 380, h: 240, homes: [] };
-      for (j = 0; j < 10; j++) {
-        b.homes.push({ x: b.x + 36 + (j % 5) * 62, y: b.y + 58 + Math.floor(j / 5) * 92 });
-      }
-      out.push(b);
-    }
-    return out;
-  }());
-  var PARTIES = [
-    { x: 250,  y: 150, c: "#2F5E7C" }, { x: 1350, y: 150, c: "#8A3450" },
-    { x: 250,  y: 850, c: "#7A5A17" }, { x: 1350, y: 850, c: "#5B4E7A" }
-  ];
-  function blocksJoined() { return Math.floor(committed / 10); }
-  function blockPartial() { return (committed % 10) / 10; }
 
   /* ══════════════════════════════════════════════════════════════════════
      CAMERA  (inherited from resilience-grid / micromutual)
@@ -299,10 +311,9 @@
 
      `fit` is the screen's ground window: the band of the viewport the copy
      has left clear. It is both a height budget and an aim point, on every
-     width. A county tolerates being centred behind plates; sixty parcels
-     the viewer is meant to COUNT do not, so the street is sized to the band
-     and placed in it. Width is still the viewport's, because a street wants
-     to run off both edges. */
+     width. Sixty houses the viewer is meant to COUNT have to land in the
+     clear band, not half under the copy. Width is still the viewport's,
+     because a street wants to run off both edges. */
   function viewBoxFor(view, fit) {
     var el = document.getElementById("world").getBoundingClientRect();
     var vpW = window.innerWidth, vpH = window.innerHeight;
@@ -338,7 +349,7 @@
   }
 
   function moveCamera(name, instant) {
-    var cam = (narrow && CAM_N[name]) || CAM[name] || CAM.street;
+    var cam = (isPhone() && CAM_N[name]) || CAM[name] || CAM.street;
     var target = viewBoxFor(cam, groundFit());
     if (!vb || instant || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVB(target); placePins(); return;
@@ -368,13 +379,13 @@
   }
   function pinSet(n) {
     if (n === 1) {
-      return [pinAt("ink", "No. 31 · work done", ROSA, -116),
-              pinAt("grey", "Same quote, all 60", 4, -116)];
+      return [pinAt("ink", "No. 31 · work done", ROSA, -44),
+              pinAt("grey", "Same quote, all 60", 4, -44)];
     }
     /* Screen 2 carries no pin. The count is already the largest thing on
        the screen and a label repeating it under the street is noise. */
     if (n === 2) { return []; }
-    return [pinAt("broker", "Thorn Lane, signed", PER_ROW + 7, 118)];
+    return [pinAt("broker", "Thorn Lane, signed", PER_ROW + 7, 54)];
   }
 
   function buildPins(n) {
@@ -401,7 +412,7 @@
 
     var sc = screens && screens[current - 1];
     var blockers = sc ? Array.prototype.map.call(
-      sc.querySelectorAll(".plate"), function (p) { return p.getBoundingClientRect(); }) : [];
+      sc.querySelectorAll(".plate, .xhead"), function (p) { return p.getBoundingClientRect(); }) : [];
     blockers = blockers.concat(Array.prototype.map.call(
       document.querySelectorAll(".chrome button, .chrome select"),
       function (p) { return p.getBoundingClientRect(); }));
@@ -438,18 +449,30 @@
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
   var range = document.getElementById("thr-range");
+  var ctlEl = document.getElementById("ctl");
   var countEl = document.getElementById("thr-count");
   var offerEl = document.getElementById("offer");
   var offerState = document.getElementById("offer-state");
   var offerLine = document.getElementById("offer-line");
-  var offerGlyph = offerEl ? offerEl.querySelector(".offer-glyph") : null;
   var signN = document.getElementById("sign-n");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
                "eight", "nine", "ten", "eleven", "twelve"];
   function few(n) { return n <= 12 ? WORDS[n] : String(n); }
+  function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
 
   var lastOpen = null;
+
+  /* The condition statement. ONE sentence, derived from NEED − committed. */
+  function conditionLine(open) {
+    if (open) {
+      return "Participation reached. The offer still requires hardening, verification and 48 staying in. Not cover yet.";
+    }
+    var short = NEED - committed;
+    return short === 1
+      ? "One more household and the carrier writes the street as one risk."
+      : cap(few(short)) + " more households and the carrier writes the street as one risk.";
+  }
 
   function paintOffer(announceChange) {
     var open = committed >= NEED;
@@ -460,18 +483,10 @@
        visible without reading the number */
     if (range) { range.style.setProperty("--p", (committed / HOMES * 100).toFixed(2) + "%"); }
 
+    if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; }
     if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
-    if (offerGlyph) { offerGlyph.textContent = open ? "●" : "○"; }
-    if (offerState) { offerState.textContent = open ? "Available" : "Not available"; }
-    if (offerLine) {
-      var short = NEED - committed;
-      offerLine.textContent = open
-        ? "The carrier writes the street as one risk, at one price, for three years."
-        : short === 1
-          ? "One more household and the carrier writes the street as one risk."
-          : few(short).charAt(0).toUpperCase() + few(short).slice(1) +
-            " more households and the carrier writes the street as one risk.";
-    }
+    if (offerState) { offerState.textContent = open ? "Available — conditional" : "Not available"; }
+    if (offerLine) { offerLine.textContent = conditionLine(open); }
     /* screen 3 is the same deal, so it reads the same count — and never
        shows a number below the one that binds it */
     if (signN) { signN.textContent = Math.max(committed, NEED) + " of 60"; }
@@ -484,11 +499,11 @@
     if (announceChange) {
       if (open !== lastOpen) {
         say(open
-          ? "Threshold met at " + committed + " of 60. The offer is available."
+          ? "Threshold met at " + committed + " of 60. The offer is available, conditional. Not cover yet."
           : "Below the threshold at " + committed + " of 60. The offer is not available.");
       } else {
         say(open
-          ? committed + " of 60 committed. The threshold of 48 is met and the offer stands."
+          ? committed + " of 60 committed. The threshold of 48 is met and the conditional offer stands."
           : committed + " of 60 committed, " + (NEED - committed) + " short of 48.");
       }
     }
@@ -508,29 +523,31 @@
 
   function altFor(n) {
     if (n === 1) {
-      return "Plan of Thorn Lane: sixty parcels in two rows of thirty either side of one road, " +
-        "with open ground behind both rows. Every lot is drawn with a broken boundary and an " +
-        "untreated frontage except number 31, which is ringed, filled, and carries a completed " +
-        "marker. Its quote is the street's quote.";
+      return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
+        "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
+        "hollow with a dashed edge except number 31, which is solid and ringed. Its quote is the " +
+        "street's quote.";
     }
     if (n === 2) {
-      return "The same street with " + committed + " of the sixty parcels committed: each one " +
-        "filled, with a solid boundary, a treated frontage strip and a filled marker. The " +
-        "remaining " + (HOMES - committed) + " are hatched, broken-edged and carry a hollow " +
-        "marker.";
+      var open = committed >= NEED;
+      return "The same street with " + committed + " of the sixty houses committed: each solid " +
+        "green with a cleared frontage strip at the road. The remaining " + (HOMES - committed) +
+        " are hollow with dashed edges and no strip. " +
+        (open
+          ? "An amber boundary encloses the whole street, hollow houses included: the street is " +
+            "offered as one risk, but the houses not joined stay hollow inside it."
+          : "There is no boundary around the street yet.");
     }
-    return "A close run of Thorn Lane with the agreement in force: committed parcels filled, " +
-      "their frontage strips treated and joined along the road, and the parcels still out " +
-      "showing as gaps in the run.";
+    return "Thorn Lane with the agreement in force: " + Math.max(committed, NEED) + " houses solid, their " +
+      "frontage strips joined into continuous runs along the road, the amber boundary around the " +
+      "street, and four marks at its corners for the carrier, the fund, the surveyor and the " +
+      "broker. The houses still out are hollow gaps in the run.";
   }
 
   function drawFor(n) {
-    /* screen 1 is one prepared household in an uncoordinated street;
-       screen 2 is the street filling; screen 3 is the street as one thing
-       with the four parties that make the agreement hold. */
-    if (n === 1)      { renderStreet({ mode: "alone" }); }
-    else if (n === 2) { renderStreet({ mode: "commit" }); }
-    else              { renderStreet({ mode: "signed", allJoined: true }); }
+    if (n === 1)      { renderStreet({ mode: "alone", alt: altFor(1) }); }
+    else if (n === 2) { renderStreet({ mode: "commit", alt: altFor(2) }); }
+    else              { renderStreet({ mode: "signed", alt: altFor(3) }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -607,9 +624,8 @@
     /* NARROW NEVER SHRINKS.
        The --fit search exists so a desktop composition stays inside a stage
        that does not scroll. A phone screen DOES scroll, so running the search
-       there buys nothing and costs everything: it drove uppercase labels to
-       6.4px and notes to 7.7px in the prototype this is forked from. Below
-       900px the type holds its size and the screen scrolls. */
+       there buys nothing and costs everything. Below 900px the type holds its
+       size and the screen scrolls. */
     if (narrow) { return; }
 
     if (!spills(sc)) { return; }
@@ -724,7 +740,6 @@
   window.addEventListener("resize", function () {
     clearTimeout(relayout);
     relayout = setTimeout(function () {
-      var was = narrow;
       narrow = isNarrow();
       /* The window is the stage. Every screen is re-fitted to the new one,
          not just the visible one, so a resize can never leave a hidden
@@ -735,7 +750,6 @@
         fitScreen(s);
         if (h) { s.hidden = true; }
       });
-      if (was !== narrow) { drawFor(current); }
       moveCamera(screens[current - 1].dataset.cam, true);
       placePins();
     }, 140);
@@ -767,4 +781,12 @@
   paintOffer(false);
   show(fromHash() || 1, false);
   moveCamera(screens[current - 1].dataset.cam, true);
+  /* the font arrives after first layout; the headline backing is the text's
+     own box so it follows, but the fit and the camera need the settled lines */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      fitScreen(screens[current - 1]);
+      moveCamera(screens[current - 1].dataset.cam, true);
+    });
+  }
 })();

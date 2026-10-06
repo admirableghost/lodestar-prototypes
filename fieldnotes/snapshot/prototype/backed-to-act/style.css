@@ -1520,3 +1520,247 @@ body { background: var(--stage-deep); }
 .dec { align-self: start; }
 .zones--sm { align-self: stretch; }
 .zones--sm .zone { justify-content: flex-start; padding-top: calc(var(--x-gap) * .9); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCREEN 2 · SIMPLIFIED PASS — "Cover moves the line."
+   Scoped to .screen--s2 and s2-* classes only; screens 1 and 3 are untouched.
+
+   One idea: customer authorisation lets a bounded purchase proceed with
+   specified protection attached. The PURCHASE ORDER is the dominant object.
+   The preceding work is one small "Prepared" cluster on the permitted side.
+   The new-supplier exception sits on the approval side, marked ▧ ALWAYS NEEDS
+   A PERSON, and no line or arrow ever sweeps it across.
+
+   The order never moves. THE LINE moves: the tray plate (permitted territory)
+   widens to the order's far side, the state word on the order changes, and a
+   dashed ghost of the old position explains the movement. Zone position, the
+   plate fill and the word all say the same thing, so colour is never the
+   only distinction. Implementation language follows prototype/home-again:
+   flow layout, headline backing as the heading's own box, labels in wrapping
+   areas, state marks with words, Bricolage Grotesque from fonts/.
+   ══════════════════════════════════════════════════════════════════════════ */
+@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
+
+.screen--s2 {
+  --s2-cream: #F3EBD7; --s2-ink: #16150F; --s2-mute: #B9B2A0; --s2-sheetm: #5A554A;
+  --s2-block: #6B675E; --s2-tray: #262E36;
+  --s2-ok: #74C79A; --s2-hold: #E2A75C; --s2-exc: #F3977A;
+  --s2-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --s2-ease: cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column; align-items: stretch; gap: 0;
+  /* a fixed base, so ch/em here never follow the deck's --fit search */
+  font: 400 16px/1.4 "Bricolage", "Helvetica Neue", Arial, sans-serif;
+}
+.screen--s2 > * { grid-area: auto; }
+.s2-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ── the top row: headline left, control right ───────────────────────── */
+.s2-top { display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 18px 32px; flex: 0 0 auto; pointer-events: auto; }
+.s2-head { flex: 0 1 auto; justify-content: flex-start; align-items: flex-start; gap: 0; }
+.screen--s2 .s2-head .xeyebrow { margin: 0 0 10px; font: 400 14px/1.2 "Bricolage";
+  letter-spacing: .12em; text-transform: uppercase; color: var(--s2-cream); }
+/* The backing is the heading's own box, so it contains its text at every
+   viewport. Torn edge and grain live on a pseudo-element behind the glyphs. */
+.screen--s2 .s2-xd {
+  position: relative; isolation: isolate; display: inline-block; max-width: 100%;
+  margin: 0; padding: .3em .5em .36em; border-radius: 2px;
+  font: 700 clamp(30px, 2.6vw + 3vh, 56px)/1.08 "Bricolage";
+  letter-spacing: -.022em; color: var(--s2-cream); overflow-wrap: break-word;
+}
+.screen--s2 .s2-xd span { display: block; }
+.s2-xd::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+  background: var(--s2-block) var(--s2-grain); filter: url(#s2-rough); }
+
+.s2-auth { flex: 0 0 auto; max-width: 440px; gap: 0; align-items: flex-start; }
+.s2-ctrl-lab { margin: 0 0 8px; font: 400 15px/1.3 "Bricolage"; color: var(--s2-mute); }
+.s2-auth .xchoice { gap: 12px; }
+/* the two-choice control: 46px, 2px border, the pressed one filled and ● */
+.s2-auth .xchoice button {
+  min-height: 46px; height: 46px; padding: 0 22px; border-radius: 0;
+  border: 2px solid var(--s2-cream); background: transparent; color: var(--s2-cream);
+  font: 700 15px/1 "Bricolage"; letter-spacing: .01em; cursor: pointer;
+  transition: background .15s linear, color .15s linear;
+}
+.s2-auth .xchoice button[aria-pressed="true"] { background: var(--s2-cream); color: var(--s2-ink); }
+.s2-auth .xchoice button[aria-pressed="true"]::before { content: "● "; }
+.s2-auth .xchoice button:focus-visible { outline: 3px solid var(--s2-hold); outline-offset: 3px; border-radius: 0; }
+.s2-auth .s2-support { margin: 14px 0 0; max-width: 36ch;
+  font: 400 clamp(17px, .5vw + 1.1vh, 20px)/1.4 "Bricolage"; color: var(--s2-cream); }
+
+/* ── the desk ────────────────────────────────────────────────────────── */
+.s2-desk {
+  --s2-sh: clamp(190px, calc(100vh - 560px), 250px);   /* the order's sheet height */
+  --s2-x: 30%; --s2-tray: 30%;                          /* the line, draft only  */
+  position: relative; flex: 1 0 auto; min-height: 0; pointer-events: auto;
+  width: 100%; max-width: 1360px;
+  margin-top: 16px; padding: 70px 0 24px;
+  display: grid; grid-template-columns: 28% 4% 36% 4% 28%;
+  grid-template-rows: auto; align-content: center;
+}
+.s2-desk[data-place="may"] { --s2-x: 70%; --s2-tray: 70%; }   /* the line, moved */
+
+/* the permitted tray: a lighter plate that stops at the line */
+.s2-tray { position: absolute; z-index: 0; left: 0; top: 22px; bottom: 20px;
+  width: var(--s2-tray); pointer-events: none;
+  background: var(--s2-tray) var(--s2-grain);
+  border-top: 2px solid color-mix(in srgb, var(--s2-ok) 55%, transparent);
+  transition: width .55s var(--s2-ease); }
+
+/* zone words: a mark and a word, never a tint alone */
+.s2-zlab { margin: 0; font: 700 14px/1.2 "Bricolage"; letter-spacing: .09em;
+  text-transform: uppercase; white-space: nowrap; }
+.s2-zlab--may { position: absolute; z-index: 2; left: 16px; top: 44px; color: var(--s2-ok); }
+.s2-zlab--may::before { content: "● "; }
+.s2-zlab--ask { color: var(--s2-hold); }
+.s2-zlab--ask::before { content: "○ "; }
+
+/* the approval line, set by the customer. 3px, ticked, labelled. */
+.s2-line { position: absolute; z-index: 2; top: 0; bottom: 20px; left: var(--s2-x);
+  width: 3px; margin-left: -1.5px; background: var(--s2-hold); pointer-events: none;
+  transition: left .55s var(--s2-ease); }
+.s2-line::before, .s2-line::after { content: ""; position: absolute; left: -5.5px;
+  width: 14px; height: 3px; background: var(--s2-hold); }
+.s2-line::before { top: 0; } .s2-line::after { bottom: 0; }
+.s2-line-lab { position: absolute; left: 14px; top: -3px; white-space: nowrap;
+  font: 400 15px/1.3 "Bricolage"; color: var(--s2-mute); }
+.s2-line--now .s2-zlab--ask { position: absolute; left: 16px; top: 44px; }
+/* where the line stood before — a trace, unmistakably not the current line */
+.s2-line--ghost { left: 30%; width: 0; margin-left: 0; background: none;
+  border-left: 1.5px dashed color-mix(in srgb, var(--s2-hold) 55%, transparent);
+  opacity: 0; transition: opacity .4s linear; }
+.s2-line--ghost::before, .s2-line--ghost::after { display: none; }
+.s2-line--ghost .s2-line-lab { left: auto; right: 12px; }
+.s2-desk[data-place="may"] .s2-line--ghost { opacity: 1; }
+
+/* the three objects: one column each, the order's column the widest */
+/* Each slot is two rows: a fixed art row the sheets sit at the foot of, and
+   a caption row — so the three captions start on one line, as in the study. */
+.s2-slot { position: relative; z-index: 3; grid-row: 1; justify-self: center;
+  display: grid; grid-template-rows: calc(var(--s2-sh) + 16px) auto; row-gap: 12px;
+  align-items: end; justify-items: start; max-width: 100%; }
+.s2-slot--prep { grid-column: 1; } .s2-slot--po { grid-column: 3; } .s2-slot--exc { grid-column: 5; }
+.s2-art { display: flex; align-items: flex-end; }
+
+/* a caption is a wrapping label area, never a fixed box */
+.s2-cap { margin: 0; align-self: start; display: grid; gap: 3px; max-width: max(260px, calc(var(--s2-sh) * 1.3));
+  font: 400 16px/1.3 "Bricolage"; color: var(--s2-cream); }
+.s2-cap b { font-weight: 700; }
+.s2-cap span { color: var(--s2-mute); }
+.s2-mark { font-style: normal; font: 700 14px/1.3 "Bricolage"; letter-spacing: .09em;
+  text-transform: uppercase; margin-top: 2px; }
+.s2-mark[data-kind="ask"]  { color: var(--s2-hold); }
+.s2-mark[data-kind="ask"]::before  { content: "○ "; }
+.s2-mark[data-kind="may"]  { color: var(--s2-ok); }
+.s2-mark[data-kind="may"]::before  { content: "● "; }
+.s2-mark[data-kind="hard"] { color: var(--s2-exc); }
+.s2-mark[data-kind="hard"]::before { content: "▧ "; }
+
+/* ── cut-paper sheets ────────────────────────────────────────────────── */
+.s2-sheet { position: relative; display: flex; flex-direction: column; gap: 6px;
+  padding: 12px 14px; background: var(--s2-cream); color: var(--s2-ink); }
+.s2-sheet > svg { display: block; width: 100%; flex: 0 0 auto; }
+.s2-sh { font: 700 12.5px/1.2 "Bricolage"; letter-spacing: .06em; text-transform: uppercase; }
+.s2-sm { font: 400 12.5px/1.2 "Bricolage"; color: var(--s2-sheetm); margin-top: -2px; }
+
+/* Prepared: three small sheets, one cluster */
+.s2-prep { position: relative; width: calc(var(--s2-sh) * .9); height: calc(var(--s2-sh) * .84); }
+.s2-prep .s2-sheet { position: absolute; padding: 10px 10px; gap: 8px; }
+.s2-prep .s2-sh { font-size: 11.5px; }
+.s2-sheet--quotes { left: 0; top: 0; width: 58%; height: 60%; background: #E3D7BA; }
+.s2-sheet--order  { left: 24%; top: 13%; width: 58%; height: 80%; }
+.s2-sheet--qty    { left: 60%; top: 55%; width: 40%; height: 42%; background: #EBE2CB; transform: rotate(-3deg); }
+.s2-sheet--quotes > svg { height: 44%; } .s2-sheet--order > svg { height: 38%; }
+.s2-sheet--qty > svg { height: 34%; width: 92%; }
+.s2-stamp { position: absolute; left: 10%; bottom: 10px; transform: rotate(-12deg);
+  padding: 1px 7px; border: 1.5px solid var(--s2-ink);
+  font: 700 13px/1.3 "Bricolage"; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
+
+/* The purchase order: the one dominant object */
+.s2-po { position: relative; padding: 0 54px 14px 0; transition: transform .55s var(--s2-ease); }
+.s2-sheet--po { width: calc(var(--s2-sh) * .86); height: var(--s2-sh);
+  box-shadow: 4px 4px 0 0 rgba(22,21,15,.38); }
+.s2-po-rules { height: 16px; }
+.s2-fields { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.s2-fields li { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 6px;
+  font: 400 13px/1.4 "Bricolage"; color: var(--s2-sheetm); }
+.s2-fields svg { display: block; width: 100%; height: 4px; }
+.s2-desk[data-place="may"] .s2-po { transform: rotate(-3deg); }
+/* the coverage annotation: one slip, the specified mistakes, nothing broader */
+/* pinned to the order's lower-right corner, clear of the field labels */
+.s2-slip { position: absolute; right: 0; bottom: -14px; width: 150px; transform: rotate(3deg);
+  padding: 8px 10px 9px; background: var(--s2-cream); color: var(--s2-ink);
+  border: 1.4px dashed var(--s2-ink); box-shadow: 0 2px 0 0 rgba(22,21,15,.18); }
+.s2-slip-h { margin: 0 0 3px; font: 700 12px/1.3 "Bricolage"; letter-spacing: .06em; text-transform: uppercase; }
+.s2-slip-l { list-style: none; margin: 0; padding: 0; font: 400 13px/1.3 "Bricolage"; }
+
+/* The exception: hatched band, a signature line, never moves */
+.s2-sheet--exc { width: calc(var(--s2-sh) * .8); height: calc(var(--s2-sh) * .9); padding-top: 24px; }
+.s2-hatchband { position: absolute; left: 0; top: 0; width: 100%; height: 12px; }
+.s2-sheet--exc > svg:not(.s2-hatchband) { height: 28%; }
+.s2-sign { margin-top: auto; padding-top: 6px; border-top: 1.5px solid var(--s2-ink);
+  display: flex; justify-content: space-between; gap: 6px; white-space: nowrap;
+  font: 400 11.5px/1.3 "Bricolage"; color: var(--s2-sheetm); }
+
+/* the residual responsibility, said once, in the frame */
+.s2-caveat { margin: 12px 0 0; max-width: 60ch; flex: 0 0 auto; pointer-events: auto;
+  font: 400 16px/1.4 "Bricolage"; color: var(--s2-mute); }
+
+/* short landscape windows (1180x740, 1536x740): a little less air above the desk */
+@media (min-width: 900px) and (max-height: 780px) {
+  .s2-desk { --s2-sh: clamp(200px, calc(100vh - 560px), 250px); padding-top: 50px; }
+  .s2-caveat { margin-top: 10px; }
+}
+
+/* ── portrait / narrow: stack and scroll ─────────────────────────────── */
+@media (max-width: 899px) {
+  .s2-top { flex-direction: column; align-items: stretch; gap: 16px; }
+  .s2-head { align-items: flex-start; }
+  .screen--s2 .s2-xd { font-size: clamp(30px, 8vw, 46px); }
+  .s2-auth { max-width: none; }
+  .s2-auth .s2-support { max-width: 44ch; font-size: 17px; }
+
+  .s2-desk { --s2-sh: clamp(168px, 24vw, 210px);
+    display: flex; flex-direction: column; margin-top: 18px; padding: 0; }
+  .s2-tray, .s2-zlab--may { position: static; }
+  .s2-tray { display: none; }
+  .s2-zlab--may { order: 1; padding: 10px 16px 0; background: var(--s2-tray) var(--s2-grain);
+    border-top: 2px solid color-mix(in srgb, var(--s2-ok) 55%, transparent); }
+  /* a slot becomes a row: the sheet, then its caption beside it */
+  .s2-slot { order: 2; justify-self: auto; display: flex; flex-direction: row; align-items: flex-end;
+    gap: 18px; padding: 12px 16px 16px; }
+  .s2-slot--prep { background: var(--s2-tray) var(--s2-grain); }
+  .s2-slot--po { order: 4; }
+  .s2-desk[data-place="may"] .s2-slot--po { background: var(--s2-tray) var(--s2-grain); }
+  .s2-slot--exc { order: 6; }
+  .s2-art { flex: 0 0 auto; }
+  .s2-cap { flex: 1 1 auto; max-width: none; min-width: 0; }
+  /* the slip sits under the order rather than across its fields */
+  .s2-po { display: flex; flex-direction: column; align-items: flex-start; padding: 0; }
+  .s2-slip { position: static; width: 140px; margin: -10px 0 0 24%; transform: rotate(2deg); }
+  .s2-desk[data-place="may"] .s2-po { transform: none; }
+
+  /* the line turns horizontal between the stacked trays */
+  .s2-line { position: relative; top: auto; bottom: auto; left: auto; width: auto;
+    margin: 0; background: none; border-top: 3px solid var(--s2-hold);
+    padding: 8px 16px 12px; transition: none; }
+  .s2-line--now { order: 3; }
+  .s2-desk[data-place="may"] .s2-line--now { order: 5; }
+  .s2-line::before, .s2-line::after { top: -9px; width: 3px; height: 15px; left: 0; }
+  .s2-line::after { left: auto; right: 0; }
+  .s2-line-lab, .s2-line--now .s2-zlab--ask { position: static; display: block; margin: 0; }
+  .s2-line--now .s2-zlab--ask { margin-top: 4px; }
+  .s2-line--ghost { display: none; order: 3; border-left: 0; padding: 4px 16px 6px; opacity: 1;
+    border-top: 1.5px dashed color-mix(in srgb, var(--s2-hold) 55%, transparent); }
+  .s2-desk[data-place="may"] .s2-line--ghost { display: block; }
+  .s2-line--ghost .s2-line-lab { text-align: right; }
+
+  .s2-caveat { margin-top: 16px; }
+}
+@media (max-width: 480px) {
+  .s2-slot { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .s2-auth .xchoice button { padding: 0 16px; }
+}

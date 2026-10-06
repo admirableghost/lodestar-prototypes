@@ -1114,3 +1114,143 @@ input[type="range"] { height: 44px; }
    top and bottom are untouched, which is where the headline actually
    sits. */
 .screen[data-screen="3"] .xhead--scrim::before { inset: -2.2vh -4vw -2.2vh -3vw; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCREEN 3 · THE MOMENT — simplified composition
+   Scoped to [data-screen="3"] and the .s3-* classes; nothing here touches
+   screens 1, 2, 4 or 5. The headline takes the design-study language from
+   prototype/home-again: Bricolage Grotesque on a charcoal block that is the
+   headline's OWN box (so it contains its text at every viewport), with the
+   grain and torn edge on a pseudo-element behind the glyphs. Labels on the
+   terrain are SVG text with a paper halo, drawn by app.js (S3_EVENTS).
+   ══════════════════════════════════════════════════════════════════════════ */
+@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
+
+.screen[data-screen="3"] {
+  --s3-block: #6B675E;
+  --s3-cream: #F3EBD7;
+  --s3-sans: "Bricolage", "Helvetica Neue", Arial, sans-serif;
+  --s3-label: max(12.5px, var(--x-label));
+}
+
+/* no scrim: the block is the backing */
+.screen[data-screen="3"] .xhead--scrim::before { display: none; }
+.screen[data-screen="3"] .xhead {
+  justify-content: flex-start; align-items: flex-start;
+  gap: calc(var(--x-gap) * .35);
+}
+.screen[data-screen="3"] .xeyebrow { font-family: var(--s3-sans); }
+.screen[data-screen="3"] .xhead .xd {
+  position: relative; z-index: 1;
+  display: inline-block; max-width: 100%;
+  margin: 0; padding: .3em .5em .36em;
+  font: 700 clamp(28px, 2.1vw + 2vh, 44px)/1.1 var(--s3-sans);
+  letter-spacing: -.022em; color: var(--s3-cream);
+  overflow-wrap: break-word;
+}
+.screen[data-screen="3"] .xhead .xd span { display: block; }
+.screen[data-screen="3"] .xhead .xd::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
+  background: var(--s3-block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  filter: url(#s3-rough);
+}
+
+/* ── the one plate: legend, the eight-event trace in three stages, controls ── */
+.s3-plate { align-self: start; font-family: var(--s3-sans); }
+.s3-legend {
+  grid-template-columns: 6.6ch 1fr;
+  gap: 1px calc(var(--fs) * .6);
+  margin: 0 0 calc(var(--fs) * .55);
+  padding-bottom: calc(var(--fs) * .55);
+  border-bottom: 1px solid var(--hair);
+}
+.s3-legend dt { font: 700 max(11px, calc(var(--s3-label) * .86))/1.55 var(--s3-sans); letter-spacing: .1em; }
+.s3-legend dd { font: 400 var(--s3-label)/1.35 var(--s3-sans); color: var(--edition-ink); }
+.s3-eyebrow { margin: 0 0 calc(var(--fs) * .3); font-family: var(--s3-sans); }
+.s3-eyebrow .illus { font-family: var(--s3-sans); }
+
+.plate--thin .s3-tl { display: grid; gap: 0; }
+.s3-stage {
+  display: flex; align-items: baseline; gap: .55em;
+  margin: calc(var(--fs) * .4) 0 1px;
+  font: 700 max(11px, calc(var(--s3-label) * .86))/1.5 var(--s3-sans);
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.s3-stage:first-child { margin-top: 0; }
+.s3-stage-n {
+  display: inline-grid; place-items: center; flex: 0 0 auto;
+  min-width: 1.55em; height: 1.55em; border-radius: 2px;
+  border: 1.5px solid currentColor; font-size: .92em; letter-spacing: 0; line-height: 1;
+}
+.s3-stage[data-cur="1"] { color: var(--edition-ink); }
+.s3-stage[data-cur="1"] .s3-stage-n { background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper); }
+
+.plate--thin .s3-row {
+  display: grid; grid-template-columns: 1.2em 4.4ch 1fr;
+  align-items: baseline; gap: 0 .5em;
+  padding: 1px 0 1px .2em; margin: 0; border: 0; background: none; opacity: 1;
+  color: var(--ink-soft);
+}
+.s3-row[data-on="1"] { color: var(--edition-ink); }
+.s3-row .tl-time, .s3-row .tl-who {
+  margin: 0; font: 400 var(--s3-label)/1.4 var(--s3-sans); color: inherit;
+  font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.s3-row .tl-time { font-weight: 700; }
+.s3-row[data-cur="1"] .tl-who { font-weight: 700; }
+/* the mark says what KIND of event this is: ○ observed · ● bounded action ·
+   ◇ model forecast · ■ human decision. The map uses the same four marks. */
+.s3-mk {
+  display: inline-block; width: 9px; height: 9px; box-sizing: border-box;
+  border: 1.6px solid currentColor; border-radius: 50%; background: var(--paper);
+  transform: translateY(-1px);
+}
+.s3-mk[data-kind="act"] { background: currentColor; }
+.s3-mk[data-kind="mod"] { border-radius: 0; border-style: dashed; border-color: var(--fire); transform: rotate(45deg) scale(.9); }
+.s3-mk[data-kind="dec"] { border-radius: 1px; border-width: 2.4px; width: 10px; height: 10px; }
+.s3-row[data-on="0"] .s3-mk { border-color: var(--rule); }
+.s3-row[data-on="0"] .s3-mk[data-kind="act"] { background: var(--rule); }
+
+.s3-plate .tl-controls { margin-top: calc(var(--fs) * .55); }
+.s3-plate .tl-play { font-family: var(--s3-sans); }
+.s3-micro { margin-top: calc(var(--fs) * .5); font-family: var(--s3-sans); font-size: max(11.5px, calc(var(--s3-label) * .9)); }
+
+/* the stage note: shown only for the stage in view, and only when the county
+   is too small to carry its own words (data-maptext="0", set by app.js) */
+.s3-stage-note {
+  display: none; margin: 2px 0 calc(var(--fs) * .3) .2em;
+  font: 400 var(--s3-label)/1.4 var(--s3-sans); color: var(--edition-ink);
+}
+.s3-tl[data-maptext="0"] .s3-stage-note[data-cur="1"] { display: block; }
+
+/* labels drawn on the terrain by app.js */
+.s3-lab { font-family: var(--s3-sans); }
+
+/* iPad portrait (600–899px): the plate goes two-column so the county keeps
+   enough height to carry its labels. Legend, controls and the disclaimer on
+   the left; the eight-event trace on the right. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .s3-plate { display: grid; grid-template-columns: 1fr 1.15fr; column-gap: calc(var(--x-gap) * 1.2); align-items: start; }
+  .s3-legend { grid-area: 1 / 1 / 2 / 2; margin-bottom: calc(var(--fs) * .6); }
+  .s3-plate .tl-controls { grid-area: 2 / 1 / 3 / 2; margin-top: 0; }
+  .s3-micro { grid-area: 3 / 1 / 4 / 2; }
+  .s3-eyebrow { grid-area: 1 / 2 / 2 / 3; }
+  .s3-tl { grid-area: 2 / 2 / 4 / 3; }
+}
+
+@media (max-width: 899px) {
+  /* the deck is already inset by the chrome on a narrow stage, so the
+     screen's own chrome padding reserved the same height twice — 80px the
+     county's window can use */
+  .screen[data-screen="3"] { padding-bottom: 8px; }
+  /* the block is its own backing; the narrow .xhead paper panel would frame it twice */
+  .screen[data-screen="3"] .xhead { background: none; padding: 0; }
+  .screen[data-screen="3"] .xhead .xd { font-size: clamp(27px, 7vw, 40px); }
+  .screen[data-screen="3"] .s3-legend { grid-template-columns: 6.6ch 1fr; gap: 1px calc(var(--fs) * .6); }
+  .screen[data-screen="3"] .s3-legend dt { margin-top: 0; }
+}

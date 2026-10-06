@@ -180,6 +180,11 @@
     { name: "Settlement within 5 working days of agreed liability",
       k: "settlement.days = 5 · remedy = 50.00 USD per day late",
       checks: [1, 1, 0], tag: "Missed once", cls: "miss",
+      /* the same facts as numbers, so screen 3 can show the arithmetic
+         rather than restate it: promised and observed are working days
+         counted from AGREED LIABILITY; the remedy is per day late */
+      key: "settlement.days", promised: 5, observed: 9, perDay: 50,
+      onClaim: "the third claim",
       said: "Nine working days on the third claim. Remedy applied automatically: 200.00 USD, with no claim made for it." },
     { name: "Renewal price published 30 days ahead",
       k: "renewal_notice.days = 30 · performance.published = monthly",
@@ -217,11 +222,13 @@
     { id: "candlewick", name: "Candlewick Direct", price: "1,185.00", num: 1185,
       excess: "500.00 USD", driver: "Drivers under 25 excluded",
       settle: "No settlement time published", settlePublished: false,
-      eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep." },
+      eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep.",
+      barShort: "excludes drivers under 25 — Rosa is nineteen" },
     { id: "pell", name: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
       excess: "900.00 USD", driver: "Every named driver",
       settle: "10 working days", settlePublished: true,
-      eligible: false, bar: "The excess is 900 USD, twice the 500 she capped." }
+      eligible: false, bar: "The excess is 900 USD, twice the 500 she capped.",
+      barShort: "excess 900 USD, twice her 500 cap" }
   ];
 
   var TERM = {
@@ -273,34 +280,147 @@
     say("Ranked on " + PREF_SAID[pref] + ". The agent buys " + win.name + ".");
   }
 
-  /* ── screen 3 reads the SAME table, for whichever offer was bought ─── */
+  /* ── screen 3 reads the SAME table, for whichever offer was bought ───
+     One thought: the offer contains a checkable commitment, and its
+     existing remedy applies when the commitment is missed. The screen is
+     painted from three places in the model and nowhere else — the offer
+     bought() returns, that offer's own published settlement row in OFFERS,
+     and the one missed entry in LEDGER. The arithmetic is done here, in
+     code, from those numbers. */
+  function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function usd(n) { return "USD " + grp(n); }
+
   function paintPerformance() {
     var o = bought();
-    var held = document.getElementById("held");
-    if (held) {
-      held.innerHTML = "Holding <b>" + o.name + "</b> at " + o.price +
-        " USD a year, bought inside her instructions.";
+    var full = OFFERS.filter(function (x) { return x.id === o.id; })[0] || null;
+    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
+
+    /* the published row the commitment is lifted from */
+    var row = null;
+    if (full && miss) {
+      full.doc.forEach(function (sec) {
+        sec.rows.forEach(function (r) { if (r.k === miss.key) { row = r; } });
+      });
     }
-    var pp = document.getElementById("pp");
-    if (pp) {
-      pp.innerHTML =
-        '<div class="pp-i"><p class="of-k">It promised</p>' +
-        '<p class="pp-v">' + o.settle + '</p></div>' +
-        '<div class="pp-arrow" aria-hidden="true"></div>' +
-        '<div class="pp-i pp-i--obs"><p class="of-k">What happened</p>' +
-        '<p class="pp-v pp-v--miss">9 working days on the third claim</p></div>';
+    var live = !!(row && o.settlePublished);
+
+    var id = document.getElementById("oc3-id");
+    if (id) {
+      id.innerHTML = "Holding <b>" + esc(o.name) + "</b>" +
+        (full ? '<span class="oc3-id-ref">' + esc(full.ref) + " · " + esc(full.meta) + "</span>" : "");
     }
-    var r = document.getElementById("resp"), rs = document.getElementById("resp-sub");
-    if (r) {
-      r.innerHTML = "Because the commitment was published, the remedy applied itself \u2014 " +
-        "<b>200.00 USD</b>, with no claim made for it.";
+
+    var ex = document.getElementById("oc3-excerpt");
+    if (ex) {
+      if (live) {
+        ex.innerHTML =
+          '<figcaption class="oc3-sheet-h">Lifted from the offer · service commitments</figcaption>' +
+          '<div class="oc3-sheet" aria-hidden="true"><span></span><span></span></div>' +
+          '<blockquote class="oc3-band">' +
+            '<span class="oc3-band-k">' + esc(row.k) + "</span>" +
+            '<span class="oc3-band-v">' +
+              esc(miss.name) + (row.rem ? " — " + esc(row.rem) : "") +
+            "</span>" +
+          "</blockquote>" +
+          '<div class="oc3-sheet oc3-sheet--after" aria-hidden="true"><span></span></div>';
+      } else {
+        ex.innerHTML =
+          '<figcaption class="oc3-sheet-h">From the offer · service commitments</figcaption>' +
+          '<blockquote class="oc3-band oc3-band--none"><span class="oc3-band-v">' +
+          "No settlement time is published, so there is nothing to check and nothing owed.</span></blockquote>";
+      }
     }
-    if (rs) {
-      /* honest: a breach does not hand the agent a better market */
-      rs.textContent = "The agent may re-shop inside the same instructions. Today neither "
-        + "alternative clears them, so it keeps the cover and records the miss.";
+
+    var promised = miss ? miss.promised : null,
+        observed = miss ? miss.observed : null,
+        perDay   = miss ? miss.perDay   : null,
+        late     = (promised != null && observed != null) ? Math.max(0, observed - promised) : null,
+        remedy   = (late != null && perDay != null) ? late * perDay : null;
+
+    var chk = document.getElementById("oc3-check");
+    if (chk && live && miss) {
+      var cells = [], nums = [], i, n = observed;
+      for (i = 1; i <= n; i++) {
+        var lateCell = i > promised, x = (i - 1) * 100 + 8;
+        cells.push('<rect x="' + x + '" y="16" width="84" height="68" rx="3" fill="' +
+          (lateCell ? "url(#oc3-hatch)" : "rgba(47,94,124,.14)") + '" stroke="' +
+          (lateCell ? "#8A3450" : "#2F5E7C") + '" stroke-width="' + (i === n ? 3.5 : 2) +
+          '" vector-effect="non-scaling-stroke"/>');
+        nums.push('<span' + (lateCell ? ' class="is-late"' : "") + ">" + i + "</span>");
+      }
+      /* the clock: a tick at day 0, and brackets over the promised and the late days */
+      var art =
+        '<svg class="oc3-strip" viewBox="0 0 ' + (n * 100) + ' 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+          '<line x1="2" y1="4" x2="2" y2="96" stroke="#16150F" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+          '<path d="M8 8 V3 H' + (promised * 100 - 8) + ' V8" fill="none" stroke="#2F5E7C" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+          '<path d="M' + (promised * 100 + 8) + ' 8 V3 H' + (n * 100 - 8) + ' V8" fill="none" stroke="#8A3450" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+          cells.join("") +
+        "</svg>";
+      chk.innerHTML =
+        '<p class="oc3-brk" style="--n:' + n + ';--p:' + promised + '">' +
+          '<span class="oc3-brk-p">Promised · ' + promised + " working days</span>" +
+          '<span class="oc3-brk-l">Late · ' + late + " days</span>" +
+        "</p>" +
+        '<div class="oc3-days" style="--n:' + n + '">' + art +
+          '<p class="oc3-nums" aria-hidden="true">' + nums.join("") + "</p>" +
+        "</div>" +
+        '<p class="oc3-obs">' +
+          '<span class="oc3-obs-0">Clock starts at agreed liability</span>' +
+          '<span class="oc3-obs-9"><b>' + observed + " working days</b> on " + esc(miss.onClaim) + "</span>" +
+        "</p>" +
+        '<p class="oc3-math">' +
+          promised + " working days promised · " + observed + " working days observed · " +
+          late + " days late × " + usd(perDay) + " = <b>" + usd(remedy) + "</b>" +
+        "</p>";
+    } else if (chk) {
+      chk.innerHTML = "";
     }
+
+    var rem = document.getElementById("oc3-remedy");
+    if (rem) {
+      if (live && remedy != null) {
+        rem.innerHTML =
+          '<p class="oc3-fig"><span class="oc3-fig-u">USD</span><span class="oc3-fig-n">' + grp(remedy) + "</span></p>" +
+          '<p class="oc3-fig-w">applied automatically</p>' +
+          '<p class="oc3-fig-s">The remedy is a published term of the offer, and it applied on the miss. ' +
+            "No separate claim was required.</p>";
+      } else {
+        rem.innerHTML = '<p class="oc3-fig-w">Nothing owed</p>' +
+          '<p class="oc3-fig-s">This offer publishes no settlement commitment, so a slow settlement breaks no term.</p>';
+      }
+    }
+
+    /* honest ending: a breach re-opens the agent's permission to shop, not
+       the customer's instructions. Every other offer is named with the one
+       instruction it breaks, from the same table screen 2 reads. */
+    var foot = document.getElementById("oc3-foot");
+    if (foot) {
+      var others = OC.filter(function (x) { return x !== o; });
+      var clears = others.filter(function (x) { return x.eligible; });
+      foot.innerHTML =
+        '<p class="oc3-end">The agent may re-shop inside her standing instructions. ' +
+          (clears.length ? "" : "Today neither alternative clears them.") + "</p>" +
+        '<ul class="oc3-bars">' + others.map(function (x) {
+          return "<li" + (x.eligible ? "" : ' class="is-out"') + "><b>" + esc(x.name) + "</b> — " +
+            esc(x.eligible ? "clears them" : (x.barShort || x.bar)) + "</li>";
+        }).join("") + "</ul>" +
+        '<p class="oc3-marks">' +
+          '<span class="oc3-mark" data-kind="kept">Existing cover retained</span>' +
+          '<span class="oc3-mark" data-kind="miss">Miss recorded</span>' +
+        "</p>";
+    }
+    reserveNav();
   }
+
+  /* the navigation corner stays clear of the foot: measure the chrome once
+     per layout rather than guessing its width */
+  function reserveNav() {
+    var sc = document.querySelector('.screen[data-screen="3"]');
+    var bar = document.querySelector(".chrome-r");
+    if (!sc || !bar) { return; }
+    sc.style.setProperty("--oc3-nav", Math.ceil(bar.getBoundingClientRect().width + 28) + "px");
+  }
+  window.addEventListener("resize", reserveNav);
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
     b.addEventListener("click", function () { pref = b.dataset.pref; paintCompare(); });
@@ -775,6 +895,9 @@
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
 
     drawFor(n);
+    /* the chrome's width changes with the picker's and the CTA's labels, so
+       screen 3's foot measures it on every screen change */
+    reserveNav();
     /* fit before the camera moves: on a phone the camera aims at whatever
        height the plates have left over, so it needs the settled layout */
     fitScreen(sc);

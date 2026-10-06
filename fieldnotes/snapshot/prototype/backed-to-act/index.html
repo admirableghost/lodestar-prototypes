@@ -82,34 +82,121 @@
 
 </section>
 
-<!-- ══════ 2 · THE CUSTOMER AUTHORISES ══════ -->
-<section class="screen" data-screen="2" data-label="The customer authorises" data-cam="boundary" data-veil="">
+<!-- ══════ 2 · THE CUSTOMER AUTHORISES ══════
+     Simplified pass. One idea: customer authorisation lets a bounded purchase
+     proceed with specified protection attached. The PURCHASE ORDER is the one
+     dominant object. The preceding work (compare suppliers, draft order,
+     recommend quantity) is one small "Prepared" cluster on the permitted side.
+     The new-supplier exception stays on the approval side and never moves.
+     The order does not move either — THE LINE moves, which is the headline.
+     Laid out in flow, not on the 12x8 grid: the headline backing is the
+     heading's own box, so it contains its text at every viewport. -->
+<section class="screen screen--s2" data-screen="2" data-label="The customer authorises" data-cam="boundary" data-veil="">
 
-  <div class="xhead" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">02 / The customer authorises</p>
-    <h2 class="display xd" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
+  <!-- artwork defs shared by the cut-paper objects below -->
+  <svg class="s2-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="s2-rough" x="-4%" y="-6%" width="108%" height="112%">
+        <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <pattern id="s2-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="#F3977A" stroke-width="1.4"/>
+      </pattern>
+    </defs>
+  </svg>
+
+  <div class="s2-top">
+    <div class="xhead s2-head">
+      <p class="xeyebrow">02 / The customer authorises</p>
+      <h2 class="display xd s2-xd" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
+    </div>
+
+    <div class="auth2 s2-auth">
+      <p class="s2-ctrl-lab" id="s2-ctrl-lab">Calder sets the autonomy level</p>
+      <div class="xchoice" role="group" aria-labelledby="s2-ctrl-lab">
+        <button type="button" id="lv0" aria-pressed="true">Draft only</button>
+        <button type="button" id="lv1" aria-pressed="false">Act within cover</button>
+      </div>
+      <!-- the ONE statement of the distinction between permission and cover -->
+      <p class="auth2-said s2-support" id="bnd-said">Specified purchasing mistakes are covered. You still decide what the agent may do.</p>
+    </div>
   </div>
 
-  <div class="auth2" style="grid-area:1/8/4/13">
-    <p class="zone-h">Calder sets the autonomy level</p>
-    <div class="xchoice" role="group" aria-label="Autonomy level">
-      <button type="button" id="lv0" aria-pressed="true">Draft only</button>
-      <button type="button" id="lv1" aria-pressed="false">Act within cover</button>
+  <!-- THE DESK · two zones, one line. data-place is derived from LAYOUT in
+       app.js: "ask" while Draft only, "may" once Calder acts within cover. -->
+  <div class="s2-desk" id="desk2" data-place="ask">
+
+    <div class="s2-tray" aria-hidden="true"></div>
+    <p class="s2-zlab s2-zlab--may">Agent may act</p>
+
+    <!-- the preceding work, as one cluster -->
+    <div class="s2-slot s2-slot--prep">
+      <div class="s2-art s2-prep" aria-hidden="true">
+        <div class="s2-sheet s2-sheet--quotes"><span class="s2-sh">3 quotes</span>
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="72" y2="44"/></g></svg>
+        </div>
+        <div class="s2-sheet s2-sheet--order"><span class="s2-sh">Order</span>
+          <svg viewBox="0 0 100 70" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="64" y2="44"/></g></svg>
+          <span class="s2-stamp">Draft</span>
+        </div>
+        <div class="s2-sheet s2-sheet--qty"><span class="s2-sh">Qty</span>
+          <svg viewBox="0 0 80 30"><g stroke="#16150F" stroke-width="2" stroke-linecap="round"><line x1="6" y1="4" x2="6" y2="26"/><line x1="14" y1="4" x2="14" y2="26"/><line x1="22" y1="4" x2="22" y2="26"/><line x1="30" y1="4" x2="30" y2="26"/><line x1="0" y1="24" x2="36" y2="6"/><line x1="46" y1="4" x2="46" y2="26"/><line x1="54" y1="4" x2="54" y2="26"/><line x1="62" y1="4" x2="62" y2="26"/></g></svg>
+        </div>
+      </div>
+      <p class="s2-cap"><b>Prepared</b><span>Suppliers compared, order drafted, quantity recommended.</span></p>
     </div>
-    <p class="auth2-said" id="bnd-said">Specified purchasing mistakes are covered. You still decide what the agent may do.</p>
+
+    <!-- where the line stood before Calder moved it (authorised state only) -->
+    <div class="s2-line s2-line--ghost" aria-hidden="true"><span class="s2-line-lab">line before</span></div>
+
+    <!-- the approval line, set by the customer -->
+    <div class="s2-line s2-line--now">
+      <span class="s2-line-lab" id="s2-line-lab">the line, set by Calder</span>
+      <p class="s2-zlab s2-zlab--ask">Needs your approval</p>
+    </div>
+
+    <!-- THE PURCHASE ORDER · the dominant object. It carries its coverage
+         slip in both states: cover is specified whether or not the agent may
+         place the order. -->
+    <div class="s2-slot s2-slot--po">
+      <div class="s2-art s2-po">
+        <div class="s2-sheet s2-sheet--po">
+          <span class="s2-sh">Purchase order</span>
+          <svg class="s2-po-rules" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="4" x2="100" y2="4"/><line x1="0" y1="16" x2="100" y2="16"/></g></svg>
+          <ul class="s2-fields" aria-hidden="true">
+            <li><span>Part</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="100" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
+            <li><span>Qty</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="48" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
+            <li><span>Supplier</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="100" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
+          </ul>
+        </div>
+        <!-- the one coverage annotation: the specified mistakes, nothing broader -->
+        <div class="s2-slip">
+          <p class="s2-slip-h">Covered mistakes</p>
+          <ul class="s2-slip-l"><li>wrong part</li><li>wrong quantity</li><li>duplicate order</li></ul>
+        </div>
+      </div>
+      <p class="s2-cap"><b>Purchase order</b><em class="s2-mark" id="po-state" data-kind="ask">Waits for your approval</em></p>
+    </div>
+
+    <!-- the hard exception: never moves, never swept into automatic authority -->
+    <div class="s2-slot s2-slot--exc">
+      <div class="s2-art s2-exc" aria-hidden="true">
+        <div class="s2-sheet s2-sheet--exc">
+          <svg class="s2-hatchband" viewBox="0 0 100 10" preserveAspectRatio="none"><rect width="100" height="10" fill="url(#s2-hatch)"/></svg>
+          <span class="s2-sh">New supplier</span>
+          <span class="s2-sm">over the limit</span>
+          <svg viewBox="0 0 100 40" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="6" x2="100" y2="6"/><line x1="0" y1="22" x2="100" y2="22"/><line x1="0" y1="38" x2="70" y2="38"/></g></svg>
+          <span class="s2-sign"><span>approved by</span><span>a person</span></span>
+        </div>
+      </div>
+      <p class="s2-cap"><b>New supplier, over the limit</b><em class="s2-mark s2-mark--hard" data-kind="hard">Always needs a person</em></p>
+    </div>
+
   </div>
 
-  <div class="zones" id="z2" style="grid-area:4/1/9/13">
-    <div class="zone zone--may">
-      <p class="zone-h">Agent may act</p>
-      <div class="zone-b" data-zone="may"></div>
-    </div>
-    <div class="zone-rule" aria-hidden="true"></div>
-    <div class="zone zone--ask">
-      <p class="zone-h">Needs your approval</p>
-      <div class="zone-b" data-zone="ask"></div>
-    </div>
-  </div>
+  <!-- the residual responsibility, said once -->
+  <p class="s2-caveat">Cover pays for the listed mistakes. It does not approve the order.</p>
 
 </section>
 

@@ -66,45 +66,48 @@
 
 </section>
 
-<!-- ══════ 2 · THE CONDITIONAL OFFER — the central screen ══════ -->
-<section class="screen" data-screen="2" data-label="The conditional offer" data-cam="commit" data-veil="">
+<!-- ══════ 2 · THE CONDITIONAL OFFER — the central screen ══════
+     ONE THOUGHT: the participation threshold makes a conditional collective
+     offer possible. The street is the hero; the count is said once; the
+     condition is one sentence. What the offer is made of — the fund, the
+     surveyor, the hardening, the 48 staying in — lives on screen 3, where
+     the parties who carry each clause are named. -->
+<section class="screen screen--offer" data-screen="2" data-label="The conditional offer" data-cam="commit" data-veil="">
 
-  <div class="xhead xhead--scrim xhead--s" style="grid-area:1/1/3/7">
+  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <p class="xeyebrow">01 / The offer</p>
     <h2 class="display xd" tabindex="-1"><span>The offer exists.</span><span>It is conditional</span><span>on the street.</span></h2>
   </div>
 
-  <!-- The hero control. The threshold IS the product, so it is the only thing
-       on this screen the viewer can move. -->
-  <div class="plate plate--thin" style="grid-area:7/1/9/6">
-    <p class="eyebrow">Households committed · <span class="illus">drag to see the street fill</span></p>
+  <!-- The hero control. The threshold IS the product, so it is the only
+       thing on this screen the viewer can move. The count appears here and
+       nowhere else. -->
+  <div class="plate plate--ctl" id="ctl" data-state="closed" style="grid-area:1/8/5/13">
+    <p class="eyebrow" id="thr-label">Households committed</p>
     <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60</span></p>
     <div class="thr-rail">
       <input type="range" id="thr-range" min="0" max="60" step="1" value="41"
              aria-describedby="offer-state offer-line" aria-label="Households committed, out of sixty">
+      <span class="thr-end thr-end--0" aria-hidden="true">0</span>
       <span class="thr-tick" aria-hidden="true"><i></i>48 needed</span>
+      <span class="thr-end thr-end--60" aria-hidden="true">60</span>
     </div>
     <div class="offer" id="offer" data-state="closed">
-      <p class="offer-word"><span class="offer-glyph" aria-hidden="true">○</span><span id="offer-state">Not available</span></p>
+      <p class="offer-word">
+        <svg class="offer-mark offer-mark--closed" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><defs><pattern id="warnhatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="10" height="10" fill="url(#warnhatch)" stroke="currentColor" stroke-width="1.6"/></svg>
+        <svg class="offer-mark offer-mark--open" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span id="offer-state">Not available</span>
+      </p>
       <p class="offer-line" id="offer-line">Seven more households and the carrier writes the street as one risk.</p>
     </div>
-    <p class="leg"><span class="leg-i leg-i--in"><i aria-hidden="true"></i>Committed</span><span class="leg-i leg-i--out"><i aria-hidden="true"></i>Not yet</span></p>
+    <p class="leg">
+      <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Committed</span>
+      <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
+      <span class="leg-i leg-i--bnd" id="leg-bnd"><i aria-hidden="true"></i>Collective boundary · one risk</span>
+    </p>
   </div>
 
-  <!-- Before the terms in the source, so that on a phone the street — which
-       is what the slider above just changed — comes next, and the clauses
-       follow it. On the desktop grid both are placed explicitly. -->
-  <div class="gw" aria-hidden="true" style="grid-area:3/1/7/13"></div>
-
-  <div class="terms" style="grid-area:7/7/9/13">
-    <p class="xeyebrow">What the offer is made of</p>
-    <ul class="terms-l">
-      <li><b>Each household</b> hardens its own lot</li>
-      <li><b>A resilience fund</b> pays the contractors now</li>
-      <li><b>Cover holds</b> while 48 stay in</li>
-      <li><b>An independent surveyor</b> checks every season</li>
-    </ul>
-  </div>
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
 
 </section>
 
@@ -116,20 +119,26 @@
     <h2 class="display xd" tabindex="-1"><span>What everyone</span><span>actually signed.</span></h2>
   </div>
 
-  <div class="plate plate--thin" style="grid-area:7/1/9/13">
+  <!-- What the offer is made of lives here, one clause per party, because
+       the party is what makes the clause credible. Moved from screen 2. -->
+  <div class="plate plate--thin" style="grid-area:6/1/9/13">
     <p class="eyebrow">One contract, five parties</p>
     <div class="sign">
       <div class="sr sr--house">
         <p class="sr-who">The households<span class="sr-n" id="sign-n">51 of 60</span></p>
+        <p class="sr-what">Each hardens its own lot.</p>
       </div>
       <div class="sr sr--carrier">
         <p class="sr-who">The carrier</p>
+        <p class="sr-what">Writes the street as one risk. Cover holds while 48 stay in.</p>
       </div>
       <div class="sr sr--fund">
         <p class="sr-who">The fund</p>
+        <p class="sr-what">Pays the contractors now.</p>
       </div>
       <div class="sr sr--survey">
         <p class="sr-who">The surveyor</p>
+        <p class="sr-what">Independent. Checks every lot, every season.</p>
       </div>
       <div class="sr sr--broker">
         <p class="sr-who">The broker<span class="sr-n sr-n--paid">Paid a placement fee</span></p>
@@ -138,7 +147,7 @@
     </div>
   </div>
 
-  <div class="gw" aria-hidden="true" style="grid-area:4/1/7/13"></div>
+  <div class="gw" aria-hidden="true" style="grid-area:3/1/7/13"></div>
 
 </section>
 

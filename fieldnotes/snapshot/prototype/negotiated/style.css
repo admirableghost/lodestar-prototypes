@@ -384,26 +384,8 @@ input[type="range"]::-moz-range-thumb {
 .leg-i--in  i { background: var(--edition-ink); }
 .leg-i--out i { background: var(--paper); box-shadow: inset 0 0 0 2px var(--rule); }
 
-/* ══ NEW · 3 — .terms, what the offer is made of ════════════════════════
-   Four clauses, each a label and one sentence. Colour-coded to the party
-   that carries it, so screen 3's cast is already introduced here. */
-
-.terms { display: grid; gap: calc(var(--fs) * .55); margin: 0; }
-.term { border-left: 4px solid var(--rule); padding-left: calc(var(--fs) * .7); }
-.term--house   { border-left-color: var(--edition-ink); }
-.term--fund    { border-left-color: var(--fund); }
-.term--carrier { border-left-color: var(--carrier); }
-.term--survey  { border-left-color: var(--survey); }
-.term-h {
-  margin: 0 0 calc(var(--fs) * .15);
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-}
-.term--house   .term-h { color: var(--edition-ink); }
-.term--fund    .term-h { color: var(--fund); }
-.term--carrier .term-h { color: var(--carrier); }
-.term--survey  .term-h { color: var(--survey); }
-.term-l { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
+/* (.terms, "what the offer is made of", left screen 2: its clauses now sit
+   on screen 3 against the party that carries each one.) */
 
 /* ══ NEW · 4 — .sign, the agreement ═════════════════════════════════════
    Five parties, five commitments. The broker's row carries one extra line,
@@ -580,7 +562,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 400px) {
-  .terms { gap: calc(var(--fs) * .45); }
   .sign  { gap: calc(var(--fs) * .45); }
 }
 
@@ -867,14 +848,6 @@ input[type="range"] { height: 44px; }
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent);
 }
 .plate--thin .sr-who, .plate--thin .cm-what { font-size: var(--x-label); }
-.terms { z-index: 3; align-self: end; pointer-events: auto;
-  padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .95);
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  border-radius: var(--r-m);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent); }
-.terms-l { margin: calc(var(--x-gap) * .45) 0 0; padding-left: 1.05em; display: grid; gap: calc(var(--x-gap) * .25); }
-.terms-l li { font: var(--x-label)/1.42 var(--sans); color: var(--edition-ink); }
-.terms-l b { font-weight: 600; }
 /* the signed street: parties read as a ring, so the card can be a thin band */
 .sr { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .5) calc(var(--x-gap) * 1.1); }
 .sr-row { display: flex; align-items: baseline; gap: .5em; }
@@ -891,3 +864,201 @@ input[type="range"] { height: 44px; }
 .thr-of, .aside, .cm-fall, .plate--thin .note {
   color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REVISION · STUDY 03 CARRIED INTO THE BROWSER
+   design-study/remaining-five/03-negotiated is the reference: paper
+   #F3EBD7, ink #16150F, participation green #2F5A44 / #8C9A84, one amber
+   for the boundary, Bricolage Grotesque (OFL, bundled in fonts/), the
+   headline on a charcoal block sized to its own text. The tokens are reset
+   here, late in the cascade, so every rule above resolves to the study's
+   stock without being rewritten. Route-scoped: this file styles only this
+   prototype.
+   ══════════════════════════════════════════════════════════════════════════ */
+@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap; src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap; src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
+
+:root {
+  --paper:        #F3EBD7;
+  --cream:        #F3EBD7;
+  --edition-ink:  #16150F;   /* 16.1 : 1 on paper */
+  --ink-soft:     #5A554A;   /*  6.1 : 1 on paper */
+  --edition-wash: #E8DDC2;
+  --wash-2:       #CFC2A0;
+  --rule:         #8C9A84;
+  --hair:         #DACCA8;
+  --block:        #6B675E;
+  --green:        #2F5A44;   /*  7.3 : 1 on paper */
+  --green-2:      #24473A;
+  --sage:         #8C9A84;
+  --amber:        #C98D1C;   /* the boundary mark — never type */
+  --amber-ink:    #7F5A0E;   /*  5.6 : 1 on paper — the boundary's word */
+  --warn:         #A8502A;   /*  5.3 : 1 on paper — not available   */
+  --alarm:        #A8502A;
+  --alarm-fill:   #EFE0CB;
+  --ink-fill:     #E6E1CC;
+  --sans:  "Bricolage", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Bricolage", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --plate-shadow: 0 0 0 1px rgba(22,21,15,.10), 0 14px 34px -20px rgba(22,21,15,.45);
+}
+body { background: var(--paper); }
+/* the study's headlines are Bold, on every screen, so the deck reads as one */
+.xhead .xd, .display { font-weight: 700; }
+
+/* the vignette, in the paper's own tones — it only sets how loudly the
+   street speaks at the edges */
+.veil {
+  background: radial-gradient(130% 100% at 50% 45%,
+              rgba(243,235,215,0) 40%, rgba(232,221,194,.45) 100%);
+}
+.veil[data-veil="soft"] {
+  background: radial-gradient(135% 105% at 50% 45%,
+              rgba(243,235,215,0) 46%, rgba(232,221,194,.55) 100%);
+}
+:where(a, button, select, input, [tabindex]):focus-visible,
+.display:focus-visible { outline: 3px solid var(--edition-ink); outline-offset: 3px; }
+
+/* ── the headline on its block ───────────────────────────────────────────
+   The backing is the headline's own box, so it contains the text at every
+   viewport. The torn edge and grain live on a pseudo-element behind the
+   glyphs (the #rough filter is defined in the street's SVG); the type
+   itself stays crisp, as on the study board. */
+.xhead--block { align-items: flex-start; justify-content: flex-start; gap: 10px; pointer-events: auto; }
+.xhead--block .xeyebrow {
+  margin: 0; font: 400 14px/1.3 var(--sans);
+  letter-spacing: .14em; text-transform: uppercase; color: var(--edition-ink);
+}
+.xhead--block .xd {
+  position: relative; isolation: isolate;
+  display: inline-block; max-width: 100%; margin: 0;
+  padding: .3em .5em .36em;
+  color: var(--cream);
+  font: 700 clamp(28px, 1.9vw + 2.3vh, 46px)/1.1 var(--sans);
+  letter-spacing: -.022em;
+  overflow-wrap: break-word;
+}
+.xhead--block .xd::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
+  background: var(--block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  filter: url(#rough);
+}
+
+/* ── screen 2 · the one control, on the paper, not in a panel ──────────── */
+.plate--ctl {
+  background: none; box-shadow: none; padding: 0;
+  gap: 0; max-width: 520px;
+}
+.plate--ctl .eyebrow {
+  margin: 0 0 6px; font: 700 14px/1.3 var(--sans);
+  letter-spacing: .11em; text-transform: uppercase; color: var(--ink-soft);
+}
+.plate--ctl .thr-fig {
+  margin: 0 0 4px;
+  font: 700 clamp(44px, 2.6vw + 3.4vh, 64px)/1 var(--sans);
+  letter-spacing: -.025em; font-variant-numeric: tabular-nums; color: var(--edition-ink);
+}
+.plate--ctl .thr-of { font: 400 clamp(18px, .6vw + 1vh, 22px)/1 var(--sans); letter-spacing: 0; color: var(--edition-ink); }
+
+/* the rail: the input is 44px tall for the hand; the thumb is 28px for the
+   eye; "48 needed" is marked ON the track so the viewer sees what they are
+   dragging toward before they reach it. */
+.plate--ctl .thr-rail { --thumb: 28px; position: relative; padding-bottom: 24px; margin: 0 0 12px; }
+.plate--ctl input[type="range"] { height: 44px; margin: 0; }
+.plate--ctl input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; border: 0; border-radius: 2px;
+  background: linear-gradient(to right,
+    var(--green) 0 var(--p), color-mix(in srgb, var(--edition-ink) 32%, var(--paper)) var(--p) 100%);
+}
+.plate--ctl input[type="range"]::-moz-range-track { height: 4px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--edition-ink) 32%, var(--paper)); }
+.plate--ctl input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--green); }
+.plate--ctl input[type="range"]::-webkit-slider-thumb {
+  width: var(--thumb); height: var(--thumb); margin-top: -12px;
+  background: var(--paper); border: 2.5px solid var(--edition-ink); border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.plate--ctl input[type="range"]::-moz-range-thumb {
+  width: 24px; height: 24px;
+  background: var(--paper); border: 2.5px solid var(--edition-ink); border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--paper);
+}
+/* the thumb fills the moment the threshold is met: state, said twice */
+#ctl[data-state="open"] input[type="range"]::-webkit-slider-thumb { background: var(--green); }
+#ctl[data-state="open"] input[type="range"]::-moz-range-thumb { background: var(--green); }
+.plate--ctl .thr-tick {
+  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * 0.8); top: 44px;
+  transform: translateX(-50%);
+  font: 700 13px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--edition-ink);
+}
+.plate--ctl .thr-tick i { top: -34px; height: 24px; width: 2px; background: var(--edition-ink); }
+.plate--ctl .thr-end {
+  position: absolute; top: 44px; transform: translateX(-50%);
+  font: 400 13px/1.3 var(--sans); color: var(--ink-soft); font-variant-numeric: tabular-nums;
+}
+.plate--ctl .thr-end--0  { left: calc(var(--thumb) / 2); }
+.plate--ctl .thr-end--60 { left: calc(100% - var(--thumb) / 2); }
+
+/* the offer: a mark, a state word and ONE condition sentence. Not a box.
+   Closed and open differ by mark, word, colour and sentence — never by a
+   fade — and survive greyscale. */
+.plate--ctl .offer { border: 0; background: none; padding: 0; margin: 0 0 14px; transition: none; }
+.plate--ctl .offer-word {
+  margin: 0 0 5px; gap: .5em;
+  font: 700 15px/1.3 var(--sans); letter-spacing: .09em; text-transform: uppercase;
+  color: var(--warn);
+}
+#ctl[data-state="open"] .offer-word { color: var(--green); }
+.offer-mark { width: 14px; height: 14px; flex: 0 0 auto; display: block; }
+.offer-mark--open { display: none; }
+#ctl[data-state="open"] .offer-mark--open { display: block; }
+#ctl[data-state="open"] .offer-mark--closed { display: none; }
+.plate--ctl .offer-line {
+  margin: 0; max-width: 40ch;
+  font: 400 clamp(16px, .45vw + .9vh, 18px)/1.4 var(--sans); color: var(--ink-soft);
+}
+
+/* the key: shape + fill + word, matching the houses on the street. The
+   boundary's line appears only once there is a boundary. */
+.plate--ctl .leg { gap: 6px 18px; align-items: center; }
+.plate--ctl .leg-i {
+  gap: 7px; font: 700 14px/1.3 var(--sans); letter-spacing: .09em; text-transform: uppercase;
+  color: var(--green);
+}
+.plate--ctl .leg-i--out { color: var(--ink-soft); }
+.plate--ctl .leg-i--bnd { color: var(--amber-ink); }
+.plate--ctl .leg-i svg { width: 14px; height: 19px; flex: 0 0 auto; }
+.plate--ctl .leg-i--in  svg polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
+.plate--ctl .leg-i--out svg polygon { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 2.5 2; stroke-linejoin: round; }
+.plate--ctl .leg-i--bnd i { width: 20px; height: 4px; border-radius: 0; background: var(--amber); box-shadow: none; }
+#ctl[data-state="closed"] .leg-i--bnd { display: none; }
+
+/* ── screen 3 · one clause per party ────────────────────────────────────── */
+.sr-what { margin: 0; font: 400 max(15px, var(--x-label))/1.4 var(--sans); color: var(--edition-ink); }
+.sr { align-items: baseline; }
+
+/* ── narrow: the same hierarchy, stacked, at a size a phone can hold ────── */
+@media (max-width: 899px) {
+  .xhead--block { padding: 0; background: none; gap: 8px; }
+  .xhead--block .xd { font-size: clamp(26px, 6.6vw, 40px); }
+  .plate--ctl { max-width: none; padding: 4px 0 0; }
+  .plate--ctl .thr-fig { font-size: clamp(42px, 12vw, 56px); }
+  .plate--ctl .offer-line { max-width: none; }
+}
+
+/* A plate paints after the headline's scrim. The scrim is a positioned
+   pseudo-element, so an unpositioned plate beside it was painted first and
+   the scrim washed over the plate's left edge (visible on screen 1). */
+.screen > .plate { position: relative; }
+/* a control that is only a glyph still needs 44px of width */
+.cta { min-width: 44px; }
+/* The filled badge's paper text was being overridden by the late "mixed
+   ink" rule and rendered ink on ink (screen 1, "Work done"). */
+.q-tag { color: var(--paper); }
+.q-tag--none { color: var(--ink-soft); }
+/* Narrow: the deck already stops above the chrome, so the screen must not
+   reserve the chrome's height a second time — that was 76px the street lost. */
+@media (max-width: 899px) {
+  .screen { padding-bottom: 8px; }
+}
+/* the slider's focus ring stays inside its own 44px box, clear of the
+   scale labels beneath the track */
+.plate--ctl input[type="range"]:focus-visible { outline-offset: -2px; border-radius: 8px; }

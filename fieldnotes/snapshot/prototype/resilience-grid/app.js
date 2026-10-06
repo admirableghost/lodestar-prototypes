@@ -125,11 +125,13 @@
   var CAM = {
     county:  { x: 40,  y: 110, w: 1520, h: 820 },
     network: { x: 90,  y: 100, w: 1420, h: 790 },
-    /* shifted west of the geometric centre so the ignition — and therefore
-       beat 1 — lands clear of the headline scrim's right-hand bleed rather
-       than under it. The region and the ignition point are unchanged; only
-       the framing moved. */
-    ignite:  { x: 582, y: 240, w: 900,  h: 620 },
+    /* Screen 3 keeps its whole left third for the headline block and the
+       event trace, so the camera is framed for the RIGHT two thirds: the
+       canyon, Mill Creek, the road out, the pad and the decision point sit
+       between about 40% and 90% of the width. 1124 x 781 is the 1180 x 820
+       aspect at ~1.05 px per world unit, which is what lets the labels hold
+       a fixed px size across the tested viewports. */
+    ignite:  { x: 418, y: 135, w: 1124, h: 781 },
     flows:   { x: 120, y: 180, w: 1380, h: 740 },
     payoff:  { x: 40,  y: 110, w: 1520, h: 820 }
   };
@@ -138,7 +140,9 @@
   var CAM_N = {
     county:  { x: 120, y: 240, w: 1360, h: 700 },
     network: { x: 140, y: 150, w: 1320, h: 760 },
-    ignite:  { x: 640, y: 260, w: 860,  h: 580 },
+    /* the stacked layout gives the county a window under the headline; the
+       event's subject (satellite fix to the road out) is 640 x 720 */
+    ignite:  { x: 760, y: 170, w: 640,  h: 680 },
     flows:   { x: 160, y: 300, w: 1300, h: 660 },
     payoff:  { x: 120, y: 240, w: 1360, h: 700 }
   };
@@ -268,6 +272,13 @@
       '<linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">' +
         '<stop offset="0" stop-color="' + ALARM + '" stop-opacity=".22"/>' +
         '<stop offset="1" stop-color="' + ALARM + '" stop-opacity=".04"/></linearGradient>' +
+      /* screen 3: the torn edge behind the headline block (applied from CSS)
+         and the hatch for a locked-out recloser */
+      '<filter id="s3-rough" x="-4%" y="-6%" width="108%" height="112%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
+      '<pattern id="s3-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+        '<line x1="0" y1="0" x2="0" y2="5" stroke="' + S3_HOLD + '" stroke-width="1.4"/></pattern>' +
       '</defs>');
 
     /* ── grounds: back country, slope, valley ── */
@@ -441,106 +452,8 @@
       s.push('<circle cx="' + hub.x + '" cy="' + hub.y + '" r="9" fill="' + CARRIER + '"/>');
     }
 
-    /* the event, as five places rather than five rows */
-    if (opts.event != null) {
-      /* The five moments, anchored where they happen. Times and kinds are the
-         scenario's own — 14:31 line sensor, 14:33 ridge camera, 14:38 spread
-         model, 14:43 autonomous suppression, 14:47 the duty chief — so the
-         map now carries what the strip used to have to explain. */
-      /* Label offsets are in SCREEN px from the node centre (see `px()`
-         below), and are per-beat rather than uniform. Beat 1 sits under the
-         headline's scrim at the ignite camera, so it is pushed clear of the
-         scrim's box rather than left to fade into its tail; beat 3 reads to
-         the left because it is the westmost node and a right-hand label
-         crossed the path running to beat 4. */
-      var BEATS = [
-        { n: 1, x: IGNITION.x,       y: IGNITION.y,       t: "Detect",      ts: "14:31", c: ALARM,   lx:  40, ly: -12, anc: "start" },
-        { n: 2, x: IGNITION.x + 168, y: IGNITION.y + 36,  t: "Corroborate", ts: "14:33", c: ALARM,   lx:  26, ly: -12, anc: "start" },
-        { n: 3, x: 742,              y: 486,              t: "Decide",      ts: "14:38", c: CARRIER, lx: -26, ly: -12, anc: "end"   },
-        { n: 4, x: IGNITION.x - 36,  y: IGNITION.y + 196, t: "Intervene",   ts: "14:43", c: FIRE,    lx:  26, ly: -12, anc: "start" },
-        { n: 5, x: IGNITION.x + 150, y: IGNITION.y + 250, t: "Verify",      ts: "14:47", c: PUBLIC,  lx:  26, ly: -12, anc: "start" }
-      ];
-      /* ── sizes in SCREEN px, not world units ──────────────────────────
-         The ignite camera runs about 0.63 world units per CSS px on iPad,
-         but the narrow camera pulls back to the whole county at ~2.9. A
-         fixed 13-unit label therefore rendered ~21px on iPad and ~4px on a
-         phone, where the sequence became unreadable. Everything below is
-         expressed as a target CSS px size and converted through `upp`.
-
-         The factor comes from this screen's TARGET camera, not the live
-         viewBox: the camera animates, so a mid-transition `vb` would size
-         the labels for whichever screen we were leaving. */
-      var wEl = document.getElementById("world");
-      var wpx = wEl ? wEl.getBoundingClientRect().width : 0;
-      var camT = viewBoxFor((narrow && CAM_N.ignite) || CAM.ignite, narrowFit());
-      var upp = (wpx && camT && camT.w) ? (camT.w / wpx) : 0.63;
-      var px  = function (n) { return n * upp; };
-
-      /* Word labels are shown only where the beats are actually far enough
-         apart on screen to carry them. The gate is the measured gap, not a
-         width breakpoint: at the 899px breakpoint iPad portrait has ~146px
-         between the closest pair and reads fine, while a 390px phone has
-         ~54px and the five labels would sit on top of one another. Where
-         they are suppressed the map still carries ORDER through the
-         numbered nodes and the path, and the strip below carries the NAMES
-         — which is what the strip is still for. */
-      var minGap = Infinity;
-      for (var gi = 1; gi < BEATS.length; gi++) {
-        var dx = (BEATS[gi].x - BEATS[gi - 1].x) / upp;
-        var dy = (BEATS[gi].y - BEATS[gi - 1].y) / upp;
-        minGap = Math.min(minGap, Math.sqrt(dx * dx + dy * dy));
-      }
-      var showLabels = minGap >= 110;
-
-      BEATS.forEach(function (b, i) {
-        if (i > opts.event) { return; }
-        var running = !!opts.replaying;
-        var live = running && (i === opts.event);
-        var dim  = !running ? 1 : (live ? 1 : .4);
-        if (i > 0) {
-          var a = BEATS[i - 1];
-          s.push('<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
-                 '" stroke="' + b.c + '" stroke-width="' + px(1.7).toFixed(2) +
-                 '" opacity="' + (running ? (live ? .85 : .25) : .6) +
-                 '" stroke-dasharray="' + px(6.5).toFixed(1) + ' ' + px(5).toFixed(1) + '"/>');
-        }
-        if (live) {
-          s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + px(31).toFixed(1) +
-                 '" fill="none" stroke="' + b.c + '" stroke-width="' + px(1.4).toFixed(2) +
-                 '" opacity=".4"/>');
-        }
-        /* a numbered node: the order is readable without the strip. The glyph
-           sits INSIDE its circle — at 19 units it filled the node edge to
-           edge and read as a blob at the ignite camera's scale. */
-        var r = px(live ? 19 : 16);
-        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + r.toFixed(1) +
-               '" fill="' + PAPER + '" stroke="' + b.c + '" stroke-width="' +
-               px(live ? 2.6 : 1.8).toFixed(2) + '" opacity="' + dim + '"/>');
-        s.push('<text x="' + b.x + '" y="' + (b.y + px(live ? 8 : 7)).toFixed(1) +
-               '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="' +
-               px(live ? 23 : 20).toFixed(1) + '" font-weight="700" fill="' + b.c +
-               '" opacity="' + dim + '">' + b.n + '</text>');
-        if (!showLabels) { return; }
-        /* Level 3, not Level 2. These were 24 units — ~38 CSS px on iPad, in
-           competition with a ~55px headline. At 20px they annotate the
-           terrain instead of shouting over it. The paper halo (paint-order:
-           stroke) is what lets them sit directly on ridge, risk-shading or
-           the headline scrim without a plate behind them. */
-        s.push('<text x="' + (b.x + px(b.lx)).toFixed(1) + '" y="' + (b.y + px(b.ly)).toFixed(1) +
-               '" text-anchor="' + b.anc +
-               '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(20).toFixed(1) +
-               '" font-weight="700" letter-spacing="' + px(1.5).toFixed(2) +
-               '" paint-order="stroke" stroke="' + PAPER + '" stroke-width="' + px(3.6).toFixed(2) +
-               '" stroke-linejoin="round" fill="' + b.c + '" opacity="' + dim + '">' +
-               b.t.toUpperCase() + '</text>');
-        s.push('<text x="' + (b.x + px(b.lx)).toFixed(1) + '" y="' + (b.y + px(b.ly + 19)).toFixed(1) +
-               '" text-anchor="' + b.anc +
-               '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(14).toFixed(1) +
-               '" font-weight="600" paint-order="stroke" stroke="' + PAPER + '" stroke-width="' +
-               px(3).toFixed(2) + '" stroke-linejoin="round" fill="' + INK +
-               '" opacity="' + (dim * .85) + '">' + b.ts + '</text>');
-      });
-    }
+    /* the event: eight moments in three stages — see S3_EVENTS and drawS3 */
+    if (opts.s3) { drawS3(s, opts.s3); }
 
     /* who pays: four streams converging on the operating business */
     if (opts.flows) {
@@ -660,10 +573,9 @@
     2: [{ cls: "vendor",  label: "Ridge cameras", wx: 700, wy: 226, dy: -34 },
         { cls: "utility", label: "Line sensors",  wx: 360, wy: 418, dy: -30 },
         { cls: "fire",    label: "Suppression pad", wx: 1006, wy: 772, dy: 34 }],
-    3: [{ cls: "alarm",   label: "Ignition",      wx: 992, wy: 400, dy: -46 },
-        { cls: "utility", label: "Mill Creek lateral", wx: 960, wy: 330, dy: -34 },
-        { cls: "fire",    label: "District 3",    wx: 1032, wy: 806, dy: 34 },
-        { cls: "ink",     label: "320 homes",     wx: 962, wy: 706, dy: 30 }],
+    /* screen 3 names its places as SVG text with a paper halo (drawS3), so
+       it has no projected pins */
+    3: [],
     4: [{ cls: "utility", label: "Utility",       wx: 360, wy: 418, dy: -30 },
         { cls: "fire",    label: "Four districts", wx: 702, wy: 848, dy: 32 },
         { cls: "ink",     label: "14,200 households", wx: 470, wy: 762, dy: -62 }],
@@ -786,82 +698,444 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 3 — the timeline
+     SCREEN 3 — the moment: eight events, three stages, one human decision
+
+     THE DATA. Every time, place and authority class on this screen comes
+     from S3_EVENTS, and nothing else on the screen is allowed to restate it.
+     The trace under the headline is generated from it; the map draws from
+     it; the facilitator notes copy it. Kinds:
+       obs  observed       — a sensor, a camera, a satellite
+       act  bounded action — pre-authorised, narrow, already agreed
+       mod  model forecast — a forecast is not a decision
+       dec  human decision — consequential, and the network cannot make it
+     Nothing here executes the human decision, and nothing marks the record
+     as proof of avoided loss. The carrier commands nothing in this scene.
+
+     THE STAGES. The replay plays the eight events in order, but the viewer
+     is only ever asked to read ONE stage of annotation at a time: the
+     stage in progress is written out beside its markers; earlier stages
+     collapse to their numbered marks. The static default is the end state
+     (stage 3) — complete without pressing anything — and "Show all steps"
+     is the same scene with one grouped caption per stage, never the eight
+     paragraphs the study drew.
      ══════════════════════════════════════════════════════════════════════ */
 
-  var tlRows = [];
-  var tlStep = 0, tlTimer = null;
+  var S3_EVENTS = [
+    { n: 1, stage: 1, kind: "obs", t: "14:31", who: "Line sensor, Mill Creek lateral",
+      what: ["Fault signature on the span.", "A flag, not yet a fire."],
+      state: "OBSERVED", at: [960, 330],  lab: { dx: 24, dy: -8, anc: "start" } },
+    { n: 2, stage: 1, kind: "obs", t: "14:33", who: "Ridge camera, Alder Peak",
+      what: ["Smoke at the same span."],
+      state: "OBSERVED", at: [1186, 240], lab: { dx: 24, dy: 10, anc: "start" } },
+    { n: 3, stage: 1, kind: "obs", t: "14:34", who: "Thermal satellite pass",
+      what: ["Heat at the same coordinates.", "Ignition treated as verified."],
+      state: "OBSERVED", at: [992, 190],  lab: { dx: 24, dy: -30, anc: "start" } },
+    { n: 4, stage: 2, kind: "act", t: "14:36", who: "Utility grid operations",
+      what: ["Lateral de-energised. Reclosers locked", "out on two adjacent feeders."],
+      state: "PRE-AUTHORISED · BOUNDED ACTION", at: [1130, 356], lab: { dx: 24, dy: -24, anc: "start" } },
+    { n: 5, stage: 2, kind: "mod", t: "14:38", who: "Spread model",
+      what: ["Canyon corridor run. The head turns", "toward the 320 homes above Mill Creek."],
+      state: "MODEL FORECAST · NOT A DECISION", at: [900, 540], lab: { dx: 24, dy: -26, anc: "start" } },
+    { n: 6, stage: 2, kind: "act", t: "14:41", who: "Fire District 3",
+      what: ["Two engines to the canyon mouth.", "The one road out held open."],
+      state: "BOUNDED ACTION", at: [934, 652], lab: { dx: 24, dy: -12, anc: "start" } },
+    { n: 7, stage: 2, kind: "act", t: "14:43", who: "Autonomous suppression",
+      what: ["Four aircraft launched from the Mill Creek pad.", "One operator."],
+      state: "BOUNDED ACTION · LAUNCHED IS NOT DROP APPROVED", at: [1006, 772], lab: { dx: 38, dy: -42, anc: "start" } },
+    { n: 8, stage: 3, kind: "dec", t: "14:47", who: "Duty chief, District 3",
+      what: ["Holds or releases the evacuation of 320 homes.", "Signs off on the drop over occupied parcels.", "The network cannot make either call."],
+      state: "DECISION · HUMAN · PENDING", at: [1124, 566], lab: { dx: 32, dy: -40, anc: "start" } }
+  ];
+  /* `note` is the one line the trace shows for a stage when the county is
+     too small to carry text (a phone, iPad portrait): the static view has
+     to be complete there too, without the map's annotations. */
+  var S3_STAGES = [
+    { n: 1, from: 1, to: 3, title: "Signals are corroborated",
+      note: "Three sources, different physics, one span. Ignition treated as verified at 14:34." },
+    { n: 2, from: 4, to: 7, title: "Bounded response is underway",
+      note: "Pre-authorised and narrow: the lateral is de-energised, two engines hold the one road out, four aircraft hold. The spread run is a forecast, not a decision." },
+    { n: 3, from: 8, to: 8, title: "Consequential decisions remain human",
+      note: "The evacuation of 320 homes and the drop over occupied parcels wait on the duty chief. The network cannot make either call. Decision · human · pending." }
+  ];
+  function s3StageOf(step) { return step <= 3 ? 1 : step <= 7 ? 2 : 3; }
+
+  /* the one-line captions "Show all steps" writes beside each stage group */
+  /* Each caption sits at the first event of its group (the satellite fix,
+     the utility's lock-out) — the top of each cluster of marks, where no
+     other label competes with it on any tested viewport. */
+  var S3_GROUPS = [
+    { at: [992, 190], dx: 24, dy: -22, anc: "start",
+      lines: [["1–3 · Signals corroborated", "h"], ["14:31 line sensor · 14:33 ridge camera · 14:34 satellite", "b"]] },
+    { at: [1130, 356], dx: 24, dy: -24, anc: "start",
+      lines: [["4–7 · Bounded response", "h"], ["14:36 lateral de-energised", "b"], ["14:38 model forecast", "b"], ["14:41 engines · road held", "b"], ["14:43 aircraft launched", "b"]] }
+  ];
+
+  /* the places the default scene names, and when each appears */
+  var S3_PLACES = [
+    { id: "mill", from: 1, at: [866, 626], dx: 0, dy: -26, anc: "start",
+      lines: [["Mill Creek", "p"], ["320 homes", "q"]] },
+    { id: "road", from: 8, at: [954, 790], dx: -6, dy: 0, anc: "end", c: PUBLIC,
+      lines: [["Road out", "p"], ["held open", "q"]] },
+    { id: "air",  from: 8, at: [1100, 650], dx: 16, dy: 6, anc: "start",
+      lines: [["Aircraft", "p"], ["holding", "q"]] }
+  ];
+
+  /* scene geometry, world units — the study's, kept exactly */
+  var S3_HOLD   = "#A8502A";
+  var S3_WEDGE  = "M992 400 Q1040 476 1070 556 Q1094 616 1084 660 L1060 666 Q962 668 862 654 Q858 576 896 490 Q936 432 992 400 Z";
+  var S3_AIR    = [[1006, 772], [1068, 770], [1098, 724], [1100, 650]];
+  var S3_AIRHOLD = [1100, 650];
+  var S3_DROP   = [972, 636];
+  var S3_ENGINES = [[1032, 806], [1016, 752], [996, 700], [952, 662], [934, 652]];
+  var S3_GATE   = [968, 696];
+  var S3_FEEDERS = [[800, 352], [1130, 356]];
+
+  /* ── drawing ──────────────────────────────────────────────────────────
+     o.step   events reached, 0..8
+     o.mode   "focus" (annotate the stage in progress) | "all" (grouped)
+     o.live   a replay is running: the newest event gets a ring
+     o.upp    world units per CSS px at this screen's TARGET camera
+     o.proj   world -> screen px, for the occlusion test
+     o.boxes  screen rects a label must not sit under (plates, chrome) */
+  function drawS3(s, o) {
+    var step = o.step, upp = o.upp, px = function (n) { return n * upp; };
+    var F = 'font-family="Bricolage, Helvetica Neue, Arial, sans-serif"';
+    var stage = s3StageOf(Math.max(1, step));
+    var showText = !!o.showText;
+    var n1 = function (v) { return (+v).toFixed(1); };
+
+    /* ── the event's art, in the order it happened ── */
+    if (step >= 1) {
+      /* the fault: the sensor on the lateral flags, the span is marked */
+      s.push('<path d="' + path(LATERAL) + '" fill="none" stroke="' + (step >= 4 ? S3_HOLD : ALARM) +
+             '" stroke-width="2" stroke-dasharray="7 5" opacity=".85"/>');
+    }
+    if (step >= 2) {
+      /* the camera's sight line from Alder Peak to the span */
+      s.push('<line x1="1186" y1="240" x2="' + IGNITION.x + '" y2="' + IGNITION.y +
+             '" stroke="' + INK + '" stroke-width="1" stroke-dasharray="2 5" opacity=".55"/>');
+      s.push('<circle cx="' + IGNITION.x + '" cy="' + IGNITION.y + '" r="' + (step >= 3 ? 58 : 30) + '" fill="url(#heat)"/>');
+    }
+    if (step >= 3) {
+      /* the satellite fix: a plumb line from the pass to the coordinates */
+      s.push('<line x1="' + IGNITION.x + '" y1="60" x2="' + IGNITION.x + '" y2="' + (IGNITION.y - 18) +
+             '" stroke="' + INK + '" stroke-width="1" stroke-dasharray="2 5" opacity=".55"/>');
+      s.push('<g stroke="' + ALARM + '" stroke-width="2.2">');
+      for (var a = 0; a < 8; a++) {
+        var th = (a / 8) * Math.PI * 2;
+        s.push('<line x1="' + n1(IGNITION.x + Math.cos(th) * 7) + '" y1="' + n1(IGNITION.y + Math.sin(th) * 7) +
+               '" x2="' + n1(IGNITION.x + Math.cos(th) * 15) + '" y2="' + n1(IGNITION.y + Math.sin(th) * 15) + '"/>');
+      }
+      s.push('</g>');
+      s.push('<circle cx="' + IGNITION.x + '" cy="' + IGNITION.y + '" r="5" fill="' + ALARM + '"/>');
+    }
+    if (step >= 4) {
+      /* reclosers locked out on the two adjacent feeders */
+      S3_FEEDERS.forEach(function (p) {
+        s.push('<rect x="' + (p[0] - 9) + '" y="' + (p[1] - 9) + '" width="18" height="18" fill="' + PAPER +
+               '" stroke="' + S3_HOLD + '" stroke-width="1.8"/>' +
+               '<rect x="' + (p[0] - 9) + '" y="' + (p[1] - 9) + '" width="18" height="18" fill="url(#s3-hatch)"/>');
+      });
+    }
+    if (step >= 5) {
+      /* the modelled corridor: translucent, dashed edge — a forecast */
+      s.push('<path d="' + S3_WEDGE + '" fill="' + FIRE + '" opacity=".18"/>');
+      s.push('<path d="' + S3_WEDGE + '" fill="none" stroke="' + FIRE + '" stroke-width="1.6" stroke-dasharray="6 5" opacity=".9"/>');
+    }
+    if (step >= 6) {
+      /* the one road out, held open; two engines to the canyon mouth */
+      s.push('<path d="' + path(MILLROAD) + '" fill="none" stroke="' + PUBLIC + '" stroke-width="7" opacity=".26"/>');
+      s.push('<path d="' + path(MILLROAD) + '" fill="none" stroke="' + PUBLIC + '" stroke-width="1.6"/>');
+      s.push('<path d="' + path(S3_ENGINES) + '" fill="none" stroke="' + PUBLIC + '" stroke-width="2.6"/>');
+      [[1016, 752], [996, 700]].forEach(function (p) {
+        s.push('<rect x="' + (p[0] - 6) + '" y="' + (p[1] - 4) + '" width="12" height="8" rx="1" fill="' + PUBLIC + '"/>');
+      });
+      s.push('<circle cx="934" cy="652" r="4" fill="' + PUBLIC + '"/>');
+    }
+    if (step >= 7) {
+      /* four aircraft from the pad to the hold point east of the parcels */
+      s.push('<path d="' + path(S3_AIR) + '" fill="none" stroke="' + INK + '" stroke-width="1.6"/>');
+      [[1040, 772, -90], [1082, 752, -50], [1098, 706, -8], [1100, 664, 0]].forEach(function (p) {
+        s.push('<path d="M' + (p[0] - 7) + ' ' + (p[1] + 4) + 'L' + p[0] + ' ' + (p[1] - 4) + 'L' + (p[0] + 7) + ' ' + (p[1] + 4) +
+               '" fill="none" stroke="' + INK + '" stroke-width="2.2" transform="rotate(' + p[2] + ' ' + p[0] + ' ' + p[1] + ')"/>');
+      });
+    }
+    if (step >= 8) {
+      /* the two paths that wait on one person: dashed because pending.
+         The decision is not executed here — nothing closes these. */
+      var C = S3_EVENTS[7].at;
+      s.push('<path d="M' + S3_AIRHOLD[0] + ' ' + S3_AIRHOLD[1] + ' Q1040 626 ' + (S3_DROP[0] + 16) + ' ' + (S3_DROP[1] + 4) +
+             '" fill="none" stroke="' + INK + '" stroke-width="2" stroke-dasharray="6 6" opacity=".9"/>');
+      s.push('<circle cx="' + S3_DROP[0] + '" cy="' + S3_DROP[1] + '" r="18" fill="' + PAPER + '" opacity=".5"/>');
+      s.push('<circle cx="' + S3_DROP[0] + '" cy="' + S3_DROP[1] + '" r="18" fill="none" stroke="' + INK + '" stroke-width="1.8" stroke-dasharray="3 4"/>');
+      s.push('<line x1="' + (S3_GATE[0] - 13) + '" y1="' + (S3_GATE[1] - 3) + '" x2="' + (S3_GATE[0] + 13) + '" y2="' + (S3_GATE[1] + 3) +
+             '" stroke="' + INK + '" stroke-width="4"/>');
+      s.push('<path d="M' + (C[0] - 14) + ' ' + (C[1] + 14) + ' Q1110 626 ' + (S3_AIRHOLD[0] + 8) + ' ' + (S3_AIRHOLD[1] - 6) +
+             '" fill="none" stroke="' + INK + '" stroke-width="2" stroke-dasharray="6 6"/>');
+      s.push('<path d="M' + (C[0] - 26) + ' ' + (C[1] + 10) + ' Q1030 606 ' + (S3_GATE[0] + 16) + ' ' + (S3_GATE[1] - 6) +
+             '" fill="none" stroke="' + INK + '" stroke-width="2" stroke-dasharray="6 6"/>');
+    }
+
+    /* ── labels: real text, px-sized, paper halo, never under a plate ── */
+    var SIZE = { h: 16, b: 15, s: 12.5, p: 14.5, q: 13.5 };
+    var LH   = { h: 20, b: 19, s: 18, p: 18, q: 17 };
+    function textW(t, k) {   /* a generous estimate of rendered width, px */
+      var em = SIZE[k], f = (k === "s" || k === "p") ? 0.68 : (k === "h" ? 0.56 : 0.52);
+      return t.length * em * f + (k === "s" || k === "p" ? t.length * 1.2 : 0);
+    }
+    function labelBox(wx, wy, lines, dx, dy, anc) {
+      var p = o.proj(wx, wy), w = 0, h = 0;
+      lines.forEach(function (l) { w = Math.max(w, textW(l[0], l[1])); h += LH[l[1]]; });
+      var x = anc === "end" ? p[0] + dx - w : anc === "middle" ? p[0] + dx - w / 2 : p[0] + dx;
+      return { left: x, right: x + w, top: p[1] + dy - 2, bottom: p[1] + dy + h + 2 };
+    }
+    function occluded(r) {
+      if (r.left < 6 || r.right > window.innerWidth - 6 || r.top < 6 || r.bottom > window.innerHeight - 6) { return true; }
+      for (var i = 0; i < o.boxes.length; i++) {
+        var b = o.boxes[i];
+        if (r.left < b.right + 8 && r.right > b.left - 8 && r.top < b.bottom + 8 && r.bottom > b.top - 8) { return true; }
+      }
+      return false;
+    }
+    /* Try the authored side; if that sits under a plate or off the stage,
+       mirror it; if both fail the marker stays and the words go. */
+    function place(wx, wy, lines, dx, dy, anc) {
+      if (!occluded(labelBox(wx, wy, lines, dx, dy, anc))) { return { dx: dx, dy: dy, anc: anc }; }
+      var anc2 = anc === "end" ? "start" : "end", dx2 = -dx;
+      if (!occluded(labelBox(wx, wy, lines, dx2, dy, anc2))) { return { dx: dx2, dy: dy, anc: anc2 }; }
+      return null;
+    }
+    function text(wx, wy, lines, dx, dy, anc, colour) {
+      var pl = place(wx, wy, lines, dx, dy, anc);
+      if (!pl) { return; }
+      var y = wy + px(pl.dy), x = wx + px(pl.dx);
+      lines.forEach(function (l) {
+        var k = l[1], t = l[0];
+        var bold = (k === "h" || k === "s" || k === "p");
+        var fill = k === "b" ? "#4C5862" : (colour || INK);
+        if (k === "s" && /FORECAST/.test(t)) { fill = FIRE; }
+        y += px(LH[k]);
+        s.push('<text class="s3-lab" x="' + n1(x) + '" y="' + n1(y - px(5)) + '" text-anchor="' + pl.anc + '" ' + F +
+               ' font-size="' + n1(px(SIZE[k])) + '" font-weight="' + (bold ? 700 : 400) + '"' +
+               ((k === "s" || k === "p") ? ' letter-spacing="' + n1(px(1.2)) + '"' : '') +
+               ' paint-order="stroke" stroke="' + PAPER + '" stroke-width="' + n1(px(4)) + '" stroke-linejoin="round" fill="' + fill + '">' +
+               ((k === "s" || k === "p") ? t.toUpperCase() : t) + '</text>');
+      });
+    }
+
+    /* ── the numbered markers ── */
+    function mark(ev, emph) {
+      var x = ev.at[0], y = ev.at[1], k = ev.kind, r;
+      if (o.live && emph) {
+        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(k === "dec" ? 36 : 24)) + '" fill="none" stroke="' + INK +
+               '" stroke-width="' + n1(px(1.2)) + '" opacity=".45"/>');
+      }
+      if (k === "obs") {
+        r = px(10.5);
+        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(r) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(1.8)) + '"/>');
+      } else if (k === "act") {
+        r = px(10.5);
+        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(r) + '" fill="' + INK + '"/>');
+      } else if (k === "mod") {
+        r = px(10);
+        s.push('<rect x="' + n1(x - r) + '" y="' + n1(y - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="' + PAPER +
+               '" stroke="' + FIRE + '" stroke-width="' + n1(px(1.8)) + '" stroke-dasharray="' + n1(px(3)) + ' ' + n1(px(2.5)) +
+               '" transform="rotate(45 ' + x + ' ' + y + ')"/>');
+      } else {
+        r = px(15);
+        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(30)) + '" fill="' + PAPER + '" opacity=".9"/>');
+        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(30)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.4)) +
+               '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity=".8"/>');
+        s.push('<rect x="' + n1(x - r) + '" y="' + n1(y - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" rx="' + n1(px(2)) +
+               '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.6)) + '"/>');
+      }
+      var fs = k === "dec" ? 18 : 12.5;
+      s.push('<text x="' + x + '" y="' + n1(y + px(fs * 0.36)) + '" text-anchor="middle" ' + F + ' font-size="' + n1(px(fs)) +
+             '" font-weight="700" fill="' + (k === "act" ? PAPER : k === "mod" ? FIRE : INK) + '">' + ev.n + '</text>');
+    }
+
+    S3_EVENTS.forEach(function (ev, i) {
+      if (i >= step) { return; }
+      var current = (o.mode === "focus" && ev.stage === stage);
+      var newest = (i === step - 1);
+      mark(ev, newest);
+      if (!showText) { return; }
+      if (o.mode === "focus" && current) {
+        var lines = [[ev.t + " · " + ev.who, "h"]];
+        ev.what.forEach(function (w) { lines.push([w, "b"]); });
+        lines.push([ev.state, "s"]);
+        text(ev.at[0], ev.at[1], lines, ev.lab.dx, ev.lab.dy, ev.lab.anc);
+      }
+    });
+
+    if (showText && o.mode === "all") {
+      S3_GROUPS.forEach(function (g) { text(g.at[0], g.at[1], g.lines, g.dx, g.dy, g.anc); });
+      var d = S3_EVENTS[7];
+      text(d.at[0], d.at[1], [["8 · " + d.t + " · " + d.who, "h"], [d.what[0], "b"], [d.what[1], "b"], [d.state, "s"]],
+           d.lab.dx, d.lab.dy, d.lab.anc);
+    }
+
+    if (showText) {
+      S3_PLACES.forEach(function (p) {
+        if (step < p.from) { return; }
+        /* in focus mode the stage-2 annotations already say "road held open"
+           and "aircraft launched"; the place words come with the end state */
+        text(p.at[0], p.at[1], p.lines, p.dx, p.dy, p.anc, p.c);
+      });
+    }
+  }
+
+  /* ── the trace under the headline, generated from the data ── */
+  var tlRows = [], tlStageEls = [], tlNoteEls = [];
+  var tlStep = S3_EVENTS.length, tlMode = "focus", tlTimer = null;
+
+  function buildTl() {
+    var host = document.getElementById("tl");
+    if (!host) { return; }
+    host.innerHTML = "";
+    S3_STAGES.forEach(function (st) {
+      var h = document.createElement("p");
+      h.className = "s3-stage";
+      h.innerHTML = '<span class="s3-stage-n">' + st.n + '</span><span>' + st.title + '</span>';
+      host.appendChild(h);
+      tlStageEls.push(h);
+      S3_EVENTS.filter(function (e) { return e.stage === st.n; }).forEach(function (e) {
+        var r = document.createElement("div");
+        r.className = "tl-row s3-row";
+        r.dataset.on = "0";
+        r.innerHTML = '<span class="s3-mk" data-kind="' + e.kind + '" aria-hidden="true"></span>' +
+                      '<span class="tl-time">' + e.t + '</span>' +
+                      '<span class="tl-who">' + e.who + '</span>';
+        host.appendChild(r);
+        tlRows.push(r);
+      });
+      var note = document.createElement("p");
+      note.className = "s3-stage-note";
+      note.textContent = st.note;
+      host.appendChild(note);
+      tlNoteEls.push(note);
+    });
+  }
+
+  /* world -> screen projection at this screen's TARGET camera, plus the
+     rectangles a label must keep clear of */
+  function s3Frame() {
+    var wEl = document.getElementById("world");
+    var wr = wEl.getBoundingClientRect();
+    var camT = viewBoxFor((narrow && CAM_N.ignite) || CAM.ignite, narrowFit());
+    var upp = (wr.width && camT.w) ? camT.w / wr.width : 1;
+    var sc = screens && screens[2];
+    var boxes = [];
+    if (sc) {
+      Array.prototype.forEach.call(sc.querySelectorAll(".plate, .xhead"), function (p) {
+        var r = p.getBoundingClientRect();
+        if (r.width > 2 && r.height > 2) { boxes.push(r); }
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".chrome button, .chrome select"), function (p) {
+      boxes.push(p.getBoundingClientRect());
+    });
+    return {
+      upp: upp,
+      /* ≥ 0.90 px per world unit: the county has room for words at a fixed
+         16/15 px without the stage-1 annotations (three events 50–100
+         world units apart) running into each other. Below that — a phone,
+         iPad portrait — the map carries numbered marks and the trace
+         carries the words, including a one-line note per stage. */
+      showText: (1 / upp) >= 0.90,
+      boxes: boxes,
+      proj: function (wx, wy) { return [wr.left + (wx - camT.x) / upp, wr.top + (wy - camT.y) / upp]; }
+    };
+  }
+
+  function renderS3() {
+    var f = s3Frame();
+    var host = document.getElementById("tl");
+    if (host) { host.dataset.maptext = f.showText ? "1" : "0"; }
+    renderCounty({
+      layers: { see: true, act: tlStep >= 6 },
+      s3: { step: tlStep, mode: tlMode, live: !!tlTimer, upp: f.upp, proj: f.proj, boxes: f.boxes, showText: f.showText }
+    });
+  }
 
   function paintTl() {
-    /* the event is five PLACES on the terrain; the rows only annotate it */
-    tlRows.forEach(function (r, i) { r.dataset.on = i < tlStep ? "1" : "0"; });
-    /* The control says exactly what pressing it will do. It used to read
-       "Pause" while stopped and "Replay" while running. */
+    var stage = s3StageOf(Math.max(1, tlStep));
+    tlRows.forEach(function (r, i) {
+      r.dataset.on = i < tlStep ? "1" : "0";
+      r.dataset.cur = (tlMode === "focus" && S3_EVENTS[i].stage === stage && i < tlStep) ? "1" : "0";
+    });
+    tlStageEls.forEach(function (h, i) {
+      h.dataset.cur = (tlMode === "focus" && S3_STAGES[i].n === stage && tlStep > 0) ? "1" : "0";
+    });
+    tlNoteEls.forEach(function (n, i) {
+      var st = S3_STAGES[i];
+      n.dataset.cur = (tlStep >= st.from && (tlMode === "all" || st.n === stage)) ? "1" : "0";
+    });
+    /* The control says exactly what pressing it will do. */
     var btn = document.getElementById("tl-play");
     if (btn) {
       btn.textContent = tlTimer ? "Pause"
-                      : tlStep >= tlRows.length ? "Replay from the start"
+                      : tlStep >= S3_EVENTS.length ? "Replay from the start"
                       : tlStep === 0 ? "Play the ignition"
                       : "Resume";
     }
     var all = document.getElementById("tl-all");
-    if (all) {
-      all.disabled = !tlTimer && tlStep >= tlRows.length;
-    }
-    if (current === 3) {
-      /* The five spatial moments ride the SAME step model the strip uses, so
-         the map and the trace can never disagree. At rest all five are shown;
-         during replay the active one is emphasised and the rest recede. */
-      /* Unless a replay is actually running, the whole sequence is on the map
-         — the static frame has to be understandable on its own. */
-      var last = Math.max(1, tlRows.length - 1);
-      var beat = tlTimer
-               ? Math.max(0, Math.min(4, Math.floor((tlStep - 1) * 5 / last)))
-               : 4;
-      renderCounty({
-        layers: { see: true, act: tlStep >= 6 },
-        ignition: tlStep === 0 ? 0.45 : Math.min(1, (tlStep - 1) / 7),
-        spread: tlStep >= 5,
-        response: tlStep >= 6,
-        event: beat,
-        replaying: !!tlTimer
-      });
-    }
+    if (all) { all.disabled = (tlMode === "all" && tlStep >= S3_EVENTS.length); }
+    if (current === 3) { renderS3(); }
     refit();
   }
 
   function tlStop() { clearInterval(tlTimer); tlTimer = null; }
 
+  function s3Announce(step) {
+    var ev = S3_EVENTS[step - 1];
+    if (!ev) { return; }
+    var st = S3_STAGES[ev.stage - 1];
+    var first = st.from === ev.n;
+    say((first ? "Stage " + st.n + " of 3, " + st.title + ". " : "") +
+        ev.t + ", " + ev.who + ". " + ev.what.join(" ") + " " + ev.state.toLowerCase() + ".");
+  }
+
   /* Play / Pause / Resume / Replay, in one control that is always labelled
-     with the action it performs. */
+     with the action it performs. The replay is a stepped sequence, not an
+     animation: under prefers-reduced-motion the steps still arrive, the
+     camera does not glide and nothing on the page transitions. */
   function tlRun() {
     if (tlTimer) {
       tlStop(); paintTl();
-      say("Replay paused at step " + tlStep + " of " + tlRows.length + ".");
+      say("Replay paused at step " + tlStep + " of " + S3_EVENTS.length + ".");
       return;
     }
-    var restarting = tlStep >= tlRows.length;
+    var restarting = tlStep >= S3_EVENTS.length || tlMode === "all";
     if (restarting) { tlStep = 0; }
+    tlMode = "focus";
     tlTimer = setInterval(function () {
       tlStep++;
-      if (tlStep >= tlRows.length) {
-        tlStep = tlRows.length; tlStop();
-        say("Replay complete. All " + tlRows.length + " steps shown.");
+      if (tlStep >= S3_EVENTS.length) {
+        tlStep = S3_EVENTS.length; tlStop();
       }
       paintTl();
-    }, 1150);
+      s3Announce(tlStep);
+    }, 1500);
     tlStep++;
     paintTl();
-    say(restarting ? "Replaying the ignition from the start." : "Replay resumed.");
+    s3Announce(tlStep);
   }
 
   function tlShowAll() {
     tlStop();
-    tlStep = tlRows.length;
+    tlStep = S3_EVENTS.length;
+    tlMode = "all";
     paintTl();
-    say("All " + tlRows.length + " steps shown.");
+    say("All eight steps shown, grouped into three stages. The decision at 14:47 is still pending.");
   }
 
+  /* a small hook for facilitators and the QA script: jump to a stage */
+  window.__rg = {
+    stage: function (n) { tlStop(); tlMode = "focus"; tlStep = n === 1 ? 3 : n === 2 ? 7 : 8; paintTl(); },
+    step:  function (k) { tlStop(); tlMode = "focus"; tlStep = Math.max(0, Math.min(8, k)); paintTl(); },
+    showAll: tlShowAll
+  };
 
   /* ══════════════════════════════════════════════════════════════════════
      PER-SCREEN DRAW
@@ -977,6 +1251,11 @@
     fitPending = requestAnimationFrame(function () {
       fitScreen(screens && screens[current - 1]);
       placePins();
+      /* screen 3's labels test themselves against the plates, so they are
+         drawn again once --fit has settled the plates' boxes; and on a
+         narrow stage the plate's height decides the county's window, so
+         the camera is re-aimed too (a no-op when the target is unchanged) */
+      if (current === 3) { moveCamera("ignite"); renderS3(); }
     });
   }
 
@@ -1004,12 +1283,12 @@
   });
 
   anchorPlates();
-  tlRows = Array.prototype.slice.call(document.querySelectorAll("#tl .tl-row"));
-  /* The timeline starts FULLY REVEALED. An unplayed stepper at 22% opacity
-     reads as a disabled panel, and a reviewer who never presses the button
-     would see the most important screen in the deck greyed out. The replay
-     is an enhancement on a legible default, not a gate in front of one. */
-  tlStep = tlRows.length;
+  buildTl();
+  /* The timeline starts FULLY REVEALED at the end state: the eight marks on
+     the map, the one pending decision annotated. A reviewer who never
+     presses the button sees the complete argument. The replay is an
+     enhancement on a legible default, not a gate in front of one. */
+  tlStep = S3_EVENTS.length; tlMode = "focus";
   var tlPlay = document.getElementById("tl-play");
   if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
   var tlAll = document.getElementById("tl-all");
