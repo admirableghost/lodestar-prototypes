@@ -1062,3 +1062,25 @@ input[type="range"] { height: 44px; }
     transparent 100%);
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
+/* ══ REVISION · THE REGION IS THE INTERFACE ════════════════════════════
+   Everything that used to explain the map now happens on it. What remains
+   on the glass is a headline, small anchored labels and the one control. */
+.wf-micro { z-index: 3; align-self: end; pointer-events: auto; }
+.wf-chips { z-index: 3; align-self: end; pointer-events: auto;
+  padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  border-radius: var(--r-m); box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 9%, transparent); }
+.plate--thin { padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 9%, transparent); }
+.plate--thin .tl { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .3) calc(var(--x-gap) * 1); }
+.plate--thin .tl-row { display: flex; align-items: baseline; gap: .45em; }
+.plate--thin .tl-mark { display: none; }
+.plate--thin .tl-time, .plate--thin .tl-who { font-size: var(--x-label); }
+.xask .display--ask { font-size: clamp(19px, .85vw + 1.35vh, 28px); }
+/* every Level-3 class that now sits on the terrain takes the mixed ink;
+   --ink-soft measures 4.38:1 against it */
+.gauge-stop, .note, .eyebrow, .illus, .aside, .tl-time, .tl-who, .cap, .layer-what, .rows dd {
+  color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
+}

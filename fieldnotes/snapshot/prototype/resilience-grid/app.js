@@ -252,6 +252,10 @@
     var s = [];
 
     s.push('<defs>' +
+      '<marker id="arrIn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">' +
+        '<path d="M0 0L10 5L0 10Z" fill="currentColor" opacity=".9"/></marker>' +
+      '<marker id="arrUp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+        '<path d="M0 0L10 5L0 10Z" fill="#2F5A44"/></marker>' +
       '<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">' +
         '<stop offset="0" stop-color="#EFEDE4"/><stop offset="1" stop-color="#F7F5EC"/></linearGradient>' +
       '<radialGradient id="heat" cx="50%" cy="50%" r="50%">' +
@@ -372,6 +376,124 @@
       }
       s.push("</g>");
       s.push('<circle cx="' + IGNITION.x + '" cy="' + IGNITION.y + '" r="5.5" fill="' + ALARM + '"/>');
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       SPATIAL STORYTELLING — the five beats, carried by the region
+
+       Everything below used to live in a panel: a status bar, a layer list,
+       an event log, a payer table and a pair of outcome cards. Each is now
+       a thing that happens ON the terrain, because a viewer should see what
+       changed without reading what changed.
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* the capacity boundary — a line the market draws across the county */
+    function capacityPath(pull) {
+      var pts = [], x;
+      for (x = -40; x <= W + 40; x += 40) {
+        var ridge = crestY(x);
+        /* capacity sits BELOW the ridge and is pushed further down-valley the
+           more the market retreats; the canyon is always the worst of it */
+        var canyon = Math.exp(-Math.pow((x - IGNITION.x) / 300, 2)) * 120;
+        pts.push([x, ridge + 120 + pull * (210 + canyon)]);
+      }
+      return pts;
+    }
+
+    if (opts.retreat || opts.market) {
+      var pull = opts.market ? 1 : (opts.retreatPull == null ? 1 : opts.retreatPull);
+
+      /* the ground the market has walked away from, shaded as risk */
+      s.push('<path d="' + path(capacityPath(pull), false) +
+             ' L' + (W + 40) + ' -80 L-40 -80 Z" fill="' + ALARM + '" opacity=".10"/>');
+
+      if (opts.market) {
+        /* screen 5: both boundaries at once, so the movement IS the image */
+        s.push('<path d="' + path(capacityPath(0.34), false) + '" fill="none" stroke="' + PUBLIC +
+               '" stroke-width="5" opacity=".95"/>');
+        s.push('<path d="' + path(capacityPath(0.34), false) +
+               ' L' + (W + 40) + ' ' + (H + 80) + ' L-40 ' + (H + 80) + ' Z" fill="' + PUBLIC + '" opacity=".07"/>');
+        for (var ax = 180; ax < W; ax += 300) {
+          var y0 = crestY(ax) + 120 + 1 * (210 + Math.exp(-Math.pow((ax - IGNITION.x) / 300, 2)) * 120);
+          var y1 = crestY(ax) + 120 + 0.34 * (210 + Math.exp(-Math.pow((ax - IGNITION.x) / 300, 2)) * 120);
+          s.push('<line x1="' + ax + '" y1="' + y0 + '" x2="' + ax + '" y2="' + (y1 + 16) +
+                 '" stroke="' + PUBLIC + '" stroke-width="3" opacity=".75" marker-end="url(#arrUp)"/>');
+        }
+      }
+      s.push('<path d="' + path(capacityPath(pull), false) + '" fill="none" stroke="' + ALARM +
+             '" stroke-width="4" stroke-dasharray="' + (opts.market ? "14 10" : "0") + '" opacity=".9"/>');
+    }
+
+    /* the standing network: assets that already exist, joined into a system */
+    if (opts.network) {
+      var hub = { x: 800, y: 520 };
+      NODES.forEach(function (n) {
+        if (!L[n.layer]) { return; }
+        s.push('<line x1="' + n.x + '" y1="' + n.y + '" x2="' + hub.x + '" y2="' + hub.y +
+               '" stroke="' + CARRIER + '" stroke-width="1.3" opacity=".30"/>');
+      });
+      s.push('<circle cx="' + hub.x + '" cy="' + hub.y + '" r="26" fill="' + PAPER +
+             '" stroke="' + CARRIER + '" stroke-width="3"/>');
+      s.push('<circle cx="' + hub.x + '" cy="' + hub.y + '" r="9" fill="' + CARRIER + '"/>');
+    }
+
+    /* the event, as five places rather than five rows */
+    if (opts.event != null) {
+      var BEATS = [
+        { x: IGNITION.x,      y: IGNITION.y,       t: "Detect",      c: ALARM },
+        { x: IGNITION.x - 150, y: IGNITION.y - 70, t: "Corroborate", c: ALARM },
+        { x: 800,             y: 520,              t: "Decide",      c: CARRIER },
+        { x: IGNITION.x - 60, y: IGNITION.y + 180, t: "Intervene",   c: FIRE },
+        { x: IGNITION.x + 130, y: IGNITION.y + 300, t: "Verify",     c: PUBLIC }
+      ];
+      BEATS.forEach(function (b, i) {
+        if (i > opts.event) { return; }
+        if (i > 0) {
+          var a = BEATS[i - 1];
+          s.push('<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
+                 '" stroke="' + b.c + '" stroke-width="2.6" opacity=".6" stroke-dasharray="9 7"/>');
+        }
+        var live = (i === opts.event);
+        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + (live ? 26 : 13) +
+               '" fill="none" stroke="' + b.c + '" stroke-width="' + (live ? 3.4 : 2) + '" opacity="' + (live ? 1 : .6) + '"/>');
+        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="6" fill="' + b.c + '"/>');
+      });
+    }
+
+    /* who pays: four streams converging on the operating business */
+    if (opts.flows) {
+      var core = { x: 800, y: 560 };
+      var PAYERS = [
+        { x: 330,  y: 372, c: UTILITY, t: "Utility", why: "avoids outage and its own exposure" },
+        { x: 1290, y: 372, c: PUBLIC, t: "Public agencies", why: "regional resilience" },
+        { x: 330,  y: 790, c: FIRE, t: "Property owners", why: "a maintained perimeter" },
+        { x: 1290, y: 790, c: CARRIER, t: "Insurer", why: "verified change in risk" }
+      ];
+      PAYERS.forEach(function (q) {
+        s.push('<path d="M' + q.x + ' ' + q.y + ' Q' + ((q.x + core.x) / 2) + ' ' +
+               ((q.y + core.y) / 2 + (q.y < core.y ? 70 : -70)) + ' ' + core.x + ' ' + core.y +
+               '" fill="none" stroke="' + q.c + '" stroke-width="4" opacity=".62" marker-end="url(#arrIn)"/>');
+        s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="17" fill="' + PAPER +
+               '" stroke="' + q.c + '" stroke-width="3.4"/>');
+        var lx = q.x < core.x ? q.x + 30 : q.x - 30;
+        var anc = q.x < core.x ? "start" : "end";
+        s.push('<text x="' + lx + '" y="' + (q.y - 2) + '" text-anchor="' + anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="700" ' +
+               'letter-spacing="2.2" fill="' + q.c + '">' + q.t.toUpperCase() + '</text>');
+        s.push('<text x="' + lx + '" y="' + (q.y + 30) + '" text-anchor="' + anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="' + INK +
+               '" opacity=".82">' + q.why + '</text>');
+      });
+      s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="44" fill="' + PAPER +
+             '" stroke="' + INK + '" stroke-width="3.5"/>');
+      s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="15" fill="' + INK + '"/>');
+      s.push('<text x="' + core.x + '" y="' + (core.y + 76) + '" text-anchor="middle" ' +
+             'font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="700" ' +
+             'letter-spacing="2.4" fill="' + INK + '">THE OPERATING NETWORK</text>');
+      /* one evidence path, verified outcomes toward an underwriting decision */
+      s.push('<path d="M' + (core.x + 44) + ' ' + core.y + ' Q1160 ' + (core.y - 150) +
+             ' 1290 ' + (790 - 26) + '" fill="none" stroke="' + CARRIER +
+             '" stroke-width="2.4" stroke-dasharray="11 8" opacity=".85" marker-end="url(#arrIn)"/>');
     }
 
     svg.innerHTML = s.join("");
@@ -589,6 +711,9 @@
   var tlStep = 0, tlTimer = null;
 
   function paintTl() {
+    /* the event is five PLACES on the terrain; the rows only annotate it */
+    renderCounty({ layers: { see: true, act: true }, ignition: 0.45,
+                   event: Math.max(0, Math.min(4, tlStep - 1)) });
     tlRows.forEach(function (r, i) { r.dataset.on = i < tlStep ? "1" : "0"; });
     /* The control says exactly what pressing it will do. It used to read
        "Pause" while stopped and "Replay" while running. */
@@ -651,12 +776,14 @@
      PER-SCREEN DRAW
      ══════════════════════════════════════════════════════════════════════ */
 
+  /* Each screen now asks the REGION for its beat, rather than asking a panel
+     to describe one. The layer map is still what screen 2 toggles. */
   function drawFor(n) {
-    if (n === 1) { renderCounty({ layers: {} }); }
-    else if (n === 2) { renderCounty({ layers: layerOn }); }
+    if (n === 1)      { renderCounty({ layers: {}, retreat: true }); }
+    else if (n === 2) { renderCounty({ layers: layerOn, network: true }); }
     else if (n === 3) { paintTl(); }
-    else if (n === 4) { renderCounty({ layers: { see: true, act: true } }); }
-    else if (n === 5) { renderCounty({ layers: { see: true, act: true }, protected: true }); }
+    else if (n === 4) { renderCounty({ layers: { see: true, act: true }, flows: true }); }
+    else if (n === 5) { renderCounty({ layers: { see: true, act: true }, protected: true, market: true }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
