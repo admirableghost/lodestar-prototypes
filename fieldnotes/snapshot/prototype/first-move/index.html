@@ -10,93 +10,54 @@
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="fm">
 
 <button class="skip" type="button" id="skip">Skip to this screen's content</button>
 
-<!-- A quiet ruled field, not a map. This prototype depicts a screen, so the
-     ground is a page rather than a place. -->
+<!-- ═══════════════ THE GROUND ═══════════════
+     Not a page and not a map: an information field. A deep indigo world of
+     receding document silhouettes, with one directional axis running through
+     it. Screen 1 sends four policies along that axis and folds them into one
+     recommendation; screen 2 carries the same axis into a transaction wall.
+     Everything is drawn in app.js — no images, no external request. -->
 <div class="world" id="world">
-  <svg id="field" preserveAspectRatio="xMidYMid slice" role="presentation" aria-hidden="true"></svg>
+  <svg id="field" preserveAspectRatio="xMidYMid meet" role="img"
+       aria-label="A dark field of layered policy documents. A luminous path runs through four of them and converges into a single recommended policy; on the second screen the same path runs on and stops dead against a solid amber wall marked Buy, Bind, Sign, Identity and Payment."></svg>
 </div>
-<div class="veil" id="veil" data-veil="soft" aria-hidden="true"></div>
 
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · THE ANALYSIS IS ALREADY DELEGATED ══════════════════════════
-     The old screen put a quote card, a four-row timeline with sub-copy and a
-     disclaimer card in competition with the headline. The analysis itself is
-     the argument, so it is now the one object on the screen: four stages on a
-     track that fills as it runs. Everything the facilitator can say aloud has
-     left the glass. -->
-<section class="screen screen--hero" data-screen="1" data-label="What it already does">
+<!-- ══════ 1 · WHAT AI ALREADY DOES ═══════════════════════════════════════
+     The four documents, the reasoning path and the one recommendation are
+     all on the ground. What is left on the glass is the headline, the state
+     of the run, and the control that re-runs it. -->
+<section class="screen" data-screen="1" data-label="What it already does">
 
-  <div class="xhead" style="grid-area:1/1/4/8">
+  <div class="xhead xhead--dark" style="grid-area:1/1/4/7">
     <p class="xeyebrow">Opening · today</p>
     <h1 class="display xd" tabindex="-1"><span>She stopped reading</span><span>the policies herself.</span></h1>
     <p class="xlede">Four renewal quotes. One question, asked in plain language.</p>
   </div>
 
-  <div class="gw" aria-hidden="true"></div>
-
-  <div class="flow" id="read" style="grid-area:5/1/8/13">
-    <div class="flow-step tl-row" data-on="0">
-      <p class="flow-w">Read</p><p class="flow-s">all four wordings</p>
-    </div>
-    <div class="flow-step tl-row" data-on="0">
-      <p class="flow-w">Compare</p><p class="flow-s">the garage exclusion</p>
-    </div>
-    <div class="flow-step tl-row" data-on="0">
-      <p class="flow-w">Rank</p><p class="flow-s">against her claim history</p>
-    </div>
-    <div class="flow-step tl-row" data-on="0">
-      <p class="flow-w">Recommend</p><p class="flow-s">the cheapest came third</p>
-    </div>
-  </div>
-
-  <div class="flow-foot" style="grid-area:8/1/9/13">
-    <button class="tl-play" type="button" id="read-play">Run it again</button>
-    <p class="flow-state"><span id="read-count">Four documents read.</span></p>
+  <div class="fm-foot" style="grid-area:7/7/9/13">
+    <p class="fm-state" id="read-count">Four documents, every exclusion, in the time it takes to read one.</p>
+    <button class="fm-run" type="button" id="read-play">Run it again</button>
     <p class="xmicro">Invented person and quotes. A reconstruction, not a recording.</p>
   </div>
 
 </section>
 
 <!-- ══════ 2 · WHERE IT STOPS ═════════════════════════════════════════════
-     The handoff is the point of the whole prototype, so it is now a wall the
-     eye cannot miss: everything delegated runs into it from the left and
-     stops. The insurer-side commentary and the disclaimer card are gone; the
-     closing question is the only other thing on the screen. -->
-<section class="screen screen--hero" data-screen="2" data-label="Where it stops">
+     The wall is the memorable event, so nothing competes with it. The
+     closing question sits low and quiet: headline → wall → question. -->
+<section class="screen" data-screen="2" data-label="Where it stops">
 
-  <div class="xhead" style="grid-area:1/1/4/7">
+  <div class="xhead xhead--dark" style="grid-area:1/1/4/7">
     <p class="xeyebrow">Opening · the handoff</p>
     <h2 class="display xd" tabindex="-1"><span>It can read everything.</span><span>It cannot sign.</span></h2>
   </div>
 
-  <div class="gw" aria-hidden="true"></div>
-
-  <div class="wall" style="grid-area:4/1/8/13">
-    <div class="wall-side wall-side--done">
-      <p class="wall-h">Delegated</p>
-      <p class="wall-i">Read the wordings</p>
-      <p class="wall-i">Compare the exclusions</p>
-      <p class="wall-i">Rank them for her</p>
-      <p class="wall-i">Draft the questions</p>
-    </div>
-    <div class="wall-bar" aria-hidden="true"><span class="wall-bar-l">Buy<br>Bind<br>Sign</span></div>
-    <div class="wall-side wall-side--hers">
-      <p class="wall-h">Still hers</p>
-      <p class="wall-i">Prove who she is</p>
-      <p class="wall-i">Answer the declarations</p>
-      <p class="wall-i">Authorise the payment</p>
-      <p class="wall-i">Sign</p>
-    </div>
-  </div>
-
-  <!-- The closing question is a bridge to the next prototype, not a second
-       headline. It sits low and quiet so the eye runs headline -> wall -> here. -->
-  <div class="xask" style="grid-area:8/1/9/9">
+  <div class="fm-ask" style="grid-area:7/1/9/7">
     <p class="display display--ask xd" tabindex="-1">What happens when she delegates the next step too?</p>
   </div>
 

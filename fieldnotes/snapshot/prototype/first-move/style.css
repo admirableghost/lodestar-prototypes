@@ -1260,3 +1260,138 @@ input[type="range"] { height: 44px; }
     transparent 100%);
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FIRST MOVE · THE INFORMATION FIELD
+   ══════════════════════════════════════════════════════════════════════════
+   Everything above this line is the inherited cream stock. This prototype no
+   longer sits on paper: it sits in a deep indigo field that the drawing owns
+   edge to edge. So the tokens are redefined rather than the rules rewritten,
+   and only the few components that carry type are restyled.
+
+   The inherited rule was "every word sits on an opaque plate". That rule
+   survives, inverted: every word sits on a DARK scrim, and the scrim is a
+   lighting effect on a pseudo-element, never a card. No boxes return.
+
+   Contrast, measured against the darkest ground (#070B16):
+     --paper #F3F5FC on ground      17.9 : 1
+     --ink-soft #A9B3D1 on ground    8.4 : 1
+     amber #F3A23F on ground        10.2 : 1
+     wall ink #070B16 on amber      10.2 : 1
+   ══════════════════════════════════════════════════════════════════════════ */
+
+body.fm {
+  --paper:       #F3F5FC;
+  --edition-ink: #F3F5FC;
+  --ink-soft:    #A9B3D1;
+  --rule:        #46507A;
+  --hair:        #232C52;
+  background: #070B16;
+  color: var(--paper);
+}
+
+/* the ground is the drawing; nothing may paint over it */
+body.fm .world { background: #070B16; }
+body.fm .veil { display: none; }
+
+/* ── type on the field ──────────────────────────────────────────────────
+   A feathered dark scrim, sized to the text, on a pseudo-element that
+   bleeds past the box without occupying layout space. */
+body.fm .xhead--dark { position: relative; }
+body.fm .xhead--dark > * { position: relative; z-index: 1; }
+body.fm .xhead--dark::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  inset: -7vh -16vw -8vh -7vw;
+  background: radial-gradient(62% 68% at 26% 46%,
+    rgba(7,11,22,.95) 0%, rgba(7,11,22,.90) 40%,
+    rgba(7,11,22,.62) 66%, rgba(7,11,22,.22) 86%, rgba(7,11,22,0) 100%);
+}
+body.fm .xhead h1, body.fm .xhead h2, body.fm .xhead .xd { color: var(--paper); }
+body.fm .xeyebrow { color: #7FD8E8; letter-spacing: .22em; }
+body.fm .xlede, body.fm .xmicro { color: var(--ink-soft); }
+
+/* ── screen 1's state line and its one control ──────────────────────────
+   Bottom right, under the recommendation, so the eye runs headline →
+   documents → recommendation → state. Not a panel: text on the field. */
+body.fm .fm-foot {
+  position: relative; z-index: 3; pointer-events: auto;
+  display: flex; flex-direction: column; align-items: flex-end;
+  justify-content: flex-end; gap: calc(var(--x-gap) * .55);
+  text-align: right;
+}
+body.fm .fm-foot::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  inset: -8vh -9vw -8vh -16vw;
+  background: radial-gradient(60% 66% at 72% 52%,
+    rgba(7,11,22,.94) 0%, rgba(7,11,22,.86) 42%,
+    rgba(7,11,22,.55) 68%, rgba(7,11,22,.18) 87%, rgba(7,11,22,0) 100%);
+}
+body.fm .fm-foot > * { position: relative; z-index: 1; }
+body.fm .fm-state {
+  margin: 0; max-width: 30ch;
+  font: var(--x-lede)/1.4 var(--sans); color: var(--paper);
+}
+body.fm .fm-run {
+  min-height: 46px; padding: 0 1.15em;
+  border: 1.5px solid #5FD8E8; border-radius: var(--r-m);
+  background: transparent; color: #A9EEF6;
+  font: 600 var(--x-label)/1 var(--sans); letter-spacing: .09em;
+  text-transform: uppercase; cursor: pointer;
+  transition: background .15s linear, color .15s linear;
+}
+body.fm .fm-run:hover, body.fm .fm-run:focus-visible { background: #5FD8E8; color: #06121A; }
+
+/* ── screen 2's closing question ────────────────────────────────────────
+   Low and quiet. It is a bridge to the next prototype, not a headline. */
+body.fm .fm-ask {
+  position: relative; z-index: 3; pointer-events: auto;
+  display: flex; align-items: flex-end;
+}
+body.fm .fm-ask::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  inset: -8vh -14vw -8vh -7vw;
+  background: radial-gradient(60% 70% at 26% 52%,
+    rgba(7,11,22,.94) 0%, rgba(7,11,22,.86) 42%,
+    rgba(7,11,22,.55) 68%, rgba(7,11,22,.18) 87%, rgba(7,11,22,0) 100%);
+}
+body.fm .fm-ask > * { position: relative; z-index: 1; }
+body.fm .fm-ask .display--ask {
+  margin: 0; max-width: 24ch;
+  font: 400 var(--x-display-s)/1.14 var(--serif);
+  letter-spacing: -.015em; color: var(--paper);
+}
+
+/* ── chrome, on the field ───────────────────────────────────────────────
+   Navigation is secondary here, so it loses its paper plates and becomes
+   outlines on the ground. */
+body.fm .chrome .iconbtn,
+body.fm .chrome .picker {
+  background: rgba(10,15,30,.82); color: var(--paper);
+  border: 1px solid #3A4472; box-shadow: none;
+}
+body.fm .chrome select { color: var(--paper); background: transparent; }
+body.fm .chrome select option { color: #11162A; background: #F3F5FC; }
+body.fm .chrome .cta {
+  background: #5FD8E8; color: #06121A; box-shadow: none;
+  border: 1px solid #5FD8E8;
+}
+body.fm .chrome .iconbtn[disabled] { opacity: .4; }
+body.fm .skip { background: #5FD8E8; color: #06121A; }
+
+/* focus must be visible on a dark ground, where the inherited ring vanishes */
+body.fm :focus-visible { outline: 3px solid #7FD8E8; outline-offset: 2px; }
+
+/* ── narrow ─────────────────────────────────────────────────────────────
+   The deck stacks and scrolls. The drawing switches to its portrait axis in
+   app.js, so here the type only has to stop competing with it: scrims become
+   solid bands and the foot stops hugging the right edge. */
+@media (max-width: 899px) {
+  body.fm .fm-foot { align-items: flex-start; text-align: left; }
+  body.fm .xhead--dark::before,
+  body.fm .fm-foot::before,
+  body.fm .fm-ask::before {
+    inset: -1.6vh -5vw; border-radius: 10px;
+    background: rgba(7,11,22,.90);
+  }
+  body.fm .fm-state { max-width: none; }
+}
