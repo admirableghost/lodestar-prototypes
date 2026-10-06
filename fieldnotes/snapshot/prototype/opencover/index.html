@@ -39,104 +39,85 @@
      Everything else is voiceover. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · WHAT THE PERSON SETS ══════ -->
-<section class="screen" data-screen="1" data-label="What the person sets" data-cam="set" data-veil="soft">
+<!-- ══════════════════════════════════════════════════════════════════════
+     ONE OBJECT, THREE STATES.
 
-  <div class="xhead" style="grid-area:1/1/4/8">
-    <p class="xeyebrow">OpenCover · a household motor policy · hypothetical</p>
-    <h1 class="display xd" tabindex="-1"><span>Set once.</span><span>Never shopped again.</span></h1>
-    <p class="note">Invented insurers, invented prices, invented commitments. Hypothetical throughout; no real insurer, policy or assistant is described.</p>
+     The offer is a structured thing with a small number of explicit fields.
+     Screen 1 publishes it. Screen 2 reasons over it against what she cares
+     about. Screen 3 checks it against what actually happened. The same five
+     field labels run through all three screens, so the argument is that the
+     product itself is legible — not that an assistant has been bolted on.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══════ 1 · THE OFFER, PUBLISHED ══════ -->
+<section class="screen" data-screen="1" data-label="The offer" data-cam="set" data-veil="soft">
+
+  <div class="xhead" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">01 / The offer</p>
+    <h1 class="display xd" tabindex="-1"><span>Every commitment,</span><span>published.</span></h1>
   </div>
 
-  <div class="gw" aria-hidden="true"></div>
+  <p class="xmicro oc-micro" style="grid-area:2/8/4/13">Invented insurer, invented terms. Nothing here describes a real product.</p>
 
-  <div class="plate" style="grid-area:4/1/9/7">
-    <p class="eyebrow">Stated priorities · four, in order</p>
-    <div class="recs" id="prios"></div>
-  </div>
-
-  <div class="plate" style="grid-area:4/7/9/13">
-    <p class="eyebrow eyebrow--utility">Permission boundary</p>
-    <div class="perm">
-      <div class="perm-col perm-col--may">
-        <p class="perm-h">May act alone</p>
-        <ul class="perm-l">
-          <li>Compare the whole market, at any time</li>
-          <li>Renew the current policy, if the terms have not changed</li>
-          <li>Switch insurer, if the offer meets every priority above and costs no more than 200 USD a year above the cheapest offer on the market</li>
-        </ul>
-      </div>
-      <div class="perm-col perm-col--ask">
-        <p class="perm-h">Must come back to me</p>
-        <ul class="perm-l">
-          <li>Any offer that fails one of the four priorities</li>
-          <li>Any excess above the stated cap</li>
-          <li>Removing or restricting a named driver</li>
-          <li>Anything beyond the 200 USD a year limit</li>
-        </ul>
-      </div>
-    </div>
-    <div class="grant" id="grant-box" data-on="0">
-      <p class="grant-state"><span class="tag" id="grant-tag">Not granted</span><span id="grant-said">The assistant may compare. It may not buy.</span></p>
-      <button class="cta cta--inline" type="button" id="grant">Grant this permission</button>
-    </div>
+  <div class="obj" style="grid-area:4/1/9/13">
+    <div class="obj-f"><p class="obj-k">Price</p><p class="obj-v">1,340<span class="obj-u">USD / yr</span></p></div>
+    <div class="obj-f"><p class="obj-k">Covered</p><p class="obj-v obj-v--s">Liability, fire, theft,<br>every named driver</p></div>
+    <div class="obj-f obj-f--out"><p class="obj-k">Not covered</p><p class="obj-v obj-v--s">Unattended theft,<br>undeclared changes</p></div>
+    <div class="obj-f"><p class="obj-k">Service promise</p><p class="obj-v obj-v--s">Answer in 1 day,<br>settle in 5</p></div>
+    <div class="obj-f obj-f--key"><p class="obj-k">The agent may</p><p class="obj-v obj-v--s">Renew, and switch<br>inside her rules</p></div>
   </div>
 
 </section>
 
-<!-- ══════ 2 · THE OFFER AS DATA ══════ -->
-<section class="screen" data-screen="2" data-label="The offer as data" data-cam="offers" data-veil="">
+<!-- ══════ 2 · THE AGENT CHOOSES ══════ -->
+<section class="screen" data-screen="2" data-label="The agent chooses" data-cam="offers" data-veil="">
 
-  <div class="plate" style="grid-area:1/1/4/7">
-    <p class="eyebrow">02 / The offer as data</p>
-    <h2 class="display" tabindex="-1"><span>The buyer reads the policy.</span><span>The buyer is not a person.</span></h2>
-    <p class="body">Covered perils, exclusions and service commitments, published so they can be read without being interpreted. The assistant scores them against the stated priorities.</p>
+  <div class="xhead" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">02 / The agent chooses</p>
+    <h2 class="display xd" tabindex="-1"><span>It knows what</span><span>she cares about.</span></h2>
   </div>
 
-  <div class="gw" aria-hidden="true"></div>
-
-  <div class="plate" style="grid-area:4/1/9/7">
-    <p class="eyebrow">Three offers · ranked by <span class="illus" id="rank-name">stated priorities</span></p>
-    <div class="recs" id="cmp"></div>
-    <p class="verdict" id="verdict"></p>
-    <div class="chips">
-      <button class="chipbtn" type="button" id="rank-prio" aria-pressed="true" aria-controls="cmp doc">Rank by my priorities</button>
-      <button class="chipbtn" type="button" id="rank-price" aria-pressed="false" aria-controls="cmp doc">Rank by price</button>
+  <div class="pref" style="grid-area:1/8/4/13">
+    <p class="obj-k">She cares most about</p>
+    <div class="xchoice" role="group" aria-label="What she cares most about">
+      <button type="button" data-pref="price"   aria-pressed="false">Price</button>
+      <button type="button" data-pref="excl"    aria-pressed="true">Fewest exclusions</button>
+      <button type="button" data-pref="service" aria-pressed="false">Fastest settlement</button>
     </div>
   </div>
 
-  <div class="plate" style="grid-area:1/8/9/13">
-    <p class="eyebrow">The top-ranked offer, as published · <span class="illus">invented</span></p>
-    <div class="doc" id="doc"></div>
+  <div class="rank" id="rank" style="grid-area:4/1/8/13">
+    <div class="rk" data-o="meridian"><p class="rk-n">Meridian</p><div class="rk-bar"><span></span></div><p class="rk-why"></p></div>
+    <div class="rk" data-o="candlewick"><p class="rk-n">Candlewick</p><div class="rk-bar"><span></span></div><p class="rk-why"></p></div>
+    <div class="rk" data-o="pell"><p class="rk-n">Pell &amp; Roe</p><div class="rk-bar"><span></span></div><p class="rk-why"></p></div>
   </div>
+
+  <p class="oc-verdict" id="verdict" style="grid-area:8/1/9/13"></p>
 
 </section>
 
-<!-- ══════ 3 · AFTER THE PURCHASE ══════ -->
+<!-- ══════ 3 · THE PROMISE STAYS CHECKABLE ══════ -->
 <section class="screen" data-screen="3" data-label="After the purchase" data-cam="after" data-veil="soft">
 
   <div class="xhead" style="grid-area:1/1/4/6">
-    <p class="xeyebrow">03 / After the purchase</p>
-    <h2 class="display xd" tabindex="-1"><span>Renewal stops</span><span>being a date.</span></h2>
+    <p class="xeyebrow">03 / Eleven months in</p>
+    <h2 class="display xd" tabindex="-1"><span>The promise</span><span>stays checkable.</span></h2>
   </div>
 
-  <div class="gw" aria-hidden="true"></div>
-
-  <div class="plate plate--carrier" style="grid-area:4/1/7/6">
-    <p class="eyebrow eyebrow--carrier">What the assistant may do now</p>
-    <p class="grant-state"><span class="tag" id="branch-tag">Needs you</span></p>
-    <p class="body" id="branch-said"></p>
-    <button class="cta cta--inline" type="button" id="branch-go" data-goto="1">Set the permission</button>
+  <div class="perf" style="grid-area:1/6/6/13">
+    <div class="pf"><p class="obj-k">Answer in 1 day</p><p class="pf-v">Met</p></div>
+    <div class="pf pf--miss"><p class="obj-k">Settle in 5 days</p><p class="pf-v">Took 9</p></div>
+    <div class="pf"><p class="obj-k">Price published ahead</p><p class="pf-v">Met</p></div>
   </div>
 
-  <div class="plate" style="grid-area:7/1/9/6">
-    <p class="eyebrow">The question</p>
-    <p class="display display--ask" tabindex="-1">What must an insurer publish, and keep proving, to be chosen again?</p>
-  </div>
-
-  <div class="plate" style="grid-area:1/7/9/13">
-    <p class="eyebrow">Commitments, checked against performance · first eleven months</p>
-    <div class="recs" id="led"></div>
+  <!-- The bookend. Opening ended at a solid wall labelled Buy · Bind · Sign
+       that the agent could not cross. The same bar returns here, open, and
+       the agent goes through it — because the product published what it
+       needed to. Nothing says this; the picture does. -->
+  <div class="gate" style="grid-area:6/1/9/13">
+    <p class="gate-l">The agent</p>
+    <div class="gate-bar" aria-hidden="true"><span>Buy · Bind · Sign</span></div>
+    <p class="gate-r" id="gate-r">re-shops, and switches</p>
   </div>
 
 </section>

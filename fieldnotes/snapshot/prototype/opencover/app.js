@@ -193,34 +193,66 @@
      decides whether screen 2 can buy and whether screen 3 can switch.
      ══════════════════════════════════════════════════════════════════════ */
 
-  var granted = false;
-  var rankMode = "priorities";   /* or "price" */
-
-  function ranked() {
-    var a = OFFERS.slice();
-    if (rankMode === "price") {
-      a.sort(function (x, y) { return x.premium - y.premium; });
-    } else {
-      /* fails first, then price — a compliant offer always outranks a
-         cheaper non-compliant one, which is the entire argument */
-      a.sort(function (x, y) {
-        var fx = fails(x).length, fy = fails(y).length;
-        return fx !== fy ? fx - fy : x.premium - y.premium;
-      });
-    }
-    return a;
-  }
-  function fails(o) {
-    return PRIORITIES.filter(function (p) { return !o.scores[p.id].ok; });
-  }
-  function cheapest() {
-    return OFFERS.reduce(function (a, b) { return a.premium <= b.premium ? a : b; });
-  }
-
   /* ══════════════════════════════════════════════════════════════════════
-     THE GROUND — a register sheet, 1600 x 1000
+     PREFERENCE → REASONING → CHOICE
+
+     Three offers, three things she might care most about. The agent scores
+     each offer against the active preference and the best fit changes in
+     front of the room. The scores are the only data here, so the ranking
+     the viewer sees is the ranking the rule produces.
      ══════════════════════════════════════════════════════════════════════ */
 
+  var OC = [
+    { id: "meridian",   name: "Meridian",
+      price: 42, excl: 92, service: 88,
+      why: { price: "1,340 a year \u2014 not the cheapest",
+             excl:  "No exclusion she would meet",
+             service: "Settles in five days, with a remedy" } },
+    { id: "candlewick", name: "Candlewick",
+      price: 95, excl: 30, service: 44,
+      why: { price: "1,185 a year \u2014 the cheapest",
+             excl:  "Excludes drivers under 25",
+             service: "Publishes no settlement time" } },
+    { id: "pell",       name: "Pell & Roe",
+      price: 28, excl: 66, service: 70,
+      why: { price: "1,420 a year",
+             excl:  "Caps the excess higher than she asked",
+             service: "Settles in ten days" } }
+  ];
+  var PREF_LABEL = { price: "price", excl: "fewest exclusions", service: "fastest settlement" };
+  var pref = "excl";
+
+  function paintRank() {
+    var rank = document.getElementById("rank");
+    if (!rank) { return; }
+    var best = OC.reduce(function (a, b) { return a[pref] >= b[pref] ? a : b; });
+    OC.forEach(function (o) {
+      var el = rank.querySelector('[data-o="' + o.id + '"]');
+      if (!el) { return; }
+      el.querySelector(".rk-bar span").style.width = o[pref] + "%";
+      el.querySelector(".rk-why").textContent = o.why[pref];
+      el.dataset.best = o === best ? "1" : "0";
+    });
+    var v = document.getElementById("verdict");
+    if (v) {
+      v.innerHTML = "On " + PREF_LABEL[pref] + ", the agent buys <b>" + best.name +
+        "</b> \u2014 inside the rules she set, without asking.";
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
+    });
+    var gate = document.getElementById("gate-r");
+    if (gate) { gate.textContent = "re-shops, and switches"; }
+    say("Ranked by " + PREF_LABEL[pref] + ". The agent buys " + best.name + ".");
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
+    b.addEventListener("click", function () { pref = b.dataset.pref; paintRank(); });
+  });
+  paintRank();
+
+  /* Restored: the world palette and its frame sat inside the state block the
+     recomposition replaced, and renderWorld below is still its consumer. */
   var W = 1600, H = 1000;
 
   var INK     = "#44415C",
@@ -232,10 +264,7 @@
       PUBLIC  = "#2F5A44",
       ALARM   = "#A33322";
 
-  /* The three records, in world coordinates. Deliberately SMALL against the
-     sheet: at the camera distances below they render around 120–210px wide,
-     which is the size at which a card of ruled rows reads as a document on
-     a page. Drawn any larger, the rows read as a loading skeleton. */
+  /* Restored with the palette: the world's three record geometries. */
   var PRINCIPAL = { x: 150, y: 196, w: 300, h: 290 };
   var CARDS = [
     { id: "candlewick", x: 696,  y: 420, w: 170, h: 316 },
@@ -243,6 +272,7 @@
     { id: "pell",       x: 1076, y: 420, w: 170, h: 316 }
   ];
   var LED = { x: 520, y: 806, w: 880, h: 150 };
+
 
   var svg = document.getElementById("plan");
 
@@ -384,21 +414,13 @@
     }
 
     /* ── the flows between the records ── */
-    s.push('<path d="M456 336Q580 352 688 450" fill="none" stroke="' + RULE +
-           '" stroke-width="1.8" marker-end="url(#arr)"/>');
-    s.push('<path d="M966 744Q962 776 952 800" fill="none" stroke="' + RULE +
-           '" stroke-width="1.8" marker-end="url(#arr)"/>');
     /* the return. Heavier, in the ink, because it is the argument: the
        market re-opens on a missed commitment rather than on a date. */
-    s.push('<path d="M1402 874Q1534 812 1498 710Q1460 604 1258 584" fill="none" stroke="' + INK +
-           '" stroke-width="2.6" marker-end="url(#ari)"/>');
 
-    /* ── the records ── */
-    s.push(card(PRINCIPAL, PRINCIPAL_ROWS, { sel: opts.focus === 1 }));
-    CARDS.forEach(function (c) {
-      s.push(card(c, CARD_ROWS[c.id], { sel: opts.sel === c.id }));
-    });
-    s.push(ledgerStrip());
+    /* The drawn documents and the ledger belonged to the old composition and
+       collided with the fields that replaced them. The structured offer is
+       now the content, so the ground is the ruled sheet it sits on and
+       nothing more. */
 
     svg.innerHTML = s.join("");
   }
@@ -496,21 +518,7 @@
 
   var pinHost = document.getElementById("pins");
 
-  function pinSet(n) {
-    if (n === 1) {
-      return [{ cls: "utility", label: "Stated by the person", wx: 300, wy: 196, dy: -24 },
-              { cls: "grey",    label: "Granted once",         wx: 300, wy: 486, dy: 24 }];
-    }
-    if (n === 2) {
-      var sel = ranked()[0];
-      var c = CARDS.filter(function (q) { return q.id === sel.id; })[0] || CARDS[1];
-      return [{ cls: "grey", label: "Three offers, as data", wx: 966, wy: 420, dy: -24 },
-              { cls: "ink",  label: "Top ranked",            wx: c.x + c.w / 2, wy: c.y + c.h, dy: 24 }];
-    }
-    return [{ cls: "grey",  label: "Performance, recorded", wx: 700,  wy: 806, dy: -24 },
-            { cls: "alarm", label: "One missed",            wx: 1120, wy: 896, dy: 0 },
-            { cls: "ink",   label: "Re-opened",             wx: 1506, wy: 752, dy: 0 }];
-  }
+  function pinSet() { return []; }
 
   function buildPins(n) {
     pinHost.innerHTML = "";
@@ -566,198 +574,11 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 1 — the stated record and the grant
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function paintPriorities() {
-    var host = document.getElementById("prios");
-    if (!host) { return; }
-    host.innerHTML = PRIORITIES.map(function (p, i) {
-      return '<div class="rec rec--set">' +
-        '<p class="rec-top"><span class="rec-name">' + esc(p.name) + "</span>" +
-        '<span class="rec-n">priority ' + (i + 1) + "</span></p>" +
-        '<p class="rec-k">' + esc(p.k) + "</p>" +
-        '<p class="rec-said">' + esc(p.said) + "</p></div>";
-    }).join("");
-  }
-
-  var grantBtn = document.getElementById("grant");
-  var grantBox = document.getElementById("grant-box");
-
-  function paintGrant() {
-    if (grantBox) { grantBox.dataset.on = granted ? "1" : "0"; }
-    var tag = document.getElementById("grant-tag");
-    var said = document.getElementById("grant-said");
-    if (tag) {
-      tag.textContent = granted ? "Granted" : "Not granted";
-      tag.className = "tag " + (granted ? "tag--ok" : "tag--hold");
-    }
-    if (said) {
-      said.textContent = granted
-        ? "The assistant may buy and switch inside this boundary, and is told every time it does."
-        : "The assistant may compare. It may not buy.";
-    }
-    /* The control is always labelled with what pressing it will do. */
-    if (grantBtn) { grantBtn.textContent = granted ? "Revoke this permission" : "Grant this permission"; }
-  }
-
-  if (grantBtn) {
-    grantBtn.addEventListener("click", function () {
-      granted = !granted;
-      paintGrant(); paintOffers(); paintBranch();
-      say(granted
-        ? "Permission granted. The assistant may buy and switch inside the boundary."
-        : "Permission revoked. The assistant may compare but not buy.");
-      refit();
-    });
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — the comparison, and the offer rendered as data
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function docHTML(o) {
-    var s = ['<p class="doc-head"><span class="doc-id">' + esc(o.ref) +
-             '</span><span class="doc-meta">' + esc(o.meta) + "</span></p>"];
-    o.doc.forEach(function (sec) {
-      s.push('<div class="doc-sec"><p class="doc-h' +
-             (sec.cls ? " doc-h--" + sec.cls : "") + '">' + esc(sec.h) + "</p><dl class=\"dl\">");
-      sec.rows.forEach(function (r) {
-        var cls = r.out ? " kv--out" : r.nul ? " kv--null" : "";
-        var dd = (r.nul ? '<span class="nul">null</span>' : "") + esc(r.v) +
-                 (r.rem ? '<span class="kv-rem">' + esc(r.rem) + "</span>" : "");
-        s.push('<div class="kv' + cls + '"><dt>' + esc(r.k) + "</dt><dd>" + dd + "</dd></div>");
-      });
-      s.push("</dl></div>");
-    });
-    return s.join("");
-  }
-
-  function paintOffers() {
-    var order = ranked(), top = order[0], low = cheapest();
-    var cmp = document.getElementById("cmp");
-    var doc = document.getElementById("doc");
-    var rankName = document.getElementById("rank-name");
-    var verdict = document.getElementById("verdict");
-
-    if (rankName) { rankName.textContent = rankMode === "price" ? "price" : "stated priorities"; }
-    document.getElementById("rank-prio").setAttribute("aria-pressed", rankMode === "priorities" ? "true" : "false");
-    document.getElementById("rank-price").setAttribute("aria-pressed", rankMode === "price" ? "true" : "false");
-
-    if (cmp) {
-      cmp.innerHTML = order.map(function (o, i) {
-        var f = fails(o);
-        var tags = (i === 0 ? '<span class="tag tag--sel">Top ranked</span>' : "") +
-          (f.length
-            ? '<span class="tag tag--bad">Fails ' + f.length + " of 4</span>"
-            : '<span class="tag tag--ok">Meets all four</span>');
-        var marks = PRIORITIES.map(function (p) {
-          var sc = o.scores[p.id];
-          return '<span class="mark mark--' + (sc.ok ? "ok" : "bad") + '">' +
-            '<span class="mark-g" aria-hidden="true">' + (sc.ok ? "✓" : "×") + "</span>" +
-            "<span>" + esc(p.name) + "</span>" +
-            '<span class="mark-v">' + esc(sc.v) + "</span></span>";
-        }).join("");
-        /* top-ranked AND failing is the price-sort state, and it has to look
-           wrong, not selected */
-        var cls = i === 0 ? (f.length ? "rec--miss" : "rec--sel") : (f.length ? "rec--out" : "");
-        return '<div class="rec ' + cls + '">' +
-          '<p class="rec-top"><span class="rec-name">' + esc(o.name) + "</span>" + tags +
-          '<span class="rec-n">' + esc(o.price) + "</span></p>" +
-          '<div class="marks">' + marks + "</div></div>";
-      }).join("");
-    }
-
-    if (doc) { doc.innerHTML = docHTML(top); }
-
-    if (verdict) {
-      var gap = top.premium - low.premium;
-      if (fails(top).length) {
-        verdict.className = "verdict verdict--bad";
-        verdict.innerHTML = "Ranked by price alone the assistant buys " + esc(top.name) +
-          " and <span class=\"strong\">" + esc(top.why) + "</span>. " +
-          "A failed priority is outside the permission at any price difference, so it does not act.";
-      } else if (granted) {
-        verdict.className = "verdict";
-        verdict.innerHTML = "<span class=\"strong\">Buying " + esc(top.name) + ".</span> " +
-          gap.toFixed(0) + ".00 USD above the cheapest offer, inside the " + DELTA +
-          " USD limit you set. Bought without asking; you are told that it happened.";
-      } else {
-        verdict.className = "verdict verdict--bad";
-        verdict.innerHTML = esc(top.name) + " is the choice on your priorities. " +
-          "<span class=\"strong\">The assistant cannot buy it:</span> the permission has not been granted.";
-      }
-    }
-
-    if (current === 2) {
-      renderWorld({ focus: 2, sel: top.id });
-      buildPins(2);
-    }
-    refit();
-  }
-
-  function setRank(mode, spoken) {
-    rankMode = mode;
-    paintOffers();
-    say(spoken);
-  }
-  document.getElementById("rank-prio").addEventListener("click", function () {
-    setRank("priorities", "Ranked by the four stated priorities. Meridian Mutual is top ranked.");
-  });
-  document.getElementById("rank-price").addEventListener("click", function () {
-    setRank("price", "Ranked by price. Candlewick Direct is top ranked and fails two priorities.");
-  });
-
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 3 — the performance ledger and the branch
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function paintLedger() {
-    var host = document.getElementById("led");
-    if (!host) { return; }
-    host.innerHTML = LEDGER.map(function (c) {
-      var chks = c.checks.map(function (v) {
-        return '<span class="chk' + (v ? "" : " chk--miss") + '" aria-hidden="true">' +
-               (v ? "✓" : "×") + "</span>";
-      }).join("");
-      return '<div class="rec rec--' + c.cls + '">' +
-        '<p class="rec-top"><span class="rec-name">' + esc(c.name) + "</span>" +
-        '<span class="tag tag--' + (c.cls === "miss" ? "bad" : "ok") + '">' + esc(c.tag) + "</span></p>" +
-        '<p class="rec-k">' + esc(c.k) + "</p>" +
-        '<div class="chks">' + chks + '<span class="chks-l">' +
-        c.checks.filter(function (v) { return v; }).length + " of " + c.checks.length +
-        " met</span></div>" +
-        '<p class="rec-said">' + esc(c.said) + "</p></div>";
-    }).join("");
-  }
-
-  function paintBranch() {
-    var tag = document.getElementById("branch-tag");
-    var said = document.getElementById("branch-said");
-    var go = document.getElementById("branch-go");
-    if (!tag || !said || !go) { return; }
-    if (granted) {
-      tag.textContent = "Permitted";
-      tag.className = "tag tag--ok";
-      said.textContent = "The missed commitment re-opens the market. The assistant is re-tendering now and may switch without asking — inside the same four priorities and the same " +
-        DELTA + " USD limit.";
-      go.hidden = true;
-    } else {
-      tag.textContent = "Needs you";
-      tag.className = "tag tag--hold";
-      said.textContent = "The missed commitment re-opens the market. The assistant has a compliant alternative and cannot take it: the permission has not been granted.";
-      go.hidden = false;
-    }
-    refit();
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
      PER-SCREEN DRAW
      ══════════════════════════════════════════════════════════════════════ */
 
   function drawFor(n) {
-    if (n === 2) { renderWorld({ focus: 2, sel: ranked()[0].id }); }
-    else { renderWorld({ focus: n }); }
+    renderWorld({ focus: n });
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -885,11 +706,6 @@
   });
 
   anchorPlates();
-  paintPriorities();
-  paintGrant();
-  paintLedger();
-  paintBranch();
-  paintOffers();
 
   function show(n, push) {
     n = ((n - 1 + total) % total) + 1;
