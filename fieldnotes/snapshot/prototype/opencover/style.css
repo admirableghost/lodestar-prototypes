@@ -1019,3 +1019,12 @@ input[type="range"] { height: 44px; }
 /* Field labels sit on the ground now, where --ink-soft measured 4.38:1. */
 .obj-k, .rk-why { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
 .obj-u, .pf .obj-k { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+/* Every Level-3 class in the new composition sits on the ground; none of
+   them may use the old soft ink, which measures below AA there. */
+.rk-n, .gate-l, .gate-r, .obj-v--s { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
+.rk[data-best="1"] .rk-n { color: var(--edition-ink); }
+/* The name column was too narrow, so the bar started underneath the name and
+   struck it through. Give the names their own measured column. */
+.rk { grid-template-columns: minmax(12ch, 14ch) 1fr minmax(0, 26ch); }
+.rk-n { white-space: nowrap; }
+.rank { align-self: center; gap: calc(var(--x-gap) * 1.3); }
