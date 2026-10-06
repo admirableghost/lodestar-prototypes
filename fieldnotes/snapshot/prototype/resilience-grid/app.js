@@ -443,13 +443,41 @@
          scenario's own — 14:31 line sensor, 14:33 ridge camera, 14:38 spread
          model, 14:43 autonomous suppression, 14:47 the duty chief — so the
          map now carries what the strip used to have to explain. */
+      /* Label offsets are in SCREEN px from the node centre (see `px()`
+         below), and are per-beat rather than uniform. Beat 1 sits under the
+         headline's scrim at the ignite camera, so it is pushed clear of the
+         scrim's box rather than left to fade into its tail; beat 3 reads to
+         the left because it is the westmost node and a right-hand label
+         crossed the path running to beat 4. */
       var BEATS = [
-        { n: 1, x: IGNITION.x,       y: IGNITION.y,       t: "Detect",      ts: "14:31", c: ALARM,   lx:  18, ly: -14, anc: "start" },
-        { n: 2, x: IGNITION.x + 168, y: IGNITION.y + 36,  t: "Corroborate", ts: "14:33", c: ALARM,   lx:  18, ly: -14, anc: "start" },
-        { n: 3, x: 742,              y: 486,              t: "Decide",      ts: "14:38", c: CARRIER, lx:  18, ly: -14, anc: "start" },
-        { n: 4, x: IGNITION.x - 36,  y: IGNITION.y + 196, t: "Intervene",   ts: "14:43", c: FIRE,    lx:  18, ly: -14, anc: "start" },
-        { n: 5, x: IGNITION.x + 150, y: IGNITION.y + 250, t: "Verify",      ts: "14:47", c: PUBLIC,  lx:  18, ly: -14, anc: "start" }
+        { n: 1, x: IGNITION.x,       y: IGNITION.y,       t: "Detect",      ts: "14:31", c: ALARM,   lx:  40, ly: -12, anc: "start" },
+        { n: 2, x: IGNITION.x + 168, y: IGNITION.y + 36,  t: "Corroborate", ts: "14:33", c: ALARM,   lx:  26, ly: -12, anc: "start" },
+        { n: 3, x: 742,              y: 486,              t: "Decide",      ts: "14:38", c: CARRIER, lx: -26, ly: -12, anc: "end"   },
+        { n: 4, x: IGNITION.x - 36,  y: IGNITION.y + 196, t: "Intervene",   ts: "14:43", c: FIRE,    lx:  26, ly: -12, anc: "start" },
+        { n: 5, x: IGNITION.x + 150, y: IGNITION.y + 250, t: "Verify",      ts: "14:47", c: PUBLIC,  lx:  26, ly: -12, anc: "start" }
       ];
+      /* ── sizes in SCREEN px, not world units ──────────────────────────
+         The ignite camera runs about 0.63 world units per CSS px on iPad,
+         but the narrow camera pulls back to the whole county at ~2.9. A
+         fixed 13-unit label therefore rendered ~21px on iPad and ~4px on a
+         phone, where the sequence became unreadable. Everything below is
+         expressed as a target CSS px size and converted through `upp`.
+
+         On narrow the five beats also compress to ~40px apart on screen, so
+         no word label can sit beside them without colliding. There the map
+         carries ORDER (numbered nodes and the path) and the strip below
+         carries the NAMES — which is what the strip is still for.
+
+         The factor comes from this screen's TARGET camera, not the live
+         viewBox: the camera animates, so a mid-transition `vb` would size
+         the labels for whichever screen we were leaving. */
+      var wEl = document.getElementById("world");
+      var wpx = wEl ? wEl.getBoundingClientRect().width : 0;
+      var camT = viewBoxFor((narrow && CAM_N.ignite) || CAM.ignite, narrowFit());
+      var upp = (wpx && camT && camT.w) ? (camT.w / wpx) : 0.63;
+      var px  = function (n) { return n * upp; };
+      var showLabels = !narrow;
+
       BEATS.forEach(function (b, i) {
         if (i > opts.event) { return; }
         var running = !!opts.replaying;
@@ -458,27 +486,45 @@
         if (i > 0) {
           var a = BEATS[i - 1];
           s.push('<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
-                 '" stroke="' + b.c + '" stroke-width="2.6" opacity="' + (running ? (live ? .85 : .25) : .6) +
-                 '" stroke-dasharray="10 8"/>');
+                 '" stroke="' + b.c + '" stroke-width="' + px(1.7).toFixed(2) +
+                 '" opacity="' + (running ? (live ? .85 : .25) : .6) +
+                 '" stroke-dasharray="' + px(6.5).toFixed(1) + ' ' + px(5).toFixed(1) + '"/>');
         }
         if (live) {
-          s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="20" fill="none" stroke="' + b.c +
-                 '" stroke-width="2" opacity=".4"/>');
+          s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + px(31).toFixed(1) +
+                 '" fill="none" stroke="' + b.c + '" stroke-width="' + px(1.4).toFixed(2) +
+                 '" opacity=".4"/>');
         }
-        /* a numbered node: the order is readable without the strip */
-        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + (live ? 11 : 9) +
-               '" fill="' + PAPER + '" stroke="' + b.c + '" stroke-width="' + (live ? 4 : 2.6) +
-               '" opacity="' + dim + '"/>');
-        s.push('<text x="' + b.x + '" y="' + (b.y + (live ? 4 : 3.4)) + '" text-anchor="middle" ' +
-               'font-family="Arial,Helvetica,sans-serif" font-size="' + (live ? 23 : 19) +
-               '" font-weight="700" fill="' + b.c + '" opacity="' + dim + '">' + b.n + '</text>');
-        s.push('<text x="' + (b.x + b.lx) + '" y="' + (b.y + b.ly) + '" text-anchor="' + b.anc +
-               '" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" ' +
-               'letter-spacing="2" fill="' + b.c + '" opacity="' + dim + '">' +
+        /* a numbered node: the order is readable without the strip. The glyph
+           sits INSIDE its circle — at 19 units it filled the node edge to
+           edge and read as a blob at the ignite camera's scale. */
+        var r = px(live ? 19 : 16);
+        s.push('<circle cx="' + b.x + '" cy="' + b.y + '" r="' + r.toFixed(1) +
+               '" fill="' + PAPER + '" stroke="' + b.c + '" stroke-width="' +
+               px(live ? 2.6 : 1.8).toFixed(2) + '" opacity="' + dim + '"/>');
+        s.push('<text x="' + b.x + '" y="' + (b.y + px(live ? 8 : 7)).toFixed(1) +
+               '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="' +
+               px(live ? 23 : 20).toFixed(1) + '" font-weight="700" fill="' + b.c +
+               '" opacity="' + dim + '">' + b.n + '</text>');
+        if (!showLabels) { return; }
+        /* Level 3, not Level 2. These were 24 units — ~38 CSS px on iPad, in
+           competition with a ~55px headline. At 20px they annotate the
+           terrain instead of shouting over it. The paper halo (paint-order:
+           stroke) is what lets them sit directly on ridge, risk-shading or
+           the headline scrim without a plate behind them. */
+        s.push('<text x="' + (b.x + px(b.lx)).toFixed(1) + '" y="' + (b.y + px(b.ly)).toFixed(1) +
+               '" text-anchor="' + b.anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(20).toFixed(1) +
+               '" font-weight="700" letter-spacing="' + px(1.5).toFixed(2) +
+               '" paint-order="stroke" stroke="' + PAPER + '" stroke-width="' + px(3.6).toFixed(2) +
+               '" stroke-linejoin="round" fill="' + b.c + '" opacity="' + dim + '">' +
                b.t.toUpperCase() + '</text>');
-        s.push('<text x="' + (b.x + b.lx) + '" y="' + (b.y + b.ly + 13) + '" text-anchor="' + b.anc +
-               '" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="' + INK +
-               '" opacity="' + (dim * .8) + '">' + b.ts + '</text>');
+        s.push('<text x="' + (b.x + px(b.lx)).toFixed(1) + '" y="' + (b.y + px(b.ly + 19)).toFixed(1) +
+               '" text-anchor="' + b.anc +
+               '" font-family="Arial,Helvetica,sans-serif" font-size="' + px(14).toFixed(1) +
+               '" font-weight="600" paint-order="stroke" stroke="' + PAPER + '" stroke-width="' +
+               px(3).toFixed(2) + '" stroke-linejoin="round" fill="' + INK +
+               '" opacity="' + (dim * .85) + '">' + b.ts + '</text>');
       });
     }
 
