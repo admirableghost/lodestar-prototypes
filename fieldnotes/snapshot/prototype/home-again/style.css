@@ -298,30 +298,33 @@ body {
 #spec-std { font-weight: 700; }
 #spec-std::before { background: var(--fire); }
 
-/* ══ NEW · 2  .slots — builder capacity ═════════════════════════════════
-   The strategic point of the whole prototype is that the scarce thing after
-   a regional loss is a builder, not money. A finite row of slots is the
-   only way to show that without writing it in a paragraph: you can see that
-   there are not many, that one is already this household's, and — on screen
-   2 — that a regional event fills every one of them at once.
 
-   Three states, all of which survive greyscale: filled ink (this
-   household), filled rule-grey-on-ink (held for others), hollow (open), and
-   a fourth, dashed, for a slot that is honoured but queued. */
-
-.slots { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .32); margin: calc(var(--fs) * .55) 0 0; }
-.slot {
-  width: calc(var(--fs) * 1.1); height: calc(var(--fs) * 1.1);
+/* ══ .capstate — regional capacity as a STATE, not a count ═════════════
+   Replaces the eight-cell meter under "Regional capacity is not exhausted".
+   Eight cells asserted a regional total nobody could know; the condition
+   only ever turned on whether the region can still absorb the work. */
+.capstate {
+  display: inline-flex; align-items: center; gap: calc(var(--fs) * .4);
+  margin: calc(var(--fs) * .5) 0 0;
+  padding: calc(var(--fs) * .28) calc(var(--fs) * .6);
   border-radius: var(--r-s);
-  border: 1.5px solid var(--rule); background: var(--paper);
-  flex: 0 0 auto;
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.6 var(--sans);
+  letter-spacing: .11em; text-transform: uppercase;
 }
-.slot[data-slot="held"]   { background: var(--fire); border-color: var(--fire); }
-.slot[data-slot="mine"]   { background: var(--edition-ink); border: 2px solid var(--edition-ink);
-                            box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--edition-ink); }
-.slot[data-slot="queued"] { background: var(--paper); border: 2px dashed var(--edition-ink);
-                            box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--edition-ink); }
-.slots--sm .slot { width: calc(var(--fs) * .9); height: calc(var(--fs) * .9); }
+.capstate-mark {
+  width: calc(var(--fs) * .62); height: calc(var(--fs) * .62);
+  flex: 0 0 auto; border-radius: 50%;
+}
+.capstate[data-cap="available"] { background: var(--public-fill); color: var(--public); }
+.capstate[data-cap="available"] .capstate-mark {
+  background: var(--public); border: 2px solid var(--public);
+}
+/* Constrained changes SHAPE as well as colour — filled disc to a dashed ring
+   — so the state survives greyscale without anything being countable. */
+.capstate[data-cap="constrained"] { background: var(--alarm-fill); color: var(--alarm); }
+.capstate[data-cap="constrained"] .capstate-mark {
+  background: transparent; border: 2px dashed var(--alarm);
+}
 
 
 /* the named people — a lead and a builder are the two things a cheque is

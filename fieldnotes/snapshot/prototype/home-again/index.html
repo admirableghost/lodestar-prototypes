@@ -140,18 +140,16 @@
       <div class="cond-row" id="cond-cap" data-met="1">
         <p class="cond-what">Regional capacity is not exhausted<span class="cond-state">Met</span></p>
         <p class="cond-why">One builder's book is finite. A whole region claiming at once is the case this cannot absorb.</p>
-        <div class="slots slots--sm" id="cap-slots" role="img" aria-label="Eight builder slots: one held for this household, three held for other households, four open.">
-          <span class="slot" data-slot="mine"></span>
-          <span class="slot" data-slot="held"></span>
-          <span class="slot" data-slot="held"></span>
-          <span class="slot" data-slot="held"></span>
-          <span class="slot" data-slot="open"></span>
-          <span class="slot" data-slot="open"></span>
-          <span class="slot" data-slot="open"></span>
-          <span class="slot" data-slot="open"></span>
-        </div>
-        <p class="note" id="cap-cap-normal">Four slots still open in Calder Reach.</p>
-        <p class="note" id="cap-cap-event" hidden>Every slot claimed in one week. The queue is the constraint, and money does not shorten it.</p>
+        <!-- A qualitative state, not a count. Eight cells asserted a regional
+             capacity nobody could know; what this condition actually turns on
+             is whether the region can still absorb the work. The word carries
+             it, so nothing here can be counted. -->
+        <p class="capstate" id="cap-state" data-cap="available">
+          <span class="capstate-mark" aria-hidden="true"></span>
+          <span id="cap-state-word">Available</span>
+        </p>
+        <p class="note" id="cap-cap-normal">Builders in Calder Reach are still taking new work.</p>
+        <p class="note" id="cap-cap-event" hidden>A whole region is claiming at once. The queue is the constraint, and money does not shorten it.</p>
       </div>
 
     </div>

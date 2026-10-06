@@ -23,7 +23,7 @@
 
    WHAT IS INVENTED
    All of it. The Rennick household, Calder Reach, Ardren & Sons, Marta Ives,
-   the eight builder slots and the day-by-day sequence on screen 3 are
+   the regional capacity state and the day-by-day sequence on screen 3 are
    invented, and screen 1 says so. No real insurer, product, builder or price
    is described anywhere, and no statistic is cited.
    ══════════════════════════════════════════════════════════════════════════ */
@@ -552,13 +552,11 @@
   var eventOn = false;
   var evBtn   = document.getElementById("event-toggle");
   var condCap = document.getElementById("cond-cap");
-  var capSlots = document.getElementById("cap-slots");
+  var capState = document.getElementById("cap-state");
+  var capWord  = document.getElementById("cap-state-word");
   var capNormal = document.getElementById("cap-cap-normal");
   var capEvent  = document.getElementById("cap-cap-event");
   var fallRows = Array.prototype.slice.call(document.querySelectorAll(".cm-row[data-falls]"));
-
-  var SLOTS_NORMAL = ["mine", "held", "held", "held", "open", "open", "open", "open"];
-  var SLOTS_EVENT  = ["queued", "held", "held", "held", "held", "held", "held", "held"];
 
   function paintEvent() {
     if (condCap) {
@@ -571,15 +569,10 @@
       var st = r.querySelector(".cm-state");
       if (st) { st.textContent = eventOn ? "Falls back" : "Committed"; }
     });
-    if (capSlots) {
-      var set = eventOn ? SLOTS_EVENT : SLOTS_NORMAL;
-      Array.prototype.forEach.call(capSlots.children, function (el, i) {
-        el.dataset.slot = set[i] || "open";
-      });
-      capSlots.setAttribute("aria-label", eventOn
-        ? "Eight builder slots: every one claimed. This household's slot is honoured but queued."
-        : "Eight builder slots: one held for this household, three held for other households, four open.");
-    }
+    // The capacity state is a WORD, not a quantity. Nothing here is countable,
+    // so the condition can change without implying a regional total.
+    if (capState) { capState.dataset.cap = eventOn ? "constrained" : "available"; }
+    if (capWord)  { capWord.textContent  = eventOn ? "Constrained" : "Available"; }
     if (capNormal) { capNormal.hidden = eventOn; }
     if (capEvent)  { capEvent.hidden = !eventOn; }
     if (evBtn) {
