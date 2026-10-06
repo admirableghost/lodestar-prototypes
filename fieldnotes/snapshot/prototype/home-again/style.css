@@ -942,3 +942,23 @@ input[type="range"] { height: 44px; }
   padding: calc(var(--x-gap) * .5) calc(var(--x-gap) * 1.6) calc(var(--x-gap) * .5) 0;
   background: linear-gradient(90deg, var(--paper) 0%, var(--paper) 62%, transparent 100%);
 }
+
+/* ══ ITERATION-003 · contrast and collision corrections ═════════════════
+   Taking the cards away put this type onto the ground, where --ink-soft
+   measured 4.38:1 — below AA. Level-3 type now uses the edition ink and
+   earns its quietness from size and letterspacing instead of from being
+   paler. */
+.xeyebrow, .xmicro { color: var(--edition-ink); }
+.xlede { color: color-mix(in srgb, var(--edition-ink) 88%, var(--paper)); }
+/* The scrim pulled itself up by a negative margin and sat on the line
+   above it. It lifts the type in place instead. */
+.xhead--scrim { margin: 0; }
+
+/* Scrim padding was extending the headline box into the row below it. */
+.xhead--scrim { padding-bottom: 0; }
+/* Legacy Level-3 classes now sit on the ground too, so they take the ink. */
+.xhead .note, .xhead .display--ask, .xask .display--ask,
+.xblock .lead-role, .xblock .note { color: var(--edition-ink); }
+
+/* Last two legacy soft-ink classes that ended up on the ground. */
+.illus, .wall-side--hers .wall-i { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
