@@ -883,3 +883,11 @@ input[type="range"] { height: 44px; }
 .eyebrow, .q-tag, .sr-who { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
 /* every remaining Level-3 class that ended up on the parchment ground */
 .leg-i, .illus, .thr-of, .sr-what { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
+
+/* One rule instead of chasing these individually: on the parchment ground
+   --ink-soft measures 4.38:1, so every Level-3 class that sits on it takes
+   the mixed ink. Hierarchy comes from size and letterspacing, not paleness. */
+.note, .eyebrow, .illus, .leg-i, .q-tag, .sr-who, .sr-what, .sr-why,
+.thr-of, .aside, .cm-fall, .plate--thin .note {
+  color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
+}
