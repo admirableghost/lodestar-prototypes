@@ -1104,3 +1104,13 @@ input[type="range"] { height: 44px; }
 .tl-min .eyebrow { font-size: max(11px, calc(var(--x-label) * .9)); }
 .plate--carrier.plate--thin .rows dt, .plate--carrier.plate--thin .rows dd { font-size: var(--x-label); }
 .rows dt, .rows--legend dt { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
+
+/* ══ SCREEN 3 · the scrim must not wash out beat 1 ══════════════════════
+   The shared scrim bleeds 14vw past its box — 165px at iPad width — which
+   put the ignition node and its DETECT label under a half-opaque paper
+   wash while the identically-coloured CORROBORATE beside it read at full
+   strength. The headline here is three short lines and does not need that
+   much feathering to the right, so screen 3 pulls the bleed in. Left,
+   top and bottom are untouched, which is where the headline actually
+   sits. */
+.screen[data-screen="3"] .xhead--scrim::before { inset: -2.2vh -4vw -2.2vh -3vw; }

@@ -125,7 +125,11 @@
   var CAM = {
     county:  { x: 40,  y: 110, w: 1520, h: 820 },
     network: { x: 90,  y: 100, w: 1420, h: 790 },
-    ignite:  { x: 620, y: 240, w: 900,  h: 620 },
+    /* shifted west of the geometric centre so the ignition — and therefore
+       beat 1 — lands clear of the headline scrim's right-hand bleed rather
+       than under it. The region and the ignition point are unchanged; only
+       the framing moved. */
+    ignite:  { x: 582, y: 240, w: 900,  h: 620 },
     flows:   { x: 120, y: 180, w: 1380, h: 740 },
     payoff:  { x: 40,  y: 110, w: 1520, h: 820 }
   };
@@ -463,11 +467,6 @@
          phone, where the sequence became unreadable. Everything below is
          expressed as a target CSS px size and converted through `upp`.
 
-         On narrow the five beats also compress to ~40px apart on screen, so
-         no word label can sit beside them without colliding. There the map
-         carries ORDER (numbered nodes and the path) and the strip below
-         carries the NAMES — which is what the strip is still for.
-
          The factor comes from this screen's TARGET camera, not the live
          viewBox: the camera animates, so a mid-transition `vb` would size
          the labels for whichever screen we were leaving. */
@@ -476,7 +475,22 @@
       var camT = viewBoxFor((narrow && CAM_N.ignite) || CAM.ignite, narrowFit());
       var upp = (wpx && camT && camT.w) ? (camT.w / wpx) : 0.63;
       var px  = function (n) { return n * upp; };
-      var showLabels = !narrow;
+
+      /* Word labels are shown only where the beats are actually far enough
+         apart on screen to carry them. The gate is the measured gap, not a
+         width breakpoint: at the 899px breakpoint iPad portrait has ~146px
+         between the closest pair and reads fine, while a 390px phone has
+         ~54px and the five labels would sit on top of one another. Where
+         they are suppressed the map still carries ORDER through the
+         numbered nodes and the path, and the strip below carries the NAMES
+         — which is what the strip is still for. */
+      var minGap = Infinity;
+      for (var gi = 1; gi < BEATS.length; gi++) {
+        var dx = (BEATS[gi].x - BEATS[gi - 1].x) / upp;
+        var dy = (BEATS[gi].y - BEATS[gi - 1].y) / upp;
+        minGap = Math.min(minGap, Math.sqrt(dx * dx + dy * dy));
+      }
+      var showLabels = minGap >= 110;
 
       BEATS.forEach(function (b, i) {
         if (i > opts.event) { return; }
