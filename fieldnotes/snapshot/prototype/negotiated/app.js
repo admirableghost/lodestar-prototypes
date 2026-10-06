@@ -93,17 +93,17 @@
      app.js turns it into one at draw time against the screen's own ground
      window, so the framing stays honest at any window size. */
   var CAM = {
-    street: { x: 0,   y: 236, w: 1600, h: 424 },   /* all sixty          */
-    commit: { x: 0,   y: 236, w: 1600, h: 424 },   /* all sixty, filling */
-    signed: { x: 212, y: 232, w: 690,  h: 432 }    /* a signed run       */
+    street: { x: 0, y: 120, w: 1600, h: 760 },
+    commit: { x: 0, y: 120, w: 1600, h: 760 },
+    signed: { x: 0, y: 100, w: 1600, h: 800 }
   };
   /* A phone gets the same landscape world, framed tighter: both rows and the
      road still, but a run of the street rather than all sixty, because the
      window under the stacked plates is short. */
   var CAM_N = {
-    street: { x: 390, y: 236, w: 850, h: 424 },
-    commit: { x: 370, y: 236, w: 890, h: 424 },
-    signed: { x: 540, y: 232, w: 520, h: 432 }
+    street: { x: 60, y: 150, w: 1480, h: 700 },
+    commit: { x: 60, y: 150, w: 1480, h: 700 },
+    signed: { x: 60, y: 140, w: 1480, h: 720 }
   };
 
   var narrow = false;
@@ -176,122 +176,115 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   function renderStreet(opts) {
-    var s = [], i;
+    opts = opts || {};
+    var s = [];
 
+    /* ── the ground: a parchment plan, not a map tile ───────────────── */
     s.push('<defs>' +
-      '<pattern id="brush" width="13" height="13" patternUnits="userSpaceOnUse" ' +
-      'patternTransform="rotate(38)"><rect width="13" height="13" fill="#DCE1D2"/>' +
-      '<line x1="0" y1="0" x2="0" y2="13" stroke="#AEB8A4" stroke-width="1.2"/></pattern>' +
-      '<pattern id="open" width="9" height="9" patternUnits="userSpaceOnUse" ' +
-      'patternTransform="rotate(45)"><rect width="9" height="9" fill="#F2F1E7"/>' +
-      '<line x1="0" y1="0" x2="0" y2="9" stroke="#C3C8BA" stroke-width="1.1"/></pattern>' +
-      "</defs>");
+      '<linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#F6F2E6"/><stop offset="1" stop-color="#EBE6D6"/></linearGradient>' +
+      '<linearGradient id="gjoin" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#1F7A63" stop-opacity=".22"/>' +
+        '<stop offset="1" stop-color="#1F7A63" stop-opacity=".07"/></linearGradient>' +
+      '<filter id="glow" x="-40%" y="-40%" width="180%" height="180%">' +
+        '<feGaussianBlur stdDeviation="10" result="b"/>' +
+        '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      '</defs>');
+    s.push('<rect x="-400" y="-400" width="2400" height="1800" fill="url(#gsky)"/>');
 
-    s.push("<g>");
-
-    /* the slope the street is cut into */
-    s.push('<rect x="-500" y="-600" width="2600" height="2200" fill="#EDEFE3"/>');
-    s.push('<rect x="-500" y="-600" width="2600" height="' + (600 + 196) + '" fill="url(#brush)"/>');
-    s.push('<rect x="-500" y="690" width="2600" height="1000" fill="url(#brush)"/>');
-    [120, 76, 32].forEach(function (y, n) {
-      s.push('<path d="M-500 ' + y + "Q" + (W / 2) + " " + (y - 26 - n * 6) + " 2100 " + (y + 10) +
-        '" fill="none" stroke="' + RULE + '" stroke-width="1.2" opacity=".34"/>');
-    });
-    [760, 812, 866].forEach(function (y, n) {
-      s.push('<path d="M-500 ' + y + "Q" + (W / 2) + " " + (y + 24 + n * 5) + " 2100 " + (y - 8) +
-        '" fill="none" stroke="' + RULE + '" stroke-width="1.2" opacity=".34"/>');
-    });
-    /* the edge of the open ground, both sides */
-    s.push('<line x1="-500" y1="196" x2="2100" y2="196" stroke="' + RULE + '" stroke-width="2" opacity=".55"/>');
-    s.push('<line x1="-500" y1="690" x2="2100" y2="690" stroke="' + RULE + '" stroke-width="2" opacity=".55"/>');
-
-    /* the road. It has to read as a surface and not as a gap between the
-       rows, because the two rows are one street and one contract. */
-    s.push('<rect x="-500" y="' + ROAD_Y + '" width="2600" height="' + ROAD_H + '" fill="#D5D9CB"/>');
-    [ROAD_Y, ROAD_Y + ROAD_H].forEach(function (y) {
-      s.push('<line x1="-500" y1="' + y + '" x2="2100" y2="' + y +
-        '" stroke="#97A292" stroke-width="2"/>');
-    });
-    s.push('<line x1="-500" y1="' + ROAD_MID + '" x2="2100" y2="' + ROAD_MID +
-      '" stroke="#FBF9F1" stroke-width="2.6" stroke-dasharray="20 18"/>');
-
-    /* ── the sixty parcels ── */
-    for (i = 0; i < HOMES; i++) {
-      var X = px(i), Y = py(i), CX = hcx(i), CY = hcy(i);
-      var on = opts.mode === "commit" ? isIn(i) : false;
-      var did = opts.done ? !!opts.done(i) : false;
-      var filled = on || did;
-      var g = "";
-
-      /* the lot. A committed lot is a different GROUND and a different
-         boundary, not a brighter version of the same one. */
-      g += '<rect x="' + X.toFixed(1) + '" y="' + Y + '" width="' + PW.toFixed(1) + '" height="' + PH +
-        '" rx="3" fill="' + (filled ? "#DCE6DD" : "url(#open)") +
-        '" stroke="' + (filled ? INK : RULE) + '" stroke-width="' + (filled ? 1.8 : 1) + '"' +
-        (filled ? "" : ' stroke-dasharray="5 4"') + "/>";
-
-      /* what is growing out the back — the fuel the clearing is for */
-      var gtop = rowOf(i) === 0 ? Y + 40 : CY + 18;
-      var gbot = rowOf(i) === 0 ? CY - 18 : Y + PH - 40;
-      GARDEN[i].forEach(function (p) {
-        g += '<circle cx="' + (X + 7 + p.fx * (PW - 14)).toFixed(1) + '" cy="' +
-          (gtop + p.fy * (gbot - gtop)).toFixed(1) + '" r="' + p.r.toFixed(1) +
-          '" fill="#C6D2BA" opacity="' + (filled ? ".55" : ".9") + '"/>';
-      });
-
-      /* the driveway to the road */
-      var dy = rowOf(i) === 0 ? Y + PH : Y;
-      g += '<rect x="' + (CX - 5).toFixed(1) + '" y="' + Math.min(dy, CY) + '" width="10" height="' +
-        (Math.abs(dy - CY) - 8) + '" fill="#E6E8DC"/>';
-
-      /* the five metres cleared to the boundary */
-      var sr = stripRect(i);
-      g += '<rect x="' + sr.x.toFixed(1) + '" y="' + sr.y + '" width="' + sr.w.toFixed(1) +
-        '" height="' + sr.h + '" rx="2" fill="' + (filled ? "rgba(60,86,72,.26)" : "none") +
-        '" stroke="' + (filled ? INK : "#AEB8A4") + '" stroke-width="' + (filled ? 1.3 : 1) + '"' +
-        (filled ? "" : ' stroke-dasharray="4 4"') + "/>";
-
-      /* the house */
-      var x0 = CX - HW / 2, y0 = CY - HH / 2;
-      g += (
-        '<path d="M' + x0.toFixed(1) + " " + (y0 + HH) + "L" + x0.toFixed(1) + " " + (y0 + HH * 0.42) +
-        "L" + CX.toFixed(1) + " " + y0 + "L" + (x0 + HW).toFixed(1) + " " + (y0 + HH * 0.42) +
-        "L" + (x0 + HW).toFixed(1) + " " + (y0 + HH) + 'Z" fill="' + INK + '"/>');
-
-      /* the marker. Filled disc with a tick = committed; hollow ring = not
-         yet. On screen 1 only the one household who acted alone carries one,
-         because nothing has been offered to anybody yet. */
-      if (opts.mode === "commit" || did) {
-        var my = markY(i);
-        g += (filled
-          ? '<circle cx="' + CX.toFixed(1) + '" cy="' + my + '" r="9" fill="' + INK +
-            '" stroke="' + PAPER + '" stroke-width="2"/>' +
-            '<path d="M' + (CX - 4.2).toFixed(1) + " " + my + "l3 3.2l5.4 -6" +
-            '" fill="none" stroke="' + PAPER + '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
-          : '<circle cx="' + CX.toFixed(1) + '" cy="' + my + '" r="8" fill="' + PAPER +
-            '" stroke="' + RULE + '" stroke-width="2.4"/>');
-      }
-
-      /* the ring that marks a household we are following */
-      if (opts.ring && opts.ring(i)) {
-        g += '<rect x="' + (X - 6).toFixed(1) + '" y="' + (Y - 6) + '" width="' + (PW + 12).toFixed(1) +
-          '" height="' + (PH + 12) + '" rx="6" fill="none" stroke="' + PAPER + '" stroke-width="6"/>' +
-          '<rect x="' + (X - 6).toFixed(1) + '" y="' + (Y - 6) + '" width="' + (PW + 12).toFixed(1) +
-          '" height="' + (PH + 12) + '" rx="6" fill="none" stroke="' + INK + '" stroke-width="2.6"/>';
-      }
-
-      s.push("<g>" + g + "</g>");
+    /* plot rhythm, very faint — residential texture, never a grid UI */
+    for (var gx = -200; gx < 1900; gx += 64) {
+      s.push('<line x1="' + gx + '" y1="-200" x2="' + gx + '" y2="1200" stroke="#D9D2BE" stroke-width="1" opacity=".5"/>');
     }
 
-    /* No count bar is drawn on the ground. There was one, and it was the
-       third place on screen 2 saying "41 of 60" after the figure and the
-       slider — a duplicate reading, not a second fact. The parcels are the
-       count. */
+    /* ── the street itself ──────────────────────────────────────────── */
+    s.push('<rect x="-400" y="' + ST_Y + '" width="2400" height="' + ST_H + '" fill="#E2DCC8"/>');
+    s.push('<line x1="-400" y1="' + (ST_Y + ST_H / 2) + '" x2="2000" y2="' + (ST_Y + ST_H / 2) +
+           '" stroke="#C9C0A6" stroke-width="2" stroke-dasharray="26 20"/>');
 
-    s.push("</g>");
+    var joinedTo = opts.allJoined ? BLOCKS.length : blocksJoined();
+    var crossed  = opts.allJoined || committed >= NEED;
+
+    /* ── the collective boundary: the threshold EVENT ───────────────── */
+    if (crossed) {
+      s.push('<rect x="64" y="128" width="1472" height="744" rx="30" fill="none" ' +
+             'stroke="#C08A2E" stroke-width="5" filter="url(#glow)" opacity=".92"/>');
+      s.push('<rect x="64" y="128" width="1472" height="744" rx="30" fill="#C08A2E" opacity=".05"/>');
+      /* the blocks are now one thing, so they are tied together */
+      for (var t = 0; t < BLOCKS.length - 1; t++) {
+        var a = BLOCKS[t], bq = BLOCKS[t + 1];
+        s.push('<line x1="' + (a.x + a.w / 2) + '" y1="' + (a.y + a.h / 2) +
+               '" x2="' + (bq.x + bq.w / 2) + '" y2="' + (bq.y + bq.h / 2) +
+               '" stroke="#1F7A63" stroke-width="2.5" opacity=".5" stroke-dasharray="10 8"/>');
+      }
+    }
+
+    /* ── the blocks ─────────────────────────────────────────────────── */
+    BLOCKS.forEach(function (b, bi) {
+      var full = bi < joinedTo;
+      var part = (bi === joinedTo) ? blockPartial() : (full ? 1 : 0);
+      var lit  = full || part > 0;
+
+      s.push('<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h +
+             '" rx="14" fill="' + (lit ? "url(#gjoin)" : "#E4E0CE") + '" ' +
+             'stroke="' + (full ? "#1F7A63" : lit ? "#4E9B85" : "#C4BCA4") + '" ' +
+             'stroke-width="' + (full ? 3 : 1.6) + '"' + (full ? '' : ' stroke-dasharray="9 7"') + '/>');
+
+      /* the houses: enough to read as a neighbourhood, not as a count */
+      b.homes.forEach(function (h, hi) {
+        var on = full || hi / b.homes.length < part;
+        var prepared = opts.mode === "alone" && bi === 0 && hi === 2;
+        var fill = prepared ? "#1F7A63" : on ? "#4E9B85" : "#CFC8B2";
+        s.push('<g opacity="' + (on || prepared ? 1 : .85) + '">');
+        s.push('<path d="M' + h.x + ' ' + (h.y + 9) + 'L' + (h.x + 13) + ' ' + h.y +
+               'L' + (h.x + 26) + ' ' + (h.y + 9) + 'Z" fill="' + fill + '"/>');
+        s.push('<rect x="' + (h.x + 3) + '" y="' + (h.y + 9) + '" width="20" height="15" fill="' + fill + '"/>');
+        s.push('</g>');
+        if (prepared) {
+          s.push('<circle cx="' + (h.x + 13) + '" cy="' + (h.y + 12) + '" r="30" fill="none" ' +
+                 'stroke="#1F7A63" stroke-width="2.5" opacity=".75"/>');
+          s.push('<circle cx="' + (h.x + 13) + '" cy="' + (h.y + 12) + '" r="46" fill="none" ' +
+                 'stroke="#1F7A63" stroke-width="1.4" opacity=".4"/>');
+        }
+      });
+    });
+
+    /* ── screen 3: the parties that make the agreement hold ─────────── */
+    if (opts.mode === "signed") {
+      PARTIES.forEach(function (q) {
+        s.push('<line x1="800" y1="500" x2="' + q.x + '" y2="' + q.y +
+               '" stroke="' + q.c + '" stroke-width="2.5" opacity=".55"/>');
+        s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="13" fill="' + q.c + '"/>');
+      });
+    }
+
     svg.innerHTML = s.join("");
-    if (opts.alt) { svg.setAttribute("aria-label", opts.alt); }
   }
+
+  /* six blocks of ten, because a street you can read beats sixty parcels you
+     have to count. The household number stays authoritative in the copy and
+     in the state; the blocks are how the eye follows it. */
+  var ST_Y = 470, ST_H = 60;
+  var BLOCKS = (function () {
+    var out = [], x, i, j;
+    for (i = 0; i < 6; i++) {
+      var top = i < 3;
+      x = 150 + (i % 3) * 440;
+      var y = top ? 190 : 580;
+      var b = { x: x, y: y, w: 380, h: 240, homes: [] };
+      for (j = 0; j < 10; j++) {
+        b.homes.push({ x: b.x + 36 + (j % 5) * 62, y: b.y + 58 + Math.floor(j / 5) * 92 });
+      }
+      out.push(b);
+    }
+    return out;
+  }());
+  var PARTIES = [
+    { x: 250,  y: 150, c: "#2F5E7C" }, { x: 1350, y: 150, c: "#8A3450" },
+    { x: 250,  y: 850, c: "#7A5A17" }, { x: 1350, y: 850, c: "#5B4E7A" }
+  ];
+  function blocksJoined() { return Math.floor(committed / 10); }
+  function blockPartial() { return (committed % 10) / 10; }
 
   /* ══════════════════════════════════════════════════════════════════════
      CAMERA  (inherited from resilience-grid / micromutual)
@@ -532,18 +525,12 @@
   }
 
   function drawFor(n) {
-    if (n === 1) {
-      renderStreet({
-        mode: "quote",
-        done: function (i) { return i === ROSA; },
-        ring: function (i) { return i === ROSA; },
-        alt: altFor(1)
-      });
-    } else if (n === 2) {
-      renderStreet({ mode: "commit", alt: altFor(2) });
-    } else {
-      renderStreet({ mode: "commit", alt: altFor(3) });
-    }
+    /* screen 1 is one prepared household in an uncoordinated street;
+       screen 2 is the street filling; screen 3 is the street as one thing
+       with the four parties that make the agreement hold. */
+    if (n === 1)      { renderStreet({ mode: "alone" }); }
+    else if (n === 2) { renderStreet({ mode: "commit" }); }
+    else              { renderStreet({ mode: "signed", allJoined: true }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════

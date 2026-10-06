@@ -856,3 +856,28 @@ input[type="range"] { height: 44px; }
     transparent 100%);
 }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
+/* ══ REVISION · THE STREET IS THE HERO ═════════════════════════════════
+   The panels were taking the top half and pushing the neighbourhood into a
+   strip. They are now thin bands at the foot of the screen, and the street
+   has the stage. Nothing in the logic moved — only what dominates. */
+.plate--thin {
+  padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .95);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent);
+}
+.plate--thin .sr-who, .plate--thin .cm-what { font-size: var(--x-label); }
+.terms { z-index: 3; align-self: end; pointer-events: auto;
+  padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .95);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  border-radius: var(--r-m);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent); }
+.terms-l { margin: calc(var(--x-gap) * .45) 0 0; padding-left: 1.05em; display: grid; gap: calc(var(--x-gap) * .25); }
+.terms-l li { font: var(--x-label)/1.42 var(--sans); color: var(--edition-ink); }
+.terms-l b { font-weight: 600; }
+/* the signed street: parties read as a ring, so the card can be a thin band */
+.sr { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .5) calc(var(--x-gap) * 1.1); }
+.sr-row { display: flex; align-items: baseline; gap: .5em; }
+/* the one disclaimer sits on the ground, where the soft ink misses AA */
+.note, .plate--thin .note { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
+.eyebrow, .q-tag, .sr-who { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
