@@ -213,31 +213,50 @@
 
   var OC = [
     { id: "meridian", name: "Meridian Mutual", price: "1,340.00", num: 1340,
-      excess: "450.00 USD", driver: "Every named driver, no age condition",
-      settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true,
-      eligible: true, bar: null,
+      excess: "450.00 USD", excessNum: 450, driver: "Every named driver, no age condition",
+      settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true, settleDays: 5,
+      /* exclusions that reach HER household: the count "fewest exclusions" ranks on */
+      hits: 0,
+      /* the one term each preference turns on, three words or fewer. This is
+         what the glass shows; the long forms above stay for the notes. */
+      term: { price: "1,340 USD", excl: "No age condition", settle: "5 working days" },
+      eligible: true, bar: null, verdict: "Chosen",
       why: { price:  "the lowest price she can actually buy",
              excl:   "no exclusion that reaches her household",
              settle: "the only published settlement time with a remedy behind it" } },
     { id: "candlewick", name: "Candlewick Direct", price: "1,185.00", num: 1185,
-      excess: "500.00 USD", driver: "Drivers under 25 excluded",
-      settle: "No settlement time published", settlePublished: false,
+      excess: "500.00 USD", excessNum: 500, driver: "Drivers under 25 excluded",
+      settle: "No settlement time published", settlePublished: false, settleDays: null,
+      hits: 1,
+      term: { price: "1,185 USD", excl: "Under 25 excluded", settle: "None published" },
       eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep.",
-      barShort: "excludes drivers under 25 — Rosa is nineteen" },
-    { id: "pell", name: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
-      excess: "900.00 USD", driver: "Every named driver",
-      settle: "10 working days", settlePublished: true,
+      barShort: "excludes drivers under 25 — Rosa is nineteen", verdict: "Excludes Rosa" },
+    { id: "pell", name: "Pell & Roe", longName: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
+      excess: "900.00 USD", excessNum: 900, driver: "Every named driver",
+      settle: "10 working days", settlePublished: true, settleDays: 10,
+      hits: 0,
+      term: { price: "1,420 USD", excl: "No age condition", settle: "10 working days" },
       eligible: false, bar: "The excess is 900 USD, twice the 500 she capped.",
-      barShort: "excess 900 USD, twice her 500 cap" }
+      barShort: "excess 900 USD, twice her 500 cap", verdict: "Excess 900" }
   ];
 
-  var TERM = {
-    price:  { label: "Annual price",        get: function (o) { return o.price + " USD"; } },
-    excl:   { label: "Who is covered",      get: function (o) { return o.driver; } },
-    settle: { label: "Settlement commitment", get: function (o) { return o.settle; } }
+  /* How each preference ORDERS the three. Ordering is presentation; it never
+     touches eligibility, so the bought offer is the same in every order. */
+  var RANK = {
+    price:  function (a, b) { return a.num - b.num; },
+    excl:   function (a, b) { return (a.hits - b.hits) || (a.num - b.num); },
+    settle: function (a, b) {
+      var da = a.settleDays == null ? Infinity : a.settleDays,
+          db = b.settleDays == null ? Infinity : b.settleDays;
+      return (da - db) || (a.num - b.num);
+    }
   };
   var PREF_SAID = { price: "price", excl: "fewest exclusions", settle: "fastest settlement" };
-  var pref = "excl";
+
+  /* The preference chosen on screen 2 is the one screen 3 reads, and it
+     survives a reload. A browser that refuses storage simply starts on price. */
+  var pref = "price";
+  try { if (RANK[sessionStorage.getItem("oc-pref")]) { pref = sessionStorage.getItem("oc-pref"); } } catch (e) { /* private mode */ }
 
   function bought() {
     /* the cheapest ELIGIBLE offer; eligibility is never traded away */
@@ -245,34 +264,49 @@
              .reduce(function (a, b) { return a.num <= b.num ? a : b; });
   }
 
+  /* ── screen 1: the offer object, from the same row screens 2 and 3 use ──
+     Five terms and nothing else: the insurer, the price, the excess, who is
+     covered, the settlement promise. The full published document (perils,
+     exclusions, the other commitments, the remedy figure) stays in OFFERS. */
+  function paintOffer() {
+    var host = document.getElementById("offer");
+    if (!host) { return; }
+    var o = bought();
+    host.innerHTML =
+      '<svg class="offer-sheet" viewBox="0 0 320 22" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+        '<rect x="0" y="4" width="92" height="4" rx="2" fill="#16150F" opacity=".55"/>' +
+        '<rect x="104" y="4" width="150" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
+        '<rect x="0" y="15" width="60" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
+        '<rect x="104" y="15" width="200" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
+      "</svg>" +
+      '<p class="offer-co">' + esc(o.name) + "</p>" +
+      '<p class="offer-price"><span class="offer-n">' + grp(o.num) + '</span><span class="offer-u">USD a year</span></p>' +
+      '<ul class="offer-terms">' +
+        "<li>Excess " + o.excessNum + " USD</li>" +
+        "<li>Named drivers covered</li>" +
+        '<li class="is-promise">Settlement ' + o.settleDays + " working days</li>" +
+      "</ul>";
+  }
+
+  /* ── screen 2: three offers, ONE term each, and a verdict word ───────── */
   function paintCompare() {
     var host = document.getElementById("cmp");
     if (!host) { return; }
-    var t = TERM[pref], win = bought();
-    host.innerHTML = OC.map(function (o) {
-      var val = t.get(o);
+    var win = bought();
+    host.innerHTML = OC.slice().sort(RANK[pref]).map(function (o) {
       var unp = (pref === "settle" && !o.settlePublished);
       return '<div class="of" data-win="' + (o === win ? "1" : "0") +
              '" data-ok="' + (o.eligible ? "1" : "0") + '">' +
-             '<p class="of-co">' + o.name + '</p>' +
-             '<p class="of-k">' + t.label + '</p>' +
-             '<p class="of-v' + (unp ? " of-v--none" : "") + '">' + val + '</p>' +
-             (o.eligible
-               ? '<p class="of-t">' + (o === win ? "Chosen \u2014 " + o.why[pref] : "Eligible") + '</p>'
-               : '<p class="of-t of-t--no">Cannot be bought \u2014 ' + o.bar + '</p>') +
-             '</div>';
+             '<p class="of-co">' + esc(o.name) + "</p>" +
+             '<p class="of-v' + (unp ? " of-v--none" : "") + '">' + esc(o.term[pref]) + "</p>" +
+             '<p class="of-t' + (o.eligible ? "" : " of-t--no") + '">' +
+               '<span class="sr-only">' + (o === win ? "Bought: " : (o.eligible ? "Eligible" : "Cannot be bought: ")) + "</span>" +
+               esc(o === win ? o.verdict : (o.eligible ? "" : o.verdict)) +
+               (o.eligible ? "" : '<span class="sr-only"> — ' + esc(o.bar) + "</span>") +
+             "</p>" +
+             "</div>";
     }).join("");
 
-    var v = document.getElementById("verdict");
-    if (v) {
-      v.innerHTML = "On " + PREF_SAID[pref] + ", the agent buys <b>" + win.name +
-        "</b> \u2014 " + win.why[pref] + ".";
-    }
-    var perm = document.getElementById("permit");
-    if (perm) {
-      perm.textContent = "Inside her standing instructions, so it buys without asking. "
-        + "The cheaper offer is outside them, and no price difference changes that.";
-    }
     Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
     });
@@ -281,14 +315,13 @@
   }
 
   /* ── screen 3 reads the SAME table, for whichever offer was bought ───
-     One thought: the offer contains a checkable commitment, and its
-     existing remedy applies when the commitment is missed. The screen is
-     painted from three places in the model and nowhere else — the offer
-     bought() returns, that offer's own published settlement row in OFFERS,
-     and the one missed entry in LEDGER. The arithmetic is done here, in
-     code, from those numbers. */
+     ONE calculation: promised (counted from agreed liability) → observed →
+     the remedy, which is a published term and applied on the miss with no
+     separate claim. Painted from three places in the model and nowhere
+     else: the offer bought() returns, that offer's own published settlement
+     row in OFFERS, and the one missed entry in LEDGER. The arithmetic is
+     done here, in code, from those numbers. */
   function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-  function usd(n) { return "USD " + grp(n); }
 
   function paintPerformance() {
     var o = bought();
@@ -306,29 +339,7 @@
 
     var id = document.getElementById("oc3-id");
     if (id) {
-      id.innerHTML = "Holding <b>" + esc(o.name) + "</b>" +
-        (full ? '<span class="oc3-id-ref">' + esc(full.ref) + " · " + esc(full.meta) + "</span>" : "");
-    }
-
-    var ex = document.getElementById("oc3-excerpt");
-    if (ex) {
-      if (live) {
-        ex.innerHTML =
-          '<figcaption class="oc3-sheet-h">Lifted from the offer · service commitments</figcaption>' +
-          '<div class="oc3-sheet" aria-hidden="true"><span></span><span></span></div>' +
-          '<blockquote class="oc3-band">' +
-            '<span class="oc3-band-k">' + esc(row.k) + "</span>" +
-            '<span class="oc3-band-v">' +
-              esc(miss.name) + (row.rem ? " — " + esc(row.rem) : "") +
-            "</span>" +
-          "</blockquote>" +
-          '<div class="oc3-sheet oc3-sheet--after" aria-hidden="true"><span></span></div>';
-      } else {
-        ex.innerHTML =
-          '<figcaption class="oc3-sheet-h">From the offer · service commitments</figcaption>' +
-          '<blockquote class="oc3-band oc3-band--none"><span class="oc3-band-v">' +
-          "No settlement time is published, so there is nothing to check and nothing owed.</span></blockquote>";
-      }
+      id.innerHTML = '<span class="sr-only">Holding </span><b>' + esc(o.name) + "</b>";
     }
 
     var promised = miss ? miss.promised : null,
@@ -337,76 +348,66 @@
         late     = (promised != null && observed != null) ? Math.max(0, observed - promised) : null,
         remedy   = (late != null && perDay != null) ? late * perDay : null;
 
-    var chk = document.getElementById("oc3-check");
-    if (chk && live && miss) {
-      var cells = [], nums = [], i, n = observed;
+    var calc = document.getElementById("oc3-calc");
+    if (calc && live && miss && remedy != null) {
+      /* the clock, as cells: the promised days in ledger blue, the late days
+         hatched in plum. No numbers in the cells; the figures sit under them. */
+      var cells = [], i, n = observed;
       for (i = 1; i <= n; i++) {
-        var lateCell = i > promised, x = (i - 1) * 100 + 8;
-        cells.push('<rect x="' + x + '" y="16" width="84" height="68" rx="3" fill="' +
-          (lateCell ? "url(#oc3-hatch)" : "rgba(47,94,124,.14)") + '" stroke="' +
-          (lateCell ? "#8A3450" : "#2F5E7C") + '" stroke-width="' + (i === n ? 3.5 : 2) +
+        var lateCell = i > promised, x = (i - 1) * 100 + 6;
+        cells.push('<rect x="' + x + '" y="14" width="88" height="72" rx="3" fill="' +
+          (lateCell ? "url(#oc3-hatch)" : "rgba(47,94,124,.16)") + '" stroke="' +
+          (lateCell ? "#8A3450" : "#2F5E7C") + '" stroke-width="' + (lateCell ? 2.4 : 2) +
           '" vector-effect="non-scaling-stroke"/>');
-        nums.push('<span' + (lateCell ? ' class="is-late"' : "") + ">" + i + "</span>");
       }
-      /* the clock: a tick at day 0, and brackets over the promised and the late days */
-      var art =
-        '<svg class="oc3-strip" viewBox="0 0 ' + (n * 100) + ' 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
-          '<line x1="2" y1="4" x2="2" y2="96" stroke="#16150F" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
-          '<path d="M8 8 V3 H' + (promised * 100 - 8) + ' V8" fill="none" stroke="#2F5E7C" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
-          '<path d="M' + (promised * 100 + 8) + ' 8 V3 H' + (n * 100 - 8) + ' V8" fill="none" stroke="#8A3450" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+      var strip =
+        '<svg class="calc-strip" viewBox="0 0 ' + (n * 100) + ' 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+          '<line x1="2" y1="2" x2="2" y2="98" stroke="#16150F" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+          '<path d="M6 8 V2 H' + (promised * 100 - 6) + ' V8" fill="none" stroke="#2F5E7C" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+          '<path d="M' + (promised * 100 + 6) + ' 8 V2 H' + (n * 100 - 6) + ' V8" fill="none" stroke="#8A3450" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
           cells.join("") +
         "</svg>";
-      chk.innerHTML =
-        '<p class="oc3-brk" style="--n:' + n + ';--p:' + promised + '">' +
-          '<span class="oc3-brk-p">Promised · ' + promised + " working days</span>" +
-          '<span class="oc3-brk-l">Late · ' + late + " days</span>" +
-        "</p>" +
-        '<div class="oc3-days" style="--n:' + n + '">' + art +
-          '<p class="oc3-nums" aria-hidden="true">' + nums.join("") + "</p>" +
+      var arrow =
+        '<svg class="calc-link" viewBox="0 0 48 48" aria-hidden="true" focusable="false">' +
+          '<path d="M4 24 H36" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/>' +
+          '<path d="M30 14 L42 24 L30 34" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+        "</svg>";
+      calc.innerHTML =
+        '<div class="calc-days" style="--n:' + n + ';--p:' + promised + '">' + strip + "</div>" +
+        '<div class="calc-step calc-step--p">' +
+          '<p class="calc-n">' + promised + "</p>" +
+          '<p class="calc-w">working days promised</p>' +
+          '<p class="calc-s">from agreed liability</p>' +
         "</div>" +
-        '<p class="oc3-obs">' +
-          '<span class="oc3-obs-0">Clock starts at agreed liability</span>' +
-          '<span class="oc3-obs-9"><b>' + observed + " working days</b> on " + esc(miss.onClaim) + "</span>" +
-        "</p>" +
-        '<p class="oc3-math">' +
-          promised + " working days promised · " + observed + " working days observed · " +
-          late + " days late × " + usd(perDay) + " = <b>" + usd(remedy) + "</b>" +
-        "</p>";
-    } else if (chk) {
-      chk.innerHTML = "";
-    }
-
-    var rem = document.getElementById("oc3-remedy");
-    if (rem) {
-      if (live && remedy != null) {
-        rem.innerHTML =
-          '<p class="oc3-fig"><span class="oc3-fig-u">USD</span><span class="oc3-fig-n">' + grp(remedy) + "</span></p>" +
-          '<p class="oc3-fig-w">applied automatically</p>' +
-          '<p class="oc3-fig-s">The remedy is a published term of the offer, and it applied on the miss. ' +
-            "No separate claim was required.</p>";
-      } else {
-        rem.innerHTML = '<p class="oc3-fig-w">Nothing owed</p>' +
-          '<p class="oc3-fig-s">This offer publishes no settlement commitment, so a slow settlement breaks no term.</p>';
-      }
+        arrow +
+        '<div class="calc-step calc-step--o">' +
+          '<p class="calc-n">' + observed + "</p>" +
+          '<p class="calc-w">observed</p>' +
+          '<p class="calc-s">' + late + " late × " + perDay + " USD</p>" +
+        "</div>" +
+        arrow +
+        '<div class="calc-step calc-step--r">' +
+          '<p class="calc-n"><span class="calc-big">' + grp(remedy) + '</span><span class="calc-u">USD</span></p>' +
+          '<p class="calc-w">applied automatically, no claim</p>' +
+        "</div>";
+    } else if (calc) {
+      /* no published settlement time means nothing to check and nothing
+         owed. Unreachable with the current model, where bought() is the one
+         offer with a published commitment; kept so the screen never lies. */
+      calc.innerHTML = '<div class="calc-step calc-step--o"><p class="calc-w">No settlement time published.</p></div>';
     }
 
     /* honest ending: a breach re-opens the agent's permission to shop, not
-       the customer's instructions. Every other offer is named with the one
-       instruction it breaks, from the same table screen 2 reads. */
+       the customer's instructions. Whether any other offer clears them is
+       computed from the same table screen 2 reads. */
     var foot = document.getElementById("oc3-foot");
     if (foot) {
       var others = OC.filter(function (x) { return x !== o; });
       var clears = others.filter(function (x) { return x.eligible; });
-      foot.innerHTML =
-        '<p class="oc3-end">The agent may re-shop inside her standing instructions. ' +
-          (clears.length ? "" : "Today neither alternative clears them.") + "</p>" +
-        '<ul class="oc3-bars">' + others.map(function (x) {
-          return "<li" + (x.eligible ? "" : ' class="is-out"') + "><b>" + esc(x.name) + "</b> — " +
-            esc(x.eligible ? "clears them" : (x.barShort || x.bar)) + "</li>";
-        }).join("") + "</ul>" +
-        '<p class="oc3-marks">' +
-          '<span class="oc3-mark" data-kind="kept">Existing cover retained</span>' +
-          '<span class="oc3-mark" data-kind="miss">Miss recorded</span>' +
+      foot.innerHTML = '<p class="oc3-end">' +
+        (clears.length
+          ? "Eligible replacement: " + esc(clears[0].name) + "."
+          : "No eligible replacement. Existing cover retained.") +
         "</p>";
     }
     reserveNav();
@@ -415,16 +416,24 @@
   /* the navigation corner stays clear of the foot: measure the chrome once
      per layout rather than guessing its width */
   function reserveNav() {
-    var sc = document.querySelector('.screen[data-screen="3"]');
     var bar = document.querySelector(".chrome-r");
-    if (!sc || !bar) { return; }
-    sc.style.setProperty("--oc3-nav", Math.ceil(bar.getBoundingClientRect().width + 28) + "px");
+    if (!bar) { return; }
+    var w = Math.ceil(bar.getBoundingClientRect().width + 28) + "px";
+    Array.prototype.forEach.call(document.querySelectorAll(".screen.oc"), function (sc) {
+      sc.style.setProperty("--oc3-nav", w);
+    });
   }
   window.addEventListener("resize", reserveNav);
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
-    b.addEventListener("click", function () { pref = b.dataset.pref; paintCompare(); });
+    b.addEventListener("click", function () {
+      pref = b.dataset.pref;
+      try { sessionStorage.setItem("oc-pref", pref); } catch (e) { /* private mode */ }
+      paintCompare();
+      refit();
+    });
   });
+  paintOffer();
   paintCompare();
 
   /* Restored: the world palette and its frame sat inside the state block the
@@ -872,7 +881,7 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["See the offer as data", "See what happens after", "Back to what the person sets"];
+  var CTA = ["Let the agent choose", "See it hold the promise", "Back to what the person sets"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");

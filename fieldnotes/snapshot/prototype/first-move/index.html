@@ -6,7 +6,7 @@
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>First Move — buying cover with an assistant</title>
-<meta name="description" content="A reconstruction of what a general assistant can already do when someone shops for insurance — and the one thing it still cannot do.">
+<meta name="description" content="A reconstruction of what a general assistant can already do when someone shops for insurance — and the step that stays hers.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -25,52 +25,50 @@
 </svg>
 
 <!-- ═══════════════ THE GROUND ═══════════════
-     Not a page and not a map: an information field. On screen 1 it is only a
-     faint texture of receding documents behind the composition; on screen 2
-     it is the deep indigo world the transaction wall stands in. Everything is
-     drawn in app.js — no images, no external request. -->
+     One charcoal field under both screens: a faint texture of receding
+     documents. Drawn in app.js — no images, no external request. -->
 <div class="world" id="world">
-  <svg id="field" preserveAspectRatio="xMidYMid meet" role="img"
-       aria-label="A dark field of layered policy documents. A luminous path runs through four of them and converges into a single recommended policy; on the second screen the same path runs on and stops dead against a solid amber wall marked Buy, Bind, Sign, Identity and Payment."></svg>
+  <svg id="field" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
 </div>
 
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · WHAT AI ALREADY DOES ═══════════════════════════════════════
-     One flow: four quotes → the comparison that matters to this household
+<!-- ══════ 1 · WHAT IT ALREADY DOES ══════════════════════════════════════
+     One flow: four quotes → the two clauses that matter to this household
      → one recommended quote. Text is HTML in flow; the drawing is one SVG
      laid out in CSS pixels, so its labels are the same size as the type. -->
-<section class="screen fm-s1" data-screen="1" data-label="What it already does">
+<section class="screen fm-sc fm-s1" data-screen="1" data-label="What it already does">
 
-  <header class="fm-s1-head" id="s1-head">
-    <p class="fm-s1-eyebrow">Opening · today</p>
-    <h1 class="display fm-s1-headline" tabindex="-1"><span>She stopped reading</span><span>the policies herself.</span></h1>
-    <p class="fm-s1-lede">Four renewal quotes. One question, asked in plain language.</p>
+  <header class="fm-head" id="s1-head">
+    <h1 class="display fm-headline" tabindex="-1"><span>She stopped reading</span> <span>the policies herself.</span></h1>
+    <p class="fm-lede">Four quotes compared against her needs.</p>
   </header>
 
   <svg class="fm-scene" id="scene1" role="img"
-       aria-label="Four renewal quotes, fanned on a dark field. One reasoning path runs through them and pulls two clauses out for comparison: a garage exclusion, found in two of the four, and a prior claim, rated differently by each. The path arrives at one quote lifted out of the fan and marked Recommended, not the cheapest. The cheapest quote is marked ranked third. The path runs on toward the right edge."></svg>
+       aria-label="Four renewal quotes, Quote A to Quote D, fanned on a dark field. One reasoning path runs through all four and pulls two clauses out onto the path: a garage exclusion, marked on Quote B and Quote C, and a prior claim, rated at a different point on each of the four. The cheapest quote, Quote C, is marked ranked third. The path arrives at Quote D, lifted out of the fan and marked Recommended, not the cheapest, then runs on toward the right edge."></svg>
 
-  <div class="fm-s1-foot" id="s1-foot">
-    <p class="fm-s1-state" id="read-count">Ranked against what her household needs, not just the price.</p>
-    <button class="fm-s1-run" type="button" id="read-play">Run it again</button>
-    <p class="fm-s1-micro">Invented person and quotes. A reconstruction, not a recording.</p>
+  <div class="fm-foot" id="s1-foot">
+    <button class="fm-run" type="button" id="read-play">Run it again</button>
+    <p class="fm-micro">Invented person and quotes. A reconstruction, not a recording.</p>
   </div>
 
 </section>
 
 <!-- ══════ 2 · WHERE IT STOPS ═════════════════════════════════════════════
-     The wall is the memorable event, so nothing competes with it. The
-     closing question sits low and quiet: headline → wall → question. -->
-<section class="screen" data-screen="2" data-label="Where it stops">
+     The same path, carried on from the recommendation, meets a wall the
+     assistant does not pass. The purchase beyond it is hers to make.
+     Headline → wall → question. -->
+<section class="screen fm-sc fm-s2" data-screen="2" data-label="Where it stops">
 
-  <div class="xhead xhead--dark" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">Opening · the handoff</p>
-    <h2 class="display xd" tabindex="-1"><span>It can read everything.</span><span>It cannot sign.</span></h2>
-  </div>
+  <header class="fm-head" id="s2-head">
+    <h2 class="display fm-headline" tabindex="-1"><span>The recommendation is ready.</span> <span>You complete the purchase.</span></h2>
+  </header>
 
-  <div class="fm-ask" style="grid-area:7/1/9/7">
-    <p class="display display--ask xd" tabindex="-1">What happens when she delegates the next step too?</p>
+  <svg class="fm-scene" id="scene2" role="img"
+       aria-label="The recommended quote sits at the left with the other three faded behind it. The reasoning path runs from it straight into a solid warm wall that spans the stage and carries five words: Buy, Bind, Sign, Identity, Payment. The path scatters against the wall and does not pass. Beyond the wall, drawn only as a dashed outline, is the bound policy."></svg>
+
+  <div class="fm-ask" id="s2-ask">
+    <p class="fm-ask-q" tabindex="-1">What happens when she delegates the next step too?</p>
   </div>
 
 </section>

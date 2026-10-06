@@ -146,11 +146,11 @@ body {
   background: var(--paper);
   border-radius: var(--r-s);
   box-shadow: 0 0 0 1px rgba(60,86,72,.22), 0 6px 16px -10px rgba(60,86,72,.6);
-  padding: 4px 9px;
-  /* 11px, not the forked 10px: nothing in this publication renders below
-     11px, and a pin sits on the drawing where it is hardest to read. */
-  font: 600 max(11px, calc(var(--fs-base) * .667))/1.5 var(--sans);
-  letter-spacing: .13em; text-transform: uppercase;
+  padding: 6px 12px;
+  /* 16px: a pin is a label on the drawing, where it is hardest to read,
+     and labels on the iPad hold 16px. */
+  font: 700 16px/1.4 var(--sans);
+  letter-spacing: .09em; text-transform: uppercase;
   white-space: nowrap;
 }
 .pin--ink    { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(60,86,72,.6); }
@@ -242,43 +242,9 @@ body {
   letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
 }
 
-/* ══ NEW · 1 — .qs, the two quotes ══════════════════════════════════════
-   Screen 1's whole argument in one object: two households in opposite
-   states of preparation, and one outcome. The rows are deliberately
-   identical below the name, because that identity IS the beat. State is
-   carried by the left border, the badge word and the glyph; no text is
-   ever faded. */
-
-.qs { display: grid; gap: calc(var(--fs) * .5); margin: 0 0 calc(var(--fs) * .7); }
-.q {
-  border-left: 4px solid var(--rule);
-  border-radius: var(--r-s);
-  padding: calc(var(--fs) * .45) calc(var(--fs) * .7);
-  background: var(--edition-wash);
-}
-.q--done { border-left-color: var(--edition-ink); }
-.q-who {
-  margin: 0 0 calc(var(--fs) * .25);
-  font: 600 var(--t-sub)/1.35 var(--sans);
-  display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--fs) * .45);
-}
-.q-tag {
-  padding: 1px 6px; border-radius: var(--r-s);
-  background: var(--edition-ink); color: var(--paper);
-  font: 600 max(11px, calc(var(--t-lab) * .96))/1.6 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase;
-}
-/* "No work" must not read as the privileged state, so it is an outline
-   badge rather than a filled one — a different FORM, not a paler ink. */
-.q-tag--none {
-  background: transparent; color: var(--ink-soft);
-  box-shadow: inset 0 0 0 1px var(--rule);
-}
-.q-state {
-  margin: 0; display: flex; align-items: center; gap: calc(var(--fs) * .4);
-  font: 700 var(--t-body)/1.3 var(--sans); color: var(--alarm);
-}
-.q-glyph { font-size: .9em; }
+/* (Screen 1's renewal mini-report — the two-quotes plate — left the deck
+   under the sixty-word copy contract. Its argument is now the headline, the
+   consequence line and the one pin on no. 31.) */
 
 /* ══ NEW · 2 — .thr, the threshold, and .offer, its consequence ═════════
    The one control in the deck. The product is the threshold, so the
@@ -362,14 +328,6 @@ input[type="range"]::-moz-range-thumb {
   border-left-color: var(--edition-ink);
   background: var(--ink-fill);
 }
-.offer-word {
-  margin: 0 0 calc(var(--fs) * .2);
-  display: flex; align-items: center; gap: calc(var(--fs) * .45);
-  font: 700 max(15px, calc(var(--fs) * 1.13))/1.25 var(--sans);
-  color: var(--alarm);
-}
-.offer[data-state="open"] .offer-word { color: var(--edition-ink); }
-.offer-glyph { font-size: 1em; line-height: 1; }
 .offer-line { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
 
 .leg { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .9); margin: 0; }
@@ -384,48 +342,9 @@ input[type="range"]::-moz-range-thumb {
 .leg-i--in  i { background: var(--edition-ink); }
 .leg-i--out i { background: var(--paper); box-shadow: inset 0 0 0 2px var(--rule); }
 
-/* (.terms, "what the offer is made of", left screen 2: its clauses now sit
-   on screen 3 against the party that carries each one.) */
-
-/* ══ NEW · 4 — .sign, the agreement ═════════════════════════════════════
-   Five parties, five commitments. The broker's row carries one extra line,
-   because the screen has to make a fee feel earned rather than asserted,
-   and the only thing that does that is what they were exposed to. */
-
-.sign { display: grid; gap: calc(var(--fs) * .55); margin: 0; }
-.sr { border-left: 4px solid var(--rule); padding-left: calc(var(--fs) * .75); }
-.sr--house   { border-left-color: var(--edition-ink); }
-.sr--carrier { border-left-color: var(--carrier); }
-.sr--fund    { border-left-color: var(--fund); }
-.sr--survey  { border-left-color: var(--survey); }
-.sr--broker  { border-left-color: var(--broker); }
-.sr-who {
-  margin: 0 0 calc(var(--fs) * .18);
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: calc(var(--fs) * .45);
-  font: 600 var(--t-sub)/1.35 var(--sans);
-}
-.sr--carrier .sr-who { color: var(--carrier); }
-.sr--fund    .sr-who { color: var(--fund); }
-.sr--survey  .sr-who { color: var(--survey); }
-.sr--broker  .sr-who { color: var(--broker); }
-.sr-n {
-  padding: 1px 6px; border-radius: var(--r-s);
-  background: var(--edition-wash); color: var(--edition-ink);
-  font: 600 max(11px, calc(var(--t-lab) * .96))/1.6 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-}
-.sr-n--paid { background: var(--broker-fill); color: var(--broker); }
-.sr-what { margin: 0; font: var(--t-sec)/1.42 var(--sans); }
-/* the earned line — set apart by a rule and a diamond, the publication's
-   mark for "this is the evidence, not the claim" */
-.sr-why {
-  margin: calc(var(--fs) * .3) 0 0;
-  padding-left: calc(var(--fs) * .7);
-  border-left: 2px solid var(--broker);
-  font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft);
-}
-.sr-why::before { content: "◆ "; color: var(--broker); font-size: .85em; }
+/* (.terms, "what the offer is made of", left screen 2; .sign, the five
+   prose rows, left screen 3. Screen 3 is now one arrangement diagram —
+   see .deal, at the end of this file.) */
 
 /* ══ CHROME ═════════════════════════════════════════════════════════════ */
 
@@ -458,7 +377,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
-  font: 14px/1 var(--sans); cursor: pointer;
+  font: 16px/1 var(--sans); cursor: pointer;
 }
 
 /* The primary action is the ink, not an accent. */
@@ -468,7 +387,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--edition-ink); color: var(--paper);
   border: 1px solid var(--edition-ink); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
-  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
+  font: 600 16px/1 var(--sans); cursor: pointer; white-space: nowrap;
 }
 .cta:hover { background: #31473B; border-color: #31473B; }
 
@@ -538,8 +457,6 @@ input[type="range"]::-moz-range-thumb {
      whole depth has to fit in this band. */
   .gw { flex: 1 0 auto; min-height: min(27vh, 215px); }
 
-  .q-who { gap: calc(var(--fs) * .4); }
-
   .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
   .chrome-r { width: 100%; }
   .picker { flex: 1 1 auto; min-width: 0; }
@@ -559,10 +476,6 @@ input[type="range"]::-moz-range-thumb {
    a floor out of; the plates come first and the street takes what is left. */
 @media (max-width: 899px) and (max-height: 739px) {
   .gw { flex: 1 1 0; min-height: 0; }
-}
-
-@media (max-width: 400px) {
-  .sign  { gap: calc(var(--fs) * .45); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -847,21 +760,10 @@ input[type="range"] { height: 44px; }
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent);
 }
-.plate--thin .sr-who, .plate--thin .cm-what { font-size: var(--x-label); }
-/* the signed street: parties read as a ring, so the card can be a thin band */
-.sr { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .5) calc(var(--x-gap) * 1.1); }
-.sr-row { display: flex; align-items: baseline; gap: .5em; }
-/* the one disclaimer sits on the ground, where the soft ink misses AA */
-.note, .plate--thin .note { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
-.eyebrow, .q-tag, .sr-who { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
-/* every remaining Level-3 class that ended up on the parchment ground */
-.leg-i, .illus, .thr-of, .sr-what { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
-
 /* One rule instead of chasing these individually: on the parchment ground
    --ink-soft measures 4.38:1, so every Level-3 class that sits on it takes
    the mixed ink. Hierarchy comes from size and letterspacing, not paleness. */
-.note, .eyebrow, .illus, .leg-i, .q-tag, .sr-who, .sr-what, .sr-why,
-.thr-of, .aside, .cm-fall, .plate--thin .note {
+.note, .eyebrow, .illus, .leg-i, .thr-of, .aside, .plate--thin .note {
   color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
 }
 
@@ -923,11 +825,7 @@ body { background: var(--paper); }
    viewport. The torn edge and grain live on a pseudo-element behind the
    glyphs (the #rough filter is defined in the street's SVG); the type
    itself stays crisp, as on the study board. */
-.xhead--block { align-items: flex-start; justify-content: flex-start; gap: 10px; pointer-events: auto; }
-.xhead--block .xeyebrow {
-  margin: 0; font: 400 14px/1.3 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--edition-ink);
-}
+.xhead--block { align-items: flex-start; justify-content: flex-start; gap: 12px; pointer-events: auto; }
 .xhead--block .xd {
   position: relative; isolation: isolate;
   display: inline-block; max-width: 100%; margin: 0;
@@ -949,8 +847,8 @@ body { background: var(--paper); }
   gap: 0; max-width: 520px;
 }
 .plate--ctl .eyebrow {
-  margin: 0 0 6px; font: 700 14px/1.3 var(--sans);
-  letter-spacing: .11em; text-transform: uppercase; color: var(--ink-soft);
+  margin: 0 0 6px; font: 700 16px/1.3 var(--sans);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft);
 }
 .plate--ctl .thr-fig {
   margin: 0 0 4px;
@@ -959,10 +857,11 @@ body { background: var(--paper); }
 }
 .plate--ctl .thr-of { font: 400 clamp(18px, .6vw + 1vh, 22px)/1 var(--sans); letter-spacing: 0; color: var(--edition-ink); }
 
-/* the rail: the input is 44px tall for the hand; the thumb is 28px for the
-   eye; "48 needed" is marked ON the track so the viewer sees what they are
-   dragging toward before they reach it. */
-.plate--ctl .thr-rail { --thumb: 28px; position: relative; padding-bottom: 24px; margin: 0 0 12px; }
+/* the rail: the input is 44px tall for the hand and the thumb is the same
+   44px for the eye — one object, the size of a fingertip, on a thin track.
+   "48 needed" is marked ON the track so the viewer sees what they are
+   dragging toward before they reach it. The endpoints carry no numerals. */
+.plate--ctl .thr-rail { --thumb: 44px; position: relative; padding-bottom: 26px; margin: 0 0 12px; }
 .plate--ctl input[type="range"] { height: 44px; margin: 0; }
 .plate--ctl input[type="range"]::-webkit-slider-runnable-track {
   height: 4px; border: 0; border-radius: 2px;
@@ -972,68 +871,50 @@ body { background: var(--paper); }
 .plate--ctl input[type="range"]::-moz-range-track { height: 4px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--edition-ink) 32%, var(--paper)); }
 .plate--ctl input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--green); }
 .plate--ctl input[type="range"]::-webkit-slider-thumb {
-  width: var(--thumb); height: var(--thumb); margin-top: -12px;
-  background: var(--paper); border: 2.5px solid var(--edition-ink); border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--paper);
+  width: var(--thumb); height: var(--thumb); margin-top: -20px;
+  background: var(--paper); border: 3px solid var(--edition-ink); border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--paper), 0 6px 14px -8px rgba(22,21,15,.6);
 }
 .plate--ctl input[type="range"]::-moz-range-thumb {
-  width: 24px; height: 24px;
-  background: var(--paper); border: 2.5px solid var(--edition-ink); border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--paper);
+  width: 44px; height: 44px;
+  background: var(--paper); border: 3px solid var(--edition-ink); border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--paper), 0 6px 14px -8px rgba(22,21,15,.6);
 }
 /* the thumb fills the moment the threshold is met: state, said twice */
 #ctl[data-state="open"] input[type="range"]::-webkit-slider-thumb { background: var(--green); }
 #ctl[data-state="open"] input[type="range"]::-moz-range-thumb { background: var(--green); }
 .plate--ctl .thr-tick {
-  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * 0.8); top: 44px;
+  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * 0.8); top: 46px;
   transform: translateX(-50%);
-  font: 700 13px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--edition-ink);
+  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--edition-ink);
 }
-.plate--ctl .thr-tick i { top: -34px; height: 24px; width: 2px; background: var(--edition-ink); }
-.plate--ctl .thr-end {
-  position: absolute; top: 44px; transform: translateX(-50%);
-  font: 400 13px/1.3 var(--sans); color: var(--ink-soft); font-variant-numeric: tabular-nums;
-}
-.plate--ctl .thr-end--0  { left: calc(var(--thumb) / 2); }
-.plate--ctl .thr-end--60 { left: calc(100% - var(--thumb) / 2); }
+.plate--ctl .thr-tick i { top: -30px; height: 22px; width: 2px; background: var(--edition-ink); }
 
-/* the offer: a mark, a state word and ONE condition sentence. Not a box.
-   Closed and open differ by mark, word, colour and sentence — never by a
-   fade — and survive greyscale. */
+/* the offer: a mark and ONE state line. Not a box. Closed and open differ
+   by mark, colour and sentence — never by a fade — and survive greyscale. */
 .plate--ctl .offer { border: 0; background: none; padding: 0; margin: 0 0 14px; transition: none; }
-.plate--ctl .offer-word {
-  margin: 0 0 5px; gap: .5em;
-  font: 700 15px/1.3 var(--sans); letter-spacing: .09em; text-transform: uppercase;
-  color: var(--warn);
+.plate--ctl .offer-line {
+  margin: 0; max-width: 34ch;
+  display: flex; align-items: flex-start; gap: .55em;
+  font: 700 clamp(18px, .5vw + 1.05vh, 22px)/1.35 var(--sans); color: var(--warn);
 }
-#ctl[data-state="open"] .offer-word { color: var(--green); }
-.offer-mark { width: 14px; height: 14px; flex: 0 0 auto; display: block; }
+#ctl[data-state="open"] .offer-line { color: var(--green); }
+.offer-mark { width: 16px; height: 16px; flex: 0 0 auto; display: block; margin-top: .3em; }
 .offer-mark--open { display: none; }
 #ctl[data-state="open"] .offer-mark--open { display: block; }
 #ctl[data-state="open"] .offer-mark--closed { display: none; }
-.plate--ctl .offer-line {
-  margin: 0; max-width: 40ch;
-  font: 400 clamp(16px, .45vw + .9vh, 18px)/1.4 var(--sans); color: var(--ink-soft);
-}
 
-/* the key: shape + fill + word, matching the houses on the street. The
-   boundary's line appears only once there is a boundary. */
-.plate--ctl .leg { gap: 6px 18px; align-items: center; }
+/* the key: shape + fill + word, matching the houses on the street. Two
+   entries only — the boundary is artwork, not a keyed term. */
+.plate--ctl .leg { gap: 6px 20px; align-items: center; }
 .plate--ctl .leg-i {
-  gap: 7px; font: 700 14px/1.3 var(--sans); letter-spacing: .09em; text-transform: uppercase;
+  gap: 8px; font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
   color: var(--green);
 }
 .plate--ctl .leg-i--out { color: var(--ink-soft); }
-.plate--ctl .leg-i--bnd { color: var(--amber-ink); }
-.plate--ctl .leg-i svg { width: 14px; height: 19px; flex: 0 0 auto; }
+.plate--ctl .leg-i svg { width: 15px; height: 20px; flex: 0 0 auto; }
 .plate--ctl .leg-i--in  svg polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
 .plate--ctl .leg-i--out svg polygon { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 2.5 2; stroke-linejoin: round; }
-.plate--ctl .leg-i--bnd i { width: 20px; height: 4px; border-radius: 0; background: var(--amber); box-shadow: none; }
-#ctl[data-state="closed"] .leg-i--bnd { display: none; }
-
-/* ── screen 3 · one clause per party ────────────────────────────────────── */
-.sr-what { margin: 0; font: 400 max(15px, var(--x-label))/1.4 var(--sans); color: var(--edition-ink); }
-.sr { align-items: baseline; }
 
 /* ── narrow: the same hierarchy, stacked, at a size a phone can hold ────── */
 @media (max-width: 899px) {
@@ -1050,10 +931,6 @@ body { background: var(--paper); }
 .screen > .plate { position: relative; }
 /* a control that is only a glyph still needs 44px of width */
 .cta { min-width: 44px; }
-/* The filled badge's paper text was being overridden by the late "mixed
-   ink" rule and rendered ink on ink (screen 1, "Work done"). */
-.q-tag { color: var(--paper); }
-.q-tag--none { color: var(--ink-soft); }
 /* Narrow: the deck already stops above the chrome, so the screen must not
    reserve the chrome's height a second time — that was 76px the street lost. */
 @media (max-width: 899px) {
@@ -1062,3 +939,128 @@ body { background: var(--paper); }
 /* the slider's focus ring stays inside its own 44px box, clear of the
    scale labels beneath the track */
 .plate--ctl input[type="range"]:focus-visible { outline-offset: -2px; border-radius: 8px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DENSITY PASS — the sixty-word copy contract
+   (design-study/density-pass/SCREEN-COPY.md, NEGOTIATED). Three screens,
+   one composition each, at most three reading regions: the headline on its
+   own block, the street, and one object — a consequence line, the threshold
+   control, or the five-party diagram. Every size here is a fixed clamp, not
+   the --fs unit, because the copy is now short enough that the iPad floors
+   (explanatory 18px, labels 16px) can simply hold.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── the consequence, under the headline (screens 1 and 3) ──────────────
+   The one explanatory line a screen is allowed. It sits on its own paper
+   chip, so it is never set directly on the drawing. */
+.xcons {
+  margin: 0; display: inline-block; max-width: 26ch;
+  padding: .32em .7em .36em; border-radius: 3px;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 14%, transparent);
+  font: 400 clamp(18px, .6vw + 1.25vh, 26px)/1.3 var(--sans);
+  letter-spacing: -.01em; color: var(--edition-ink);
+  text-wrap: balance;
+}
+/* screen 3's count: the figure persists from the slider, so it is a number
+   first and a word second */
+.xcons--count { display: inline-flex; align-items: baseline; gap: .3em; max-width: none; text-wrap: initial; }
+.xcount {
+  font: 700 clamp(30px, 1.6vw + 2.6vh, 48px)/1 var(--sans);
+  letter-spacing: -.025em; font-variant-numeric: tabular-nums;
+}
+
+/* ── the disclosure ──────────────────────────────────────────────────────
+   One micro line, on its own chip at the foot of screen 1, clear of the
+   chrome on the right. 16px, the label floor. */
+.xmicro--chip {
+  align-self: end; justify-self: start;
+  padding: .3em .7em; border-radius: 3px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent);
+  font: 400 16px/1.4 var(--sans); color: var(--edition-ink);
+  max-width: none; pointer-events: auto;
+}
+
+/* ── screen 3 · the arrangement diagram ─────────────────────────────────
+   Five parties as objects on ONE spine — the contract — in the same colours
+   as the four marks at the boundary's corners on the street (households are
+   the green of the houses themselves). Each object: a mark on the spine, a
+   name, one contribution. Desktop: a row. Narrow: a column, same spine. */
+.plate--deal { padding: calc(var(--x-gap) * .75) calc(var(--x-gap) * 1.1) calc(var(--x-gap) * .8); }
+.deal {
+  --deal-gap: clamp(14px, 1.6vw, 28px);
+  position: relative; list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0 var(--deal-gap);
+}
+/* the spine: one rule from mark to mark, drawn as a segment per party so
+   it starts at the first mark and ends at the last */
+.dp { position: relative; min-width: 0; padding-top: 32px; }
+.dp:not(:last-child)::before {
+  content: ""; position: absolute; left: 12px; right: calc(-1 * var(--deal-gap) - 12px);
+  top: 11px; height: 2px;
+  background: var(--edition-ink); opacity: .5;
+}
+.dp-mark {
+  position: absolute; left: 0; top: 0; width: 24px; height: 24px; display: block;
+  background: var(--paper); border-radius: 50%; padding: 1px;
+  box-shadow: 0 0 0 3px var(--paper);
+}
+.dp--house .dp-mark { border-radius: 2px; }
+.dp--house   .dp-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
+.dp--carrier .dp-mark circle { fill: var(--carrier); }
+.dp--fund    .dp-mark circle { fill: var(--fund); }
+.dp--survey  .dp-mark circle { fill: var(--survey); }
+.dp--broker  .dp-mark circle { fill: var(--broker); }
+.dp-who {
+  margin: 0 0 4px;
+  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--edition-ink);
+}
+.dp--carrier .dp-who { color: var(--carrier); }
+.dp--fund    .dp-who { color: var(--fund); }
+.dp--survey  .dp-who { color: var(--survey); }
+.dp--broker  .dp-who { color: var(--broker); }
+.dp--house   .dp-who { color: var(--green); }
+.dp-what {
+  margin: 0;
+  font: 400 clamp(18px, .45vw + 1vh, 21px)/1.35 var(--sans);
+  color: var(--edition-ink); text-wrap: pretty;
+}
+
+/* ── short desktop windows: the band gets no shorter, the street does ──── */
+@media (min-width: 900px) and (max-height: 760px) {
+  .xcons { font-size: 18px; }
+  .dp-what { font-size: 18px; }
+  .plate--deal { padding-top: calc(var(--x-gap) * .55); padding-bottom: calc(var(--x-gap) * .6); }
+}
+
+/* ── narrow: the same hierarchy, stacked ────────────────────────────────── */
+@media (max-width: 899px) {
+  .xcons { font-size: clamp(17px, 4.6vw, 22px); max-width: none; }
+  .xcount { font-size: clamp(30px, 9vw, 44px); }
+  .xmicro--chip { align-self: flex-start; font-size: 15px; }
+  .pin { font-size: 15px; padding: 5px 10px; }
+  /* a plate in the stacked column takes the full width: anchorPlates()
+     writes align-self:end inline for the grid, and a flex column would
+     read that as "shrink-wrap, right-aligned" */
+  .screen > .plate { align-self: stretch !important; }
+  .plate--deal { padding: 14px 14px 12px; }
+  .deal { --deal-gap: 10px; grid-template-columns: 1fr; gap: var(--deal-gap) 0; }
+  /* the spine turns vertical, through the marks */
+  .dp:not(:last-child)::before { left: 11px; right: auto; width: 2px; top: 12px; bottom: calc(-1 * var(--deal-gap) - 12px); height: auto; }
+  .dp { padding: 0 0 0 38px; min-height: 24px; }
+  .dp-who { display: inline; margin: 0 .5em 0 0; }
+  .dp-what { display: inline; font-size: 17px; }
+  .plate--ctl .leg-i { font-size: 15px; }
+  .plate--ctl .thr-tick { font-size: 15px; }
+  .plate--ctl .eyebrow { font-size: 15px; }
+  .plate--ctl .offer-line { font-size: 18px; max-width: none; }
+}
+/* iPad portrait (820px) is narrow but is still the iPad: labels hold 16px */
+@media (min-width: 600px) and (max-width: 899px) {
+  .xmicro--chip, .pin, .dp-who, .plate--ctl .leg-i, .plate--ctl .thr-tick, .plate--ctl .eyebrow { font-size: 16px; }
+  .dp-what { font-size: 18px; }
+  .xcons { font-size: 20px; }
+}

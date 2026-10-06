@@ -2,84 +2,72 @@
    Resilience Grid · 2036 prototype · Alder County
    A wildfire protection network, told from the region rather than the house.
 
-   Forked from prototype/micromutual/style.css. Everything structural is
-   inherited unchanged — the ground-is-the-page layout, the one-unit sizing
-   with its per-screen --fit, the plate rules, the chrome. See design.md for
-   what is inherited and what is new; this file follows that document.
+   Forked from prototype/micromutual/style.css: the ground-is-the-page
+   layout, the per-screen --fit, the chrome and the narrow stack are
+   inherited. The type language is the one the design study settled on for
+   screen 3 and now carries every screen: Bricolage Grotesque on a charcoal
+   block that is the headline's OWN box (sized to its text, with the grain
+   and torn edge on a pseudo-element behind the glyphs), short lines on
+   paper, and labels on the terrain as SVG text with a paper halo.
 
-   STOCK — Fieldnotes shared later-edition paper #FBF9F1, new ink #36414A.
-   Cool graphite, so it cannot be mistaken for Emberwatch's warm brown on a
-   shelf or in a screenshot. No webfonts, no images, no external request.
-
-   THE ONE RULE that makes a full-bleed drawing readable: every word sits on
-   an opaque plate. Nothing is ever set on the ground, on the veil, or on a
-   gradient. That is why every contrast figure below is measured against
-   --paper and never against white.
+   STOCK — paper #FBF9F1, ink #36414A. Cool graphite, so it cannot be
+   mistaken for Emberwatch's warm brown. Fonts are local; no external request.
    ══════════════════════════════════════════════════════════════════════════ */
+
+@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
 
 :root {
   --paper:        #FBF9F1;
   --edition-ink:  #36414A;   /*  9.90 : 1 on paper */
   --edition-wash: #E6E7E7;
-  --wash-2:       #D8DBDC;   /* bar tracks only — carries no text */
-
-  --ink-soft:     #5C6872;   /*  5.42 on paper; >= 4.60 on every 13% fill */
-  --rule:         #8A959C;   /*  2.90 — hairlines and strokes, NEVER type */
+  --ink-soft:     #5C6872;   /*  5.42 on paper */
+  --rule:         #8A959C;   /*  hairlines and strokes, never type */
   --hair:         #DCDDD8;
 
-  /* ── the seven actors ───────────────────────────────────────────────────
-     Five values lifted unchanged from Micromutual's semantic set; --capital
-     is new; --fire is Emberwatch's "Prepare" driven down until it clears AA
-     on the wash as well as the paper. Households are the ink itself. */
-  --carrier:  #2F5E7C;   /* 6.61 — the insurer                      */
-  --utility:  #5B4E7A;   /* 7.08 — the electric utility             */
-  --fire:     #9E4A14;   /* 5.79 — the four fire districts          */
-  --public:   #2F5A44;   /* 7.47 — county and public agencies       */
-  --vendor:   #7A5A17;   /* 6.03 — sensing and suppression vendors  */
-  --capital:  #8A3450;   /* 7.41 — resilience / catastrophe capital */
-  --alarm:    #A33322;   /* 6.52 — the ignition, and shortfall      */
+  --carrier:  #2F5E7C;
+  --utility:  #5B4E7A;
+  --fire:     #9E4A14;
+  --public:   #2F5A44;
+  --vendor:   #7A5A17;
+  --alarm:    #A33322;
 
-  /* 13% alpha of the same value — one number per hue, not a second tint */
-  --carrier-fill: #E4EBEF;
-  --utility-fill: #EAE8F0;
-  --fire-fill:    #F6E8DC;
-  --public-fill:  #E6EDE7;
-  --vendor-fill:  #F1EBDC;
-  --capital-fill: #F3E4E9;
-  --alarm-fill:   #F4E4E0;
+  --block:    #6B675E;       /* the headline's charcoal block */
+  --cream:    #F3EBD7;       /* the type on it: 5.6 : 1 */
 
   --r-s: 3px; --r-m: 6px; --r-l: 10px;
 
-  --serif: Georgia, "Times New Roman", serif;
-  --sans:  Arial, Helvetica, sans-serif;
+  --sans: "Bricolage", "Helvetica Neue", Arial, sans-serif;
 
   --plate-shadow: 0 0 0 1px rgba(54,65,74,.11), 0 14px 34px -20px rgba(54,65,74,.55);
 
-  /* ── the one unit ──────────────────────────────────────────────────────
-     Height-led, because the deck does not scroll on desktop: a 720px window
-     gets 13px body copy and a 1080px window gets 15px, continuously in
-     between. --fit is a per-screen multiplier app.js lowers only when a
-     screen's own content would still leave the stage. */
+  /* the one unit. Height-led, because the deck does not scroll on desktop.
+     --fit is a per-screen multiplier app.js lowers only when a screen's own
+     content would still leave the stage. */
   --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
   --fit: 1;
-  --fs: var(--fs-base);
-
-  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
-  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
-  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
-  --rowsz:  clamp(14px, 0.75vw + 0.85vh, 21px);
 
   --gutter: 18px;
   --chrome-h: 76px;
   --grid-gap: calc(var(--fs-base) * .93);
+
+  /* the type roles. iPad landscape (1180 x 820) gives the headline 44px,
+     explanatory lines 18px, labels and controls 16px. */
+  --x-display: clamp(27px, 2.1vw + 2vh, 44px);
+  --x-lede:    clamp(18px, .55vw + 1vh, 21px);
+  --x-label:   16px;
+  --x-micro:   max(14px, calc(var(--fs-base) * .95));
+  --x-gap:     clamp(14px, 1.6vh, 26px);
+  --x-ask:     clamp(21px, 1vw + 1.5vh, 30px);
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; height: 100%; }
 
-/* Plates set their own `display`, which outranks the user-agent rule for
-   [hidden]. Without this a hidden screen still paints — and on a full-bleed
-   layout it paints straight on top of the one that should show. */
+/* blocks set their own `display`, which outranks the user-agent rule for
+   [hidden]; without this a hidden screen still paints */
 [hidden] { display: none !important; }
 
 body {
@@ -111,8 +99,8 @@ body {
 }
 /* the heading receives focus from the skip button; it must not draw a ring
    when it is reached by a mouse click on the page */
-.display:focus { outline: none; }
-.display:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
+.xd:focus, .xq:focus { outline: none; }
+.xd:focus-visible, .xq:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
 
 :where(a, button, select, input, [tabindex]):focus-visible {
   outline: 2px solid var(--edition-ink);
@@ -122,13 +110,13 @@ body {
 
 /* ══ THE GROUND ═════════════════════════════════════════════════════════ */
 
-/* Inset past every edge, so Alder County is cropped by the viewport rather
-   than framed by it: 1440 x 900 renders it at roughly 122% x 116%. */
+/* inset past every edge, so Alder County is cropped by the viewport rather
+   than framed by it */
 .world { position: fixed; inset: -8% -11%; z-index: 0; }
 .world svg { display: block; width: 100%; height: 100%; }
 
-/* Per-screen wash. No text ever sits on it — every word is on an opaque
-   plate — so this only sets how loudly the ground speaks. */
+/* per-screen wash. Every word on the ground carries its own paper, so this
+   only sets how loudly the ground speaks. */
 .veil {
   position: fixed; inset: 0; z-index: 1; pointer-events: none;
   transition: background .45s cubic-bezier(.4,0,.2,1);
@@ -139,39 +127,20 @@ body {
   background: radial-gradient(135% 105% at 50% 45%,
               rgba(251,249,241,0) 44%, rgba(216,219,220,.60) 100%);
 }
-.veil[data-veil="hard"] {
-  background: linear-gradient(180deg, rgba(249,248,240,.50), rgba(220,223,222,.64));
-}
 /* screen 3 only: the ground is the event, so the wash pulls back and warms */
 .veil[data-veil="ignite"] {
   background: radial-gradient(90% 75% at 62% 56%,
               rgba(163,51,34,.07) 0%, rgba(251,249,241,0) 45%, rgba(224,226,222,.52) 100%);
 }
 
-/* map pins — opaque plates, projected onto the ground by script */
-.pins { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
-.pin {
-  position: absolute; transform: translate(-50%, -50%);
-  background: var(--paper);
-  border-radius: var(--r-s);
-  box-shadow: 0 0 0 1px rgba(54,65,74,.22), 0 6px 16px -10px rgba(54,65,74,.6);
-  padding: 4px 9px;
-  font: 600 max(10px, calc(var(--fs-base) * .667))/1.5 var(--sans);
-  letter-spacing: .13em; text-transform: uppercase;
-  white-space: nowrap;
-}
-.pin--ink     { color: var(--edition-ink); box-shadow: 0 0 0 2px var(--edition-ink), 0 6px 16px -10px rgba(54,65,74,.6); }
-.pin--alarm   { color: var(--alarm);   box-shadow: 0 0 0 1.5px var(--alarm),   0 6px 16px -10px rgba(54,65,74,.6); }
-.pin--fire    { color: var(--fire);    box-shadow: 0 0 0 1.5px var(--fire),    0 6px 16px -10px rgba(54,65,74,.6); }
-.pin--utility { color: var(--utility); box-shadow: 0 0 0 1.5px var(--utility), 0 6px 16px -10px rgba(54,65,74,.6); }
-.pin--vendor  { color: var(--vendor);  box-shadow: 0 0 0 1.5px var(--vendor),  0 6px 16px -10px rgba(54,65,74,.6); }
-.pin--grey    { color: var(--ink-soft);box-shadow: 0 0 0 1.5px var(--rule),    0 6px 16px -10px rgba(54,65,74,.6); }
+/* labels drawn on the terrain by app.js */
+.lab { font-family: var(--sans); }
 
 /* ══ THE DECK ═══════════════════════════════════════════════════════════ */
 
-/* The deck covers the whole viewport above the ground, so it has to be
-   transparent to the pointer as well as to the eye. Plates switch pointer
-   events back on. */
+/* the deck covers the whole viewport above the ground, so it has to be
+   transparent to the pointer as well as to the eye; blocks switch pointer
+   events back on */
 .deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
 
 .screen {
@@ -183,481 +152,108 @@ body {
   gap: var(--grid-gap);
   pointer-events: none;
   align-items: start;
-
   --fs: calc(var(--fs-base) * var(--fit));
-  --pad-y: calc(var(--fs) * 1.07);
-  --pad-x: calc(var(--fs) * 1.20);
-
-  /* ── the five text roles ──────────────────────────────────────────────
-     Every font-size in this file resolves through one of these, so a floor
-     can be applied in one place. On a wide window they are pure multiples
-     of --fs; on a narrow one they take hard minimums (see the narrow block)
-     because --fit used to drive labels to 6.4px and notes to 7.7px, which
-     is not small type, it is unreadable type. */
-  /* Floors are GLOBAL, not mobile-only. An earlier pass floored only below
-     899px and a 1280x720 presentation window still shrank uppercase labels
-     to 8.7px, because --fit runs on any short stage, not just a phone.
-     Nothing in this publication renders below 11px on any viewport. */
-  --t-body: max(13px,   var(--fs));              /* running copy            */
-  --t-sub:  max(12.5px, calc(var(--fs) * .93));  /* stat lines              */
-  --t-mid:  max(12px,   calc(var(--fs) * .867)); /* names, timeline actions */
-  --t-sec:  max(11.5px, calc(var(--fs) * .8));   /* notes, asides, chips    */
-  --t-lab:  max(11px,   calc(var(--fs) * .667)); /* uppercase labels        */
-
   font-size: var(--fs);
-
-  /* Last resort on a stage too short to hold the composition at legible
-     type: scroll. The brief is explicit — scrolling beats microscopic
-     typography. --fit still absorbs the first part of the squeeze through
-     padding and gaps, which do not take floors. */
+  /* last resort on a stage too short to hold the composition: scroll */
   overflow-y: auto;
 }
-.screen[hidden] { display: none; }
 .screen > * { min-width: 0; }
 
-.plate, .chipbtn, .cta, .iconbtn, .picker, .tl-play, select { pointer-events: auto; }
-
-/* A plate is as tall as what it holds. It is never handed a height it then
-   has to hide the remainder of. */
-.plate {
-  background: var(--paper);
-  border-radius: var(--r-l);
-  box-shadow: var(--plate-shadow);
-  padding: var(--pad-y) var(--pad-x);
-  display: flex; flex-direction: column; justify-content: flex-start;
+.xhead, .wf-chips, .wf-micro, .xask, .s3-ctl, .chipbtn, .tl-play, .cta, .iconbtn, .picker, select {
+  pointer-events: auto;
 }
-.plate--wash    { background: var(--edition-wash); }
-.plate--carrier { background: var(--carrier-fill); }
-.plate--alarm   { background: var(--alarm-fill); }
-.plate--tight   { padding: calc(var(--fs) * .8) calc(var(--fs) * .95); }
 
 /* ══ TYPE ═══════════════════════════════════════════════════════════════ */
 
-.eyebrow {
-  margin: 0 0 calc(var(--fs) * .6);
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--ink-soft);
+/* ── the headline region: eyebrow, block, one qualifier ── */
+.xhead {
+  display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;
+  gap: calc(var(--x-gap) * .4);
+  z-index: 1;
 }
-.eyebrow--carrier { color: var(--carrier); }
-.eyebrow--utility { color: var(--utility); }
-.eyebrow--fire    { color: var(--fire); }
-.eyebrow--public  { color: var(--public); }
-.eyebrow--vendor  { color: var(--vendor); }
-.eyebrow--capital { color: var(--capital); }
-.eyebrow--alarm   { color: var(--alarm); }
-.eyebrow--ink     { color: var(--edition-ink); }
-
-.display {
-  margin: 0 0 calc(var(--fs) * .8);
-  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
-  letter-spacing: -.028em;
-  text-wrap: balance;
+.xeyebrow {
+  margin: 0; padding: 3px 8px;
+  background: var(--paper); border-radius: var(--r-s);
+  font: 700 max(13px, calc(var(--x-label) * .85))/1.3 var(--sans);
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--edition-ink);
 }
-.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
-/* The closing provocation is the hero of screen 6 and is sized to win the
-   lower right of the composition. It wraps on its own, so no authored
-   line breaks — it is a question, not a headline. */
-.display--ask {
-  font-size: calc(var(--dsp) * var(--fit) * 1.06);
-  letter-spacing: -.026em; line-height: 1.12;
+/* the block is the headline's OWN box: inline-block, so it is exactly as
+   wide as its longest line and as tall as its lines */
+.xd {
+  position: relative; z-index: 1;
+  display: inline-block; max-width: 100%;
+  margin: 0; padding: .3em .5em .36em;
+  font: 700 var(--x-display)/1.1 var(--sans);
+  letter-spacing: -.022em; color: var(--cream);
+  overflow-wrap: break-word;
 }
-.display--ask span { display: inline; }
-.display span { display: block; }
-.display:last-child { margin-bottom: 0; }
-
-.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
-.body:last-child { margin-bottom: 0; }
-.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft); }
-.note + .note { margin-top: calc(var(--fs) * .35); }
-.strong { color: var(--edition-ink); font-weight: 700; }
-
-.fig {
-  margin: 0 0 calc(var(--fs) * .3);
-  font: 400 calc(var(--figsz) * var(--fit))/1 var(--serif); letter-spacing: -.025em;
+.xd span { display: block; }
+.xd::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
+  background: var(--block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  filter: url(#s3-rough);
 }
-.fig-unit {
-  font: var(--t-sec)/1 var(--sans); letter-spacing: 0;
-  color: var(--ink-soft); margin-left: 3px;
-}
-.fig--alarm   { color: var(--alarm); }
-.fig--carrier { color: var(--carrier); }
-
-.rows {
-  margin: 0 0 calc(var(--fs) * .8); display: grid;
-  grid-template-columns: 13ch 1fr; gap: calc(var(--fs) * .33) calc(var(--fs) * .93);
-}
-.rows:last-child { margin-bottom: 0; }
-.rows dt {
-  font: 600 var(--t-lab)/1.9 var(--sans); letter-spacing: .14em;
-  text-transform: uppercase; color: var(--ink-soft);
-}
-.rows dd { margin: 0; font: var(--t-body)/1.4 var(--sans); }
-/* Screen 3's authority legend: three short pairs that must not compete with
-   the event timeline beside them. */
-.rows--legend { grid-template-columns: 7.5ch 1fr; gap: calc(var(--fs) * .3) calc(var(--fs) * .8); }
-.rows--legend dd { font-size: var(--t-sec); }
-
-/* ── stat lines, screen 1. Illustrative regional figures. ─────────────── */
-.stats { display: grid; gap: calc(var(--fs) * .72); margin: 0; }
-.stat { display: flex; align-items: baseline; gap: calc(var(--fs) * .8); }
-.stat-fig {
-  flex: 0 0 auto; min-width: 4.4ch;
-  font: 400 calc(var(--rowsz) * var(--fit) * 1.18)/1 var(--serif);
-  letter-spacing: -.02em; font-variant-numeric: oldstyle-nums;
-}
-.stat-txt { margin: 0; font: var(--t-sub)/1.35 var(--sans); }
-.stat--alarm .stat-fig { color: var(--alarm); }
-
-/* ══ EVIDENCE vs SCENARIO — the one new convention ══════════════════════
-   Marked by FORM, not by a seventh colour. An aside is a dated thing that
-   actually happened; everything without a diamond is Alder County, 2036.
-   See design.md §4. */
-
-.aside {
-  margin: calc(var(--fs) * .5) 0 0;
-  padding-left: calc(var(--fs) * .8);
-  border-left: 2px solid var(--rule);
-  font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft);
-}
-.aside::before {
-  content: "◆ "; color: var(--edition-ink); font-size: .85em;
-}
-.aside .strong { color: var(--edition-ink); }
-.aside-yr { white-space: nowrap; }
-
-/* signals already here — the evidence plate, screen 6 */
-.sig { margin: 0; padding: 0 0 0 calc(var(--fs) * .8); list-style: none;
-       border-left: 2px solid var(--rule); display: grid; gap: calc(var(--fs) * .5); }
-.sig li { font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft); }
-.sig li::before { content: "◆ "; color: var(--edition-ink); font-size: .85em; }
-.sig .strong { color: var(--edition-ink); }
-
-/* the standing illustrative mark, for invented regional figures */
-.illus {
-  display: inline-block; margin: 0;
-  font: 600 var(--t-lab)/1.6 var(--sans);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+/* the one qualifier under a headline, on paper */
+.xlede {
+  margin: 0; max-width: 32ch; padding: 4px 9px;
+  background: var(--paper); border-radius: var(--r-s);
+  font: 400 var(--x-lede)/1.38 var(--sans);
+  color: var(--edition-ink);
 }
 
-/* ══ 3.2  .gauge — regional insurability ════════════════════════════════
-   A track with a travelling marker. Direction, never a score. */
+/* ── the single disclosure ── */
+.xmicro {
+  margin: 0; max-width: 46ch; padding: 3px 7px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent); border-radius: var(--r-s);
+  font: 400 var(--x-micro)/1.4 var(--sans);
+  color: var(--edition-ink);
+}
+.wf-micro { z-index: 3; align-self: end; justify-self: start; }
 
-.gauge { margin: calc(var(--fs) * .4) 0 0; }
-.gauge-track {
-  position: relative; height: calc(var(--fs) * .5);
-  background: var(--wash-2); border-radius: 999px;
-  margin: 0 0 calc(var(--fs) * 1.5);
+/* ── the closing question, screen 5 ── */
+.xask { align-self: end; justify-self: end; z-index: 3; max-width: 100%; }
+.xq {
+  margin: 0; padding: .45em .7em;
+  background: var(--paper); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 700 var(--x-ask)/1.22 var(--sans);
+  letter-spacing: -.015em; color: var(--edition-ink);
+  max-width: 24ch; text-wrap: balance;
 }
-.gauge-bar {
-  position: absolute; inset: 0 auto 0 0; border-radius: 999px;
-  background: var(--alarm);
-  width: 12%;
-  transition: width .6s cubic-bezier(.4,0,.2,1), background .6s linear;
-}
-.gauge-stops {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: calc(var(--fs) * .4); margin: 0;
-}
-.gauge-stop {
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
-  padding-top: calc(var(--fs) * .4);
-  border-top: 1px solid var(--hair);
-}
-.gauge-stop:nth-child(2) { text-align: center; }
-.gauge-stop:nth-child(3) { text-align: right; }
-.gauge-stop[data-on="1"] { color: var(--edition-ink); border-top-color: var(--edition-ink); }
-.gauge-now {
-  display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
-  margin: 0 0 calc(var(--fs) * .55);
-  font: 600 max(14px, var(--fs))/1.3 var(--sans);
-}
-.gauge-glyph { font-size: 1.05em; line-height: 1; }
-.gauge--retreating .gauge-now, .gauge--retreating .gauge-bar { color: var(--alarm); }
-.gauge--retreating .gauge-bar { background: var(--alarm); }
-.gauge--managed .gauge-now { color: var(--vendor); }
-.gauge--managed .gauge-bar { background: var(--vendor); width: 52%; }
-/* Deliberately short of the end of the track. The third state is
-   "potentially viable, subject to evidence and capacity" — a bar that filled
-   the rail would say the question had been settled. */
-.gauge--viable .gauge-now { color: var(--public); }
-.gauge--viable .gauge-bar { background: var(--public); width: 84%; }
 
-/* ══ 3.3  .layers — the network stack ═══════════════════════════════════ */
+/* ══ CONTROLS ═══════════════════════════════════════════════════════════ */
 
-.layers { display: grid; gap: calc(var(--fs) * .62); margin: 0; }
-.layer {
-  border-left: 4px solid var(--rule);
-  border-radius: var(--r-s);
-  padding: calc(var(--fs) * .5) 0 calc(var(--fs) * .5) calc(var(--fs) * .8);
-  /* NO TEXT FADING. The off state used to set opacity .48 on the whole rail,
-     which took every word in it below readable contrast. State is now carried
-     by the border, the ground and a badge; the type does not move. */
-  transition: border-color .3s linear, background .3s linear;
+/* screen 2: the four layer buttons and the restore */
+.wf-chips {
+  z-index: 3; align-self: end; justify-self: start;
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 8px;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  border-radius: var(--r-m);
 }
-.layer[data-on="0"] {
-  border-left-color: var(--hair);
-  background: var(--edition-wash);
-}
-.layer[data-on="0"] .eyebrow { color: var(--ink-soft); }
-/* the badge is the unambiguous signal, and it is a word, not a tint */
-.layer-state {
-  display: none;
-  margin-left: .5em; padding: 1px 5px;
-  border-radius: var(--r-s); background: var(--wash-2); color: var(--edition-ink);
-  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans); letter-spacing: .1em;
-}
-.layer[data-on="0"] .layer-state { display: inline-block; }
-.layer--see   { border-left-color: var(--vendor); }
-.layer--know  { border-left-color: var(--carrier); }
-.layer--act   { border-left-color: var(--fire); }
-.layer--fund  { border-left-color: var(--capital); }
-.layer .eyebrow { margin-bottom: calc(var(--fs) * .25); }
-.layer-what { margin: 0 0 calc(var(--fs) * .45); font: var(--t-sub)/1.35 var(--sans); }
-.caps { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .3) calc(var(--fs) * .33); margin: 0; }
-.cap {
-  background: var(--edition-wash); border-radius: var(--r-s);
-  padding: 2px calc(var(--fs) * .45);
-  font: var(--t-sec)/1.5 var(--sans);
-  white-space: nowrap;
-}
-.cap-co { color: var(--ink-soft); }
-.cap-co::before { content: " · "; }
-
-/* ══ 3.4  .tl — the event timeline ══════════════════════════════════════ */
-
-.tl { margin: 0; display: grid; gap: 0; }
-.tl-row {
-  display: grid;
-  grid-template-columns: 5.4ch calc(var(--fs) * 1.5) 1fr;
-  align-items: start; gap: 0 calc(var(--fs) * .5);
-  padding: calc(var(--fs) * .36) calc(var(--fs) * .3);
-  /* NO TEXT FADING. Steps not yet reached used to sit at .22 opacity, which
-     made seven of the eight rows unreadable until the replay ran. Every row
-     is now fully legible at rest; progression is carried by the dot, a left
-     rule and a ground tint. */
-  border-left: 2px solid transparent;
-  border-radius: var(--r-s);
-  transition: background .3s linear, border-color .3s linear;
-}
-.tl-row[data-on="1"] {
-  background: var(--edition-wash);
-  border-left-color: var(--rule);
-}
-/* a step not yet reached: hollow dot */
-.tl-row[data-on="0"] .tl-dot {
-  background: var(--paper) !important;
-  box-shadow: 0 0 0 2px var(--rule), 0 0 0 5px var(--paper) !important;
-}
-.tl-time {
-  font: 600 var(--t-sec)/1.45 var(--sans);
-  font-variant-numeric: tabular-nums; color: var(--ink-soft);
-  text-align: right; white-space: nowrap;
-}
-/* the hairline that makes the column read as one sequence */
-.tl-mark { position: relative; height: 100%; display: flex; justify-content: center; }
-.tl-mark::before {
-  content: ""; position: absolute; top: 0; bottom: -100%;
-  width: 1px; background: var(--hair);
-}
-.tl-row:last-child .tl-mark::before { display: none; }
-.tl-dot {
-  position: relative; z-index: 1; margin-top: calc(var(--fs) * .35);
-  width: calc(var(--fs) * .55); height: calc(var(--fs) * .55);
-  border-radius: 50%; background: var(--rule); flex: 0 0 auto;
-  box-shadow: 0 0 0 3px var(--paper);
-}
-.tl-dot--utility { background: var(--utility); }
-.tl-dot--vendor  { background: var(--vendor); }
-.tl-dot--carrier { background: var(--carrier); }
-.tl-dot--fire    { background: var(--fire); }
-.tl-dot--alarm   { background: var(--alarm); }
-.tl-dot--public  { background: var(--public); }
-/* a corroborating signal is a different KIND of event from an action */
-.tl-row--corrob .tl-dot { background: var(--paper); box-shadow: 0 0 0 2px var(--vendor), 0 0 0 5px var(--paper); }
-.tl-who { margin: 0; font: 600 var(--t-sec)/1.45 var(--sans); }
-/* The authority class of each step, so "three sources agreed" is never
-   mistaken for "therefore everything executed". Detection and corroboration
-   are evidence; a bounded protocol action is pre-authorised and narrow; the
-   consequential decision is human. */
-.tl-kind {
-  display: inline-block; margin-left: .5em;
-  padding: 1px 5px; border-radius: var(--r-s);
-  background: var(--wash-2); color: var(--edition-ink);
-  font: 600 max(11px, calc(var(--t-lab) * .94))/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
-}
-.tl-row--corrob .tl-kind { background: var(--vendor-fill); color: var(--vendor); }
-.tl-what { margin: 0; font: var(--t-mid)/1.42 var(--sans); }
-.tl-body { min-width: 0; }
-
-/* the one human decision point — the most prominent row in the timeline */
-.tl-row--human {
-  background: var(--carrier-fill); border-radius: var(--r-m);
-  padding: calc(var(--fs) * .55) calc(var(--fs) * .6);
-  margin: calc(var(--fs) * .25) 0;
-  grid-template-columns: 5.4ch 1fr;
-}
-.tl-row--human .tl-mark { display: none; }
-.tl-row--human .tl-who { color: var(--carrier); }
-.tl-row--human .tl-who::before { content: "◆ "; }
-.tl-decide {
-  margin: calc(var(--fs) * .25) 0 0;
-  font: var(--t-sec)/1.4 var(--sans); color: var(--ink-soft);
-}
-.tl-decide .strong { color: var(--carrier); }
-
-.tl-controls {
-  display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .45);
-  margin-top: calc(var(--fs) * .6);
-}
-.tl-play {
-  display: inline-flex; align-items: center; gap: calc(var(--fs) * .5);
-  min-height: 38px; padding: 0 calc(var(--fs) * .9);
+.chipbtn, .tl-play {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; min-width: 44px; padding: 0 16px;
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
-  font: 600 var(--t-mid)/1 var(--sans); cursor: pointer;
+  font: 700 var(--x-label)/1 var(--sans); cursor: pointer;
 }
-.tl-play:hover { background: var(--edition-wash); }
-.tl-play[disabled] {
+.chipbtn:hover, .tl-play:hover { background: var(--edition-wash); }
+.chipbtn[aria-pressed="true"] {
+  background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper);
+}
+.chipbtn[disabled], .tl-play[disabled] {
   color: var(--ink-soft); background: var(--edition-wash);
   border-color: var(--hair); cursor: default;
 }
 
-/* ══ 3.5  .xchg — the value exchange ════════════════════════════════════ */
-
-.xchg { display: grid; gap: calc(var(--fs) * .4); margin: 0; }
-.xr {
-  display: grid; grid-template-columns: 11.5ch 1fr 1fr;
-  gap: 0 calc(var(--fs) * .7); align-items: start;
-  border-left: 4px solid var(--rule);
-  padding: calc(var(--fs) * .4) 0 calc(var(--fs) * .4) calc(var(--fs) * .6);
-  font-variant-numeric: tabular-nums;
+/* screen 3: replay controls and the disclosure, bottom left */
+.s3-ctl {
+  z-index: 3; align-self: end; justify-self: start;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
 }
-.xr--carrier   { border-left-color: var(--carrier); }
-.xr--utility   { border-left-color: var(--utility); }
-.xr--fire      { border-left-color: var(--fire); }
-.xr--public    { border-left-color: var(--public); }
-.xr--vendor    { border-left-color: var(--vendor); }
-.xr--capital   { border-left-color: var(--capital); }
-.xr--household { border-left-color: var(--edition-ink); }
-.xr-who { margin: 0; font: 600 var(--t-mid)/1.35 var(--sans); }
-.xr-cell { margin: 0; font: var(--t-sec)/1.38 var(--sans); color: var(--ink-soft); }
-.xr-cell .strong { color: var(--edition-ink); font-weight: 400; }
-/* The simplified exchange: a participant and the one loss it escapes. The
-   three-column form (avoids / contributes) was the densest object in the
-   deck; the full ledger is carried in concept.md instead. */
-.xr-plain { grid-column: 2 / -1; color: var(--edition-ink); }
-.xchg-head {
-  display: grid; grid-template-columns: 11.5ch 1fr 1fr;
-  gap: 0 calc(var(--fs) * .7); padding-left: calc(var(--fs) * .6 + 4px);
-  margin: 0 0 calc(var(--fs) * .2);
-}
-.xchg-head span {
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
-}
-/* money / capacity / permission / data / assets — so a reader can see at a
-   glance that most participants are not contributing money */
-.kind {
-  display: inline-block; margin-right: 4px;
-  font: 600 var(--t-lab)/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--edition-ink);
-}
-
-/* ── .tier — who might fund it ────────────────────────────────────────
-   Part of the exchange (§3.5). This replaced a stacked percentage bar that
-   put six exact shares on screen; the numbers implied knowledge nobody has.
-   An ORDERED set of tiers makes the same strategic point — the parties
-   carrying the largest direct liability have the strongest reason to fund,
-   and the insurer is not among them — without inventing a split. */
-
-.tier { display: grid; gap: calc(var(--fs) * .55); margin: 0 0 calc(var(--fs) * .6); }
-.tier-g {
-  border-left: 4px solid var(--rule);
-  padding-left: calc(var(--fs) * .7);
-}
-.tier-g--lead { border-left-color: var(--utility); }
-.tier-g--co   { border-left-color: var(--carrier); }
-.tier-g--kind { border-left-color: var(--fire); }
-.tier-h {
-  margin: 0 0 calc(var(--fs) * .15);
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-}
-.tier-g--lead .tier-h { color: var(--utility); }
-.tier-g--co   .tier-h { color: var(--carrier); }
-.tier-g--kind .tier-h { color: var(--fire); }
-.tier-l { margin: 0; font: var(--t-sec)/1.4 var(--sans); }
-
-/* ── .agr — the hypothetical operating agreement ──────────────────────
-   Screen 4's commercial proposition, as five numbered clauses. It is the
-   one place the prototype says concretely what the parties sign. */
-
-.agr { margin: 0 0 calc(var(--fs) * .5); padding: 0; list-style: none;
-       display: grid; gap: calc(var(--fs) * .45); counter-reset: agr; }
-.agr li {
-  display: grid; grid-template-columns: calc(var(--fs) * 1.5) 1fr;
-  gap: 0 calc(var(--fs) * .5);
-  font: var(--t-sec)/1.42 var(--sans); color: var(--ink-soft);
-}
-.agr-n {
-  display: grid; place-items: center;
-  width: calc(var(--fs) * 1.25); height: calc(var(--fs) * 1.25);
-  border-radius: 50%; background: var(--edition-ink); color: var(--paper);
-  font: 700 max(11px, calc(var(--t-lab) * .96))/1 var(--sans);
-}
-.agr li:last-child .agr-n { background: var(--carrier); }
-.agr li:last-child { color: var(--edition-ink); }
-.agr .strong { color: var(--edition-ink); }
-
-/* ══ 3.7  .counter — the documented failure ═════════════════════════════ */
-
-.counter {
-  background: var(--alarm-fill);
-  border-left: 4px solid var(--alarm);
-  border-radius: var(--r-s);
-  padding: calc(var(--fs) * .6) calc(var(--fs) * .8);
-}
-.counter .eyebrow { color: var(--alarm); }
-
-/* ══ 3.8  .fork — without / with ════════════════════════════════════════ */
-
-.fork { display: grid; grid-template-columns: 1fr 1px 1fr;
-        gap: 0 calc(var(--fs) * .95); margin: 0; }
-.fork-rule { background: var(--hair); }
-.fork-col { display: grid; gap: calc(var(--fs) * .35); align-content: start; }
-.fork-head {
-  margin: 0 0 calc(var(--fs) * .3);
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-}
-.fork-col--out .fork-head { color: var(--alarm); }
-.fork-col--in  .fork-head { color: var(--public); }
-.fork-step {
-  margin: 0; display: grid; grid-template-columns: calc(var(--fs) * .95) 1fr;
-  gap: 0 calc(var(--fs) * .3);
-  font: var(--t-mid)/1.38 var(--sans);
-}
-.fork-step::before { content: "↓"; color: var(--rule); font-size: .9em; line-height: 1.5; }
-.fork-col--out .fork-step:last-child { color: var(--alarm); font-weight: 700; }
-.fork-col--in  .fork-step:last-child { color: var(--public); font-weight: 700; }
-
-/* ══ 3.9  chip buttons (layer reveal, screen 2) ═════════════════════════ */
-
-.chips { display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .4); margin: 0; }
-.chipbtn {
-  min-height: 34px; padding: 0 calc(var(--fs) * .8);
-  background: var(--paper); color: var(--edition-ink);
-  border: 1px solid var(--rule); border-radius: var(--r-m);
-  font: 600 var(--t-sec)/1 var(--sans); cursor: pointer;
-}
-.chipbtn:hover { background: var(--edition-wash); }
-.chipbtn[aria-pressed="true"] {
-  background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper);
-}
+.tl-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
 
 /* ══ CHROME ═════════════════════════════════════════════════════════════ */
 
@@ -670,15 +266,14 @@ body {
 }
 .chrome-r { display: flex; align-items: center; gap: 8px; }
 .iconbtn {
-  width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center;
+  width: 46px; height: 46px; min-width: 44px; min-height: 44px; flex: 0 0 auto;
+  display: grid; place-items: center;
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
   font: 16px/1 var(--sans); cursor: pointer;
 }
 .iconbtn:hover { background: var(--edition-wash); }
-/* A disabled control still has to be legible: ink-soft on wash is 4.6 : 1,
-   and the flat wash fill is what says "off", not a pale grey glyph. */
 .iconbtn[disabled] {
   color: var(--ink-soft); background: var(--edition-wash);
   border-color: var(--hair); cursor: default;
@@ -690,28 +285,27 @@ body {
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
-  font: 14px/1 var(--sans); cursor: pointer;
+  font: 15px/1 var(--sans); cursor: pointer;
 }
 
-/* The primary action is the ink, not an accent — design.md §9. */
+/* the primary action is the ink, not an accent */
 .cta {
-  display: inline-flex; align-items: center; gap: 9px;
-  min-height: 46px; padding: 0 20px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 46px; min-width: 46px; padding: 0 20px;
   background: var(--edition-ink); color: var(--paper);
   border: 1px solid var(--edition-ink); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
-  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
+  font: 700 16px/1 var(--sans); cursor: pointer; white-space: nowrap;
 }
 .cta:hover { background: #2A333B; border-color: #2A333B; }
 
-/* The ground window is a desktop no-op. On a phone it is the hole the county
-   shows through, and it takes whatever height the plates have not claimed. */
+/* the ground window is a desktop no-op. On a narrow stage it is the hole
+   the county shows through, and it takes whatever height the blocks have
+   not claimed. */
 .gw { display: none; }
 
 /* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
 
-/* Below about 820px of stage the gutter and the chrome are the cheapest
-   height to give back, before --fit has to touch the type at all. */
 @media (min-width: 900px) and (max-height: 820px) {
   :root { --gutter: 13px; --chrome-h: 66px; }
   .chrome { padding: 0 var(--gutter) 10px; }
@@ -722,80 +316,40 @@ body {
 @media (max-width: 899px) {
   :root {
     --gutter: 13px; --chrome-h: 68px; --grid-gap: 10px;
-    /* a phone is not a short desktop: start from 14px, not 13px */
     --fs-base: clamp(14px, 3.6vw, 15.5px);
-  }
-
-  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
-     app.js does not run the --fit search on a narrow window at all (see
-     fitScreen), so --fit is 1 here and these are the real rendered sizes.
-     The floors are belt-and-braces for very short viewports. Nothing on a
-     phone renders below 11px, and nothing carrying a sentence below 14px. */
-  .screen {
-    --t-body: max(14px,   var(--fs));
-    --t-sub:  max(13.5px, calc(var(--fs) * .93));
-    --t-mid:  max(13px,   calc(var(--fs) * .867));
-    --t-sec:  max(12.5px, calc(var(--fs) * .8));
-    --t-lab:  max(11px,   calc(var(--fs) * .667));
+    --x-display: clamp(27px, 6.6vw, 40px);
+    --x-lede: 18px;
+    --x-ask: clamp(20px, 5vw, 26px);
   }
 
   .world { inset: -5% -9%; }
 
-  /* The deck stops at the controls rather than scrolling underneath them:
-     a floating bar over running text is unreadable, and it puts body copy on
-     an unknown background. The ground still runs behind the bar to the edge. */
+  /* the deck stops at the controls rather than scrolling underneath them */
   .deck { inset: 0 0 var(--chrome-h) 0; }
 
-  /* One screenful, top to bottom. Plates take the height they need, the
-     county window takes what is left, and app.js lowers --fit if the sum
-     would still be more than the phone has. */
+  /* one screenful, top to bottom: blocks take the height they need, the
+     county window takes what is left */
   .screen {
-    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
+    display: flex; flex-direction: column; gap: 10px;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     padding: var(--gutter) var(--gutter) 8px;
   }
   .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
-
   .gw { display: block; flex: 1 1 0; min-height: 0; }
-  /* on the two screens where the drawing IS the argument, the window keeps a
-     floor and --fit pays for it out of the type */
-  .gw--map { flex: 1 0 auto; min-height: min(20vh, 150px); }
+  .gw--map { flex: 1 0 auto; min-height: min(24vh, 180px); }
 
-  /* The exchange table becomes stacked cards. It never scrolls sideways. */
-  .xchg-head { display: none; }
-  .xr {
-    grid-template-columns: 1fr;
-    gap: calc(var(--fs) * .2);
-    padding: calc(var(--fs) * .45) 0 calc(var(--fs) * .45) calc(var(--fs) * .6);
-  }
-  .xr-cell::before {
-    display: block;
-    font: 600 var(--t-lab)/1.6 var(--sans);
-    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
-  }
-  .xr-avoids::before      { content: "Avoids"; }
-  .xr-contributes::before { content: "Contributes"; }
-
-  .fork { grid-template-columns: 1fr; gap: calc(var(--fs) * .8); }
-  .fork-rule { display: none; }
-
-  .tier { gap: calc(var(--fs) * .45); }
-
-  .rows { grid-template-columns: 1fr; gap: 1px; }
-  .rows dt { margin-top: calc(var(--fs) * .4); }
-
-  .tl-row { grid-template-columns: 5ch calc(var(--fs) * 1.3) 1fr; }
-  .tl-row--human { grid-template-columns: 5ch 1fr; }
-
+  /* the desktop `align-self: end` would push these to the right of a
+     column; on a stack everything hangs from the left edge */
+  .s3-ctl, .wf-chips, .wf-micro { align-self: flex-start; }
+  .xask { align-self: stretch; }
+  .xq { max-width: 100%; }
 
   .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
   .chrome-r { width: 100%; }
   .picker { flex: 1 1 auto; min-width: 0; }
   .picker select { width: 100%; max-width: none; }
-  .cta { padding: 0 14px; font-size: 14px; }
-  /* The label is hidden from SIGHT, not from the accessibility tree.
-     display:none left the button's accessible name as the arrow glyph
-     alone, so it announced as "→" on a phone. */
+  .cta { padding: 0 14px; font-size: 15px; }
+  /* the label is hidden from SIGHT, not from the accessibility tree */
   .cta span:first-child {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
@@ -803,51 +357,15 @@ body {
   }
 }
 
-/* On a phone shorter than about 740px there is no height to give the window
-   a floor out of; the plates come first and the county takes what is left. */
+/* a phone shorter than about 740px: the blocks come first and the county
+   takes what is left */
 @media (max-width: 899px) and (max-height: 739px) {
   .gw--map { flex: 1 1 0; min-height: 0; }
 }
 
-@media (max-width: 400px) {
-  .layers { gap: calc(var(--fs) * .5); }
-  .cap { white-space: normal; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
-}
-
-/* ══ TOUCH TARGETS (integration) ═══════════════════════════════════════
-   iPad is the primary delivery device and this is operated while someone
-   holds it. Every control takes a 44px minimum box. The chip and replay
-   buttons were 34px and 38px, which is a miss on a tablet. Padding, not
-   font-size, does the growing, so type is unaffected. */
-.chipbtn, .tl-play, .iconbtn, .cta, .picker select, button, select {
-  min-height: 44px;
-}
-.chipbtn, .tl-play { padding-top: 0; padding-bottom: 0; }
-/* a control that is only a glyph still needs width */
-.iconbtn { min-width: 44px; }
-
-/* ══ TOUCH TARGETS 2 (integration) ═════════════════════════════════════
-   Two misses the first pass left. A range input reports its track height,
-   not a thumb box, so it needs an explicit 44px height to be draggable with
-   a thumb on glass. And a chip with a two-letter label was 41px wide — the
-   44px rule is both dimensions, not just the vertical one. */
-input[type="range"] { height: 44px; }
-.chipbtn { min-width: 44px; }
-
-/* ══ TABLET CHROME (integration) ══════════════════════════════════════
-   iPad is the primary device, and iPad portrait is 820px — below the 899px
-   breakpoint, so it was inheriting the phone's chrome and showing the Next
-   button as a bare arrow. Stacking at that width is right; a tablet with
-   820px of width losing the one label that says where Next goes is not.
-   Restore the label above phone width. */
+/* iPad portrait (600–899px) keeps the Next label: a tablet with 820px of
+   width losing the one word that says where Next goes is not right */
 @media (min-width: 600px) and (max-width: 899px) {
-  /* Both selectors: one lane scoped its phone rule as `.chrome .cta`, which
-     outranks a bare `.cta`. Matching that specificity and coming later in
-     source order is what makes the restore actually win there. */
   .cta span:first-child,
   .chrome .cta span:first-child {
     position: static; width: auto; height: auto; padding: 0; margin: 0;
@@ -856,401 +374,24 @@ input[type="range"] { height: 44px; }
   .cta { padding: 0 18px; }
 }
 
-/* ══ IPAD GESTURE CLEARANCE (integration) ═════════════════════════════════
-   iPad is the primary device and the chrome is fixed to the bottom edge, so
-   prev / picker / next ended ~11px from it — inside the home-indicator strip,
-   under the one button a facilitator taps on every screen. env() alone is not
-   enough: a desktop browser and some iPad configurations report a 0 inset, so
-   the clearance takes whichever is larger. Everything that reserves room for
-   the chrome has to grow by the same amount or the content slides under it. */
+/* ══ MOTION ═════════════════════════════════════════════════════════════
+   The camera is a JS tween that app.js already skips under this query;
+   nothing else on the page moves. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ══ iPAD GESTURE CLEARANCE ═════════════════════════════════════════════
+   The chrome is fixed to the bottom edge; keep it out of the home-indicator
+   strip. Everything that reserves room for the chrome grows by the same
+   amount or the content slides under it. */
 :root { --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px)); }
 .chrome {
   height: calc(var(--chrome-h) + var(--gesture-safe));
   padding-bottom: calc(var(--gutter) + var(--gesture-safe));
 }
 .screen { padding-bottom: calc(var(--chrome-h) + var(--gesture-safe)); }
-.deck   { bottom: 0; }
 @media (max-width: 899px) {
   .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   EXECUTIVE LAYER — iteration-003
-   ══════════════════════════════════════════════════════════════════════════
-
-   These prototypes are narrated live to senior leadership on iPads. The
-   screen carries the idea, the visual proof and the one commitment; the
-   facilitator carries rationale, caveats and economics. Everything here
-   exists to move weight OFF the glass and ONTO the drawing.
-
-   Three decisions drive the whole layer:
-
-   1 · ONE HEADLINE, AT REAL SCALE. The old deck capped at 38px and then
-       surrounded it with three competing cards. Display type now runs to
-       ~56px on iPad landscape and nothing else is allowed near that weight.
-
-   2 · THE CARD IS NO LONGER THE DEFAULT. `.plate` reads as a product panel.
-       A headline now sits on a soft scrim that fades into the ground — a
-       lightened region of the page, not an object on top of it. Cards
-       survive only where the concept genuinely IS an object: an offer, a
-       commitment, a comparison.
-
-   3 · ANNOTATION BEATS EXPLANATION. Facts that used to sit in prose blocks
-       become labels attached to the drawing, or one large state readout.
-       If a sentence can be said aloud instead, it is not on the screen.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-.screen {
-  /* One scale, shared by all six, so the set reads as one presentation. */
-  --x-display: clamp(30px, 2.6vw + 3.0vh, 58px);
-  --x-display-s: clamp(26px, 1.9vw + 2.3vh, 46px);
-  --x-lede:    clamp(16px, 0.5vw + 0.9vh, 21px);
-  --x-state:   clamp(26px, 1.5vw + 2.2vh, 46px);
-  --x-label:   clamp(13px, 0.28vw + 0.5vh, 15.5px);
-  --x-micro:   max(12px, calc(var(--fs-base) * .82));
-  --x-gap:     clamp(14px, 1.6vh, 26px);
-}
-
-/* ── LEVEL 1 · the headline ──────────────────────────────────────────────
-   No border, no shadow, no radius. A scrim that dissolves into the ground,
-   so the page reads as one surface with a lightened region rather than a
-   card sitting on a picture. */
-.xhead {
-  display: flex; flex-direction: column; justify-content: center;
-  gap: calc(var(--x-gap) * .5);
-  padding: 0; background: none;   /* the page IS the surface — no card, no scrim */
-  pointer-events: auto;
-}
-/* Only where the ground is genuinely busy (a map, a dark console) does the
-   headline need help. A feathered radial, never a rectangle with an edge. */
-.xhead--scrim {
-  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 2.2)
-           calc(var(--x-gap) * 1.1) calc(var(--x-gap) * .9);
-  margin: calc(var(--x-gap) * -.9) 0 0 calc(var(--x-gap) * -.9);
-  background: radial-gradient(130% 125% at 18% 45%,
-    var(--paper) 0%, var(--paper) 46%,
-    color-mix(in srgb, var(--paper) 70%, transparent) 72%,
-    transparent 100%);
-}
-.xhead h1, .xhead h2, .xhead .xd {
-  margin: 0;
-  font: 400 var(--x-display)/1.03 var(--serif);
-  letter-spacing: -.021em;
-  color: var(--edition-ink);
-  text-wrap: balance;
-}
-.xhead--s h1, .xhead--s h2, .xhead--s .xd { font-size: var(--x-display-s); }
-.xhead .xd span { display: block; }
-.xlede {
-  margin: 0; max-width: 34ch;
-  font: var(--x-lede)/1.42 var(--sans);
-  color: var(--ink-soft);
-}
-.xeyebrow {
-  margin: 0 0 calc(var(--x-gap) * .35);
-  font: 600 var(--x-label)/1.3 var(--sans);
-  letter-spacing: .17em; text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-/* ── LEVEL 2 · the consequence ───────────────────────────────────────────
-   The one state, number or verdict the screen turns on. Sized to be read
-   across a room, and never more than one per screen. */
-.xstate {
-  display: inline-flex; align-items: baseline; gap: .42em;
-  margin: 0; font: 400 var(--x-state)/1 var(--serif);
-  letter-spacing: -.02em; color: var(--edition-ink);
-}
-.xstate-unit { font: 600 var(--x-label)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.xverdict {
-  display: inline-flex; align-items: center; gap: .55em;
-  margin: 0; padding: .36em .78em;
-  border-radius: var(--r-m);
-  font: 600 var(--x-label)/1.5 var(--sans);
-  letter-spacing: .13em; text-transform: uppercase;
-}
-.xverdict-mark { width: .72em; height: .72em; border-radius: 50%; flex: 0 0 auto; }
-
-/* ── LEVEL 3 · annotation on the drawing ─────────────────────────────────
-   Replaces the explanatory card. A label belongs to the thing it names, so
-   it sits on the ground with a hairline tether, not in a panel elsewhere. */
-.xanno {
-  position: absolute; z-index: 3;
-  padding: calc(var(--x-gap) * .3) calc(var(--x-gap) * .5);
-  background: var(--paper);
-  border-radius: var(--r-s);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 16%, transparent);
-  font: 600 var(--x-label)/1.35 var(--sans);
-  letter-spacing: .04em; color: var(--edition-ink);
-  max-width: 21ch;
-}
-.xanno em { display: block; font: 400 calc(var(--x-label) * .95)/1.4 var(--sans);
-  font-style: normal; color: var(--ink-soft); letter-spacing: 0; }
-.xanno--quiet { box-shadow: none; background: color-mix(in srgb, var(--paper) 72%, transparent); }
-
-/* ── the single disclaimer ───────────────────────────────────────────────
-   One micro line, once per prototype. It is a legal necessity, not content. */
-.xmicro {
-  margin: 0; font: var(--x-micro)/1.45 var(--sans);
-  color: var(--ink-soft); max-width: 46ch;
-}
-
-/* ── decisions ───────────────────────────────────────────────────────────
-   A choice the room makes is Level 2, so it is sized like one. */
-.xchoice { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .45); margin: 0; }
-.xchoice button {
-  min-height: 52px; padding: 0 calc(var(--x-gap) * .95);
-  border: 1.5px solid var(--edition-ink); border-radius: var(--r-m);
-  background: transparent; color: var(--edition-ink);
-  font: 600 var(--x-lede)/1 var(--sans); cursor: pointer;
-  transition: background .15s linear, color .15s linear;
-}
-.xchoice button[aria-pressed="true"] { background: var(--edition-ink); color: var(--paper); }
-
-/* ── give the drawing the room ───────────────────────────────────────────
-   The ground was being covered by plates. Screens that opt in let the
-   drawing run to the edges and keep type to one corner. */
-.screen--hero { align-items: stretch; }
-.screen--hero .gw { display: block; }
-
-/* Narrow keeps the same hierarchy, at a size a phone can hold. */
-@media (max-width: 899px) {
-  .screen {
-    --x-display: clamp(27px, 7.2vw, 38px);
-    --x-display-s: clamp(24px, 6.2vw, 32px);
-    --x-state: clamp(24px, 6.4vw, 34px);
-    --x-lede: 15.5px;
-    --x-label: 13px;
-  }
-  .xhead { padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .8); background: var(--paper); }
-  .xanno { position: static; max-width: none; }
-}
-
-/* ══ ITERATION-003 · contrast and collision corrections ═════════════════
-   Taking the cards away put this type onto the ground, where --ink-soft
-   measured 4.38:1 — below AA. Level-3 type now uses the edition ink and
-   earns its quietness from size and letterspacing instead of from being
-   paler. */
-.xeyebrow, .xmicro { color: var(--edition-ink); }
-.xlede { color: color-mix(in srgb, var(--edition-ink) 88%, var(--paper)); }
-/* The scrim pulled itself up by a negative margin and sat on the line
-   above it. It lifts the type in place instead. */
-.xhead--scrim { margin: 0; }
-
-/* Scrim padding was extending the headline box into the row below it. */
-.xhead--scrim { padding-bottom: 0; }
-/* Legacy Level-3 classes now sit on the ground too, so they take the ink. */
-.xhead .note, .xhead .display--ask, .xask .display--ask,
-.xblock .lead-role, .xblock .note { color: var(--edition-ink); }
-
-/* Last two legacy soft-ink classes that ended up on the ground. */
-.illus, .wall-side--hers .wall-i { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-
-/* The scrim was painted on the element itself, so its padding grew the box
-   and the detector saw it overlapping whatever sat in the next row. It is a
-   lighting effect, not a layout object, so it moves to a pseudo-element that
-   bleeds past the box without occupying space. */
-.xhead--scrim { position: relative; padding: 0; background: none; }
-.xhead--scrim > * { position: relative; z-index: 1; }
-.xhead--scrim::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -2.2vh -14vw -2.2vh -3vw;
-  background: radial-gradient(118% 120% at 20% 50%,
-    var(--paper) 0%, var(--paper) 48%,
-    color-mix(in srgb, var(--paper) 68%, transparent) 74%,
-    transparent 100%);
-}
-.wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-
-/* ══ REVISION · THE REGION IS THE INTERFACE ════════════════════════════
-   Everything that used to explain the map now happens on it. What remains
-   on the glass is a headline, small anchored labels and the one control. */
-.wf-micro { z-index: 3; align-self: end; pointer-events: auto; }
-.wf-chips { z-index: 3; align-self: end; pointer-events: auto;
-  padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9);
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
-  border-radius: var(--r-m); box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 9%, transparent); }
-.plate--thin { padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9);
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 9%, transparent); }
-.plate--thin .tl { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .3) calc(var(--x-gap) * 1); }
-.plate--thin .tl-row { display: flex; align-items: baseline; gap: .45em; }
-.plate--thin .tl-mark { display: none; }
-.plate--thin .tl-time, .plate--thin .tl-who { font-size: var(--x-label); }
-.xask .display--ask { font-size: clamp(19px, .85vw + 1.35vh, 28px); }
-/* every Level-3 class that now sits on the terrain takes the mixed ink;
-   --ink-soft measures 4.38:1 against it */
-.gauge-stop, .note, .eyebrow, .illus, .aside, .tl-time, .tl-who, .cap, .layer-what, .rows dd {
-  color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper));
-}
-/* The strip no longer carries the explanation — the map does. It keeps the
-   replay control and a compact trace of the steps, and nothing else. */
-.tl-min { padding: calc(var(--x-gap) * .45) calc(var(--x-gap) * .8); }
-.tl-min .tl-row { opacity: .55; }
-.tl-min .tl-row[data-on="1"] { opacity: 1; }
-.tl-min .tl-kind, .tl-min .tl-what { display: none; }
-.tl-min .tl-time { font-size: var(--x-label); }
-.tl-min .tl-who { font-size: var(--x-label); }
-/* screen 5: the capacity words were too quiet at iPad distance */
-.gauge-stop { font-size: max(12.5px, var(--x-label)); letter-spacing: .1em; }
-.gauge-stop[data-on="1"] { color: var(--edition-ink); font-weight: 700; }
-/* screen 2: the layer strip steps back without changing how it behaves */
-.wf-chips { background: color-mix(in srgb, var(--paper) 78%, transparent); box-shadow: none; }
-.wf-chips .chipbtn { font-size: var(--x-label); }
-.tl-min { padding: calc(var(--x-gap) * .4) calc(var(--x-gap) * .7); }
-.tl-min .tl { gap: calc(var(--x-gap) * .22) calc(var(--x-gap) * .7); }
-.tl-min .tl-row { background: none; border: 0; padding: 0; }
-.tl-min .eyebrow { font-size: max(11px, calc(var(--x-label) * .9)); }
-.plate--carrier.plate--thin .rows dt, .plate--carrier.plate--thin .rows dd { font-size: var(--x-label); }
-.rows dt, .rows--legend dt { color: color-mix(in srgb, var(--edition-ink) 84%, var(--paper)); }
-
-/* ══ SCREEN 3 · the scrim must not wash out beat 1 ══════════════════════
-   The shared scrim bleeds 14vw past its box — 165px at iPad width — which
-   put the ignition node and its DETECT label under a half-opaque paper
-   wash while the identically-coloured CORROBORATE beside it read at full
-   strength. The headline here is three short lines and does not need that
-   much feathering to the right, so screen 3 pulls the bleed in. Left,
-   top and bottom are untouched, which is where the headline actually
-   sits. */
-.screen[data-screen="3"] .xhead--scrim::before { inset: -2.2vh -4vw -2.2vh -3vw; }
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SCREEN 3 · THE MOMENT — simplified composition
-   Scoped to [data-screen="3"] and the .s3-* classes; nothing here touches
-   screens 1, 2, 4 or 5. The headline takes the design-study language from
-   prototype/home-again: Bricolage Grotesque on a charcoal block that is the
-   headline's OWN box (so it contains its text at every viewport), with the
-   grain and torn edge on a pseudo-element behind the glyphs. Labels on the
-   terrain are SVG text with a paper halo, drawn by app.js (S3_EVENTS).
-   ══════════════════════════════════════════════════════════════════════════ */
-@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
-  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
-@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
-  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
-
-.screen[data-screen="3"] {
-  --s3-block: #6B675E;
-  --s3-cream: #F3EBD7;
-  --s3-sans: "Bricolage", "Helvetica Neue", Arial, sans-serif;
-  --s3-label: max(12.5px, var(--x-label));
-}
-
-/* no scrim: the block is the backing */
-.screen[data-screen="3"] .xhead--scrim::before { display: none; }
-.screen[data-screen="3"] .xhead {
-  justify-content: flex-start; align-items: flex-start;
-  gap: calc(var(--x-gap) * .35);
-}
-.screen[data-screen="3"] .xeyebrow { font-family: var(--s3-sans); }
-.screen[data-screen="3"] .xhead .xd {
-  position: relative; z-index: 1;
-  display: inline-block; max-width: 100%;
-  margin: 0; padding: .3em .5em .36em;
-  font: 700 clamp(28px, 2.1vw + 2vh, 44px)/1.1 var(--s3-sans);
-  letter-spacing: -.022em; color: var(--s3-cream);
-  overflow-wrap: break-word;
-}
-.screen[data-screen="3"] .xhead .xd span { display: block; }
-.screen[data-screen="3"] .xhead .xd::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
-  background: var(--s3-block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  filter: url(#s3-rough);
-}
-
-/* ── the one plate: legend, the eight-event trace in three stages, controls ── */
-.s3-plate { align-self: start; font-family: var(--s3-sans); }
-.s3-legend {
-  grid-template-columns: 6.6ch 1fr;
-  gap: 1px calc(var(--fs) * .6);
-  margin: 0 0 calc(var(--fs) * .55);
-  padding-bottom: calc(var(--fs) * .55);
-  border-bottom: 1px solid var(--hair);
-}
-.s3-legend dt { font: 700 max(11px, calc(var(--s3-label) * .86))/1.55 var(--s3-sans); letter-spacing: .1em; }
-.s3-legend dd { font: 400 var(--s3-label)/1.35 var(--s3-sans); color: var(--edition-ink); }
-.s3-eyebrow { margin: 0 0 calc(var(--fs) * .3); font-family: var(--s3-sans); }
-.s3-eyebrow .illus { font-family: var(--s3-sans); }
-
-.plate--thin .s3-tl { display: grid; gap: 0; }
-.s3-stage {
-  display: flex; align-items: baseline; gap: .55em;
-  margin: calc(var(--fs) * .4) 0 1px;
-  font: 700 max(11px, calc(var(--s3-label) * .86))/1.5 var(--s3-sans);
-  letter-spacing: .09em; text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.s3-stage:first-child { margin-top: 0; }
-.s3-stage-n {
-  display: inline-grid; place-items: center; flex: 0 0 auto;
-  min-width: 1.55em; height: 1.55em; border-radius: 2px;
-  border: 1.5px solid currentColor; font-size: .92em; letter-spacing: 0; line-height: 1;
-}
-.s3-stage[data-cur="1"] { color: var(--edition-ink); }
-.s3-stage[data-cur="1"] .s3-stage-n { background: var(--edition-ink); border-color: var(--edition-ink); color: var(--paper); }
-
-.plate--thin .s3-row {
-  display: grid; grid-template-columns: 1.2em 4.4ch 1fr;
-  align-items: baseline; gap: 0 .5em;
-  padding: 1px 0 1px .2em; margin: 0; border: 0; background: none; opacity: 1;
-  color: var(--ink-soft);
-}
-.s3-row[data-on="1"] { color: var(--edition-ink); }
-.s3-row .tl-time, .s3-row .tl-who {
-  margin: 0; font: 400 var(--s3-label)/1.4 var(--s3-sans); color: inherit;
-  font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis;
-}
-.s3-row .tl-time { font-weight: 700; }
-.s3-row[data-cur="1"] .tl-who { font-weight: 700; }
-/* the mark says what KIND of event this is: ○ observed · ● bounded action ·
-   ◇ model forecast · ■ human decision. The map uses the same four marks. */
-.s3-mk {
-  display: inline-block; width: 9px; height: 9px; box-sizing: border-box;
-  border: 1.6px solid currentColor; border-radius: 50%; background: var(--paper);
-  transform: translateY(-1px);
-}
-.s3-mk[data-kind="act"] { background: currentColor; }
-.s3-mk[data-kind="mod"] { border-radius: 0; border-style: dashed; border-color: var(--fire); transform: rotate(45deg) scale(.9); }
-.s3-mk[data-kind="dec"] { border-radius: 1px; border-width: 2.4px; width: 10px; height: 10px; }
-.s3-row[data-on="0"] .s3-mk { border-color: var(--rule); }
-.s3-row[data-on="0"] .s3-mk[data-kind="act"] { background: var(--rule); }
-
-.s3-plate .tl-controls { margin-top: calc(var(--fs) * .55); }
-.s3-plate .tl-play { font-family: var(--s3-sans); }
-.s3-micro { margin-top: calc(var(--fs) * .5); font-family: var(--s3-sans); font-size: max(11.5px, calc(var(--s3-label) * .9)); }
-
-/* the stage note: shown only for the stage in view, and only when the county
-   is too small to carry its own words (data-maptext="0", set by app.js) */
-.s3-stage-note {
-  display: none; margin: 2px 0 calc(var(--fs) * .3) .2em;
-  font: 400 var(--s3-label)/1.4 var(--s3-sans); color: var(--edition-ink);
-}
-.s3-tl[data-maptext="0"] .s3-stage-note[data-cur="1"] { display: block; }
-
-/* labels drawn on the terrain by app.js */
-.s3-lab { font-family: var(--s3-sans); }
-
-/* iPad portrait (600–899px): the plate goes two-column so the county keeps
-   enough height to carry its labels. Legend, controls and the disclaimer on
-   the left; the eight-event trace on the right. */
-@media (min-width: 600px) and (max-width: 899px) {
-  .s3-plate { display: grid; grid-template-columns: 1fr 1.15fr; column-gap: calc(var(--x-gap) * 1.2); align-items: start; }
-  .s3-legend { grid-area: 1 / 1 / 2 / 2; margin-bottom: calc(var(--fs) * .6); }
-  .s3-plate .tl-controls { grid-area: 2 / 1 / 3 / 2; margin-top: 0; }
-  .s3-micro { grid-area: 3 / 1 / 4 / 2; }
-  .s3-eyebrow { grid-area: 1 / 2 / 2 / 3; }
-  .s3-tl { grid-area: 2 / 2 / 4 / 3; }
-}
-
-@media (max-width: 899px) {
-  /* the deck is already inset by the chrome on a narrow stage, so the
-     screen's own chrome padding reserved the same height twice — 80px the
-     county's window can use */
-  .screen[data-screen="3"] { padding-bottom: 8px; }
-  /* the block is its own backing; the narrow .xhead paper panel would frame it twice */
-  .screen[data-screen="3"] .xhead { background: none; padding: 0; }
-  .screen[data-screen="3"] .xhead .xd { font-size: clamp(27px, 7vw, 40px); }
-  .screen[data-screen="3"] .s3-legend { grid-template-columns: 6.6ch 1fr; gap: 1px calc(var(--fs) * .6); }
-  .screen[data-screen="3"] .s3-legend dt { margin-top: 0; }
+  .screen { padding-bottom: 8px; }
 }

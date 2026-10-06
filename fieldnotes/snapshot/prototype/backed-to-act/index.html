@@ -12,237 +12,253 @@
 </head>
 <body>
 
-<!-- A button, not an anchor. As an anchor to #deck it rewrites the hash, the
-     router reads that as "no screen", and the reader is thrown back to screen
-     1 — the opposite of skipping to content. -->
-<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+<!-- A button, not an anchor: an anchor to #deck rewrites the hash and the
+     router reads that as "no screen". Visually hidden until focused, so it
+     is never a visible word on the glass. -->
+<button class="skip sr-only" type="button" id="skip">Skip to this screen's content</button>
 
 <!-- ═══════════════ THE GROUND ═══════════════
-     Not a map. The full-bleed ground is the console itself: a dark field, a
-     faint dot grid, one activity trace, and one horizontal authority line
-     that physically rises when the boundary is moved on screen 2. Drawn in
-     SVG, deliberately quiet — nothing on it is readable and nothing needs to
-     be. Every word on this page sits on an opaque plate. -->
+     A dark field: a faint dot grid, a few long verticals and one trace of
+     the agent's work. Nothing on it is readable and nothing needs to be. -->
 <div class="world" id="world">
   <svg id="field" preserveAspectRatio="xMidYMid slice" role="img"
-       aria-label="A quiet dark console field: a faint dot grid, a trace of the agent's work running left to right, and a horizontal authority line that sits low while the agent may only draft and rises when it is permitted to act."></svg>
+       aria-label="A quiet dark console field: a faint dot grid and a trace of the agent's work running left to right. The left of the field is lit cool, the right warm."></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 
+<!-- artwork defs shared by every cut-paper object. Kept outside the screens
+     so a hidden screen can never take the filter with it. -->
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="rough" x="-4%" y="-6%" width="108%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#F3977A" stroke-width="1.4"/>
+    </pattern>
+  </defs>
+</svg>
 
-<!-- ONE BEAT PER SCREEN.
-     1 the work and the person it waits on · 2 the boundary moving · 3 the
-     agent acting inside it, and the one case that comes back. Everything
-     else belongs in the walkthrough, not on the glass. -->
+<!-- ONE DESK, THREE BEATS.
+     The same cut-paper objects sit on the same desk on every screen: a
+     "Prepared" cluster, a purchase order, an exception sheet, and ONE LINE
+     between what the agent may do and what needs a person. Which side of
+     the line the order sits on is read from LAYOUT in app.js — one table —
+     and the line, never the paper, is what moves.
+       1 · the work is done; the order waits on a person
+       2 · the customer authorises; cover moves the line
+       3 · a day inside the boundary; what next? -->
 <main class="deck" id="deck">
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     TWO ZONES, FIVE ACTIONS.
-
-     The earlier version drew the actions as bars of differing height, which
-     implied a quantity nobody had defined and let a permitted bar and a
-     blocked bar both sit below the line. The actions are now equal objects
-     that live in one of two named zones. Position is the only thing that
-     carries permission, and the thing that moves between screens is an
-     action, not a measurement.
-
-     Permission and cover are deliberately separate: the customer decides
-     what the agent may do, and the policy covers a named set of mistakes
-     inside that. One does not imply the other.
-     ══════════════════════════════════════════════════════════════════════ -->
-  <template id="acts">
-    <div class="act" data-act="compare"><p class="act-n">Compare suppliers</p></div>
-    <div class="act" data-act="draft"><p class="act-n">Draft order</p></div>
-    <div class="act" data-act="recommend"><p class="act-n">Recommend quantity</p></div>
-    <div class="act" data-act="place"><p class="act-n">Place order</p><p class="act-c">Covered: wrong part, wrong quantity, duplicate order</p></div>
-    <div class="act act--hard" data-act="newsup"><p class="act-n">New supplier, over the limit</p><p class="act-x">Always needs a person</p></div>
-  </template>
-
 <!-- ══════ 1 · WITHOUT AUTHORISATION ══════ -->
-<section class="screen" data-screen="1" data-label="Without authorisation" data-cam="queue" data-veil="soft">
+<section class="screen screen--s1" data-screen="1" data-label="Without authorisation" data-cam="queue" data-veil="soft">
 
-  <div class="xhead" style="grid-area:1/1/4/8">
-    <p class="xeyebrow">01 / Without authorisation</p>
-    <h1 class="display xd" tabindex="-1"><span>It can do the work.</span><span>It cannot spend</span><span>the money.</span></h1>
-  </div>
-
-  <p class="xmicro bta-micro" style="grid-area:2/9/4/13">Invented company and figures.</p>
-
-  <div class="zones" id="z1" style="grid-area:4/1/9/13">
-    <div class="zone zone--may">
-      <p class="zone-h">Agent may act</p>
-      <div class="zone-b" data-zone="may"></div>
-    </div>
-    <div class="zone-rule" aria-hidden="true"></div>
-    <div class="zone zone--ask">
-      <p class="zone-h">Needs your approval</p>
-      <div class="zone-b" data-zone="ask"></div>
+  <div class="top">
+    <div class="xhead">
+      <p class="eyebrow">01 / Without authorisation</p>
+      <h1 class="xd" tabindex="-1"><span>It can do the work.</span><span>It cannot spend the money.</span></h1>
     </div>
   </div>
+
+  <div class="desk" id="desk1" data-place="ask">
+    <div class="tray" aria-hidden="true"></div>
+    <p class="zlab zlab--may">Agent may act</p>
+
+    <!-- the preceding work, as one wordless cluster of sheets -->
+    <div class="slot slot--prep">
+      <div class="art prep" aria-hidden="true">
+        <div class="sheet sheet--quotes">
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="72" y2="44"/></g></svg>
+        </div>
+        <div class="sheet sheet--order">
+          <svg viewBox="0 0 100 70" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="64" y2="44"/><line x1="0" y1="62" x2="80" y2="62"/></g></svg>
+        </div>
+        <div class="sheet sheet--qty">
+          <svg viewBox="0 0 80 30"><g stroke="#16150F" stroke-width="2" stroke-linecap="round"><line x1="6" y1="4" x2="6" y2="26"/><line x1="14" y1="4" x2="14" y2="26"/><line x1="22" y1="4" x2="22" y2="26"/><line x1="30" y1="4" x2="30" y2="26"/><line x1="0" y1="24" x2="36" y2="6"/><line x1="46" y1="4" x2="46" y2="26"/><line x1="54" y1="4" x2="54" y2="26"/><line x1="62" y1="4" x2="62" y2="26"/></g></svg>
+        </div>
+      </div>
+      <p class="cap"><b>Prepared</b><span>suppliers compared, order drafted</span></p>
+    </div>
+
+    <!-- the approval line, where the customer has left it -->
+    <div class="line line--now">
+      <p class="zlab zlab--ask">Needs your approval</p>
+    </div>
+
+    <!-- the purchase order, waiting on the approval side -->
+    <div class="slot slot--po">
+      <div class="art po">
+        <div class="sheet sheet--po">
+          <span class="sh">Purchase order</span>
+          <svg class="po-rules" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="4" x2="100" y2="4"/><line x1="0" y1="16" x2="100" y2="16"/></g></svg>
+          <svg class="po-fields" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1.6" opacity=".6" stroke-linecap="round"><line x1="2" y1="6" x2="98" y2="6"/><line x1="2" y1="22" x2="54" y2="22"/><line x1="2" y1="38" x2="98" y2="38"/></g></svg>
+        </div>
+      </div>
+      <p class="cap"><em class="mark" data-kind="ask">waits for approval</em></p>
+    </div>
+  </div>
+
+  <p class="micro">Invented company and figures.</p>
 
 </section>
 
 <!-- ══════ 2 · THE CUSTOMER AUTHORISES ══════
-     Simplified pass. One idea: customer authorisation lets a bounded purchase
-     proceed with specified protection attached. The PURCHASE ORDER is the one
-     dominant object. The preceding work (compare suppliers, draft order,
-     recommend quantity) is one small "Prepared" cluster on the permitted side.
-     The new-supplier exception stays on the approval side and never moves.
-     The order does not move either — THE LINE moves, which is the headline.
-     Laid out in flow, not on the 12x8 grid: the headline backing is the
-     heading's own box, so it contains its text at every viewport. -->
+     The order never moves. The line moves: the tray widens past the order,
+     and a dashed trace shows where the line stood before. The exception
+     stays on the approval side in both states. -->
 <section class="screen screen--s2" data-screen="2" data-label="The customer authorises" data-cam="boundary" data-veil="">
 
-  <!-- artwork defs shared by the cut-paper objects below -->
-  <svg class="s2-defs" width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <filter id="s2-rough" x="-4%" y="-6%" width="108%" height="112%">
-        <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
-      <pattern id="s2-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="#F3977A" stroke-width="1.4"/>
-      </pattern>
-    </defs>
-  </svg>
-
-  <div class="s2-top">
-    <div class="xhead s2-head">
-      <p class="xeyebrow">02 / The customer authorises</p>
-      <h2 class="display xd s2-xd" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
+  <div class="top">
+    <div class="xhead">
+      <p class="eyebrow">02 / The customer authorises</p>
+      <h2 class="xd" tabindex="-1"><span>Cover moves</span><span>the line.</span></h2>
     </div>
 
-    <div class="auth2 s2-auth">
-      <p class="s2-ctrl-lab" id="s2-ctrl-lab">Calder sets the autonomy level</p>
-      <div class="xchoice" role="group" aria-labelledby="s2-ctrl-lab">
+    <div class="aside auth">
+      <div class="xchoice" role="group" aria-label="The agent's authority">
         <button type="button" id="lv0" aria-pressed="true">Draft only</button>
         <button type="button" id="lv1" aria-pressed="false">Act within cover</button>
       </div>
-      <!-- the ONE statement of the distinction between permission and cover -->
-      <p class="auth2-said s2-support" id="bnd-said">Specified purchasing mistakes are covered. You still decide what the agent may do.</p>
+      <p class="statement" id="bnd-said">Specified mistakes are covered. You set the agent's authority.</p>
     </div>
   </div>
 
-  <!-- THE DESK · two zones, one line. data-place is derived from LAYOUT in
-       app.js: "ask" while Draft only, "may" once Calder acts within cover. -->
-  <div class="s2-desk" id="desk2" data-place="ask">
+  <div class="desk" id="desk2" data-place="ask">
+    <div class="tray" aria-hidden="true"></div>
+    <p class="zlab zlab--may">Agent may act</p>
 
-    <div class="s2-tray" aria-hidden="true"></div>
-    <p class="s2-zlab s2-zlab--may">Agent may act</p>
-
-    <!-- the preceding work, as one cluster -->
-    <div class="s2-slot s2-slot--prep">
-      <div class="s2-art s2-prep" aria-hidden="true">
-        <div class="s2-sheet s2-sheet--quotes"><span class="s2-sh">3 quotes</span>
+    <div class="slot slot--prep">
+      <div class="art prep" aria-hidden="true">
+        <div class="sheet sheet--quotes">
           <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="72" y2="44"/></g></svg>
         </div>
-        <div class="s2-sheet s2-sheet--order"><span class="s2-sh">Order</span>
-          <svg viewBox="0 0 100 70" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="64" y2="44"/></g></svg>
-          <span class="s2-stamp">Draft</span>
+        <div class="sheet sheet--order">
+          <svg viewBox="0 0 100 70" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="64" y2="44"/><line x1="0" y1="62" x2="80" y2="62"/></g></svg>
         </div>
-        <div class="s2-sheet s2-sheet--qty"><span class="s2-sh">Qty</span>
+        <div class="sheet sheet--qty">
           <svg viewBox="0 0 80 30"><g stroke="#16150F" stroke-width="2" stroke-linecap="round"><line x1="6" y1="4" x2="6" y2="26"/><line x1="14" y1="4" x2="14" y2="26"/><line x1="22" y1="4" x2="22" y2="26"/><line x1="30" y1="4" x2="30" y2="26"/><line x1="0" y1="24" x2="36" y2="6"/><line x1="46" y1="4" x2="46" y2="26"/><line x1="54" y1="4" x2="54" y2="26"/><line x1="62" y1="4" x2="62" y2="26"/></g></svg>
         </div>
       </div>
-      <p class="s2-cap"><b>Prepared</b><span>Suppliers compared, order drafted, quantity recommended.</span></p>
+      <p class="cap"><b>Prepared</b></p>
     </div>
 
-    <!-- where the line stood before Calder moved it (authorised state only) -->
-    <div class="s2-line s2-line--ghost" aria-hidden="true"><span class="s2-line-lab">line before</span></div>
+    <!-- where the line stood before the customer moved it (authorised only) -->
+    <div class="line line--ghost"><span class="line-lab">line before</span></div>
 
     <!-- the approval line, set by the customer -->
-    <div class="s2-line s2-line--now">
-      <span class="s2-line-lab" id="s2-line-lab">the line, set by Calder</span>
-      <p class="s2-zlab s2-zlab--ask">Needs your approval</p>
+    <div class="line line--now">
+      <p class="zlab zlab--ask">Needs your approval</p>
     </div>
 
-    <!-- THE PURCHASE ORDER · the dominant object. It carries its coverage
-         slip in both states: cover is specified whether or not the agent may
-         place the order. -->
-    <div class="s2-slot s2-slot--po">
-      <div class="s2-art s2-po">
-        <div class="s2-sheet s2-sheet--po">
-          <span class="s2-sh">Purchase order</span>
-          <svg class="s2-po-rules" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="4" x2="100" y2="4"/><line x1="0" y1="16" x2="100" y2="16"/></g></svg>
-          <ul class="s2-fields" aria-hidden="true">
-            <li><span>Part</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="100" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
-            <li><span>Qty</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="48" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
-            <li><span>Supplier</span><svg viewBox="0 0 100 4" preserveAspectRatio="none"><line x1="0" y1="2" x2="100" y2="2" stroke="#16150F" stroke-width="1.4" opacity=".7"/></svg></li>
-          </ul>
+    <!-- THE PURCHASE ORDER, with its coverage slip in both states: cover is
+         specified whether or not the agent may place the order -->
+    <div class="slot slot--po">
+      <div class="art po">
+        <div class="sheet sheet--po">
+          <span class="sh">Purchase order</span>
+          <svg class="po-rules" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="4" x2="100" y2="4"/><line x1="0" y1="16" x2="100" y2="16"/></g></svg>
+          <svg class="po-fields" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1.6" opacity=".6" stroke-linecap="round"><line x1="2" y1="6" x2="98" y2="6"/><line x1="2" y1="22" x2="54" y2="22"/><line x1="2" y1="38" x2="98" y2="38"/></g></svg>
         </div>
-        <!-- the one coverage annotation: the specified mistakes, nothing broader -->
-        <div class="s2-slip">
-          <p class="s2-slip-h">Covered mistakes</p>
-          <ul class="s2-slip-l"><li>wrong part</li><li>wrong quantity</li><li>duplicate order</li></ul>
+        <div class="slip">
+          <p class="slip-h">Covered mistakes</p>
+          <ul class="slip-l"><li>wrong part</li><li>wrong quantity</li><li>duplicate order</li></ul>
         </div>
       </div>
-      <p class="s2-cap"><b>Purchase order</b><em class="s2-mark" id="po-state" data-kind="ask">Waits for your approval</em></p>
     </div>
 
     <!-- the hard exception: never moves, never swept into automatic authority -->
-    <div class="s2-slot s2-slot--exc">
-      <div class="s2-art s2-exc" aria-hidden="true">
-        <div class="s2-sheet s2-sheet--exc">
-          <svg class="s2-hatchband" viewBox="0 0 100 10" preserveAspectRatio="none"><rect width="100" height="10" fill="url(#s2-hatch)"/></svg>
-          <span class="s2-sh">New supplier</span>
-          <span class="s2-sm">over the limit</span>
-          <svg viewBox="0 0 100 40" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="6" x2="100" y2="6"/><line x1="0" y1="22" x2="100" y2="22"/><line x1="0" y1="38" x2="70" y2="38"/></g></svg>
-          <span class="s2-sign"><span>approved by</span><span>a person</span></span>
+    <div class="slot slot--exc">
+      <div class="art exc">
+        <div class="sheet sheet--exc">
+          <svg class="hatchband" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="10" fill="url(#hatch)"/></svg>
+          <span class="sh">New supplier,</span>
+          <span class="sm">over the limit</span>
+          <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="6" x2="100" y2="6"/><line x1="0" y1="22" x2="100" y2="22"/><line x1="0" y1="38" x2="70" y2="38"/></g></svg>
+          <span class="sign" aria-hidden="true"><svg viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="8" x2="100" y2="8" stroke="#16150F" stroke-width="1.5"/></svg></span>
         </div>
       </div>
-      <p class="s2-cap"><b>New supplier, over the limit</b><em class="s2-mark s2-mark--hard" data-kind="hard">Always needs a person</em></p>
+      <p class="cap"><em class="mark" data-kind="hard">always needs a person</em></p>
     </div>
-
   </div>
-
-  <!-- the residual responsibility, said once -->
-  <p class="s2-caveat">Cover pays for the listed mistakes. It does not approve the order.</p>
 
 </section>
 
-<!-- ══════ 3 · THE EVIDENCE AND THE NEXT DECISION ══════ -->
-<section class="screen" data-screen="3" data-label="What you would allow next" data-cam="run" data-veil="soft">
+<!-- ══════ 3 · A DAY INSIDE THE BOUNDARY ══════
+     The documents are history and never change. The question is forward:
+     Keep and Narrow move the line; Expand only PROPOSES, and the proposal
+     is dashed until an approval and a protection review are given. -->
+<section class="screen screen--s3" data-screen="3" data-label="What you would allow next" data-cam="run" data-veil="soft">
 
-  <div class="xhead xhead--s" style="grid-area:1/1/3/6">
-    <p class="xeyebrow">03 / A day inside the boundary</p>
-    <h2 class="display xd" tabindex="-1"><span>Three placed.</span><span>One came back.</span></h2>
+  <div class="top">
+    <div class="xhead">
+      <p class="eyebrow">03 / A day inside the boundary</p>
+      <h2 class="xd" tabindex="-1"><span>Three placed.</span><span>One came back.</span></h2>
+    </div>
+
+    <div class="aside dec">
+      <p class="dec-q" id="dec-q">What would you let the agent do next?</p>
+      <div class="xchoice" role="group" aria-labelledby="dec-q">
+        <button type="button" data-choice="keep"   aria-pressed="false">Keep</button>
+        <button type="button" data-choice="narrow" aria-pressed="false">Narrow</button>
+        <button type="button" data-choice="expand" aria-pressed="false">Expand</button>
+      </div>
+      <p class="dec-said" id="dec-said" hidden>Proposed expansion. Approval and protection review required.</p>
+    </div>
   </div>
 
-  <!-- The counters are not three additive totals. The covered mistake is one
-       OF the three placed orders (PO-4473 in the source scenario), so it is
-       shown nested under them rather than beside them. -->
-  <div class="out" style="grid-area:1/6/3/13">
-    <div class="out-i">
-      <p class="out-n">3</p>
-      <p class="out-l">orders placed, no person involved</p>
-      <p class="out-s">including <b>1 covered mistake</b> — the insurer paid the restocking</p>
-    </div>
-    <div class="out-i out-i--esc">
-      <p class="out-n">1</p>
-      <p class="out-l">sent for approval</p>
-      <p class="out-s">over the limit, and a new supplier</p>
-    </div>
-  </div>
+  <div class="desk" id="desk3" data-place="may" data-proposed="0" data-decided="">
+    <div class="tray" aria-hidden="true"></div>
+    <!-- the proposed widening: dashed, clearly not the active boundary -->
+    <div class="prop" aria-hidden="true"></div>
+    <p class="zlab zlab--may">Agent may act</p>
 
-  <div class="dec" style="grid-area:3/1/6/13">
-    <p class="dec-q">What would you let the agent do next?</p>
-    <div class="xchoice" role="group" aria-label="What would you let the agent do next?">
-      <button type="button" data-choice="keep"   aria-pressed="false">Keep it</button>
-      <button type="button" data-choice="narrow" aria-pressed="false">Narrow it</button>
-      <button type="button" data-choice="expand" aria-pressed="false">Expand it</button>
+    <!-- three orders placed, as one stack -->
+    <div class="slot slot--stack">
+      <div class="art stack" aria-hidden="true">
+        <div class="sheet sheet--s3 sheet--s3a">
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="72" y2="44"/></g></svg>
+        </div>
+        <div class="sheet sheet--s3 sheet--s3b">
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="60" y2="44"/></g></svg>
+        </div>
+        <div class="sheet sheet--s3 sheet--s3c">
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="80" y2="44"/></g></svg>
+          <svg class="tick" viewBox="0 0 24 24"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <p class="cap"><b>3 orders placed</b></p>
     </div>
-    <p class="dec-said" id="dec-said" hidden></p>
-  </div>
 
-  <div class="zones zones--sm" id="z3" style="grid-area:6/1/9/13">
-    <div class="zone zone--may">
-      <p class="zone-h">Agent may act</p>
-      <div class="zone-b" data-zone="may"></div>
+    <!-- where the line stood before the room narrowed it (narrow only) -->
+    <div class="line line--ghost" aria-hidden="true"></div>
+
+    <!-- the approval line, where the customer set it on screen 2 -->
+    <div class="line line--now">
+      <p class="zlab zlab--ask">Needs your approval</p>
     </div>
-    <div class="zone-rule" aria-hidden="true"></div>
-    <div class="zone zone--ask">
-      <p class="zone-h">Needs your approval</p>
-      <div class="zone-b" data-zone="ask"></div>
+
+    <!-- the one covered mistake: the cover's slip, paid -->
+    <div class="slot slot--slip">
+      <div class="art paid" aria-hidden="true">
+        <div class="slip slip--paid">
+          <svg viewBox="0 0 100 44" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="24" x2="100" y2="24"/><line x1="0" y1="40" x2="56" y2="40"/></g></svg>
+          <svg class="tick tick--big" viewBox="0 0 24 24"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <p class="cap"><b>1 covered mistake</b><span>restocking paid</span></p>
+    </div>
+
+    <!-- the one that came back: a hatched sheet on the approval side -->
+    <div class="slot slot--exc">
+      <div class="art exc" aria-hidden="true">
+        <div class="sheet sheet--exc sheet--exc3">
+          <svg class="hatchband" viewBox="0 0 100 10" preserveAspectRatio="none"><rect width="100" height="10" fill="url(#hatch)"/></svg>
+          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1" opacity=".45"><line x1="0" y1="8" x2="100" y2="8"/><line x1="0" y1="26" x2="100" y2="26"/><line x1="0" y1="44" x2="70" y2="44"/></g></svg>
+          <span class="sign"><svg viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="8" x2="100" y2="8" stroke="#16150F" stroke-width="1.5"/></svg></span>
+        </div>
+      </div>
+      <p class="cap"><b>1 sent for approval</b><span>new supplier</span></p>
     </div>
   </div>
 
@@ -250,9 +266,7 @@
 
 </main>
 
-<!-- ═══════════════ CHROME ═══════════════
-     Prev icon button · content-labelled picker · ink-pill next. On this stock
-     the "ink" pill is paper on the console, because the ink IS the surface. -->
+<!-- ═══════════════ CHROME ═══════════════ -->
 <div class="chrome">
   <div class="chrome-r">
     <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">

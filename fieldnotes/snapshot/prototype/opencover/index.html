@@ -15,158 +15,131 @@
 <!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
      router read that as "no screen", and the user was thrown back to screen 1
      — the opposite of skipping to content. It now moves focus to the heading
-     of whatever screen is open. -->
-<button class="skip" type="button" id="skip">Skip to this screen's content</button>
+     of whatever screen is open. It is keyboard-only until focused (the
+     sr-only idiom; .skip:focus reveals it), so it carries no visible words. -->
+<button class="skip sr-only" type="button" id="skip">Skip to this screen's content</button>
 
 <!-- ═══════════════ THE GROUND ═══════════════
-     Not a place. This prototype has no territory — its subject is published
-     terms — so the ground is a register: a ruled field carrying three
-     records, with the camera moving between them. What the person stated,
-     the three offers read as data, and the performance ledger that re-opens
-     the market. Drawn once in a 1600 x 1000 world; see app.js. -->
+     The register sheet is still drawn (app.js, renderWorld) and the camera
+     still pans it, but every screen now paints its own warm paper over it,
+     so the ground is a quiet ruled field under the chrome and nothing more. -->
 <div class="world" id="world">
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
-       aria-label="A ruled register sheet carrying three records: at the upper left, the priorities and permission stated by a person; at the centre, three offer documents side by side with the middle one outlined as selected; along the lower band, a performance ledger of met and missed service commitments. Arrows run from the stated record to the offers to the ledger, and a heavier arrow returns from the ledger to the offers."></svg>
+       aria-label="A ruled register sheet, the ground the three screens sit on."></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <div class="pins" id="pins" aria-hidden="true"></div>
 
-<!-- ONE THOUGHT PER SCREEN.
-     1 — the person sets priorities and permissions, once, and grants them.
-     2 — an offer rendered as data, and the comparison scored against those
-         priorities rather than against price.
-     3 — the commitments checked against performance, and what a miss allows.
-     Everything else is voiceover. -->
+<!-- shared SVG defs: the headline block's rough edge, the hatch for a day
+     late and for an offer that cannot be bought -->
+<svg class="oc-defs" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <filter id="oc3-rough" x="-4%" y="-6%" width="108%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <pattern id="oc3-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#8A3450" stroke-width="1.8"/>
+    </pattern>
+    <pattern id="oc-hatch-warm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#D9561F" stroke-width="1.6"/>
+    </pattern>
+  </defs>
+</svg>
+
+<!-- ONE THOUGHT PER SCREEN, SIXTY WORDS OR FEWER.
+     1 — an offer a machine can read, and her instructions sitting apart.
+     2 — the agent buys the cheapest offer that is eligible, never the cheapest.
+     3 — the promise was checkable; the remedy applied itself.
+     Everything else is said aloud by the facilitator
+     (design-study/density-pass/opencover/FACILITATOR-NOTES.md). -->
 <main class="deck" id="deck">
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     ONE OFFER OBJECT, CARRIED THROUGH.
+<!-- ══════ 1 · THE OFFER IS READABLE TO AN AGENT ══════
+     Two objects that are never merged: the offer is a document the insurer
+     publishes, painted from the same OC model screens 2 and 3 read; her
+     instructions are a note she owns, on the warm boundary rule. -->
+<section class="screen oc oc1" data-screen="1" data-label="What the person sets" data-cam="set" data-veil="soft">
 
-     The insurer publishes an offer; the customer separately grants her agent
-     standing instructions. Those are two different things and the layout
-     never merges them: the offer is a document the insurer owns, the
-     instructions are a note the customer owns, and a hairline ties them.
+  <header class="oc-head">
+    <div class="oc-title">
+      <p class="oc-eyebrow">01 / What the person sets</p>
+      <h1 class="display oc-headline" tabindex="-1">Insurance written to be read by her machine.</h1>
+    </div>
+  </header>
 
-     Screen 2 does not score anything. It shows the ACTUAL term each
-     preference turns on, and whether an offer is eligible at all. Screen 3
-     uses whichever offer was actually bought, and compares it only against
-     commitments that offer actually published.
-     ══════════════════════════════════════════════════════════════════════ -->
+  <div class="oc-scene oc1-scene">
+    <article class="offer" id="offer" aria-label="The offer, published as terms a machine can read">
+      <!-- painted by paintOffer() from the offer bought() returns -->
+    </article>
 
-<!-- ══════ 1 · THE OFFER, AS THE AGENT READS IT ══════ -->
-<section class="screen" data-screen="1" data-label="The offer" data-cam="set" data-veil="soft">
+    <svg class="oc-link" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path d="M4 24 H36" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
+      <path d="M30 14 L42 24 L30 34" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
 
-  <div class="xhead" style="grid-area:1/1/3/7">
-    <p class="xeyebrow">01 / The offer</p>
-    <h1 class="display xd" tabindex="-1"><span>Written to be read</span><span>by her agent.</span></h1>
+    <aside class="instr" aria-label="Her standing instructions to the agent, set by the customer and not by the insurer">
+      <ul class="instr-l">
+        <li>Never lapse</li>
+        <li>Excess under 500</li>
+        <li>Keep Rosa, nineteen</li>
+        <li>Up to 200 USD above the cheapest</li>
+      </ul>
+    </aside>
   </div>
 
-  <p class="xmicro oc-micro" style="grid-area:1/9/2/13">Invented insurer and terms. Nothing here describes a real product.</p>
-
-  <article class="card" style="grid-area:3/1/9/8" aria-label="Meridian Mutual offer">
-    <header class="card-h">
-      <p class="card-co">Meridian Mutual</p>
-      <p class="card-id">Motor · 12 months · published</p>
-    </header>
-    <div class="card-price">
-      <p class="card-n">1,340.00</p><p class="card-u">USD per year</p>
-    </div>
-    <dl class="card-rows">
-      <dt>Covered</dt><dd>Third-party liability, unlimited · fire and theft · every named driver, no age condition · windscreen</dd>
-      <dt class="is-out">Excluded</dt><dd class="is-out">Theft while unattended · undeclared modifications · driving abroad</dd>
-      <dt>Excess</dt><dd>450.00 USD standard · 0.00 USD windscreen</dd>
-      <dt class="is-key">Service commitments</dt><dd class="is-key">Answer in 1 working day · settle in 5 working days from agreed liability, with a remedy of 50.00 USD per day late</dd>
-    </dl>
-  </article>
-
-  <div class="tie" aria-hidden="true" style="grid-area:3/8/9/9"></div>
-
-  <aside class="instr" style="grid-area:3/9/9/13" aria-label="Your standing instructions">
-    <p class="instr-h">Your standing instructions</p>
-    <p class="instr-s">Set by the customer, not by the insurer.</p>
-    <ul class="instr-l">
-      <li>Cover must never lapse, including at renewal</li>
-      <li>No excess above 500 USD</li>
-      <li>Rosa stays a covered driver — she is nineteen</li>
-      <li>A published settlement time beats a lower premium</li>
-    </ul>
-    <p class="instr-p">The agent may buy, renew and switch inside these. Anything else comes back to you.</p>
-  </aside>
+  <footer class="oc-foot">
+    <p class="oc-micro">Invented insurers and household.</p>
+  </footer>
 
 </section>
 
-<!-- ══════ 2 · WHAT THE PREFERENCE ACTUALLY TURNS ON ══════ -->
-<section class="screen" data-screen="2" data-label="The agent chooses" data-cam="offers" data-veil="">
+<!-- ══════ 2 · THE AGENT CHOOSES WITHIN THE RULES ══════
+     Eligibility is the hard filter; the preference only decides which term
+     each offer shows and the order the three are ranked in. -->
+<section class="screen oc oc2" data-screen="2" data-label="The agent chooses" data-cam="offers" data-veil="">
 
-  <div class="xhead xhead--s" style="grid-area:1/1/3/6">
-    <p class="xeyebrow">02 / The agent chooses</p>
-    <h2 class="display xd" tabindex="-1"><span>It reads the terms,</span><span>not the marketing.</span></h2>
-  </div>
-
-  <div class="pref" style="grid-area:1/6/3/13">
-    <p class="instr-h">She cares most about</p>
-    <div class="xchoice" role="group" aria-label="What she cares most about">
-      <button type="button" data-pref="price"   aria-pressed="false">Price</button>
-      <button type="button" data-pref="excl"    aria-pressed="true">Fewest exclusions</button>
-      <button type="button" data-pref="settle"  aria-pressed="false">Fastest settlement</button>
+  <header class="oc-head">
+    <div class="oc-title">
+      <p class="oc-eyebrow">02 / The agent chooses</p>
+      <h2 class="display oc-headline" tabindex="-1">The cheapest it can actually buy.</h2>
     </div>
-  </div>
+    <div class="rank" role="group" aria-labelledby="rank-l">
+      <p class="rank-l" id="rank-l">Rank on</p>
+      <div class="xchoice">
+        <button type="button" data-pref="price"  aria-pressed="true">Price</button>
+        <button type="button" data-pref="excl"   aria-pressed="false">Fewest exclusions</button>
+        <button type="button" data-pref="settle" aria-pressed="false">Fastest settlement</button>
+      </div>
+    </div>
+  </header>
 
-  <div class="cmp" id="cmp" style="grid-area:3/1/7/13"></div>
-
-  <div class="buy" style="grid-area:7/1/9/13">
-    <p class="buy-v" id="verdict"></p>
-    <p class="buy-p" id="permit"></p>
+  <div class="oc-scene oc2-scene" id="cmp" aria-live="polite">
+    <!-- painted by paintCompare() -->
   </div>
 
 </section>
 
-<!-- ══════ 3 · PROMISE AGAINST PERFORMANCE ══════
-     ONE THOUGHT: the offer contains a checkable commitment, and its existing
-     remedy applies when the commitment is missed.
+<!-- ══════ 3 · PROMISE → MISS → REMEDY ══════
+     One calculation, painted by paintPerformance() from the offer bought()
+     returns, that offer's own published settlement row in OFFERS and the one
+     missed entry in LEDGER. The clock starts at agreed liability; the remedy
+     is a published term that applied on the miss, with no separate claim. -->
+<section class="screen oc oc3" data-screen="3" data-label="Promise against performance" data-cam="after" data-veil="soft">
 
-     Flow layout — head, one bounded scene, foot — rather than the 12 x 8
-     grid the other two screens use. The headline backing is the headline's
-     own box (grain on a pseudo-element), so it contains its text at every
-     width. Everything in the scene is painted by paintPerformance() from the
-     same OC / OFFERS / LEDGER model screens 1 and 2 read; the full offer
-     document, the exclusions, the other commitments and the eleven-month
-     matrix stay in the model and on screens 1–2, not here. -->
-<section class="screen oc3" data-screen="3" data-label="Promise against performance" data-cam="after" data-veil="soft">
-
-  <svg class="oc3-defs" aria-hidden="true" focusable="false" width="0" height="0">
-    <defs>
-      <filter id="oc3-rough" x="-4%" y="-6%" width="108%" height="112%">
-        <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
-      <pattern id="oc3-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="#8A3450" stroke-width="1.8"/>
-      </pattern>
-    </defs>
-  </svg>
-
-  <header class="oc3-head">
-    <div class="oc3-title">
-      <p class="oc3-eyebrow">03 / Eleven months in</p>
-      <h2 class="display oc3-headline" tabindex="-1">The promise is checkable.</h2>
+  <header class="oc-head">
+    <div class="oc-title">
+      <p class="oc-eyebrow">03 / Eleven months in</p>
+      <h2 class="display oc-headline" tabindex="-1">The promise is checkable.</h2>
     </div>
     <!-- the selected offer's identity: always the offer bought() returns -->
     <p class="oc3-id" id="oc3-id"></p>
   </header>
 
-  <div class="oc3-scene">
-    <!-- ONE enlarged excerpt: a single row lifted from the offer document -->
-    <figure class="oc3-excerpt" id="oc3-excerpt"></figure>
-    <!-- commitment → observed miss → contractual response -->
-    <div class="oc3-chain">
-      <div class="oc3-check" id="oc3-check"></div>
-      <svg class="oc3-link" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-        <path d="M4 24 H36" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/>
-        <path d="M30 14 L42 24 L30 34" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="oc3-remedy" id="oc3-remedy"></div>
-    </div>
+  <div class="oc-scene oc3-scene">
+    <figure class="calc" id="oc3-calc" aria-label="The settlement promise checked against performance">
+      <!-- painted by paintPerformance() -->
+    </figure>
   </div>
 
   <footer class="oc3-foot" id="oc3-foot"></footer>
@@ -176,7 +149,7 @@
 </main>
 
 <!-- ═══════════════ CHROME ═══════════════
-     Small controls in the bottom gutter. No bar: the register runs behind
+     Small controls in the bottom gutter. No bar: the paper runs behind
      them to all four edges. -->
 <div class="chrome">
   <div class="chrome-r">
@@ -188,7 +161,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">See the offer as data</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">Let the agent choose</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

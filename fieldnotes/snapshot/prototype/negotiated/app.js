@@ -378,14 +378,11 @@
     return { cls: cls, label: label, wx: hcx(i), wy: hcy(i), dy: dy };
   }
   function pinSet(n) {
-    if (n === 1) {
-      return [pinAt("ink", "No. 31 · work done", ROSA, -44),
-              pinAt("grey", "Same quote, all 60", 4, -44)];
-    }
-    /* Screen 2 carries no pin. The count is already the largest thing on
-       the screen and a label repeating it under the street is noise. */
-    if (n === 2) { return []; }
-    return [pinAt("broker", "Thorn Lane, signed", PER_ROW + 7, 54)];
+    /* Screen 1 carries the one artwork label the copy contract allows.
+       Screens 2 and 3 carry none: the count is already the largest thing
+       on screen 2, and screen 3's parties are named in the diagram band. */
+    if (n === 1) { return [pinAt("ink", "No. 31 · prepared", ROSA, -44)]; }
+    return [];
   }
 
   function buildPins(n) {
@@ -412,7 +409,7 @@
 
     var sc = screens && screens[current - 1];
     var blockers = sc ? Array.prototype.map.call(
-      sc.querySelectorAll(".plate, .xhead"), function (p) { return p.getBoundingClientRect(); }) : [];
+      sc.querySelectorAll(".plate, .xhead, .xmicro"), function (p) { return p.getBoundingClientRect(); }) : [];
     blockers = blockers.concat(Array.prototype.map.call(
       document.querySelectorAll(".chrome button, .chrome select"),
       function (p) { return p.getBoundingClientRect(); }));
@@ -452,8 +449,7 @@
   var ctlEl = document.getElementById("ctl");
   var countEl = document.getElementById("thr-count");
   var offerEl = document.getElementById("offer");
-  var offerState = document.getElementById("offer-state");
-  var offerLine = document.getElementById("offer-line");
+  var offerText = document.getElementById("offer-text");
   var signN = document.getElementById("sign-n");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
@@ -463,15 +459,17 @@
 
   var lastOpen = null;
 
-  /* The condition statement. ONE sentence, derived from NEED − committed. */
+  /* The ONE state line, verbatim from the copy contract. Below the
+     threshold: "Not available. {k} more households needed." with
+     k = 48 − committed, as a word up to twelve and a number above (the
+     contract allows either); k = 1 takes the singular. At or above: the
+     fourteen-word line. */
   function conditionLine(open) {
     if (open) {
-      return "Participation reached. The offer still requires hardening, verification and 48 staying in. Not cover yet.";
+      return "Participation reached. Hardening, verification and 48 staying in are still required. Not coverage yet.";
     }
     var short = NEED - committed;
-    return short === 1
-      ? "One more household and the carrier writes the street as one risk."
-      : cap(few(short)) + " more households and the carrier writes the street as one risk.";
+    return "Not available. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed.";
   }
 
   function paintOffer(announceChange) {
@@ -485,11 +483,10 @@
 
     if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; }
     if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
-    if (offerState) { offerState.textContent = open ? "Available — conditional" : "Not available"; }
-    if (offerLine) { offerLine.textContent = conditionLine(open); }
+    if (offerText) { offerText.textContent = conditionLine(open); }
     /* screen 3 is the same deal, so it reads the same count — and never
        shows a number below the one that binds it */
-    if (signN) { signN.textContent = Math.max(committed, NEED) + " of 60"; }
+    if (signN) { signN.textContent = String(Math.max(committed, NEED)); }
 
     if (current === 2) {
       renderStreet({ mode: "commit", alt: altFor(2) });
@@ -525,8 +522,9 @@
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
         "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
-        "hollow with a dashed edge except number 31, which is solid and ringed. Its quote is the " +
-        "street's quote.";
+        "hollow with a dashed edge except number 31, which is solid and ringed: the one prepared " +
+        "home, labelled “No. 31, prepared”. It has hardened its own lot and still has no offer, " +
+        "because the street around it sets the price.";
     }
     if (n === 2) {
       var open = committed >= NEED;
@@ -540,8 +538,9 @@
     }
     return "Thorn Lane with the agreement in force: " + Math.max(committed, NEED) + " houses solid, their " +
       "frontage strips joined into continuous runs along the road, the amber boundary around the " +
-      "street, and four marks at its corners for the carrier, the fund, the surveyor and the " +
-      "broker. The houses still out are hollow gaps in the run.";
+      "street, and four marks at its corners in the colours of the carrier (blue), the fund " +
+      "(plum), the surveyor (ochre) and the broker (violet), matching the five-party diagram " +
+      "below. The houses still out are hollow gaps in the run.";
   }
 
   function drawFor(n) {
@@ -667,7 +666,7 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["See the offer", "Read the agreement", "Back to the street"];
+  var CTA = ["See the offer", "Read the agreement", "Back to the beginning"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");

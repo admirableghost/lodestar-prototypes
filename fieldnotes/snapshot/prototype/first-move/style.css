@@ -1264,220 +1264,183 @@ input[type="range"] { height: 44px; }
 /* ══════════════════════════════════════════════════════════════════════════
    FIRST MOVE · THE INFORMATION FIELD
    ══════════════════════════════════════════════════════════════════════════
-   Everything above this line is the inherited cream stock. This prototype no
-   longer sits on paper: it sits in a deep indigo field that the drawing owns
-   edge to edge. So the tokens are redefined rather than the rules rewritten,
-   and only the few components that carry type are restyled.
+   Everything above this line is the inherited cream stock. This prototype
+   does not sit on paper: both screens sit in one charcoal field that the
+   drawing owns edge to edge, so the tokens are redefined here rather than
+   the rules rewritten, and only the few components that carry type are
+   restyled. Everything is scoped to body.fm.
 
-   The inherited rule was "every word sits on an opaque plate". That rule
-   survives, inverted: every word sits on a DARK scrim, and the scrim is a
-   lighting effect on a pseudo-element, never a card. No boxes return.
-
-   Contrast, measured against the darkest ground (#070B16):
-     --paper #F3F5FC on ground      17.9 : 1
-     --ink-soft #A9B3D1 on ground    8.4 : 1
-     amber #F3A23F on ground        10.2 : 1
-     wall ink #070B16 on amber      10.2 : 1
-   ══════════════════════════════════════════════════════════════════════════ */
-
-body.fm {
-  --paper:       #F3F5FC;
-  --edition-ink: #F3F5FC;
-  --ink-soft:    #A9B3D1;
-  --rule:        #46507A;
-  --hair:        #232C52;
-  background: #070B16;
-  color: var(--paper);
-}
-
-/* the ground is the drawing; nothing may paint over it */
-body.fm .world { background: #070B16; }
-body.fm .veil { display: none; }
-
-/* ── type on the field ──────────────────────────────────────────────────
-   A feathered dark scrim, sized to the text, on a pseudo-element that
-   bleeds past the box without occupying layout space. */
-body.fm .xhead--dark { position: relative; }
-body.fm .xhead--dark > * { position: relative; z-index: 1; }
-body.fm .xhead--dark::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -7vh -16vw -8vh -7vw;
-  background: radial-gradient(62% 68% at 26% 46%,
-    rgba(7,11,22,.95) 0%, rgba(7,11,22,.90) 40%,
-    rgba(7,11,22,.62) 66%, rgba(7,11,22,.22) 86%, rgba(7,11,22,0) 100%);
-}
-body.fm .xhead h1, body.fm .xhead h2, body.fm .xhead .xd { color: var(--paper); }
-body.fm .xeyebrow { color: #7FD8E8; letter-spacing: .22em; }
-body.fm .xlede, body.fm .xmicro { color: var(--ink-soft); }
-
-/* ── screen 2's closing question ────────────────────────────────────────
-   Low and quiet. It is a bridge to the next prototype, not a headline. */
-body.fm .fm-ask {
-  position: relative; z-index: 3; pointer-events: auto;
-  display: flex; align-items: flex-end;
-}
-body.fm .fm-ask::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -8vh -14vw -8vh -7vw;
-  background: radial-gradient(60% 70% at 26% 52%,
-    rgba(7,11,22,.94) 0%, rgba(7,11,22,.86) 42%,
-    rgba(7,11,22,.55) 68%, rgba(7,11,22,.18) 87%, rgba(7,11,22,0) 100%);
-}
-body.fm .fm-ask > * { position: relative; z-index: 1; }
-body.fm .fm-ask .display--ask {
-  margin: 0; max-width: 24ch;
-  font: 400 var(--x-display-s)/1.14 var(--serif);
-  letter-spacing: -.015em; color: var(--paper);
-}
-
-/* ── chrome, on the field ───────────────────────────────────────────────
-   Navigation is secondary here, so it loses its paper plates and becomes
-   outlines on the ground. */
-body.fm .chrome .iconbtn,
-body.fm .chrome .picker {
-  background: rgba(10,15,30,.82); color: var(--paper);
-  border: 1px solid #3A4472; box-shadow: none;
-}
-body.fm .chrome select { color: var(--paper); background: transparent; }
-body.fm .chrome select option { color: #11162A; background: #F3F5FC; }
-body.fm .chrome .cta {
-  background: #5FD8E8; color: #06121A; box-shadow: none;
-  border: 1px solid #5FD8E8;
-}
-body.fm .chrome .iconbtn[disabled] { opacity: .4; }
-body.fm .skip { background: #5FD8E8; color: #06121A; }
-
-/* focus must be visible on a dark ground, where the inherited ring vanishes */
-body.fm :focus-visible { outline: 3px solid #7FD8E8; outline-offset: 2px; }
-
-/* ── narrow ─────────────────────────────────────────────────────────────
-   The deck stacks and scrolls. The drawing switches to its portrait axis in
-   app.js, so here the type only has to stop competing with it: scrims become
-   solid bands and the foot stops hugging the right edge. */
-@media (max-width: 899px) {
-  body.fm .xhead--dark::before,
-  body.fm .fm-ask::before {
-    inset: -1.6vh -5vw; border-radius: 10px;
-    background: rgba(7,11,22,.90);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SCREEN 1 · FOUR QUOTES, ONE RECOMMENDATION
-   ══════════════════════════════════════════════════════════════════════════
-   Scoped to .fm-s1 so nothing here reaches screen 2 or the chrome. The
-   palette is the design study's: charcoal ground, cut-paper lavender quotes,
-   a paper recommendation, cool traces, one warm hatch. Type is Bricolage
-   Grotesque, bundled in fonts/.
+   The palette is the design study's: charcoal ground, cut-paper lavender
+   quotes, a paper recommendation, cool traces, one warm family. Type is
+   Bricolage Grotesque, bundled in fonts/.
 
    The headline backing is the headline's own box — padding around text that
-   wraps naturally — with its grain and rough edge on a pseudo-element, so the
-   text can never outgrow it. The drawing is one SVG laid out in CSS pixels by
-   app.js, which is why its labels are set in px here and stay readable on a
-   phone without any whole-screen scaling.
+   wraps naturally — with its grain and rough edge on a pseudo-element, so
+   the text can never outgrow it. Each drawing is one SVG laid out in CSS
+   pixels by app.js, which is why its labels are set in px and stay readable
+   on a phone without any whole-screen scaling.
 
    Contrast, measured against the ground #1E242B:
      cream  #F3EBD7  12.8 : 1      muted #B4AE9C  6.9 : 1
-     trace  #6FC3CF   7.6 : 1      cream on block #6B675E  4.9 : 1 (54px bold)
+     trace  #6FC3CF   7.6 : 1      cream on block #6B675E  4.9 : 1 (≥30px bold)
+     cream on the wall #A8502A  4.6 : 1 (18px bold)
    ══════════════════════════════════════════════════════════════════════════ */
 @font-face { font-family: "Bricolage"; font-weight: 700; src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
 @font-face { font-family: "Bricolage"; font-weight: 400; src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
 
-body.fm .fm-s1 {
-  --s1-ground: #1E242B; --s1-cream: #F3EBD7; --s1-muted: #B4AE9C;
-  --s1-block: #6B675E; --s1-trace: #6FC3CF;
-  --s1-font: "Bricolage", "Helvetica Neue", Arial, sans-serif;
-  --s1-nav-w: 500px;   /* the navigation corner, bottom right, stays clear */
+body.fm {
+  --fm-ground: #1E242B; --fm-cream: #F3EBD7; --fm-muted: #B4AE9C;
+  --fm-block: #6B675E; --fm-trace: #6FC3CF; --fm-chrome: #2A3038;
+  --fm-font: "Bricolage", "Helvetica Neue", Arial, sans-serif;
+  --paper: var(--fm-cream); --edition-ink: var(--fm-cream); --ink-soft: var(--fm-muted);
+  --rule: #6B675E; --hair: #3A414A;
+  background: var(--fm-ground);
+  color: var(--fm-cream);
+  font-family: var(--fm-font);
+}
+
+/* the ground is the drawing; nothing may paint over it */
+body.fm .world { background: var(--fm-ground); }
+body.fm .veil { display: none; }
+
+/* ── the skip control: invisible until it has focus, then a cream plate ── */
+body.fm .skip { background: var(--fm-cream); color: var(--fm-ground); font-family: var(--fm-font); opacity: 0; }
+body.fm .skip:focus { opacity: 1; }
+
+/* ── a screen: one composition, type placed by the corner ──────────────── */
+body.fm .fm-sc {
   display: block; padding: 0; gap: 0;
-  font-family: var(--s1-font);
+  font-family: var(--fm-font);
   overflow: hidden;
 }
-body.fm .fm-s1 > * { position: absolute; pointer-events: auto; }
+body.fm .fm-sc > * { position: absolute; pointer-events: auto; }
 
 /* the drawing: full stage, under the type, never a pointer target */
-body.fm .fm-s1 .fm-scene {
+body.fm .fm-sc .fm-scene {
   position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
   display: block; pointer-events: none;
 }
-body.fm .fm-s1 .fm-scene text { font-family: var(--s1-font); }
+body.fm .fm-sc .fm-scene text { font-family: var(--fm-font); }
 
 /* ── the headline group, top left, in flow inside its own box ─────────── */
-body.fm .fm-s1 .fm-s1-head {
+body.fm .fm-sc .fm-head {
   z-index: 2; left: 56px; top: 40px;
   width: min(640px, 56vw); display: flex; flex-direction: column;
 }
-body.fm .fm-s1 .fm-s1-eyebrow {
-  margin: 0; font: 400 14px/1.2 var(--s1-font);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--s1-cream);
-}
-body.fm .fm-s1 .fm-s1-headline {
+body.fm .fm-s2 .fm-head { width: min(880px, 64vw); }   /* "The recommendation is ready." on one line up to 54px */
+body.fm .fm-sc .fm-headline {
   position: relative; display: inline-block; align-self: flex-start;
-  max-width: 100%; margin: 14px 0 0;
+  max-width: 100%; margin: 0;
   padding: .36em .5em .4em;
-  font: 700 clamp(30px, 2.3vw + 2.2vh, 54px)/1.1 var(--s1-font);
-  letter-spacing: -.021em; color: var(--s1-cream);
+  font: 700 clamp(30px, 2.3vw + 2.2vh, 54px)/1.1 var(--fm-font);
+  letter-spacing: -.021em; color: var(--fm-cream);
   overflow-wrap: break-word; text-wrap: initial;
 }
-body.fm .fm-s1 .fm-s1-headline span { display: block; }
-body.fm .fm-s1 .fm-s1-headline::before {
+body.fm .fm-sc .fm-headline span { display: block; }
+body.fm .fm-sc .fm-headline::before {
   content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
-  background: var(--s1-block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background: var(--fm-block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   filter: url(#rough);
 }
-body.fm .fm-s1 .fm-s1-headline:focus { outline: none; }
-body.fm .fm-s1 .fm-s1-headline:focus-visible { outline: 3px solid var(--s1-trace); outline-offset: 4px; }
-body.fm .fm-s1 .fm-s1-lede {
-  margin: 18px 0 0; max-width: 34ch;
-  font: 400 clamp(17px, .7vw + 1vh, 21px)/1.4 var(--s1-font); color: var(--s1-cream);
+body.fm .fm-sc .fm-headline:focus { outline: none; }
+body.fm .fm-sc .fm-headline:focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 4px; }
+body.fm .fm-sc .fm-lede {
+  margin: 18px 0 0 .5em; max-width: 34ch;
+  font: 400 clamp(18px, .7vw + 1vh, 21px)/1.4 var(--fm-font); color: var(--fm-cream);
 }
 
-/* ── the state line, the one control and the disclosure, bottom right ──── */
-body.fm .fm-s1 .fm-s1-foot {
+/* ── screen 1's foot: the one control and the disclosure, bottom right ── */
+body.fm .fm-sc .fm-foot {
   z-index: 2; right: 56px;
   bottom: calc(var(--chrome-h) + var(--gesture-safe) + 10px);
   width: min(360px, 36vw);
   display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
   text-align: right;
 }
-body.fm .fm-s1 .fm-s1-state {
-  margin: 0; font: 400 clamp(16px, .55vw + 1vh, 19px)/1.35 var(--s1-font); color: var(--s1-cream);
-}
-body.fm .fm-s1 .fm-s1-run {
+body.fm .fm-sc .fm-run {
   min-height: 46px; min-width: 44px; padding: 0 18px;
-  border: 2px solid var(--s1-cream); border-radius: 3px;
-  background: transparent; color: var(--s1-cream);
-  font: 700 15px/1 var(--s1-font); letter-spacing: .01em; cursor: pointer;
+  border: 2px solid var(--fm-cream); border-radius: 3px;
+  background: transparent; color: var(--fm-cream);
+  font: 700 16px/1 var(--fm-font); letter-spacing: .01em; cursor: pointer;
   transition: background .15s linear, color .15s linear;
 }
-body.fm .fm-s1 .fm-s1-run:hover { background: var(--s1-cream); color: var(--s1-ground); }
-body.fm .fm-s1 .fm-s1-run:focus-visible { outline: 3px solid var(--s1-trace); outline-offset: 3px; }
-body.fm .fm-s1 .fm-s1-micro {
-  margin: 2px 0 0; font: 400 15px/1.4 var(--s1-font); color: var(--s1-muted);
+body.fm .fm-sc .fm-run:hover { background: var(--fm-cream); color: var(--fm-ground); }
+body.fm .fm-sc .fm-run:focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 3px; }
+body.fm .fm-sc .fm-micro {
+  margin: 2px 0 0; font: 400 16px/1.4 var(--fm-font); color: var(--fm-muted);
 }
 
+/* ── screen 2's closing question, bottom left, quiet ───────────────────
+   A bridge to the next prototype, not a rival headline: Bricolage regular,
+   display-small size, with a short trace rule above it. */
+body.fm .fm-sc .fm-ask {
+  z-index: 2; left: 56px;
+  bottom: calc(var(--chrome-h) + var(--gesture-safe) + 14px);
+  width: min(560px, 44vw);
+  padding-top: 18px; border-top: 2px solid var(--fm-trace);
+}
+body.fm .fm-sc .fm-ask-q {
+  margin: 0; max-width: 22ch;
+  font: 400 clamp(24px, 1.5vw + 1.6vh, 40px)/1.14 var(--fm-font);
+  letter-spacing: -.012em; color: var(--fm-cream);
+}
+body.fm .fm-sc .fm-ask-q:focus { outline: none; }
+body.fm .fm-sc .fm-ask-q:focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 4px; }
+
+/* ── chrome, on the field ───────────────────────────────────────────────
+   Navigation is secondary here: outlines on the ground, in the same type,
+   and the primary action in the paper colour. */
+body.fm .chrome .iconbtn,
+body.fm .chrome .picker {
+  background: rgba(30,36,43,.9); color: var(--fm-cream);
+  border: 2px solid var(--fm-block); border-radius: 3px; box-shadow: none;
+  font-family: var(--fm-font);
+}
+body.fm .chrome .iconbtn:hover { background: var(--fm-chrome); }
+body.fm .chrome .picker select {
+  color: var(--fm-cream); background: transparent; border: 0; box-shadow: none;
+  font: 400 16px/1 var(--fm-font); min-height: 44px;
+}
+body.fm .chrome select option { color: var(--fm-ground); background: var(--fm-cream); }
+body.fm .chrome .cta {
+  background: var(--fm-cream); color: var(--fm-ground); box-shadow: none;
+  border: 2px solid var(--fm-cream); border-radius: 3px;
+  font: 700 16px/1 var(--fm-font); min-width: 44px; justify-content: center;
+}
+body.fm .chrome .cta:hover { background: #FFFFFF; border-color: #FFFFFF; }
+body.fm .chrome .iconbtn[disabled] { opacity: .4; background: rgba(30,36,43,.9); color: var(--fm-cream); }
+
+/* focus must be visible on a dark ground, where the inherited ring vanishes */
+body.fm :focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 2px; }
+
 /* ── portrait / narrow: stacked and scrolling ─────────────────────────────
-   Head, drawing, foot, in flow. app.js lays the drawing out in bands for
-   this orientation and sizes the SVG to its content; the labels inside it
-   are still set in CSS pixels, so nothing shrinks with the viewport. */
+   Head, drawing, foot (or question), in flow. app.js lays each drawing out
+   in bands for this orientation and sizes the SVG to its content; the
+   labels inside it are still set in CSS pixels, so nothing shrinks with the
+   viewport. */
 @media (max-width: 899px) {
-  body.fm .fm-s1 {
+  body.fm .fm-sc {
     display: flex; flex-direction: column; gap: 0;
     padding: 16px 16px 8px; overflow-y: auto; overflow-x: hidden;
   }
-  body.fm .fm-s1 > * { position: static; }
-  body.fm .fm-s1 .fm-s1-head { width: auto; max-width: 100%; }
-  body.fm .fm-s1 .fm-s1-headline {
-    font-size: clamp(28px, 7.4vw, 46px); margin-top: 12px;
+  body.fm .fm-sc > * { position: static; }
+  body.fm .fm-sc .fm-head, body.fm .fm-s2 .fm-head { width: auto; max-width: 100%; }
+  body.fm .fm-sc .fm-headline {
+    font-size: clamp(27px, 7.2vw, 46px); margin-top: 0;
     padding: .4em .5em .44em;
   }
-  body.fm .fm-s1 .fm-s1-lede { font-size: clamp(17px, 4.4vw, 21px); margin-top: 14px; }
-  body.fm .fm-s1 .fm-scene { position: static; width: 100%; height: auto; margin: 18px 0 0; }
-  body.fm .fm-s1 .fm-s1-foot {
+  /* screen 2's two sentences flow as one block on a phone: as two forced
+     lines they broke into four */
+  body.fm .fm-s2 .fm-headline span { display: inline; }
+  body.fm .fm-sc .fm-lede { font-size: clamp(18px, 4.4vw, 21px); margin: 14px 0 0; }
+  body.fm .fm-sc .fm-scene { position: static; width: 100%; height: auto; margin: 18px 0 0; }
+  body.fm .fm-sc .fm-foot {
     width: auto; max-width: 46ch; align-items: flex-start; text-align: left;
     margin: 12px 0 0;
   }
-  body.fm .fm-s1 .fm-s1-state { font-size: 17px; }
+  body.fm .fm-sc .fm-ask { width: auto; max-width: 100%; margin: 8px 0 12px; padding-top: 16px; }
+  body.fm .fm-sc .fm-ask-q { font-size: clamp(24px, 6.2vw, 36px); max-width: 24ch; }
 }
 @media (prefers-reduced-motion: reduce) {
-  body.fm .fm-s1 .fm-s1-run { transition: none; }
+  body.fm .fm-sc .fm-run { transition: none; }
 }

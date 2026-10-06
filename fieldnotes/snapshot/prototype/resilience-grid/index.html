@@ -12,169 +12,104 @@
 </head>
 <body>
 
-<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
-     router read that as "no screen", and the user was thrown back to screen 1
-     — the opposite of skipping to content. It now moves focus to the heading
-     of whatever screen is open. -->
+<!-- A button, not an anchor: it moves focus to the open screen's heading
+     without touching the hash (an anchor to #deck used to throw the router
+     back to screen 1). -->
 <button class="skip" type="button" id="skip">Skip to this screen's content</button>
 
 <!-- ═══════════════ THE GROUND ═══════════════
-     Alder County, invented. It is not an illustration inside the page; it is
-     the page. Inset past all four edges so it never shows a border, with a
-     per-screen camera that moves over it. Settlements are drawn as clusters,
-     never as addressable houses — see app.js and design.md §3.1. -->
+     Alder County, invented. It is the page, inset past all four edges, with
+     a per-screen camera. Every word that names something on the terrain is
+     SVG text drawn by app.js with a paper halo — so it moves with the map,
+     is read by the word gate, and is never hidden from assistive tech. -->
 <div class="world" id="world">
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
        aria-label="Plan of Alder County: a ridge system above three settlement clusters in a wildland-urban interface valley, with one canyon corridor, a transmission line crossing the ridge saddle, four fire-district boundaries, and the protection network's cameras, sensors, fire stations and suppression pads."></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
-<div class="pins" id="pins" aria-hidden="true"></div>
 
-<!-- ONE THOUGHT PER SCREEN.
-     Each section below carries a single dominant statement, a single dominant
-     visual, and one short supporting line. Secondary evidence, precedent and
-     strategic side-arguments live in concept.md and research-notes.md, not on
-     the glass. Empty space on the right of a screen is the county showing
-     through, and is deliberate. -->
+<!-- ONE THOUGHT PER SCREEN, under 60 visible words per state. The copy is
+     the locked contract (design-study/density-pass/SCREEN-COPY.md). What a
+     facilitator says aloud lives in FACILITATOR-NOTES.md; what a screen
+     reader hears stays detailed in the .sr-only paragraphs below. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · BETTER PREDICTION DOES NOT KEEP THE MARKET OPEN ══════ -->
+<!-- ══════ 1 · MARKET RETREAT ══════ -->
 <section class="screen" data-screen="1" data-label="The problem" data-cam="county" data-veil="soft">
-
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/8">
+  <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">Resilience Grid · Alder County · 2036</p>
-    <h1 class="display xd" tabindex="-1"><span>Priced precisely.</span><span>Increasingly unavailable.</span></h1>
+    <h1 class="xd" tabindex="-1"><span>Priced precisely.</span><span>Increasingly unavailable.</span></h1>
     <p class="xlede">The line is where cover stops being offered.</p>
   </div>
-
+  <p class="sr-only">The map draws the market boundary across the county: the line below which cover is still offered, pushed well down the slope toward the three settlements. The ground above it, including the whole canyon, is shaded as retreated capacity. Two fainter lines mark where the boundary would sit if the market were managed, or potentially viable again. Better prediction prices the risk precisely; it does not keep the market open.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
-
-        <div class="gauge-stops">
-        <span class="gauge-stop" data-on="1">Retreating</span>
-        <span class="gauge-stop">Managed</span>
-        <span class="gauge-stop">Potentially viable</span>
-      </div>
-    </div>
-  </div>
-
   <p class="xmicro wf-micro" style="grid-area:8/1/9/7">Invented county. No real insurer operates this network.</p>
-
 </section>
 
-<!-- ══════ 2 · THE TECHNOLOGY EXISTS; COORDINATION IS MISSING ══════ -->
+<!-- ══════ 2 · STANDING NETWORK ══════ -->
 <section class="screen" data-screen="2" data-label="The network" data-cam="network" data-veil="">
-
-  <div class="xhead xhead--scrim" style="grid-area:1/1/5/7">
+  <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">01 / The network</p>
-    <h2 class="display xd" tabindex="-1"><span>The pieces exist.</span><span>The agreement</span><span>is the proposition.</span></h2>
-    <p class="body" id="layer-count">The technology already exists. What is missing is a standing agreement for who acts, who pays, and what evidence changes an insurance decision.</p>
+    <h2 class="xd" tabindex="-1"><span>The pieces exist.</span><span>The agreement is the proposition.</span></h2>
   </div>
-
+  <p class="sr-only">The technology already exists: ridge cameras, forest gas sensors and line sensors that see; an operations hub that understands; fire stations and autonomous suppression pads that act; and the standing agreement that funds the whole as one network. What is missing is that agreement — who acts, who pays, and what evidence changes an insurance decision. The four buttons switch one layer off at a time to show what the network is without it.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
-
-  <div class="wf-chips" style="grid-area:8/1/9/13">
-      <p class="xeyebrow">The pieces, already here · tap one to switch it off</p>
-      <div class="chips">
-      <button class="chipbtn" type="button" data-layer="see" aria-pressed="true">See</button>
-      <button class="chipbtn" type="button" data-layer="know" aria-pressed="true">Understand</button>
-      <button class="chipbtn" type="button" data-layer="act" aria-pressed="true">Act</button>
-      <button class="chipbtn" type="button" data-layer="fund" aria-pressed="true">Fund</button>
-      <button class="chipbtn" type="button" id="reveal-all">Show all four</button>
-    </div>
-    </div>
-
+  <div class="wf-chips" style="grid-area:8/1/9/9" role="group" aria-label="Network layers">
+    <button class="chipbtn" type="button" data-layer="see" aria-pressed="true">See</button>
+    <button class="chipbtn" type="button" data-layer="know" aria-pressed="true">Understand</button>
+    <button class="chipbtn" type="button" data-layer="act" aria-pressed="true">Act</button>
+    <button class="chipbtn" type="button" data-layer="fund" aria-pressed="true">Fund</button>
+    <button class="chipbtn" type="button" id="reveal-all">Show all four</button>
+  </div>
 </section>
 
-<!-- ══════ 3 · WHEN THE FIRE STARTS, THE NETWORK ACTS ══════ -->
-<!-- Screen 3 is composed as one left-hand column (headline block, then one
-     quiet plate holding the authority legend, the eight-event trace grouped
-     into its three stages, the replay controls and the disclaimer) so the
-     county's canyon, Mill Creek and the decision point have the right two
-     thirds of the stage to themselves. The eight events are DATA in app.js
-     (S3_EVENTS); the rows under #tl are generated from it, so the map, the
-     trace and the facilitator notes can never disagree. -->
+<!-- ══════ 3 · COORDINATED RESPONSE, HUMAN AUTHORITY ══════
+     The eight events are DATA in app.js (S3_EVENTS). The map annotates one
+     stage at a time; the decision at 14:47 stays pending; nothing on the
+     screen executes it or claims a loss was avoided. -->
 <section class="screen" data-screen="3" data-label="The moment" data-cam="ignite" data-veil="ignite">
-
-  <div class="xhead xhead--scrim s3-head" style="grid-area:1/1/4/6">
+  <div class="xhead" style="grid-area:1/1/4/6">
     <p class="xeyebrow">02 / The moment</p>
-    <h2 class="display xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
   </div>
-
+  <p class="sr-only">An invented event, 14:31 to 14:47. Stage one, signals corroborated: a line sensor on the Mill Creek lateral flags a fault at 14:31; the Alder Peak ridge camera sees smoke at the same span at 14:33; a thermal satellite pass confirms heat at the same coordinates at 14:34. Stage two, bounded response, pre-authorised and narrow: the utility de-energises the lateral at 14:36; a spread model runs the canyon corridor at 14:38 — a forecast, not a decision; Fire District 3 sends two engines to the canyon mouth and holds the one road out open at 14:41; four aircraft launch from the Mill Creek pad at 14:43 and hold. Stage three: the evacuation of 320 homes and the suppression drop over occupied parcels wait on the duty chief's approval. The network cannot make either call. Agents execute bounded, pre-authorised actions; humans make the consequential decisions; every action joins the evidence record. Replay plays the eight events in order; Show all marks all three stages at once.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
-
-  <div class="plate plate--thin s3-plate" style="grid-area:4/1/9/5">
-    <dl class="rows rows--legend s3-legend">
-      <dt>Agents</dt><dd>Execute bounded, pre&#8209;authorised actions</dd>
-      <dt>Humans</dt><dd>Make the consequential decisions</dd>
-      <dt>Record</dt><dd>Every action joins the evidence trail</dd>
-    </dl>
-    <p class="eyebrow s3-eyebrow">14:31 → 14:47 · <span class="illus">invented event</span></p>
-    <div class="tl s3-tl" id="tl" role="group" aria-label="The eight events, in three stages"></div>
-    <div class="tl-controls">
-      <button class="tl-play" type="button" id="tl-play">Replay from the start</button>
-      <button class="tl-play" type="button" id="tl-all">Show all steps</button>
+  <div class="s3-ctl" style="grid-area:8/1/9/6">
+    <div class="tl-controls" role="group" aria-label="Replay controls">
+      <button class="tl-play" type="button" id="tl-play">Replay</button>
+      <button class="tl-play" type="button" id="tl-all">Show all</button>
     </div>
-    <p class="note s3-micro">Illustrative scenario, not a vendor capability claim. Invented county.</p>
+    <p class="xmicro">Illustrative scenario. Invented county.</p>
   </div>
-
 </section>
 
-<!-- ══════ 4 · EVERYONE AVOIDS A DIFFERENT LOSS ══════ -->
+<!-- ══════ 4 · WHO PAYS ══════ -->
 <section class="screen" data-screen="4" data-label="Why anyone pays" data-cam="flows" data-veil="soft">
-
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
+  <div class="xhead" style="grid-area:1/1/4/9">
     <p class="xeyebrow">03 / Why anyone pays</p>
-    <h2 class="display xd" tabindex="-1"><span>A business that gets</span><span>paid to change the risk.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>A business that gets paid</span><span>to change the risk.</span></h2>
   </div>
-
-  <div class="gw" aria-hidden="true"></div>
-
-  
-    
-  </div>
-
-  <div class="plate plate--thin plate--carrier" style="grid-area:8/1/9/13">
-    <p class="xeyebrow eyebrow--carrier">The arrangement</p>
-    <p class="note"><span class="strong">Everyone pays for a different reason.</span> The incumbent carrier need not be the anchor funder — its value may be translating verified evidence into underwriting decisions.</p>
-  </div>
-
+  <p class="sr-only">A diagram of four payers converging on one operating business. The utility pays for avoided outage and its own exposure. Public agencies pay for regional resilience. Property owners pay for a maintained perimeter. The insurer pays for a verified change in risk. Everyone pays for a different reason, and the insurer is one participant among four, not the anchor funder.</p>
+  <div class="gw gw--map" aria-hidden="true"></div>
 </section>
 
-<!-- ══════ 5 · PREVENTION AS MARKET CREATION ══════ -->
+<!-- ══════ 5 · MARKET CONSEQUENCE ══════ -->
 <section class="screen" data-screen="5" data-label="Market creation" data-cam="payoff" data-veil="">
-
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
+  <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">04 / Market creation</p>
-    <h2 class="display xd" tabindex="-1"><span>The product is not</span><span>the drone. It is a market</span><span>that might stay open.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>Not the drone.</span><span>A market that might stay open.</span></h2>
+    <p class="xlede">Reduced risk, credible evidence and willing capital may keep cover available.</p>
   </div>
-
-  <div class="gw" aria-hidden="true"></div>
-
-  <p class="xmicro wf-micro" style="grid-area:8/1/9/7">Each step is conditional. Invented county; no real insurer operates this network.</p>
-    <p class="note" style="margin-top:.7em"><span class="strong">Each step on the right is conditional.</span> Invented county. No real insurer operates this network.</p>
+  <p class="sr-only">The same county as screen one, with two boundaries: the dashed line where the market had retreated to, and a solid line higher on the slope where cover might be offered again, with arrows between them. Each step in that movement is conditional. The settlements are shaded as protected. Invented county; no real insurer operates this network.</p>
+  <div class="gw gw--map" aria-hidden="true"></div>
+  <div class="xask" style="grid-area:6/7/9/13">
+    <p class="xq" tabindex="-1">What if prevention is infrastructure that keeps difficult risks insurable?</p>
   </div>
-
-  
-      <div class="gauge-stops">
-        <span class="gauge-stop">Retreating</span>
-        <span class="gauge-stop">Managed</span>
-        <span class="gauge-stop" data-on="1">Potentially viable</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="xask" style="grid-area:6/8/9/13">
-    <p class="eyebrow eyebrow--carrier">The question</p>
-    <p class="display display--ask" tabindex="-1">What if prevention is not a device or a service, but infrastructure that helps keep difficult risks insurable?</p>
-  </div>
-
 </section>
 
 </main>
 
-<!-- ═══════════════ CHROME ═══════════════
-     Small plates in the bottom gutter. No bar: the ground runs behind them
-     to all four edges. -->
+<!-- ═══════════════ CHROME ═══════════════ -->
 <div class="chrome">
   <div class="chrome-r">
     <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">

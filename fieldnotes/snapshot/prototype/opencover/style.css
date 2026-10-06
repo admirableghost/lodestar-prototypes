@@ -913,296 +913,306 @@ input[type="range"] { height: 44px; }
 .wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
 
 
-/* ══ REVISION 02 · AGENT-READABLE PRODUCT, ART-DIRECTED ════════════════
-   Brighter and cooler than the Opening, which it answers: a pale lavender
-   paper, cobalt for the insurer's published commitments, violet for the
-   customer's own instructions, mint for a kept promise and clay for a
-   missed one. The offer is deliberately a CARD — it is a document the
-   insurer publishes, and pretending otherwise was the earlier mistake. */
-
-:root {
-  --oc-paper:  #F6F5FA;
-  --oc-ink:    #262338;
-  --oc-cobalt: #2E4BC6;
-  --oc-violet: #6B4FA8;
-  --oc-mint:   #1F7A63;
-  --oc-clay:   #B4432A;
-  --oc-line:   #D8D6E4;
-}
-body { background: var(--oc-paper); }
-.world::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(62% 80% at 16% 20%, rgba(46,75,198,.10) 0%, transparent 62%),
-    radial-gradient(58% 76% at 88% 78%, rgba(107,79,168,.10) 0%, transparent 60%),
-    linear-gradient(168deg, #FBFAFE 0%, var(--oc-paper) 58%, #EFEDF6 100%);
-}
-.xhead .xd, .pf-v, .instr-h { color: var(--oc-ink); }
-
-/* ── the offer: one document object with real weight ─────────────────── */
-.card {
-  pointer-events: auto; z-index: 3; align-self: stretch;
-  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .7);
-  padding: calc(var(--x-gap) * 1.15) calc(var(--x-gap) * 1.35);
-  background: #FFFFFF; border-radius: 10px;
-  border-top: 5px solid var(--oc-cobalt);
-  box-shadow: 0 1px 0 0 var(--oc-line), 0 36px 60px -40px rgba(38,35,56,.55);
-}
-.card-h { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; margin: 0; }
-.card-co { margin: 0; font: 400 clamp(21px, .9vw + 1.4vh, 30px)/1 var(--serif); color: var(--oc-ink); letter-spacing: -.015em; }
-.card-id { margin: 0; font: 600 var(--x-label)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-cobalt); }
-.card-price { display: flex; align-items: baseline; gap: .55em; }
-.card-n { margin: 0; font: 400 clamp(38px, 2.2vw + 2.6vh, 64px)/1 var(--serif); color: var(--oc-ink); letter-spacing: -.03em; }
-.card-u { margin: 0; font: 600 var(--x-label)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-ink); opacity: .72; }
-.card-rows { margin: 0; display: grid; grid-template-columns: minmax(0,13ch) 1fr; gap: calc(var(--x-gap) * .5) calc(var(--x-gap) * .9); }
-.card-rows dt { font: 600 var(--x-label)/1.4 var(--sans); letter-spacing: .13em; text-transform: uppercase; color: var(--oc-ink); opacity: .76; }
-.card-rows dd { margin: 0; font: var(--x-lede)/1.42 var(--sans); color: var(--oc-ink); }
-.card-rows .is-out { color: var(--oc-clay); opacity: 1; }
-.card-rows .is-key { color: var(--oc-cobalt); opacity: 1; }
-
-/* the hairline that ties the customer's note to the insurer's document */
-.tie { z-index: 2; align-self: center; height: 2px; background:
-  linear-gradient(90deg, var(--oc-cobalt), var(--oc-violet)); opacity: .5; }
-
-/* ── the customer's own instructions, visibly not the insurer's ─────── */
-.instr {
-  pointer-events: auto; z-index: 3; align-self: stretch;
-  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55);
-  padding: calc(var(--x-gap) * 1.05) calc(var(--x-gap) * 1.2);
-  border-left: 5px solid var(--oc-violet); border-radius: 0 10px 10px 0;
-  background: linear-gradient(180deg, rgba(107,79,168,.07) 0%, rgba(107,79,168,.02) 100%);
-}
-.instr-h { margin: 0; font: 600 var(--x-label)/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--oc-violet); }
-.instr-s { margin: 0; font: var(--x-label)/1.4 var(--sans); color: var(--oc-ink); opacity: .78; }
-.instr-l { margin: 0; padding-left: 1.1em; display: grid; gap: calc(var(--x-gap) * .35); }
-.instr-l li { font: var(--x-lede)/1.38 var(--sans); color: var(--oc-ink); }
-.instr-p { margin: auto 0 0; padding-top: calc(var(--x-gap) * .6); border-top: 1px solid var(--oc-line);
-  font: var(--x-label)/1.45 var(--sans); color: var(--oc-violet); }
-
-/* ── screen 2 · the actual term, and whether it can be bought at all ── */
-.pref { pointer-events: auto; z-index: 3; align-self: start; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55); align-items: flex-start; }
-.pref .xchoice button { border-color: var(--oc-cobalt); color: var(--oc-cobalt); }
-.pref .xchoice button[aria-pressed="true"] { background: var(--oc-cobalt); color: #fff; }
-.cmp { pointer-events: auto; z-index: 3; align-self: center; display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(var(--x-gap) * 1.1); }
-.of { padding: calc(var(--x-gap) * .95) calc(var(--x-gap) * 1.05); border-radius: 10px;
-  background: #FFFFFF; box-shadow: 0 1px 0 0 var(--oc-line), 0 22px 44px -34px rgba(38,35,56,.5);
-  border-top: 4px solid var(--oc-line); display: flex; flex-direction: column; gap: calc(var(--x-gap) * .35); }
-.of[data-win="1"] { border-top-color: var(--oc-cobalt); box-shadow: 0 0 0 2px var(--oc-cobalt), 0 26px 48px -32px rgba(46,75,198,.6); }
-.of[data-ok="0"] { background: #FBFAFC; border-top-color: var(--oc-clay); }
-.of-co { margin: 0; font: 400 clamp(18px, .7vw + 1.2vh, 25px)/1.1 var(--serif); color: var(--oc-ink); }
-.of-k { margin: 0; font: 600 var(--x-label)/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--oc-ink); opacity: .7; }
-.of-v { margin: 0; font: var(--x-lede)/1.35 var(--sans); color: var(--oc-ink); }
-.of-v--none { color: var(--oc-clay); font-style: italic; }
-.of-t { margin: auto 0 0; padding-top: calc(var(--x-gap) * .45); border-top: 1px solid var(--oc-line);
-  font: var(--x-label)/1.45 var(--sans); color: var(--oc-cobalt); }
-.of-t--no { color: var(--oc-clay); }
-.buy { pointer-events: auto; z-index: 3; align-self: end; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .35); }
-.buy-v { margin: 0; font: 400 clamp(21px, .95vw + 1.5vh, 32px)/1.22 var(--serif); color: var(--oc-ink); max-width: 64ch; }
-.buy-v b { font-weight: 400; color: var(--oc-cobalt); }
-.buy-p { margin: 0; font: var(--x-label)/1.45 var(--sans); color: var(--oc-ink); opacity: .82; max-width: 72ch; }
-
-.oc-micro { z-index: 3; align-self: start; text-align: right; color: var(--oc-ink); }
-
-@media (max-width: 899px) {
-  .card-rows { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .2); }
-  .cmp { grid-template-columns: 1fr; }
-  .tie { display: none; }
-  .oc-micro { text-align: left; }
-}
-
 /* ══════════════════════════════════════════════════════════════════════════
-   SCREEN 3 · PROMISE AGAINST PERFORMANCE — simplified, in the approved
-   implementation language (see prototype/home-again, screen 4).
+   REVISION 03 · THE EDITORIAL EDITION, ON ALL THREE SCREENS
+   design-study/density-pass/SCREEN-COPY.md (OPENCOVER) is the copy contract:
+   sixty visible words per screen per state. The screen carries one headline,
+   one composition and at most three reading regions; everything else is
+   said aloud (FACILITATOR-NOTES.md).
 
-   Flow layout: head, one bounded scene, foot. Warm paper, charcoal headline
-   block sized to its own text with grain on a pseudo-element, plum for the
-   commitment and its consequence only, ledger blue for the promised days,
-   the warm rule for her boundary only. Bricolage Grotesque, bundled in
-   fonts/ beside this file, scoped to this screen so screens 1 and 2 are
-   untouched. Everything here is route- and screen-scoped: .oc3.
+   Stock: paper #F3EBD7, ink #16150F, plum #8A3450 for the promise and its
+   consequence, ledger blue #2F5E7C for the promised days, the warm rule
+   #D9561F for HER boundary only (never type). Bricolage Grotesque, bundled
+   in fonts/. The tokens are reset here, late in the cascade, so the chrome
+   and the focus ring above resolve to this stock without being rewritten.
+   Route-scoped: this file styles only this prototype.
    ══════════════════════════════════════════════════════════════════════════ */
 @font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
   src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
 @font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
   src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
 
-.screen.oc3 {
-  --o-paper: #F3EBD7; --o-sheet: #FBF6EA; --o-ink: #16150F; --o-cream: #F3EBD7;
-  --o-block: #6B675E; --o-muted: #5A554A; --o-plum: #8A3450; --o-blue: #2F5E7C;
-  --o-warm: #D9561F; --o-line: color-mix(in srgb, var(--o-ink) 16%, transparent);
-  /* every size scales with the per-screen --fit the search in app.js lowers
-     when the composition would leave the stage */
-  --k: var(--fit);
+:root {
+  --paper:        #F3EBD7;
+  --cream:        #F3EBD7;
+  --sheet:        #FBF6EA;
+  --edition-ink:  #16150F;   /* 16.1 : 1 on paper */
+  --ink-soft:     #5A554A;   /*  6.1 : 1 on paper */
+  --edition-wash: #E8DDC2;
+  --wash-2:       #CFC2A0;
+  --rule:         #8C8574;
+  --hair:         #DACCA8;
+  --block:        #6B675E;
+  --plum:         #8A3450;   /*  7.4 : 1 on paper — the promise, the miss, the remedy */
+  --blue:         #2F5E7C;   /*  6.6 : 1 on paper — the promised days */
+  --warm:         #D9561F;   /*  3.6 : 1 — her boundary: a rule and a hatch, never a word */
+  --o-line:       color-mix(in srgb, #16150F 16%, transparent);
+  --sans:  "Bricolage", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Bricolage", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --plate-shadow: 0 0 0 1px rgba(22,21,15,.10), 0 14px 34px -20px rgba(22,21,15,.45);
   --o-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body { background: var(--paper); color: var(--edition-ink); }
+.oc-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
+/* the vignette, in the paper's own tones. It only shows at the chrome on a
+   phone, where the deck stops above the controls. */
+.veil { background: radial-gradient(130% 100% at 50% 45%, rgba(243,235,215,0) 40%, rgba(232,221,194,.45) 100%); }
+.veil[data-veil="soft"] { background: radial-gradient(135% 105% at 50% 45%, rgba(243,235,215,0) 46%, rgba(232,221,194,.55) 100%); }
+
+:where(a, button, select, input, [tabindex]):focus-visible,
+.display:focus-visible { outline: 3px solid var(--edition-ink); outline-offset: 3px; }
+
+/* chrome, in the stock: 16px controls for the hand on an iPad */
+.picker select { font: 400 16px/1 var(--sans); }
+.cta { font: 700 16px/1 var(--sans); min-width: 44px; justify-content: center; }
+.cta:hover { background: #2E2C24; border-color: #2E2C24; }
+.iconbtn { font: 18px/1 var(--sans); }
+
+/* ── the screen: head, ONE scene, foot ─────────────────────────────────── */
+.screen.oc {
+  /* every size scales with the per-screen --fit the search in app.js lowers
+     when the composition would leave the stage; the floors below hold the
+     iPad minimums (18px running text, 16px labels) whatever --fit does */
+  --k: var(--fit);
   display: flex; flex-direction: column; align-items: stretch;
-  gap: calc(14px * var(--k));
+  gap: calc(16px * var(--k));
   pointer-events: auto;
-  color: var(--o-ink);
-  font-family: "Bricolage", "Helvetica Neue", Arial, sans-serif;
+  color: var(--edition-ink);
+  font-family: var(--sans);
   /* the paper is the screen's own: a warm sheet with a faint ruled register */
   background:
-    repeating-linear-gradient(180deg, transparent 0 111px, color-mix(in srgb, var(--o-ink) 6%, transparent) 111px 112px),
-    var(--o-paper);
+    repeating-linear-gradient(180deg, transparent 0 111px, color-mix(in srgb, var(--edition-ink) 6%, transparent) 111px 112px),
+    var(--paper);
 }
-.screen.oc3 > * { min-width: 0; }
-.oc3-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.screen.oc > * { min-width: 0; }
 
-/* ── head: eyebrow, the headline on its own backing, the offer's identity ── */
-.oc3-head {
+/* ── head: eyebrow, the headline on its own backing, one line at the right ── */
+.oc-head {
   display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-  gap: 10px 28px; margin: 0; flex: 0 0 auto;
+  gap: 12px 28px; margin: 0; flex: 0 0 auto;
 }
-.oc3-title { display: flex; flex-direction: column; align-items: flex-start; }
-.oc3-eyebrow {
-  margin: 0 0 8px; font: 400 max(15px, calc(16px * var(--k)))/1.2 "Bricolage", Arial, sans-serif;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--o-ink);
+.oc-title { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; max-width: 100%; }
+.oc-eyebrow {
+  margin: 0 0 8px; font: 400 max(16px, calc(16px * var(--k)))/1.2 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--edition-ink);
 }
 /* The backing IS the headline's box. The grain and the rough edge live on a
    pseudo-element behind the glyphs, so the type stays crisp and the box can
    never be smaller than the text it carries. */
-.screen.oc3 .oc3-headline {
-  /* its own stacking context, so the backing at z-index -1 sits behind the
-     glyphs and NOT behind the screen's paper */
+.screen.oc .oc-headline {
   position: relative; isolation: isolate; display: inline-block; max-width: 100%; margin: 0;
   padding: .3em .55em .36em;
-  font: 700 clamp(30px, calc((1.9vw + 2.6vh) * var(--k)), 54px)/1.1 "Bricolage", "Helvetica Neue", Arial, sans-serif;
-  letter-spacing: -.022em; color: var(--o-cream);
+  font: 700 clamp(30px, calc((1.9vw + 2.6vh) * var(--k)), 54px)/1.1 var(--sans);
+  letter-spacing: -.022em; color: var(--cream);
   text-wrap: balance; overflow-wrap: anywhere;
 }
-.screen.oc3 .oc3-headline::before {
+.screen.oc .oc-headline::before {
   content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
-  background: var(--o-block) var(--o-grain);
+  background: var(--block) var(--o-grain);
   filter: url(#oc3-rough);
 }
-.oc3-id {
-  margin: 0 0 .25em; text-align: right;
-  font-size: max(16px, calc(18px * var(--k))); line-height: 1.3;
+.oc-micro, .oc3-id {
+  margin: 0 0 .3em; text-align: right;
+  font: 400 max(18px, calc(18px * var(--k)))/1.3 var(--sans); color: var(--edition-ink);
 }
 .oc3-id b { font-weight: 700; }
-.oc3-id-ref { display: block; font-size: max(15px, calc(16px * var(--k))); color: var(--o-muted); }
+/* screen 1's foot: the one disclosure, left, clear of the navigation corner */
+.oc-foot { flex: 0 0 auto; margin: 0; padding-right: var(--oc3-nav, 560px); }
+.oc-foot .oc-micro { text-align: left; margin: 0; color: var(--ink-soft); }
 
-/* ── the bounded scene ─────────────────────────────────────────────────── */
-.oc3-scene {
+/* ── the scene: takes the stage, centres its one object ────────────────── */
+.oc-scene {
   flex: 1 0 auto; min-height: 0;
   display: flex; flex-direction: column; justify-content: center;
   gap: calc(18px * var(--k));
 }
 
-/* ONE excerpt: a row lifted out of the offer sheet, enlarged. The cream
-   strips above and below are the sheet it was lifted from; the plum band
-   runs past the sheet's right edge, as it does on the reference board. */
-.oc3-excerpt { position: relative; margin: 0; display: grid; gap: 0; }
-.oc3-sheet-h {
-  margin: 0 0 6px; font: 700 max(14px, calc(14px * var(--k)))/1.3 "Bricolage", Arial, sans-serif;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--o-muted);
+/* ══ SCREEN 1 · the offer object, and her instructions apart from it ═══ */
+.oc1-scene {
+  display: grid; grid-template-columns: minmax(0, 7fr) auto minmax(0, 5fr);
+  align-items: center; gap: calc(22px * var(--k)) calc(26px * var(--k));
 }
-.oc3-sheet {
-  width: 86%; height: calc(26px * var(--k)); background: var(--o-sheet);
-  border: 1.4px solid var(--o-ink); border-bottom: 0;
-  display: grid; grid-template-columns: 26% 1fr; align-items: center; gap: 0 14px; padding: 0 14px;
-}
-.oc3-sheet span { height: 3px; background: var(--o-line); border-radius: 2px; }
-.oc3-sheet span:first-child { width: 70%; }
-.oc3-sheet--after { height: calc(22px * var(--k)); border-top: 0; border-bottom: 1.4px solid var(--o-ink); }
-.oc3-sheet--after span { width: 36%; }
-.oc3-band {
-  position: relative; z-index: 1; margin: 0; width: 100%;
-  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: baseline;
-  gap: 4px calc(22px * var(--k)); padding: calc(14px * var(--k)) calc(22px * var(--k)) calc(16px * var(--k));
-  background: var(--o-plum) var(--o-grain); color: var(--o-cream);
-  box-shadow: 0 6px 0 -2px color-mix(in srgb, var(--o-plum) 35%, transparent);
-}
-.oc3-band-k { font: 700 max(16px, calc(19px * var(--k)))/1.3 "Bricolage", Arial, sans-serif; letter-spacing: .01em; }
-.oc3-band-v { font: 700 clamp(17px, calc((.65vw + 1.05vh) * var(--k)), 25px)/1.28 "Bricolage", Arial, sans-serif; letter-spacing: -.005em; }
-.oc3-band--none { grid-template-columns: 1fr; background: var(--o-block); }
+.oc-link { width: calc(48px * var(--k)); height: calc(48px * var(--k)); flex: 0 0 auto; }
 
-/* commitment → observed miss → contractual response, as one chain */
-.oc3-chain {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center;
-  gap: calc(18px * var(--k)) calc(14px * var(--k));
+/* the offer: a sheet the insurer publishes. Ruled strips stand for the rest
+   of the document; the five terms are the only words on it. */
+.offer {
+  display: grid; gap: calc(10px * var(--k));
+  padding: calc(22px * var(--k)) calc(26px * var(--k)) calc(24px * var(--k));
+  background: var(--sheet); border: 1.5px solid var(--edition-ink); border-radius: 3px;
+  box-shadow: 0 10px 0 -4px color-mix(in srgb, var(--edition-ink) 14%, transparent);
 }
-.oc3-link { width: calc(44px * var(--k)); height: calc(44px * var(--k)); flex: 0 0 auto; }
-
-/* the check: brackets, nine day cells, the clock's two ends, the arithmetic */
-.oc3-check { display: grid; gap: 6px; min-width: 0; }
-.oc3-brk {
-  margin: 0; display: grid; grid-template-columns: repeat(var(--n, 9), minmax(0, 1fr)); gap: 0 8px;
-  font: 700 max(16px, calc(16px * var(--k)))/1.25 "Bricolage", Arial, sans-serif;
+.offer-sheet { display: block; width: 62%; height: calc(22px * var(--k)); margin-bottom: calc(4px * var(--k)); }
+.offer-co {
+  margin: 0; font: 700 clamp(24px, calc((.9vw + 1.5vh) * var(--k)), 34px)/1.1 var(--sans);
+  letter-spacing: -.012em;
 }
-.oc3-brk-p { grid-column: 1 / span var(--p, 5); color: var(--o-blue); }
-.oc3-brk-l { grid-column: calc(var(--p, 5) + 1) / -1; color: var(--o-plum); }
-.oc3-days { display: grid; grid-template-columns: minmax(0, 1fr); }
-.oc3-days > * { grid-area: 1 / 1; }
-.oc3-strip { display: block; width: 100%; height: clamp(44px, calc(7.4vh * var(--k)), 66px); }
-.oc3-nums {
-  margin: 0; display: grid; grid-template-columns: repeat(var(--n, 9), minmax(0, 1fr));
-  align-items: center; text-align: center; padding-top: clamp(6px, 1vh, 10px);
-  font: 400 max(16px, calc(18px * var(--k)))/1 "Bricolage", Arial, sans-serif; color: var(--o-ink);
+.offer-price { margin: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: .25em .4em; font-size: max(18px, calc(19px * var(--k))); }
+.offer-n {
+  font: 700 clamp(48px, calc((2.6vw + 4.2vh) * var(--k)), 84px)/1 var(--sans);
+  letter-spacing: -.035em; font-variant-numeric: tabular-nums;
+}
+.offer-u { font: 400 max(18px, calc(19px * var(--k)))/1.2 var(--sans); }
+.offer-terms {
+  margin: calc(4px * var(--k)) 0 0; padding: 0; list-style: none;
+  border-top: 1.5px solid var(--edition-ink);
+}
+.offer-terms li {
+  padding: calc(9px * var(--k)) 0;
+  border-bottom: 1px solid var(--o-line);
+  font: 400 clamp(18px, calc((.55vw + .95vh) * var(--k)), 23px)/1.3 var(--sans);
   font-variant-numeric: tabular-nums;
 }
-.oc3-nums .is-late { color: var(--o-plum); font-weight: 700; }
-.oc3-obs {
-  margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 18px;
-  font: 400 max(16px, calc(16px * var(--k)))/1.3 "Bricolage", Arial, sans-serif; color: var(--o-muted);
-}
-.oc3-obs-9 { color: var(--o-ink); text-align: right; }
-.oc3-obs-9 b { color: var(--o-plum); }
-.oc3-math {
-  margin: 2px 0 0; font: 400 max(16px, calc(17px * var(--k)))/1.35 "Bricolage", Arial, sans-serif;
-  color: var(--o-ink); font-variant-numeric: tabular-nums;
-}
-.oc3-math b { color: var(--o-plum); }
+.offer-terms li:last-child { border-bottom: 0; }
+/* the one term screen 3 will check: the promise, in plum, carried through */
+.offer-terms li.is-promise { color: var(--plum); font-weight: 700; }
 
-/* the response: the remedy as the largest number on the screen */
-.oc3-remedy {
-  display: grid; gap: 4px; align-content: center; justify-items: start;
-  width: clamp(240px, calc(27vw * var(--k)), 380px);
-  padding-left: calc(18px * var(--k)); border-left: 4px solid var(--o-plum);
+/* her instructions: a note she owns, on the warm boundary rule */
+.instr {
+  padding: calc(6px * var(--k)) 0 calc(6px * var(--k)) calc(22px * var(--k));
+  border-left: 5px solid var(--warm);
 }
-.oc3-fig { margin: 0; display: flex; align-items: baseline; gap: .22em; color: var(--o-plum); }
-.oc3-fig-u { font: 700 clamp(20px, calc((.9vw + 1.5vh) * var(--k)), 32px)/1 "Bricolage", Arial, sans-serif; letter-spacing: .04em; }
-.oc3-fig-n { font: 700 clamp(56px, calc((3vw + 5.2vh) * var(--k)), 108px)/1.05 "Bricolage", Arial, sans-serif; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
-.oc3-fig-w { margin: 2px 0 0; font: 700 clamp(18px, calc((.7vw + 1.2vh) * var(--k)), 26px)/1.2 "Bricolage", Arial, sans-serif; color: var(--o-plum); }
-.oc3-fig-s { margin: 4px 0 0; font: 400 max(15px, calc(16px * var(--k)))/1.38 "Bricolage", Arial, sans-serif; color: var(--o-muted); max-width: 30ch; }
+.instr-l { margin: 0; padding: 0; list-style: none; display: grid; gap: calc(12px * var(--k)); }
+.instr-l li {
+  position: relative; padding-left: 1.1em;
+  font: 700 clamp(18px, calc((.6vw + 1.05vh) * var(--k)), 25px)/1.25 var(--sans);
+  letter-spacing: -.008em;
+}
+.instr-l li::before {
+  content: ""; position: absolute; left: 0; top: .45em; width: .5em; height: .5em;
+  background: var(--warm); transform: rotate(45deg);
+}
 
-/* ── foot: the permission-bounded ending, clear of the navigation corner ── */
+/* ══ SCREEN 2 · the three offers, one term each, a verdict word ═══════ */
+.rank { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.rank-l {
+  margin: 0; font: 400 max(16px, calc(16px * var(--k)))/1.2 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+.rank .xchoice { gap: 8px; }
+.rank .xchoice button {
+  min-height: 48px; padding: 0 18px;
+  border: 1.5px solid var(--edition-ink); border-radius: 3px;
+  background: var(--sheet); color: var(--edition-ink);
+  font: 700 max(16px, calc(17px * var(--k)))/1 var(--sans); letter-spacing: -.005em;
+}
+.rank .xchoice button:hover { background: var(--edition-wash); }
+.rank .xchoice button[aria-pressed="true"] { background: var(--edition-ink); color: var(--cream); }
+
+.oc2-scene {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch; align-content: center; gap: calc(20px * var(--k));
+}
+.of {
+  position: relative; display: flex; flex-direction: column; gap: calc(6px * var(--k));
+  min-height: clamp(180px, calc(26vh * var(--k)), 260px);
+  padding: calc(20px * var(--k)) calc(22px * var(--k)) calc(18px * var(--k));
+  background: var(--sheet); border: 1.5px solid var(--edition-ink); border-radius: 3px;
+}
+.of-co { margin: 0; font: 700 clamp(20px, calc((.7vw + 1.2vh) * var(--k)), 27px)/1.15 var(--sans); letter-spacing: -.01em; }
+.of-v {
+  margin: calc(4px * var(--k)) 0 0;
+  font: 700 clamp(30px, calc((1.5vw + 2.5vh) * var(--k)), 52px)/1.05 var(--sans);
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums; text-wrap: balance;
+}
+.of-v--none { font-weight: 400; color: var(--ink-soft); }
+.of-t {
+  margin: auto 0 0; padding-top: calc(12px * var(--k));
+  font: 700 max(18px, calc(19px * var(--k)))/1.25 var(--sans);
+}
+/* the bought offer: plum, and the verdict word on a plum band */
+.of[data-win="1"] { border-color: var(--plum); box-shadow: 0 0 0 2px var(--plum), 0 12px 0 -4px color-mix(in srgb, var(--plum) 30%, transparent); }
+.of[data-win="1"] .of-t { color: var(--plum); }
+.of[data-win="1"] .of-t::before {
+  content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .5em;
+  background: var(--plum); border-radius: 50%; vertical-align: .05em;
+}
+/* an offer her instructions bar: the warm rule down its edge and a hatched
+   warm tape along its top (the boundary, drawn on the CARD, never on the
+   term, because the term itself may be fine — Pell & Roe fails on excess,
+   not on who it covers), the term set quiet, the verdict word in ink after
+   a warm boundary mark */
+.of[data-ok="0"] {
+  border-left: 6px solid var(--warm);
+  background:
+    repeating-linear-gradient(-45deg, var(--warm) 0 3px, transparent 3px 9px) top / 100% 8px no-repeat,
+    color-mix(in srgb, var(--sheet) 70%, var(--paper));
+}
+.of[data-ok="0"] .of-v { font-weight: 400; color: var(--ink-soft); }
+.of-t--no::before {
+  content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .5em;
+  background: var(--warm); transform: rotate(45deg); vertical-align: .02em;
+}
+
+/* ══ SCREEN 3 · one calculation: promised → observed → applied ═════════ */
+.calc {
+  margin: 0; display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1.2fr);
+  grid-template-rows: auto auto; align-items: end;
+  gap: calc(14px * var(--k)) calc(14px * var(--k));
+}
+/* the clock, over the two figures it produces: the promised days in ledger
+   blue, the late ones hatched in plum. The cells carry no numbers. */
+.calc-days { grid-column: 1 / 4; grid-row: 1; }
+.calc-strip { display: block; width: 100%; height: clamp(48px, calc(8vh * var(--k)), 72px); }
+.calc-step { grid-row: 2; display: grid; gap: 2px; align-content: end; }
+.calc-link { grid-row: 2; align-self: center; width: calc(44px * var(--k)); height: calc(44px * var(--k)); }
+.calc-n {
+  margin: 0; display: flex; align-items: baseline; gap: .18em;
+  font: 700 clamp(48px, calc((2.6vw + 4.4vh) * var(--k)), 92px)/1 var(--sans);
+  letter-spacing: -.035em; font-variant-numeric: tabular-nums;
+}
+.calc-u { font: 700 clamp(18px, calc((.8vw + 1.3vh) * var(--k)), 28px)/1 var(--sans); letter-spacing: .04em; }
+.calc-w { margin: 2px 0 0; font: 700 clamp(18px, calc((.6vw + 1.05vh) * var(--k)), 24px)/1.25 var(--sans); }
+.calc-s { margin: 0; font: 400 max(18px, calc(18px * var(--k)))/1.3 var(--sans); color: var(--ink-soft); }
+.calc-step--p .calc-n, .calc-step--p .calc-w { color: var(--blue); }
+.calc-step--o .calc-n, .calc-step--o .calc-w, .calc-step--o .calc-s { color: var(--plum); }
+.calc-step--r { padding-left: calc(18px * var(--k)); border-left: 4px solid var(--plum); }
+.calc-step--r .calc-n, .calc-step--r .calc-w { color: var(--plum); }
+
+/* ── foot: the closing state, clear of the navigation corner ─────────── */
 .oc3-foot {
   flex: 0 0 auto; display: grid; gap: 6px;
-  padding: calc(12px * var(--k)) 0 0; padding-right: var(--oc3-nav, 560px);
-  border-top: 3px solid var(--o-warm);
+  padding: calc(12px * var(--k)) var(--oc3-nav, 560px) 0 0;
+  border-top: 3px solid var(--warm);
 }
-.oc3-end { margin: 0; font: 400 max(16px, calc(17px * var(--k)))/1.35 "Bricolage", Arial, sans-serif; max-width: 60ch; }
-.oc3-bars { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
-.oc3-bars li { font: 400 max(16px, calc(16px * var(--k)))/1.35 "Bricolage", Arial, sans-serif; color: var(--o-muted); }
-.oc3-bars li b { color: var(--o-ink); font-weight: 700; }
-.oc3-bars li.is-out::before { content: "\25A7  "; color: var(--o-warm); }
-.oc3-marks { margin: 2px 0 0; display: flex; flex-wrap: wrap; gap: 4px 22px; }
-.oc3-mark {
-  font: 700 max(14px, calc(14px * var(--k)))/1.4 "Bricolage", Arial, sans-serif;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--o-ink);
-}
-.oc3-mark[data-kind="kept"]::before { content: "\25CF  "; }
-.oc3-mark[data-kind="miss"]::before { content: "\25A7  "; color: var(--o-plum); }
-.oc3-mark[data-kind="miss"] { color: var(--o-plum); }
+.oc3-end { margin: 0; font: 700 clamp(18px, calc((.6vw + 1vh) * var(--k)), 24px)/1.3 var(--sans); max-width: 40ch; }
 
-/* ── narrow: one column, the chain stacks, the screen scrolls ─────────── */
+/* ── narrow: one column, the scene stacks, the screen scrolls ─────────── */
 @media (max-width: 899px) {
-  .screen.oc3 { gap: 14px; padding-bottom: 16px; }
-  .screen.oc3 .oc3-headline { font-size: clamp(28px, 7.4vw, 44px); }
-  .oc3-id { text-align: left; }
-  /* the scene takes only its own height; the foot follows it, and drops to
-     the bottom only when there is room */
-  .oc3-scene { flex: 0 0 auto; justify-content: flex-start; }
-  .oc3-foot { margin-top: auto; }
-  .oc3-band { grid-template-columns: 1fr; gap: 2px; }
-  .oc3-band-v { font-size: clamp(17px, 4.6vw, 22px); }
-  .oc3-chain { grid-template-columns: 1fr; gap: 12px; justify-items: start; }
-  .oc3-link { transform: rotate(90deg); margin-left: 8px; }
-  .oc3-remedy { width: auto; max-width: 100%; }
-  .oc3-strip { height: clamp(44px, 12vw, 64px); }
-  .oc3-foot { padding-right: 0; }
+  .screen.oc { gap: 14px; padding-bottom: 16px; }
+  .screen.oc .oc-headline { font-size: clamp(28px, 7.4vw, 44px); }
+  .oc-head { align-items: flex-start; }
+  .oc-micro, .oc3-id { text-align: left; }
+  .oc-scene { flex: 0 0 auto; justify-content: flex-start; }
+  .oc1-scene { grid-template-columns: 1fr; gap: 14px; justify-items: start; }
+  .oc1-scene .offer { width: 100%; }
+  .oc1-scene .oc-link { transform: rotate(90deg); margin-left: 12px; }
+  .oc1-scene .instr { width: 100%; }
+  .oc2-scene { grid-template-columns: 1fr; gap: 12px; }
+  .of { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; min-height: 0; }
+  .of-co { flex: 1 1 100%; }
+  .of-v { font-size: clamp(28px, 8vw, 40px); }
+  .of-t { margin: 0; padding-top: 0; }
+  .calc { grid-template-columns: 1fr; grid-template-rows: none; gap: 12px; justify-items: start; }
+  .calc-days { grid-column: 1; grid-row: auto; width: 100%; }
+  .calc-step, .calc-link { grid-row: auto; }
+  .calc-link { transform: rotate(90deg); margin-left: 8px; }
+  .calc-strip { height: clamp(44px, 12vw, 64px); }
+  .oc3-foot { padding-right: 0; margin-top: auto; }
+  .oc-foot { padding-right: 0; }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  /* an iPad held upright: two offers to a row would squeeze the term, so
+     the three stack; the two objects of screen 1 sit side by side again */
+  .oc1-scene { grid-template-columns: minmax(0, 7fr) auto minmax(0, 5fr); align-items: center; }
+  .oc1-scene .oc-link { transform: none; margin: 0; }
+  /* the tablet has the height: the scene takes it and centres, as on desktop.
+     The screen still scrolls if the scene is taller than the stage. */
+  .oc-scene { flex: 1 0 auto; justify-content: center; }
+  .oc2-scene { align-content: center; }
 }
 @media (max-width: 899px) and (max-height: 500px) {
-  .screen.oc3 .oc3-headline { font-size: 28px; }
+  .screen.oc .oc-headline { font-size: 28px; }
 }

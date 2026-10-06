@@ -31,51 +31,41 @@
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Plan of Thorn Lane"></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
-<div class="pins" id="pins" aria-hidden="true"></div>
+<!-- Pins are real labels on the drawing: visible words, read by assistive
+     tech as well, so they are not aria-hidden. -->
+<div class="pins" id="pins"></div>
 
-<!-- ONE THOUGHT PER SCREEN.
+<!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
      1 acting alone fails · 2 the conditional offer · 3 the agreement.
-     Empty space is the street showing through, and is deliberate. -->
+     Copy is the locked contract (design-study/density-pass/SCREEN-COPY.md,
+     NEGOTIATED). Everything the facilitator says aloud lives in
+     FACILITATOR-NOTES.md, not here. Empty space is the street showing
+     through, and is deliberate. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · ONE HOUSEHOLD CANNOT MOVE ITS OWN PRICE ══════ -->
+<!-- ══════ 1 · ACTING ALONE ══════ -->
 <section class="screen" data-screen="1" data-label="Acting alone" data-cam="street" data-veil="soft">
 
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">Negotiated Neighborhood · Thorn Lane · hypothetical</p>
+  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <h1 class="display xd" tabindex="-1"><span>She did the work.</span><span>The street</span><span>set the price.</span></h1>
-  </div>
-
-  <div class="plate plate--thin" style="grid-area:1/8/3/13">
-    <p class="eyebrow">Renewal, this season</p>
-    <div class="qs">
-      <div class="q q--done">
-        <p class="q-who">No. 31<span class="q-tag">Work done</span></p>
-        <p class="q-state"><span class="q-glyph" aria-hidden="true">✕</span>No offer</p>
-      </div>
-      <div class="q">
-        <p class="q-who">The other 59<span class="q-tag q-tag--none">No work</span></p>
-        <p class="q-state"><span class="q-glyph" aria-hidden="true">✕</span>No offer</p>
-      </div>
-    </div>
-    <p class="body">What prices her is next door, and next door to that.</p>
-    <p class="note">Invented street, invented households, invented figures throughout. No real insurer, place or policy.</p>
+    <p class="xcons">One hardened lot. No offer, on her own.</p>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
+
+  <p class="xmicro xmicro--chip" style="grid-area:8/1/9/6">Invented street and households.</p>
 
 </section>
 
 <!-- ══════ 2 · THE CONDITIONAL OFFER — the central screen ══════
      ONE THOUGHT: the participation threshold makes a conditional collective
      offer possible. The street is the hero; the count is said once; the
-     condition is one sentence. What the offer is made of — the fund, the
+     condition is one line. What the offer is made of — the fund, the
      surveyor, the hardening, the 48 staying in — lives on screen 3, where
      the parties who carry each clause are named. -->
 <section class="screen screen--offer" data-screen="2" data-label="The conditional offer" data-cam="commit" data-veil="">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">01 / The offer</p>
     <h2 class="display xd" tabindex="-1"><span>The offer exists.</span><span>It is conditional</span><span>on the street.</span></h2>
   </div>
 
@@ -87,23 +77,19 @@
     <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60</span></p>
     <div class="thr-rail">
       <input type="range" id="thr-range" min="0" max="60" step="1" value="41"
-             aria-describedby="offer-state offer-line" aria-label="Households committed, out of sixty">
-      <span class="thr-end thr-end--0" aria-hidden="true">0</span>
-      <span class="thr-tick" aria-hidden="true"><i></i>48 needed</span>
-      <span class="thr-end thr-end--60" aria-hidden="true">60</span>
+             aria-describedby="offer-line thr-tick" aria-label="Households committed, out of sixty">
+      <span class="thr-tick" id="thr-tick"><i aria-hidden="true"></i>48 needed</span>
     </div>
     <div class="offer" id="offer" data-state="closed">
-      <p class="offer-word">
+      <p class="offer-line" id="offer-line">
         <svg class="offer-mark offer-mark--closed" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><defs><pattern id="warnhatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="10" height="10" fill="url(#warnhatch)" stroke="currentColor" stroke-width="1.6"/></svg>
         <svg class="offer-mark offer-mark--open" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-        <span id="offer-state">Not available</span>
+        <span id="offer-text">Not available. Seven more households needed.</span>
       </p>
-      <p class="offer-line" id="offer-line">Seven more households and the carrier writes the street as one risk.</p>
     </div>
     <p class="leg">
       <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Committed</span>
       <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
-      <span class="leg-i leg-i--bnd" id="leg-bnd"><i aria-hidden="true"></i>Collective boundary · one risk</span>
     </p>
   </div>
 
@@ -111,43 +97,47 @@
 
 </section>
 
-<!-- ══════ 3 · WHAT EVERYONE SIGNED ══════ -->
+<!-- ══════ 3 · WHAT EVERYONE SIGNED ══════
+     One arrangement diagram: five parties as objects on one contract spine,
+     one short contribution each. The count persists from the slider. -->
 <section class="screen" data-screen="3" data-label="The agreement" data-cam="signed" data-veil="soft">
 
-  <div class="xhead xhead--scrim" style="grid-area:1/1/4/7">
-    <p class="xeyebrow">02 / The agreement</p>
+  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <h2 class="display xd" tabindex="-1"><span>What everyone</span><span>actually signed.</span></h2>
-  </div>
-
-  <!-- What the offer is made of lives here, one clause per party, because
-       the party is what makes the clause credible. Moved from screen 2. -->
-  <div class="plate plate--thin" style="grid-area:6/1/9/13">
-    <p class="eyebrow">One contract, five parties</p>
-    <div class="sign">
-      <div class="sr sr--house">
-        <p class="sr-who">The households<span class="sr-n" id="sign-n">51 of 60</span></p>
-        <p class="sr-what">Each hardens its own lot.</p>
-      </div>
-      <div class="sr sr--carrier">
-        <p class="sr-who">The carrier</p>
-        <p class="sr-what">Writes the street as one risk. Cover holds while 48 stay in.</p>
-      </div>
-      <div class="sr sr--fund">
-        <p class="sr-who">The fund</p>
-        <p class="sr-what">Pays the contractors now.</p>
-      </div>
-      <div class="sr sr--survey">
-        <p class="sr-who">The surveyor</p>
-        <p class="sr-what">Independent. Checks every lot, every season.</p>
-      </div>
-      <div class="sr sr--broker">
-        <p class="sr-who">The broker<span class="sr-n sr-n--paid">Paid a placement fee</span></p>
-        <p class="sr-why">Held the carrier's terms and the fund's rate open for eleven months and paid for the first surveys before anyone signed. At forty-seven, that was their loss.</p>
-      </div>
-    </div>
+    <p class="xcons xcons--count"><span class="xcount" id="sign-n">48</span> households</p>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:3/1/7/13"></div>
+
+  <div class="plate plate--thin plate--deal" style="grid-area:6/1/9/13">
+    <ul class="deal" aria-label="The five parties and what each contributes">
+      <li class="dp dp--house">
+        <svg class="dp-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>
+        <p class="dp-who">Households</p>
+        <p class="dp-what">harden their lots</p>
+      </li>
+      <li class="dp dp--carrier">
+        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
+        <p class="dp-who">Carrier</p>
+        <p class="dp-what">conditional terms, while 48 stay in</p>
+      </li>
+      <li class="dp dp--fund">
+        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
+        <p class="dp-who">Fund</p>
+        <p class="dp-what">finances the work, repaid on the bill</p>
+      </li>
+      <li class="dp dp--survey">
+        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
+        <p class="dp-who">Surveyor</p>
+        <p class="dp-what">verifies every season</p>
+      </li>
+      <li class="dp dp--broker">
+        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
+        <p class="dp-who">Broker</p>
+        <p class="dp-what">assembled it, paid a placement fee</p>
+      </li>
+    </ul>
+  </div>
 
 </section>
 

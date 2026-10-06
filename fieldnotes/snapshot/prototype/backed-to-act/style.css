@@ -1,99 +1,66 @@
 /* ══════════════════════════════════════════════════════════════════════════
    Backed to Act · an agent operations console
-   Protection is what lets a business grant software more authority than it
-   otherwise would.
+   No framework, no build step, no external request. Three files.
 
-   Forked from prototype/resilience-grid/style.css. Everything structural is
-   inherited unchanged and deliberately: --fs-base with the five text roles
-   and their mobile floors, the .plate system, the .screen 12x8 grid with
-   inline grid-area, narrow -> flex column + scroll (never shrink-to-fit),
-   the radius scale, hairline-first elevation, the chrome, the focus ring,
-   the skip button, the two live regions.
+   DENSITY PASS. Every screen is one composition in one object language:
+   cut-paper documents on a dark desk, a cool permitted tray on the left, a
+   warm approval territory on the right, and ONE LINE between them. The line
+   moves; the paper never does. Copy is the locked contract and nothing more
+   (≤ 60 visible words per screen per state). Facilitator detail lives in
+   FACILITATOR-NOTES.md, not on the glass.
 
-   THE ONE PERMITTED DEVIATION — THE STOCK.
-   This prototype depicts ANOTHER COMPANY'S SOFTWARE, in which insurance
-   appears only as a backing condition. A paper publication stock would read
-   as the insurer's own app, which is the single way this prototype can fail.
-   So the working surface is a dark console: --console #1E242B with paper
-   type. Measured, not assumed:
+   Type: Bricolage Grotesque from fonts/ (OFL). On an iPad nothing
+   explanatory renders under 18px and no label under 16px.
 
-     #FBF9F1 on #1E242B  14.84 : 1     paper type on the ground
-     #FBF9F1 on #262E36  13.05 : 1     paper type on a plate
-     #FBF9F1 on #2E3741  11.46 : 1     paper type in an inner row
-     #A7B3BD on #262E36   6.44 : 1     secondary type on a plate
-     #A7B3BD on #2E3741   5.65 : 1     secondary type in an inner row
-     #74C79A on #2E3741   5.97 : 1     "placed" / "agent acts"
-     #E2A75C on #2E3741   5.70 : 1     "held" / "needs a buyer"
-     #F3977A on #2E3741   5.47 : 1     "returned to a person"
-     #8FBEE4 on #2E3741   6.13 : 1     the cover, wherever it is named
-     #2E3A44 on #FBF9F1  11.04 : 1     edition ink, the one light plate
-     #5C6872 on #FBF9F1   5.42 : 1     soft ink on the one light plate
-
-   --line (#3C4650) and --line-2 (#5A6773) are hairlines and control borders
-   and NEVER carry type.
-
-   Georgia display against Arial labels, as everywhere else in the set. No
-   webfonts, no images, no external request.
+   Contrast, measured:
+     #F3EBD7 cream on #0C1218 field        16.9 : 1   headline, labels
+     #F3EBD7 cream on #6B675E block         4.6 : 1   headline on its backing
+     #B9B2A0 mute  on #0C1218 field         9.6 : 1   secondary labels
+     #16150F ink   on #F3EBD7 cream        16.4 : 1   words on a sheet
+     #74C79A ok    on #0C1218 field         9.1 : 1   "agent may act"
+     #E2A75C hold  on #0C1218 field         8.6 : 1   "needs your approval"
+     #F3977A exc   on #0C1218 field         8.0 : 1   "always needs a person"
    ══════════════════════════════════════════════════════════════════════════ */
 
+@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
+  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
+
 :root {
-  --console:      #1E242B;   /* the ground, and the body                  */
-  --panel:        #262E36;   /* a plate                                   */
-  --panel-2:      #2E3741;   /* an inner row, a track, a badge ground     */
-  --paper:        #FBF9F1;
-  --edition-ink:  #2E3A44;   /* 11.04 : 1 on paper — the one light plate  */
-  --ink-soft:     #5C6872;   /*  5.42 : 1 on paper                        */
+  --stage-deep: #10161C;
+  --stage-navy: #16202B;
+  --cool:       #6FC3E8;
+  --warm:       #F0945F;
+  --panel:      #262E36;
+  --line:       #3C4650;      /* hairlines, control borders — never type */
+  --line-2:     #5A6773;
+  --paper:      #FBF9F1;
+  --console:    #1E242B;
 
-  --dim:          #A7B3BD;   /* secondary type on every dark surface      */
-  --line:         #3C4650;   /* hairlines — NEVER type                    */
-  --line-2:       #5A6773;   /* control borders, traces — NEVER type      */
+  --cream:  #F3EBD7;  --ink: #16150F;  --mute: #B9B2A0;  --sheetm: #5A554A;
+  --block:  #6B675E;  --tray: #262E36;
+  --ok:     #74C79A;  --hold: #E2A75C;  --exc: #F3977A;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --ease: cubic-bezier(.4,0,.2,1);
 
-  --act:          #74C79A;   /* permitted, placed                         */
-  --hold:         #E2A75C;   /* held, needs a buyer                       */
-  --esc:          #F3977A;   /* over the line, returned to a person       */
-  --cover:        #8FBEE4;   /* the backing condition                     */
-
-  --r-s: 3px; --r-m: 6px; --r-l: 10px;
-
-  --serif: Georgia, "Times New Roman", serif;
-  --sans:  Arial, Helvetica, sans-serif;
-
-  /* hairline-first elevation, inverted for a dark stock: the ring does the
-     work and the shadow only seats the plate on the field */
+  --r-s: 3px; --r-m: 6px;
+  --sans: "Bricolage", "Helvetica Neue", Arial, sans-serif;
   --plate-shadow: 0 0 0 1px rgba(167,179,189,.15), 0 16px 38px -22px rgba(0,0,0,.85);
-
-  /* ── the one unit · inherited verbatim ─────────────────────────────────
-     Height-led, because the deck does not scroll on desktop. --fit is the
-     per-screen multiplier app.js lowers only when a composition would
-     otherwise leave the stage. */
-  --fs-base: clamp(13px, 1.1vh + 0.3vw, 15px);
-  --fit: 1;
-  --fs: var(--fs-base);
-
-  --dsp:    clamp(22px, 1.35vw + 1.55vh, 38px);
-  --dsp-xl: clamp(25px, 1.80vw + 2.10vh, 50px);
-  --figsz:  clamp(20px, 1.20vw + 1.40vh, 34px);
 
   --gutter: 18px;
   --chrome-h: 76px;
-  --console-h: 40px;         /* the vendor bar */
-  --grid-gap: calc(var(--fs-base) * .93);
+  --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px));
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; height: 100%; }
-
-/* Plates set their own `display`, which outranks the user-agent rule for
-   [hidden]. Without this a hidden screen still paints — and on a full-bleed
-   layout it paints straight on top of the one that should show. */
 [hidden] { display: none !important; }
 
 body {
-  margin: 0;
-  height: 100%;
-  background: var(--console);
-  color: var(--paper);
-  font: var(--fs-base)/1.5 var(--sans);
+  margin: 0; height: 100%;
+  background: var(--stage-deep); color: var(--cream);
+  font: 400 16px/1.4 var(--sans);
   overflow: hidden;
 }
 
@@ -103,1283 +70,28 @@ body {
   white-space: nowrap; border: 0;
 }
 
-.skip {
-  position: fixed; left: 16px; top: 12px; z-index: 60;
-  width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
-  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
-  background: var(--paper); color: var(--console);
-  border-radius: var(--r-m); text-decoration: none;
-  font: 600 14px/1 var(--sans); cursor: pointer;
+/* the skip button: hidden until focused, then a real paper button */
+.skip { z-index: 60; background: var(--cream); color: var(--ink); border: 0;
+  border-radius: var(--r-m); font: 700 16px/1 var(--sans); cursor: pointer; }
+.skip.sr-only:focus {
+  position: fixed; left: 16px; top: 12px; width: auto; height: auto; margin: 0;
+  overflow: visible; clip: auto; clip-path: none; padding: 14px 16px;
 }
-.skip:focus {
-  width: auto; height: auto; overflow: visible;
-  clip: auto; clip-path: none; padding: 12px 14px;
-}
-/* the heading receives focus from the skip button; it must not draw a ring
-   when it is reached by a mouse click on the page */
-.display:focus { outline: none; }
-.display:focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
 
+/* focus is always a visible ring, never a tint */
 :where(a, button, select, input, [tabindex]):focus-visible {
-  outline: 2px solid var(--paper);
-  outline-offset: 2px;
-  border-radius: var(--r-s);
+  outline: 3px solid var(--hold); outline-offset: 3px; border-radius: var(--r-s);
 }
-/* on the one light plate the ring has to be the ink, not the paper */
-.plate--note :where(a, button, [tabindex]):focus-visible,
-.plate--note .display:focus-visible { outline-color: var(--edition-ink); }
+.xd:focus { outline: none; }
+.xd:focus-visible { outline: 3px solid var(--hold); outline-offset: 6px; }
 
 /* ══ THE GROUND ═════════════════════════════════════════════════════════ */
 
-/* Inset past every edge, so the console field is cropped by the viewport
-   rather than framed by it. */
 .world { position: fixed; inset: -8% -11%; z-index: 0; }
 .world svg { display: block; width: 100%; height: 100%; }
-
-/* Per-screen vignette. No text ever sits on it — every word is on an opaque
-   plate — so this only sets how loudly the field speaks. */
-.veil {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  transition: background .45s cubic-bezier(.4,0,.2,1);
-  background: radial-gradient(130% 100% at 50% 45%,
-              rgba(30,36,43,0) 36%, rgba(17,21,26,.72) 100%);
-}
-.veil[data-veil="soft"] {
-  background: radial-gradient(135% 105% at 50% 45%,
-              rgba(30,36,43,0) 44%, rgba(17,21,26,.78) 100%);
-}
-
-/* ══ THE VENDOR BAR ═════════════════════════════════════════════════════
-   The only component this prototype adds. See the note in index.html: the
-   hard constraint is that the surface must read as another company's
-   software. A persistent wordmark, tenant workspace and live authority
-   state does that in one strip. Labels only — never a sentence. */
-
-.cbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 5;
-  height: var(--console-h);
-  display: flex; align-items: center; gap: calc(var(--fs-base) * 1.1);
-  padding: 0 var(--gutter);
-  margin: 0;
-  background: rgba(22,27,33,.92);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(3px);
-}
-.cbar p { margin: 0; }
-.cbar-brand {
-  display: flex; align-items: baseline; gap: .55em; flex: 0 0 auto;
-  font: 700 max(13px, calc(var(--fs-base) * .94))/1 var(--sans);
-  letter-spacing: .06em; text-transform: uppercase; color: var(--paper);
-}
-.cbar-sub {
-  font: 400 max(11px, calc(var(--fs-base) * .72))/1 var(--sans);
-  letter-spacing: .13em; text-transform: uppercase; color: var(--dim);
-}
-.cbar-tenant {
-  flex: 1 1 auto; min-width: 0;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font: max(11px, calc(var(--fs-base) * .75))/1.3 var(--sans);
-  letter-spacing: .04em; color: var(--dim);
-}
-/* --line-2 is a border token and measured 2.96 : 1 here, so the separators
-   ride on --dim like the string they punctuate. */
-.cbar-slash { color: var(--dim); padding: 0 .25em; }
-.cbar-state {
-  flex: 0 0 auto;
-  display: inline-flex; align-items: center; gap: .55em;
-  padding: 5px 10px;
-  border: 1px solid var(--line-2); border-radius: 999px;
-  font: 600 max(11px, calc(var(--fs-base) * .75))/1.3 var(--sans);
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--hold);
-}
-/* state is a WORD plus a filled/hollow marker, never a tint alone */
-.cbar-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  border: 2px solid currentColor; background: transparent;
-}
-.cbar-state[data-on="1"] { color: var(--act); border-color: var(--act); }
-.cbar-state[data-on="1"] .cbar-dot { background: currentColor; }
-
-/* ══ THE DECK ═══════════════════════════════════════════════════════════ */
-
-.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
-
-.screen {
-  position: absolute; inset: 0;
-  padding: calc(var(--console-h) + var(--gutter)) var(--gutter) var(--chrome-h);
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(8, minmax(0, 1fr));
-  gap: var(--grid-gap);
-  pointer-events: none;
-  align-items: start;
-
-  --fs: calc(var(--fs-base) * var(--fit));
-  --pad-y: calc(var(--fs) * 1.07);
-  --pad-x: calc(var(--fs) * 1.20);
-
-  /* ── the five text roles · inherited verbatim ─────────────────────────
-     Every font-size in this file resolves through one of these, so a floor
-     can be applied in one place. */
-  --t-body: var(--fs);                   /* running copy            */
-  --t-sub:  calc(var(--fs) * .93);       /* figures, limit lines    */
-  --t-mid:  calc(var(--fs) * .867);      /* names, row actions      */
-  --t-sec:  calc(var(--fs) * .8);        /* notes, lists, chips     */
-  --t-lab:  calc(var(--fs) * .667);      /* uppercase labels        */
-
-  font-size: var(--fs);
-}
-.screen[hidden] { display: none; }
-.screen > * { min-width: 0; }
-
-.plate, .cta, .iconbtn, .picker, .auth-stop, select { pointer-events: auto; }
-
-/* A plate is as tall as what it holds. It is never handed a height it then
-   has to hide the remainder of. */
-.plate {
-  background: var(--panel);
-  border-radius: var(--r-l);
-  box-shadow: var(--plate-shadow);
-  padding: var(--pad-y) var(--pad-x);
-  display: flex; flex-direction: column; justify-content: flex-start;
-}
-/* The one light plate in the deck — screen 3's takeaway. The publication
-   speaking once, from outside the vendor's software. */
-.plate--note { background: var(--paper); color: var(--edition-ink); }
-
-/* ══ TYPE ═══════════════════════════════════════════════════════════════ */
-
-.eyebrow {
-  margin: 0 0 calc(var(--fs) * .6);
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--dim);
-}
-.eyebrow--ink { color: var(--ink-soft); }
-
-.display {
-  margin: 0 0 calc(var(--fs) * .8);
-  font: 400 calc(var(--dsp) * var(--fit))/1.08 var(--serif);
-  letter-spacing: -.028em;
-  text-wrap: balance;
-}
-.display--xl { font-size: calc(var(--dsp-xl) * var(--fit)); letter-spacing: -.032em; }
-.display--ask {
-  font-size: calc(var(--dsp) * var(--fit) * 1.04);
-  letter-spacing: -.026em; line-height: 1.12;
-}
-.display--ask span { display: inline; }
-.display span { display: block; }
-.display:last-child { margin-bottom: 0; }
-
-.body { margin: 0 0 calc(var(--fs) * .67); font: var(--t-body)/1.5 var(--sans); max-width: 58ch; }
-.body--tight { margin-top: calc(var(--fs) * .8); margin-bottom: 0; font-size: var(--t-sub); color: var(--dim); }
-.body:last-child { margin-bottom: 0; }
-.note { margin: 0; font: var(--t-sec)/1.42 var(--sans); color: var(--dim); }
-.plate--note .note { color: var(--ink-soft); }
-.note--rule {
-  margin-top: calc(var(--fs) * .7);
-  padding-top: calc(var(--fs) * .55);
-  border-top: 1px solid var(--line);
-}
-.strong { color: var(--paper); font-weight: 700; }
-.plate--note .strong { color: var(--edition-ink); }
-
-/* the standing "who set this" mark. --line-2 is a border token and must not
-   carry type, so this rides on --dim like every other label. */
-.illus {
-  display: inline-block; margin: 0;
-  font: 600 var(--t-lab)/1.6 var(--sans);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--dim);
-}
-
-.fig {
-  margin: 0 0 calc(var(--fs) * .7);
-  font: 400 calc(var(--figsz) * var(--fit))/1 var(--serif); letter-spacing: -.025em;
-  color: var(--paper);
-}
-.fig-unit {
-  font: var(--t-sec)/1 var(--sans); letter-spacing: 0;
-  color: var(--dim); margin-left: .5em;
-}
-
-/* the economic line — why the provider participates. One line, ruled off so
-   it reads as an aside about the vendor rather than part of the argument. */
-.econ {
-  margin: calc(var(--fs) * .3) 0 0;
-  padding-left: calc(var(--fs) * .8);
-  border-left: 2px solid var(--cover);
-  font: var(--t-sec)/1.45 var(--sans); color: var(--dim);
-}
-
-/* ══ .auth — THE AUTHORITY CONTROL ══════════════════════════════════════
-   The central object of the prototype. A track whose fill is the permission
-   boundary, and three named stops. On screen 1 it is a locked readout (list
-   items, no buttons — a control that cannot be moved must not look like one
-   that can). On screen 2 the stops are real buttons and moving them is the
-   commitment the viewer watches being made. */
-
-.auth { margin: 0; }
-.auth-track {
-  position: relative; height: calc(var(--fs) * .5);
-  background: var(--panel-2); border-radius: 999px;
-  margin: 0 0 calc(var(--fs) * 1.1);
-  overflow: hidden;
-}
-.auth-fill {
-  position: absolute; inset: 0 auto 0 0; border-radius: 999px;
-  background: var(--hold); width: 16%;
-  transition: width .55s cubic-bezier(.4,0,.2,1), background .55s linear;
-}
-.auth[data-level="1"] .auth-fill { width: 62%; background: var(--act); }
-
-.auth-stops {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: calc(var(--fs) * .4); margin: 0; padding: 0; list-style: none;
-}
-.auth-stop {
-  display: block; width: 100%; text-align: left;
-  margin: 0; padding: calc(var(--fs) * .4) 0 0;
-  background: none; border: 0; border-top: 2px solid var(--line);
-  border-radius: 0;
-  font: 600 max(11.5px, var(--t-sec))/1.3 var(--sans);
-  color: var(--dim);
-  cursor: pointer;
-}
-.auth-stops li.auth-stop { cursor: default; }
-.auth-stop:hover:not([disabled]):not(li) { color: var(--paper); border-top-color: var(--line-2); }
-.auth-sub {
-  display: block; margin-top: 3px;
-  font: 400 max(11px, var(--t-lab))/1.4 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; color: var(--dim);
-}
-/* THE SET STOP. A word, a weight and a rule — never a fade. */
-.auth-stop[data-on="1"],
-.auth-stop[aria-pressed="true"] {
-  color: var(--paper); border-top-color: var(--paper); border-top-width: 3px;
-  padding-top: calc(var(--fs) * .4 - 1px);
-}
-.auth[data-level="1"] .auth-stop[aria-pressed="true"],
-.auth[data-level="1"] .auth-stop[data-on="1"] { border-top-color: var(--act); }
-.auth-stop--off, .auth-stop[disabled] { cursor: not-allowed; }
-.auth-stop--off { border-top-style: dashed; }
-
-.grant {
-  display: flex; align-items: flex-start; gap: .6em;
-  margin: calc(var(--fs) * .9) 0 0;
-  padding: calc(var(--fs) * .55) calc(var(--fs) * .7);
-  background: var(--panel-2); border-radius: var(--r-m);
-  border-left: 3px solid var(--line-2);
-  font: var(--t-sec)/1.45 var(--sans); color: var(--dim);
-}
-.grant-mark { flex: 0 0 auto; line-height: 1.45; }
-.grant[data-on="1"] { border-left-color: var(--cover); color: var(--paper); }
-.grant[data-on="1"] .grant-mark { color: var(--cover); }
-
-/* ══ .q — THE APPROVAL QUEUE (screen 1) ═════════════════════════════════
-   The bottleneck, concretely: the things waiting on a person. */
-
-.q { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
-.q-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: baseline; gap: 0 calc(var(--fs) * .6);
-  padding: calc(var(--fs) * .36) calc(var(--fs) * .55);
-  background: var(--panel-2); border-radius: var(--r-s);
-  border-left: 3px solid var(--hold);
-}
-.q-row p { margin: 0; }
-.q-badge {
-  align-self: center;
-  padding: 1px 6px; border-radius: var(--r-s);
-  border: 1px solid var(--hold); color: var(--hold);
-  font: 700 max(11px, calc(var(--t-lab) * .98))/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
-}
-.q-what { font: var(--t-mid)/1.4 var(--sans); color: var(--paper); min-width: 0; }
-.q-val  { font: 600 var(--t-mid)/1.4 var(--sans); color: var(--paper);
-          font-variant-numeric: tabular-nums; white-space: nowrap; }
-.q-wait { font: var(--t-sec)/1.4 var(--sans); color: var(--dim);
-          font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 4ch; text-align: right; }
-.q-row--more {
-  grid-template-columns: 1fr; background: none;
-  border-left-color: var(--line); border-left-style: dashed;
-}
-.q-row--more .q-what { color: var(--dim); font-size: var(--t-sec); }
-
-/* ══ .limit / .perms — WHAT THE AGENT MAY DO (screen 2) ═════════════════ */
-
-.limit {
-  margin: 0 0 calc(var(--fs) * .8);
-  padding: calc(var(--fs) * .6) calc(var(--fs) * .75);
-  background: var(--panel-2); border-radius: var(--r-m);
-  border-left: 3px solid var(--line-2);
-}
-.limit[data-on="1"] { border-left-color: var(--cover); }
-.limit p { margin: 0; }
-.limit-lab {
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--dim);
-}
-.limit-fig {
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 .5em;
-  margin-top: calc(var(--fs) * .2) !important;
-  font: 400 calc(var(--figsz) * var(--fit))/1.05 var(--serif);
-  letter-spacing: -.025em; color: var(--paper);
-  font-variant-numeric: tabular-nums;
-}
-.limit-unit {
-  font: 400 var(--t-sec)/1.4 var(--sans); letter-spacing: 0; color: var(--dim);
-}
-.limit-2 {
-  margin-top: calc(var(--fs) * .3) !important;
-  font: var(--t-sec)/1.42 var(--sans); color: var(--dim);
-}
-
-.perms { margin: 0 0 calc(var(--fs) * .7); padding: 0; list-style: none;
-         display: grid; gap: 2px; }
-.perm {
-  display: grid; grid-template-columns: 1fr auto;
-  align-items: center; gap: 0 calc(var(--fs) * .6);
-  padding: calc(var(--fs) * .4) calc(var(--fs) * .55);
-  background: var(--panel-2); border-radius: var(--r-s);
-  border-left: 3px solid var(--hold);
-  transition: border-color .3s linear;
-}
-.perm[data-on="1"] { border-left-color: var(--act); }
-.perm-what { margin: 0; font: var(--t-mid)/1.4 var(--sans); color: var(--paper); }
-/* NO STATE BY FADING. The badge is a word in a bordered pill; it survives
-   greyscale because the word itself changes. */
-.perm-badge {
-  padding: 1px 6px; border-radius: var(--r-s);
-  border: 1px solid var(--hold); color: var(--hold);
-  font: 700 max(11px, calc(var(--t-lab) * .98))/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
-}
-.perm[data-on="1"] .perm-badge { border-color: var(--act); color: var(--act); }
-/* the consequential exception — set apart from the four permissions above */
-.perm--back {
-  margin-top: calc(var(--fs) * .5);
-  border-left-color: var(--esc) !important;
-  background: var(--panel-2);
-  box-shadow: inset 0 0 0 1px rgba(243,151,122,.34);
-}
-.perm-badge--back,
-.perm--back .perm-badge { border-color: var(--esc) !important; color: var(--esc) !important; }
-
-/* ══ .split — COVERED vs THE CUSTOMER'S OWN (screen 2) ══════════════════
-   Two columns of identical weight. What the customer keeps is as large and
-   as early as what the policy takes. */
-
-.split { display: grid; grid-template-columns: 1fr 1px 1fr;
-         gap: 0 calc(var(--fs) * .95); margin: 0; }
-.split-rule { background: var(--line); }
-.split-col { display: grid; gap: calc(var(--fs) * .25); align-content: start; }
-.split-head {
-  margin: 0;
-  font: 600 var(--t-lab)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase;
-}
-.split-col--cov .split-head { color: var(--cover); }
-.split-col--own .split-head { color: var(--hold); }
-.split-sub { margin: 0 0 calc(var(--fs) * .3); font: var(--t-lab)/1.4 var(--sans);
-             letter-spacing: .06em; color: var(--dim); }
-.split-list { margin: 0; padding: 0; list-style: none; display: grid; gap: calc(var(--fs) * .28); }
-.split-list li {
-  display: grid; grid-template-columns: calc(var(--fs) * .85) 1fr; gap: 0 calc(var(--fs) * .25);
-  font: var(--t-sec)/1.4 var(--sans); color: var(--paper);
-}
-.split-col--cov .split-list li::before { content: "+"; color: var(--cover); font-weight: 700; }
-.split-col--own .split-list li::before { content: "−"; color: var(--hold); font-weight: 700; }
-
-/* ══ .run — THE DAY (screen 3) ══════════════════════════════════════════
-   Forked from resilience-grid's .tl: the same column geometry, the same
-   hairline, the same "the human row is the loudest row" rule. */
-
-.run { margin: 0; display: grid; gap: 0; }
-.run-row {
-  display: grid;
-  grid-template-columns: 5.4ch calc(var(--fs) * 1.5) 1fr;
-  align-items: start; gap: 0 calc(var(--fs) * .5);
-  padding: calc(var(--fs) * .4) calc(var(--fs) * .3);
-  border-left: 2px solid transparent;
-  border-radius: var(--r-s);
-}
-.run-row p { margin: 0; }
-.run-time {
-  font: 600 var(--t-sec)/1.45 var(--sans);
-  font-variant-numeric: tabular-nums; color: var(--dim);
-  text-align: right; white-space: nowrap;
-}
-.run-mark { position: relative; height: 100%; display: flex; justify-content: center; }
-.run-mark::before {
-  content: ""; position: absolute; top: 0; bottom: -100%;
-  width: 1px; background: var(--line);
-}
-.run-row:last-child .run-mark::before { display: none; }
-.run-dot {
-  position: relative; z-index: 1; margin-top: calc(var(--fs) * .4);
-  width: calc(var(--fs) * .55); height: calc(var(--fs) * .55);
-  border-radius: 50%; background: var(--act); flex: 0 0 auto;
-  box-shadow: 0 0 0 3px var(--panel);
-}
-/* a covered mistake is a different KIND of event from a clean placement:
-   hollow, not filled */
-.run-dot--cov { background: var(--panel); box-shadow: 0 0 0 2px var(--cover), 0 0 0 5px var(--panel); }
-.run-who { font: 600 var(--t-sec)/1.5 var(--sans); color: var(--paper); }
-.run-kind {
-  display: inline-block; margin-left: .5em;
-  padding: 1px 6px; border-radius: var(--r-s);
-  border: 1px solid var(--act); color: var(--act);
-  font: 700 max(11px, calc(var(--t-lab) * .98))/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
-}
-.run-kind--cov { border-color: var(--cover); color: var(--cover); }
-.run-kind--esc { border-color: var(--esc); color: var(--esc); }
-.run-what { font: var(--t-mid)/1.42 var(--sans); color: var(--dim); }
-.run-body { min-width: 0; }
-
-/* the one case that crosses the line — the loudest row in the day */
-.run-row--human {
-  background: var(--panel-2); border-radius: var(--r-m);
-  border-left: 3px solid var(--esc);
-  padding: calc(var(--fs) * .6) calc(var(--fs) * .65);
-  margin: calc(var(--fs) * .4) 0 0;
-  grid-template-columns: 5.4ch 1fr;
-}
-.run-row--human .run-what { color: var(--paper); }
-.run-to {
-  margin-top: calc(var(--fs) * .35) !important;
-  padding-top: calc(var(--fs) * .35);
-  border-top: 1px solid var(--line);
-  font: var(--t-sec)/1.45 var(--sans); color: var(--dim);
-}
-.run-sum {
-  margin: calc(var(--fs) * .8) 0 0;
-  padding-top: calc(var(--fs) * .55);
-  border-top: 1px solid var(--line);
-  font: var(--t-sub)/1.45 var(--sans); color: var(--dim);
-}
-
-/* ══ CHROME ═════════════════════════════════════════════════════════════ */
-
-.chrome {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
-  height: var(--chrome-h);
-  padding: 0 var(--gutter) var(--gutter);
-  display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
-  pointer-events: none;
-}
-.chrome-r { display: flex; align-items: center; gap: 8px; }
-.iconbtn {
-  width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center;
-  background: var(--panel); color: var(--paper);
-  border: 1px solid var(--line-2); border-radius: var(--r-m);
-  box-shadow: var(--plate-shadow);
-  font: 16px/1 var(--sans); cursor: pointer;
-}
-.iconbtn:hover { background: var(--panel-2); }
-/* A disabled control still has to be legible: --dim on --panel-2 is 5.65 : 1,
-   and the flat fill is what says "off", not a faded glyph. */
-.iconbtn[disabled] {
-  color: var(--dim); background: var(--panel-2);
-  border-color: var(--line); cursor: default;
-}
-.iconbtn[disabled]:hover { background: var(--panel-2); }
-
-.picker select {
-  min-height: 46px; max-width: 34ch; padding: 0 12px;
-  background: var(--panel); color: var(--paper);
-  border: 1px solid var(--line-2); border-radius: var(--r-m);
-  box-shadow: var(--plate-shadow);
-  font: 14px/1 var(--sans); cursor: pointer;
-}
-
-/* The primary action is the stock's extreme, not an accent. On paper that is
-   the ink; on a console it is the paper. */
-.cta {
-  display: inline-flex; align-items: center; gap: 9px;
-  min-height: 46px; padding: 0 20px;
-  background: var(--paper); color: var(--console);
-  border: 1px solid var(--paper); border-radius: var(--r-m);
-  box-shadow: var(--plate-shadow);
-  font: 600 15px/1 var(--sans); cursor: pointer; white-space: nowrap;
-}
-.cta:hover { background: #ECEADF; border-color: #ECEADF; }
-
-/* The ground window is a desktop no-op. On a phone it is the hole the console
-   field shows through, and it takes whatever height the plates have not
-   claimed. */
-.gw { display: none; }
-
-/* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
-
-@media (min-width: 900px) and (max-height: 820px) {
-  :root { --gutter: 13px; --chrome-h: 66px; --console-h: 36px; }
-  .chrome { padding: 0 var(--gutter) 10px; }
-}
-
-/* ══ NARROW ═════════════════════════════════════════════════════════════ */
-
-@media (max-width: 899px) {
-  :root {
-    --gutter: 13px; --chrome-h: 68px; --console-h: 38px; --grid-gap: 10px;
-    /* a phone is not a short desktop: start from 14px, not 13px */
-    --fs-base: clamp(14px, 3.6vw, 15.5px);
-  }
-
-  /* ── MOBILE TYPE FLOORS ───────────────────────────────────────────────
-     app.js does not run the --fit search on a narrow window at all (see
-     fitScreen), so --fit is 1 here and these are the real rendered sizes. */
-  .screen {
-    --t-body: max(14px,   var(--fs));
-    --t-sub:  max(13.5px, calc(var(--fs) * .93));
-    --t-mid:  max(13px,   calc(var(--fs) * .867));
-    --t-sec:  max(12.5px, calc(var(--fs) * .8));
-    --t-lab:  max(11px,   calc(var(--fs) * .667));
-  }
-
-  .world { inset: -5% -9%; }
-
-  /* The deck stops at the controls rather than scrolling underneath them. */
-  .deck { inset: var(--console-h) 0 var(--chrome-h) 0; }
-
-  /* One screenful, top to bottom. Plates take the height they need, the
-     console field takes what is left. NEVER shrink-to-fit — phones scroll. */
-  .screen {
-    display: flex; flex-direction: column; gap: calc(var(--fs) * .62);
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: var(--gutter) var(--gutter) 8px;
-  }
-  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
-
-  .gw { display: block; flex: 1 1 0; min-height: 0; }
-
-  /* The bar must hold the wordmark and the live authority state inside
-     360px without either being cut — the pill was overflowing the right
-     edge at 390 and 430. The tenant string and the descriptor are what
-     give way: the workspace is repeated in screen 1's eyebrow, and the
-     state pill is the thing the bar exists for. */
-  .cbar { gap: calc(var(--fs-base) * .7); }
-  .cbar-tenant, .cbar-sub { display: none; }
-  .cbar-state { margin-left: auto; }
-
-  /* three stops will not sit side by side at 360px without breaking the
-     11px floor, so the boundary becomes a vertical ladder */
-  .auth-stops { grid-template-columns: 1fr; gap: calc(var(--fs) * .3); }
-  .auth-stop { padding-top: calc(var(--fs) * .32); }
-  .auth-stop[data-on="1"], .auth-stop[aria-pressed="true"] { padding-top: calc(var(--fs) * .32 - 1px); }
-
-  .q-row {
-    grid-template-columns: auto 1fr auto;
-    gap: 0 calc(var(--fs) * .45);
-    padding: calc(var(--fs) * .4) calc(var(--fs) * .5);
-  }
-  .q-wait { grid-column: 3; }
-  .q-val  { grid-column: 2 / 4; grid-row: 2; text-align: left; }
-  .q-row--more { grid-template-columns: 1fr; }
-
-  .perm { grid-template-columns: 1fr; gap: calc(var(--fs) * .25); }
-  .perm-badge { justify-self: start; }
-
-  .split { grid-template-columns: 1fr; gap: calc(var(--fs) * .8); }
-  .split-rule { display: none; }
-
-  .run-row { grid-template-columns: 5ch calc(var(--fs) * 1.3) 1fr; }
-  .run-row--human { grid-template-columns: 5ch 1fr; }
-
-  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
-  .chrome-r { width: 100%; }
-  .picker { flex: 1 1 auto; min-width: 0; }
-  .picker select { width: 100%; max-width: none; }
-  .cta { padding: 0 14px; font-size: 14px; }
-  /* The label is hidden from SIGHT, not from the accessibility tree.
-     display:none left the button's accessible name as the arrow glyph. */
-  .cta span:first-child {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
-    white-space: nowrap; border: 0;
-  }
-}
-
-@media (max-width: 400px) {
-  .q-row { grid-template-columns: auto 1fr; }
-  .q-wait { grid-column: 2; grid-row: 2; text-align: left; min-width: 0; }
-  .q-val  { grid-column: 2; grid-row: 3; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
-}
-
-/* ══ GLOBAL TYPE FLOORS (integration) ═══════════════════════════════════
-   Applied by the main thread at integration. The --fit search runs on any
-   short stage, not only a phone: at 1280x720 it drove uppercase labels to
-   under 9px. Floors are therefore global, and the screen scrolls rather
-   than shrinking past legibility. Narrow floors are re-stated after, so a
-   phone keeps the higher minimums. Nothing renders below 11px anywhere. */
-.screen {
-  --t-body: max(13px,   var(--fs));
-  --t-sub:  max(12.5px, calc(var(--fs) * .93));
-  --t-mid:  max(12px,   calc(var(--fs) * .867));
-  --t-sec:  max(11.5px, calc(var(--fs) * .8));
-  --t-lab:  max(11px,   calc(var(--fs) * .667));
-  overflow-y: auto;
-}
-@media (max-width: 899px) {
-  .screen {
-    --t-body: max(14px,   var(--fs));
-    --t-sub:  max(13.5px, calc(var(--fs) * .93));
-    --t-mid:  max(13px,   calc(var(--fs) * .867));
-    --t-sec:  max(12.5px, calc(var(--fs) * .8));
-    --t-lab:  max(11px,   calc(var(--fs) * .667));
-  }
-}
-
-/* ══ TOUCH TARGETS (integration) ═══════════════════════════════════════
-   iPad is the primary delivery device and this is operated while someone
-   holds it. Every control takes a 44px minimum box. The chip and replay
-   buttons were 34px and 38px, which is a miss on a tablet. Padding, not
-   font-size, does the growing, so type is unaffected. */
-.chipbtn, .tl-play, .iconbtn, .cta, .picker select, button, select {
-  min-height: 44px;
-}
-.chipbtn, .tl-play { padding-top: 0; padding-bottom: 0; }
-/* a control that is only a glyph still needs width */
-.iconbtn { min-width: 44px; }
-
-/* ══ TOUCH TARGETS 2 (integration) ═════════════════════════════════════
-   Two misses the first pass left. A range input reports its track height,
-   not a thumb box, so it needs an explicit 44px height to be draggable with
-   a thumb on glass. And a chip with a two-letter label was 41px wide — the
-   44px rule is both dimensions, not just the vertical one. */
-input[type="range"] { height: 44px; }
-.chipbtn { min-width: 44px; }
-
-/* ══ TABLET CHROME (integration) ══════════════════════════════════════
-   iPad is the primary device, and iPad portrait is 820px — below the 899px
-   breakpoint, so it was inheriting the phone's chrome and showing the Next
-   button as a bare arrow. Stacking at that width is right; a tablet with
-   820px of width losing the one label that says where Next goes is not.
-   Restore the label above phone width. */
-@media (min-width: 600px) and (max-width: 899px) {
-  /* Both selectors: one lane scoped its phone rule as `.chrome .cta`, which
-     outranks a bare `.cta`. Matching that specificity and coming later in
-     source order is what makes the restore actually win there. */
-  .cta span:first-child,
-  .chrome .cta span:first-child {
-    position: static; width: auto; height: auto; padding: 0; margin: 0;
-    overflow: visible; clip: auto; clip-path: none; white-space: nowrap; border: 0;
-  }
-  .cta { padding: 0 18px; }
-}
-
-/* ══ IPAD GESTURE CLEARANCE (integration) ═════════════════════════════════
-   iPad is the primary device and the chrome is fixed to the bottom edge, so
-   prev / picker / next ended ~11px from it — inside the home-indicator strip,
-   under the one button a facilitator taps on every screen. env() alone is not
-   enough: a desktop browser and some iPad configurations report a 0 inset, so
-   the clearance takes whichever is larger. Everything that reserves room for
-   the chrome has to grow by the same amount or the content slides under it. */
-:root { --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px)); }
-.chrome {
-  height: calc(var(--chrome-h) + var(--gesture-safe));
-  padding-bottom: calc(var(--gutter) + var(--gesture-safe));
-}
-.screen { padding-bottom: calc(var(--chrome-h) + var(--gesture-safe)); }
-.deck   { bottom: 0; }
-@media (max-width: 899px) {
-  .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
-}
-
-/* ══ NEW · .choice — the closing decision ═══════════════════════════════
-   Lives on the one LIGHT plate, so everything here is edition ink on paper,
-   not console stock. Three equal answers, none preselected: an unanswered
-   question is the state the screen opens in, and the facilitator takes the
-   hands. The chosen one is marked by a filled ground AND its border AND the
-   pressed state — never by a tint alone — so it survives greyscale.
-   Deliberately not a settings control: choosing changes no limit, it only
-   opens the argument. */
-
-.body--ink { color: var(--edition-ink); }
-
-.choice {
-  display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .45);
-  margin: calc(var(--fs) * .75) 0 0;
-}
-.choice-btn {
-  flex: 1 1 auto;
-  min-height: 44px; min-width: 44px;
-  padding: calc(var(--fs) * .5) calc(var(--fs) * .9);
-  border: 1.5px solid var(--edition-ink);
-  border-radius: var(--r-m);
-  background: var(--paper);
-  color: var(--edition-ink);
-  font: 600 var(--t-sub)/1.2 var(--sans);
-  cursor: pointer;
-  transition: background .15s linear, color .15s linear;
-}
-.choice-btn[aria-pressed="true"] {
-  background: var(--edition-ink);
-  color: var(--paper);
-  border-color: var(--edition-ink);
-}
-.choice-said {
-  margin: calc(var(--fs) * .6) 0 0;
-  padding-left: calc(var(--fs) * .7);
-  border-left: 4px solid var(--edition-ink);
-  font: var(--t-sec)/1.45 var(--sans);
-  color: var(--edition-ink);
-}
-
-/* The forward control steps back on the last screen: the decision above is
-   the primary action there, and two competing pills read as a toolbar. */
-.cta--quiet {
-  background: transparent;
-  color: var(--paper);
-  box-shadow: inset 0 0 0 1.5px var(--line-2, rgba(251,249,241,.45));
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   EXECUTIVE LAYER — iteration-003
-   ══════════════════════════════════════════════════════════════════════════
-
-   These prototypes are narrated live to senior leadership on iPads. The
-   screen carries the idea, the visual proof and the one commitment; the
-   facilitator carries rationale, caveats and economics. Everything here
-   exists to move weight OFF the glass and ONTO the drawing.
-
-   Three decisions drive the whole layer:
-
-   1 · ONE HEADLINE, AT REAL SCALE. The old deck capped at 38px and then
-       surrounded it with three competing cards. Display type now runs to
-       ~56px on iPad landscape and nothing else is allowed near that weight.
-
-   2 · THE CARD IS NO LONGER THE DEFAULT. `.plate` reads as a product panel.
-       A headline now sits on a soft scrim that fades into the ground — a
-       lightened region of the page, not an object on top of it. Cards
-       survive only where the concept genuinely IS an object: an offer, a
-       commitment, a comparison.
-
-   3 · ANNOTATION BEATS EXPLANATION. Facts that used to sit in prose blocks
-       become labels attached to the drawing, or one large state readout.
-       If a sentence can be said aloud instead, it is not on the screen.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-.screen {
-  /* One scale, shared by all six, so the set reads as one presentation. */
-  --x-display: clamp(30px, 2.6vw + 3.0vh, 58px);
-  --x-display-s: clamp(26px, 1.9vw + 2.3vh, 46px);
-  --x-lede:    clamp(16px, 0.5vw + 0.9vh, 21px);
-  --x-state:   clamp(26px, 1.5vw + 2.2vh, 46px);
-  --x-label:   clamp(13px, 0.28vw + 0.5vh, 15.5px);
-  --x-micro:   max(12px, calc(var(--fs-base) * .82));
-  --x-gap:     clamp(14px, 1.6vh, 26px);
-}
-
-/* ── LEVEL 1 · the headline ──────────────────────────────────────────────
-   No border, no shadow, no radius. A scrim that dissolves into the ground,
-   so the page reads as one surface with a lightened region rather than a
-   card sitting on a picture. */
-.xhead {
-  display: flex; flex-direction: column; justify-content: center;
-  gap: calc(var(--x-gap) * .5);
-  padding: 0; background: none;   /* the page IS the surface — no card, no scrim */
-  pointer-events: auto;
-}
-/* Only where the ground is genuinely busy (a map, a dark console) does the
-   headline need help. A feathered radial, never a rectangle with an edge. */
-.xhead--scrim {
-  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 2.2)
-           calc(var(--x-gap) * 1.1) calc(var(--x-gap) * .9);
-  margin: calc(var(--x-gap) * -.9) 0 0 calc(var(--x-gap) * -.9);
-  background: radial-gradient(130% 125% at 18% 45%,
-    var(--paper) 0%, var(--paper) 46%,
-    color-mix(in srgb, var(--paper) 70%, transparent) 72%,
-    transparent 100%);
-}
-.xhead h1, .xhead h2, .xhead .xd {
-  margin: 0;
-  font: 400 var(--x-display)/1.03 var(--serif);
-  letter-spacing: -.021em;
-  color: var(--edition-ink);
-  text-wrap: balance;
-}
-.xhead--s h1, .xhead--s h2, .xhead--s .xd { font-size: var(--x-display-s); }
-.xhead .xd span { display: block; }
-.xlede {
-  margin: 0; max-width: 34ch;
-  font: var(--x-lede)/1.42 var(--sans);
-  color: var(--ink-soft);
-}
-.xeyebrow {
-  margin: 0 0 calc(var(--x-gap) * .35);
-  font: 600 var(--x-label)/1.3 var(--sans);
-  letter-spacing: .17em; text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-/* ── LEVEL 2 · the consequence ───────────────────────────────────────────
-   The one state, number or verdict the screen turns on. Sized to be read
-   across a room, and never more than one per screen. */
-.xstate {
-  display: inline-flex; align-items: baseline; gap: .42em;
-  margin: 0; font: 400 var(--x-state)/1 var(--serif);
-  letter-spacing: -.02em; color: var(--edition-ink);
-}
-.xstate-unit { font: 600 var(--x-label)/1.4 var(--sans);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.xverdict {
-  display: inline-flex; align-items: center; gap: .55em;
-  margin: 0; padding: .36em .78em;
-  border-radius: var(--r-m);
-  font: 600 var(--x-label)/1.5 var(--sans);
-  letter-spacing: .13em; text-transform: uppercase;
-}
-.xverdict-mark { width: .72em; height: .72em; border-radius: 50%; flex: 0 0 auto; }
-
-/* ── LEVEL 3 · annotation on the drawing ─────────────────────────────────
-   Replaces the explanatory card. A label belongs to the thing it names, so
-   it sits on the ground with a hairline tether, not in a panel elsewhere. */
-.xanno {
-  position: absolute; z-index: 3;
-  padding: calc(var(--x-gap) * .3) calc(var(--x-gap) * .5);
-  background: var(--paper);
-  border-radius: var(--r-s);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 16%, transparent);
-  font: 600 var(--x-label)/1.35 var(--sans);
-  letter-spacing: .04em; color: var(--edition-ink);
-  max-width: 21ch;
-}
-.xanno em { display: block; font: 400 calc(var(--x-label) * .95)/1.4 var(--sans);
-  font-style: normal; color: var(--ink-soft); letter-spacing: 0; }
-.xanno--quiet { box-shadow: none; background: color-mix(in srgb, var(--paper) 72%, transparent); }
-
-/* ── the single disclaimer ───────────────────────────────────────────────
-   One micro line, once per prototype. It is a legal necessity, not content. */
-.xmicro {
-  margin: 0; font: var(--x-micro)/1.45 var(--sans);
-  color: var(--ink-soft); max-width: 46ch;
-}
-
-/* ── decisions ───────────────────────────────────────────────────────────
-   A choice the room makes is Level 2, so it is sized like one. */
-.xchoice { display: flex; flex-wrap: wrap; gap: calc(var(--x-gap) * .45); margin: 0; }
-.xchoice button {
-  min-height: 52px; padding: 0 calc(var(--x-gap) * .95);
-  border: 1.5px solid var(--edition-ink); border-radius: var(--r-m);
-  background: transparent; color: var(--edition-ink);
-  font: 600 var(--x-lede)/1 var(--sans); cursor: pointer;
-  transition: background .15s linear, color .15s linear;
-}
-.xchoice button[aria-pressed="true"] { background: var(--edition-ink); color: var(--paper); }
-
-/* ── give the drawing the room ───────────────────────────────────────────
-   The ground was being covered by plates. Screens that opt in let the
-   drawing run to the edges and keep type to one corner. */
-.screen--hero { align-items: stretch; }
-.screen--hero .gw { display: block; }
-
-/* Narrow keeps the same hierarchy, at a size a phone can hold. */
-@media (max-width: 899px) {
-  .screen {
-    --x-display: clamp(27px, 7.2vw, 38px);
-    --x-display-s: clamp(24px, 6.2vw, 32px);
-    --x-state: clamp(24px, 6.4vw, 34px);
-    --x-lede: 15.5px;
-    --x-label: 13px;
-  }
-  .xhead { padding: calc(var(--x-gap) * .7) calc(var(--x-gap) * .8); background: var(--paper); }
-  .xanno { position: static; max-width: none; }
-}
-
-/* ══ ITERATION-003 · contrast and collision corrections ═════════════════
-   Taking the cards away put this type onto the ground, where --ink-soft
-   measured 4.38:1 — below AA. Level-3 type now uses the edition ink and
-   earns its quietness from size and letterspacing instead of from being
-   paler. */
-.xeyebrow, .xmicro { color: var(--edition-ink); }
-.xlede { color: color-mix(in srgb, var(--edition-ink) 88%, var(--paper)); }
-/* The scrim pulled itself up by a negative margin and sat on the line
-   above it. It lifts the type in place instead. */
-.xhead--scrim { margin: 0; }
-
-/* This prototype's ground is a dark console. With the plate gone the ink
-   headline measured 1.34:1 — invisible. On this stock the display type is
-   paper, not ink. */
-.xhead .xd, .xhead .xeyebrow, .xhead .xlede, .xhead .note, .xhead .econ { color: var(--paper); }
-.xmicro { color: var(--paper); }
-
-/* Scrim padding was extending the headline box into the row below it. */
-.xhead--scrim { padding-bottom: 0; }
-/* Legacy Level-3 classes now sit on the ground too, so they take the ink. */
-.xhead .note, .xhead .display--ask, .xask .display--ask,
-.xblock .lead-role, .xblock .note { color: var(--edition-ink); }
-
-/* On the dark console the narrow breakpoint was giving the headline a PAPER
-   background while the text had already been set to paper — paper on paper,
-   1:1. The console ground is dark at every width, so it keeps no background. */
-@media (max-width: 899px) { .xhead { background: none; } }
-
-/* Ordering fix: the shared correction above set .xhead .note to edition ink,
-   which on this dark console measured 1.34:1. The console override has to be
-   the last word on this stock. */
-.xhead .xd, .xhead .xeyebrow, .xhead .xlede,
-.xhead .note, .xhead .econ, .xmicro { color: var(--paper); }
-
-/* The scrim was painted on the element itself, so its padding grew the box
-   and the detector saw it overlapping whatever sat in the next row. It is a
-   lighting effect, not a layout object, so it moves to a pseudo-element that
-   bleeds past the box without occupying space. */
-.xhead--scrim { position: relative; padding: 0; background: none; }
-.xhead--scrim > * { position: relative; z-index: 1; }
-.xhead--scrim::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -2.2vh -14vw -2.2vh -3vw;
-  background: radial-gradient(118% 120% at 20% 50%,
-    var(--paper) 0%, var(--paper) 48%,
-    color-mix(in srgb, var(--paper) 68%, transparent) 74%,
-    transparent 100%);
-}
-.wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-
-/* ══ ITERATION-003 · contrast and collision corrections ═════════════════
-   Taking the cards away put this type onto the ground, where --ink-soft
-   measured 4.38:1 — below AA. Level-3 type now uses the edition ink and
-   earns its quietness from size and letterspacing instead of from being
-   paler. */
-.xeyebrow, .xmicro { color: var(--edition-ink); }
-.xlede { color: color-mix(in srgb, var(--edition-ink) 88%, var(--paper)); }
-/* The scrim pulled itself up by a negative margin and sat on the line
-   above it. It lifts the type in place instead. */
-.xhead--scrim { margin: 0; }
-
-/* This prototype's ground is a dark console. With the plate gone the ink
-   headline measured 1.34:1 — invisible. On this stock the display type is
-   paper, not ink. */
-.xhead .xd, .xhead .xeyebrow, .xhead .xlede, .xhead .note, .xhead .econ { color: var(--paper); }
-.xmicro { color: var(--paper); }
-
-/* Scrim padding was extending the headline box into the row below it. */
-.xhead--scrim { padding-bottom: 0; }
-/* Legacy Level-3 classes now sit on the ground too, so they take the ink. */
-.xhead .note, .xhead .display--ask, .xask .display--ask,
-.xblock .lead-role, .xblock .note { color: var(--edition-ink); }
-
-/* On the dark console the narrow breakpoint was giving the headline a PAPER
-   background while the text had already been set to paper — paper on paper,
-   1:1. The console ground is dark at every width, so it keeps no background. */
-@media (max-width: 899px) { .xhead { background: none; } }
-
-/* Ordering fix: the shared correction above set .xhead .note to edition ink,
-   which on this dark console measured 1.34:1. The console override has to be
-   the last word on this stock. */
-.xhead .xd, .xhead .xeyebrow, .xhead .xlede,
-.xhead .note, .xhead .econ, .xmicro { color: var(--paper); }
-
-/* The scrim was painted on the element itself, so its padding grew the box
-   and the detector saw it overlapping whatever sat in the next row. It is a
-   lighting effect, not a layout object, so it moves to a pseudo-element that
-   bleeds past the box without occupying space. */
-.xhead--scrim { position: relative; padding: 0; background: none; }
-.xhead--scrim > * { position: relative; z-index: 1; }
-.xhead--scrim::before {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  inset: -2.2vh -14vw -2.2vh -3vw;
-  background: radial-gradient(118% 120% at 20% 50%,
-    var(--paper) 0%, var(--paper) 48%,
-    color-mix(in srgb, var(--paper) 68%, transparent) 74%,
-    transparent 100%);
-}
-.wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
-
-/* ══ ITERATION-003 · THE AUTHORITY BOUNDARY ════════════════════════════
-   The one object this prototype is made of, repeated on all three screens.
-
-   Work rises as bars. Authority is a horizontal line. A bar that clears the
-   line is something the agent may do alone; a bar that reaches it is capped
-   and waits for a person. The line is the only thing that changes — between
-   screens, and on the last screen under the room's own hand — so the whole
-   argument is spatial and nothing has to be read in a table. */
-
-.bnd {
-  position: relative; z-index: 3; align-self: stretch;
-  --line: 42%;
-  padding-bottom: calc(var(--x-gap) * 3.2);
-}
-/* the protected zone: everything beneath the line */
-.bnd-zone {
-  position: absolute; left: 0; right: 0; bottom: calc(var(--x-gap) * 3.2);
-  height: var(--line);
-  background: color-mix(in srgb, var(--cover, #8FBEE4) 13%, transparent);
-  border-top: 0; transition: height .55s cubic-bezier(.4,0,.2,1);
-}
-.bnd-line {
-  position: absolute; left: 0; right: 0; margin: 0;
-  bottom: calc(var(--line) + var(--x-gap) * 3.2);
-  border-top: 2px solid var(--cover, #8FBEE4);
-  transition: bottom .55s cubic-bezier(.4,0,.2,1);
-}
-.bnd-line span {
-  position: absolute; right: 0; top: calc(var(--x-gap) * -1.5);
-  font: 600 var(--x-label)/1 var(--sans);
-  letter-spacing: .2em; text-transform: uppercase; color: var(--cover, #8FBEE4);
-}
-.bnd-tasks {
-  position: absolute; inset: 0 0 0 0;
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  gap: clamp(14px, 3vw, 52px); align-items: end;
-  padding: 0 clamp(8px, 3vw, 64px) calc(var(--x-gap) * 3.2);
-}
-.bt { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
-.bt-bar {
-  display: block; width: 100%; border-radius: 3px 3px 0 0;
-  height: var(--h); transition: height .55s cubic-bezier(.4,0,.2,1), background .3s linear;
-  background: var(--line-2, #2E3741);
-}
-/* clears the line: the agent acts, and the bar is solid cover-blue */
-.bt[data-state="acts"] .bt-bar { background: var(--cover, #8FBEE4); }
-/* reaches the line: capped, hatched, and stopped */
-.bt[data-state="stops"] .bt-bar {
-  background: repeating-linear-gradient(135deg,
-    color-mix(in srgb, var(--alarm, #F3977A) 55%, transparent) 0 6px,
-    transparent 6px 12px);
-  box-shadow: inset 0 2px 0 0 var(--alarm, #F3977A);
-}
-.bt[data-state="stops"]::after {
-  content: "Human required";
-  position: absolute; left: 0; right: 0; bottom: calc(var(--h) + 8px);
-  text-align: center; white-space: nowrap;
-  font: 600 var(--x-label)/1 var(--sans);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--alarm, #F3977A);
-}
-.bt-l {
-  position: absolute; left: 0; right: 0; top: calc(100% + 10px);
-  font: var(--x-label)/1.35 var(--sans); color: var(--paper);
-  text-align: center;
-}
-.bnd--sm { padding-bottom: calc(var(--x-gap) * 3.2); }
-
-/* screen 2's control and its one annotation */
-.bnd-ctrl { z-index: 3; align-self: start; display: flex; flex-direction: column; gap: calc(var(--x-gap) * .7); align-items: flex-start; }
-.bnd-ctrl .xchoice button { border-color: var(--paper); color: var(--paper); }
-.bnd-ctrl .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
-.bnd-said { margin: 0; max-width: 30ch; font: var(--x-lede)/1.4 var(--sans); color: var(--paper); }
-
-/* screen 3's evidence: three numerals, not a log */
-.ev { z-index: 3; align-self: center; display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(var(--x-gap) * 1.2); }
-.ev-n { margin: 0; font: 400 clamp(44px, 3.4vw + 3.4vh, 92px)/1 var(--serif); color: var(--paper); letter-spacing: -.03em; }
-.ev-i--cov .ev-n { color: var(--cover, #8FBEE4); }
-.ev-i--esc .ev-n { color: var(--alarm, #F3977A); }
-.ev-l { margin: calc(var(--x-gap) * .3) 0 0; max-width: 17ch; font: var(--x-label)/1.4 var(--sans); color: var(--paper); }
-
-/* the decision — the climax, sized like one */
-.dec { z-index: 3; align-self: end; display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--x-gap) * .6) calc(var(--x-gap) * 1.1); }
-.dec-q { margin: 0; flex: 0 0 auto; font: 400 clamp(19px, .9vw + 1.4vh, 28px)/1.2 var(--serif); color: var(--paper); }
-.dec .xchoice button { border-color: var(--paper); color: var(--paper); }
-.dec .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
-.dec-said { margin: 0; flex: 1 1 26ch; font: var(--x-label)/1.45 var(--sans); color: var(--paper); }
-.bta-micro { z-index: 3; align-self: end; }
-
-@media (max-width: 899px) {
-  .bnd-tasks { gap: 8px; padding-left: 0; padding-right: 0; }
-  .bt-l { font-size: 11.5px; }
-  .ev { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .5); }
-}
-
-/* The space ABOVE the line is meaningful — it is what the agent may not reach
-   — but it was swallowing half the screen. The stage starts higher and the
-   zone carries a faint ceiling so the gap reads as bounded, not empty. */
-.bnd-zone { border-bottom: 0; }
-.bnd::before {
-  content: ""; position: absolute; left: 0; right: 0; top: 0;
-  height: 1px; background: color-mix(in srgb, var(--paper) 14%, transparent);
-}
-.bta-micro { text-align: right; }
-
-/* The deck is pointer-events:none so the ground stays visible beneath it;
-   .plate used to re-enable them. The new composition has no plates, so every
-   interactive container has to turn them back on itself — without this the
-   boundary control and the decision are simply dead to touch. */
-.bnd-ctrl, .dec, .bnd { pointer-events: auto; }
-.bnd-zone, .bnd-line, .bnd-tasks { pointer-events: none; }
-
-/* ══ REVISION 02 · TWO ZONES, FIVE EQUAL ACTIONS ═══════════════════════
-   Permission is carried by WHICH ZONE an action sits in — nothing else.
-   Every action object is the same size, because no quantity is defined and
-   a bar of differing height implied one. The divider is heavy and labelled
-   on both sides so the separation survives greyscale and needs no legend. */
-
-.zones {
-  pointer-events: auto; z-index: 3; align-self: stretch;
-  display: grid; grid-template-columns: 1fr auto 1fr;
-  gap: 0; align-items: stretch;
-}
-.zone { display: flex; flex-direction: column; gap: calc(var(--x-gap) * .55);
-  padding: calc(var(--x-gap) * .9) calc(var(--x-gap) * 1.3); min-width: 0; }
-.zone--ask { background: color-mix(in srgb, var(--paper) 5%, transparent); }
-.zone-h {
-  margin: 0 0 calc(var(--x-gap) * .3);
-  font: 600 var(--x-label)/1.3 var(--sans);
-  letter-spacing: .17em; text-transform: uppercase; color: var(--paper);
-}
-.zone--ask .zone-h { color: var(--alarm, #F3977A); }
-.zone-b { display: flex; flex-direction: column; gap: calc(var(--x-gap) * .5); }
-.zone-rule { width: 3px; background: var(--paper); opacity: .5; }
-
-/* one action, one size, wherever it sits */
-.act {
-  border: 1.5px solid color-mix(in srgb, var(--paper) 46%, transparent);
-  border-radius: var(--r-m);
-  padding: calc(var(--x-gap) * .62) calc(var(--x-gap) * .8);
-  background: color-mix(in srgb, var(--paper) 7%, transparent);
-  transition: box-shadow .35s linear, border-color .35s linear;
-}
-.act-n { margin: 0; font: var(--x-lede)/1.3 var(--sans); color: var(--paper); }
-.act-c, .act-x {
-  margin: calc(var(--x-gap) * .3) 0 0;
-  font: var(--x-label)/1.4 var(--sans);
-}
-.act-c { color: var(--cover, #8FBEE4); }   /* what the POLICY covers */
-.act-x { color: var(--alarm, #F3977A); }   /* a hard exception, never permitted */
-.zone--may .act { border-color: var(--cover, #8FBEE4); }
-.zone--ask .act { border-style: dashed; }
-.act--hard { border-color: var(--alarm, #F3977A) !important; border-style: solid !important; }
-/* the moment an action changes zone */
-.act--moved { box-shadow: 0 0 0 3px var(--cover, #8FBEE4); }
-
-/* a proposed widening is dashed and clearly NOT the active boundary */
-.zones[data-proposed="1"] .zone--may { outline: 2px dashed var(--paper); outline-offset: -4px; }
-.zones[data-proposed="1"] .zone--may .zone-h::after {
-  content: " · proposed"; color: var(--paper); opacity: .8; letter-spacing: .1em;
-}
-
-/* screen 2's control */
-.auth2 { pointer-events: auto; z-index: 3; align-self: start;
-  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .6); align-items: flex-start; }
-.auth2 .xchoice button { border-color: var(--paper); color: var(--paper); }
-.auth2 .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
-.auth2-said { margin: 0; max-width: 34ch; font: var(--x-lede)/1.4 var(--sans); color: var(--paper); }
-
-/* screen 3 · outcome accounting, then the decision as the focal event */
-.out { pointer-events: auto; z-index: 3; align-self: center;
-  display: grid; grid-template-columns: 1.3fr 1fr; gap: calc(var(--x-gap) * 1.4); }
-.out-n { margin: 0; font: 400 clamp(38px, 2.6vw + 2.6vh, 72px)/1 var(--serif);
-  color: var(--paper); letter-spacing: -.03em; }
-.out-i--esc .out-n { color: var(--alarm, #F3977A); }
-.out-l { margin: calc(var(--x-gap) * .2) 0 0; font: var(--x-lede)/1.3 var(--sans); color: var(--paper); }
-.out-s { margin: calc(var(--x-gap) * .35) 0 0; padding-left: calc(var(--x-gap) * .7);
-  border-left: 2px solid var(--cover, #8FBEE4);
-  font: var(--x-label)/1.45 var(--sans); color: var(--paper); max-width: 34ch; }
-.out-i--esc .out-s { border-left-color: var(--alarm, #F3977A); }
-.out-s b { color: var(--cover, #8FBEE4); font-weight: 400; }
-
-.dec { pointer-events: auto; z-index: 3; align-self: center;
-  display: flex; flex-direction: column; gap: calc(var(--x-gap) * .75); align-items: flex-start; }
-.dec-q { margin: 0; font: 400 clamp(26px, 1.5vw + 2.1vh, 46px)/1.12 var(--serif);
-  color: var(--paper); letter-spacing: -.02em; }
-.dec .xchoice button { border-color: var(--paper); color: var(--paper);
-  min-height: 56px; font-size: clamp(17px, .6vw + 1vh, 22px); }
-.dec .xchoice button[aria-pressed="true"] { background: var(--paper); color: var(--ink, #1E242B); }
-.dec-said { margin: 0; max-width: 62ch; font: var(--x-lede)/1.45 var(--sans); color: var(--paper); }
-.zones--sm .act-c, .zones--sm .act-x { display: none; }
-.zones--sm .act { padding: calc(var(--x-gap) * .4) calc(var(--x-gap) * .6); }
-.zones--sm .act-n { font-size: var(--x-label); }
-.zones--sm .zone { padding: calc(var(--x-gap) * .5) calc(var(--x-gap) * .9); }
-.zones--sm .zone-b { flex-direction: row; flex-wrap: wrap; }
-
-@media (max-width: 899px) {
-  .zones { grid-template-columns: 1fr; }
-  .zone-rule { width: auto; height: 3px; }
-  .out { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .8); }
-  .zones--sm .zone-b { flex-direction: column; }
-}
-
-/* ══ REVISION 02 · ART DIRECTION ═══════════════════════════════════════
-   A cinematic world rather than a terminal. Deep navy-charcoal base with a
-   luminous cool field behind the agent's zone and a warm one behind the
-   human's, so the two halves of the composition are lit differently before
-   a single word is read. Depth comes from three planes: an atmospheric
-   gradient behind, the drawn field in the middle, the action objects in
-   front with real shadow. */
-
-:root {
-  --stage-deep:  #10161C;
-  --stage-navy:  #16202B;
-  --cool:        #6FC3E8;
-  --warm:        #F0945F;
-}
-body { background: var(--stage-deep); }
-
-/* the environment: a wide cool glow on the agent's side, a warm one on the
-   human's, and a deep vignette so the composition has a horizon */
+/* cool light on the agent's side, warm on the person's, a horizon below */
 .world::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(78% 108% at 22% 62%, color-mix(in srgb, var(--cool) 17%, transparent) 0%, transparent 62%),
-    radial-gradient(66% 96% at 86% 46%, color-mix(in srgb, var(--warm) 13%, transparent) 0%, transparent 60%),
-    radial-gradient(130% 120% at 50% 0%, transparent 44%, rgba(6,10,14,.78) 100%),
-    linear-gradient(170deg, var(--stage-navy) 0%, var(--stage-deep) 72%);
-}
-
-/* the zones become lit volumes, not boxes */
-.zone { position: relative; }
-.zone--may {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--cool) 11%, transparent) 0%, transparent 78%);
-  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--cool) 34%, transparent);
-}
-.zone--ask {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--warm) 10%, transparent) 0%, transparent 78%);
-  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--warm) 30%, transparent);
-}
-.zone--may .zone-h { color: var(--cool); }
-.zone--ask .zone-h { color: var(--warm); }
-
-/* the divider reads as a real edge with light falling off it */
-.zone-rule {
-  width: 2px; opacity: 1;
-  background: linear-gradient(180deg, transparent 0%,
-    color-mix(in srgb, var(--cool) 60%, transparent) 18%,
-    color-mix(in srgb, var(--warm) 60%, transparent) 82%, transparent 100%);
-  box-shadow: 0 0 22px 2px rgba(111,195,232,.16);
-}
-
-/* action objects sit in FRONT of the field, with weight */
-.act {
-  background: linear-gradient(180deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.025) 100%);
-  border-color: color-mix(in srgb, var(--paper) 26%, transparent);
-  box-shadow: 0 14px 28px -20px rgba(0,0,0,.95);
-  backdrop-filter: blur(2px);
-}
-.zone--may .act {
-  border-color: color-mix(in srgb, var(--cool) 62%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cool) 16%, transparent),
-              0 16px 30px -20px rgba(0,0,0,.95);
-}
-.zone--ask .act { border-color: color-mix(in srgb, var(--warm) 52%, transparent); }
-.act--hard { border-color: var(--warm) !important; }
-.act-c { color: var(--cool); }
-.act-x { color: var(--warm); }
-.act--moved { box-shadow: 0 0 0 3px var(--cool), 0 0 36px 2px rgba(111,195,232,.42); }
-
-.out-i--esc .out-n { color: var(--warm); }
-.out-s { border-left-color: var(--cool); }
-.out-s b { color: var(--cool); }
-.out-i--esc .out-s { border-left-color: var(--warm); }
-.zones[data-proposed="1"] .zone--may { outline-color: color-mix(in srgb, var(--cool) 70%, transparent); }
-
-/* ══ REVISION 03 · ART DIRECTION ═══════════════════════════════════════
-   Semantics are frozen: zone membership still carries permission and the
-   DOM is untouched. What changes is that the boundary stops being a rule
-   between two panels and becomes a threshold in a deep field — a seam with
-   width, light falloff and territory either side of it. Action objects stop
-   being outlined boxes and become lit tiles floating in that space. */
-
-/* ── the field ──────────────────────────────────────────────────────── */
-.world::after {
   background:
     radial-gradient(84% 120% at 20% 56%, rgba(90,190,235,.22) 0%, transparent 58%),
     radial-gradient(70% 104% at 88% 44%, rgba(245,150,95,.17) 0%, transparent 56%),
@@ -1387,380 +99,336 @@ body { background: var(--stage-deep); }
     radial-gradient(130% 128% at 50% -8%, transparent 36%, rgba(4,7,11,.86) 100%),
     linear-gradient(168deg, #14202C 0%, #0C1218 64%, #080C11 100%);
 }
-/* fine grain, so the dark reads as atmosphere rather than flat fill */
 .veil {
-  background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
   mix-blend-mode: screen;
 }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
-/* ── the threshold: a seam, not a border ───────────────────────────── */
-.zones { position: relative; }
-.zone { background: none !important; box-shadow: none !important; }
-.zone--may  { padding-right: calc(var(--x-gap) * 2.4); }
-.zone--ask  { padding-left:  calc(var(--x-gap) * 2.4); }
-.zone-rule {
-  width: 1px; background: none; position: relative; overflow: visible;
-  box-shadow: none;
-}
-.zone-rule::before {           /* the luminous core of the threshold */
-  content: ""; position: absolute; inset: 6% -1px 6% -1px;
-  background: linear-gradient(180deg,
-    transparent 0%, rgba(140,215,250,.95) 16%,
-    rgba(190,235,255,1) 50%, rgba(250,180,125,.95) 84%, transparent 100%);
-  filter: blur(.3px);
-}
-.zone-rule::after {            /* its falloff into the field */
-  content: ""; position: absolute; inset: 0 -62px; pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(110,200,240,.16) 0%, transparent 46%),
-    linear-gradient(270deg, rgba(245,165,110,.14) 0%, transparent 46%);
-  filter: blur(14px);
-}
-/* territory, laid under each side rather than drawn around it */
-.zone--may::before, .zone--ask::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1;
-}
-.zone--may::before { background: linear-gradient(90deg, transparent 0%, rgba(96,190,232,.10) 86%); }
-.zone--ask::before { background: linear-gradient(270deg, transparent 0%, rgba(240,150,95,.09) 86%); }
+/* ══ THE DECK ═══════════════════════════════════════════════════════════ */
 
-.zone-h {
-  font-size: calc(var(--x-label) * 1.05); letter-spacing: .24em;
-  text-shadow: 0 0 22px rgba(0,0,0,.7);
-}
-.zone--may .zone-h { color: #8FD8F6; }
-.zone--ask .zone-h { color: #F9B183; }
+.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
 
-/* ── action objects: lit tiles, no outline as the primary device ───── */
-.act {
-  border: 0; border-radius: 10px;
-  padding: calc(var(--x-gap) * .72) calc(var(--x-gap) * .95);
-  background: linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255,255,255,.16),
-    0 20px 40px -26px rgba(0,0,0,1);
-  backdrop-filter: blur(3px);
-}
-.zone--may .act {
-  background: linear-gradient(165deg, rgba(120,205,245,.20) 0%, rgba(80,160,200,.07) 100%);
-  box-shadow:
-    inset 0 1px 0 0 rgba(180,230,255,.34),
-    0 0 0 1px rgba(130,210,245,.26),
-    0 26px 48px -28px rgba(0,0,0,1),
-    0 0 46px -14px rgba(120,205,245,.42);
-}
-.zone--ask .act {
-  background: linear-gradient(165deg, rgba(245,165,110,.16) 0%, rgba(190,110,70,.05) 100%);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255,205,165,.26),
-    0 0 0 1px rgba(245,165,110,.22),
-    0 26px 48px -28px rgba(0,0,0,1);
-}
-/* the hard exception reads as held back, not merely warm */
-.act--hard {
-  background: linear-gradient(165deg, rgba(245,150,95,.09) 0%, rgba(140,80,50,.05) 100%) !important;
-  box-shadow:
-    inset 0 1px 0 0 rgba(255,195,155,.2),
-    0 0 0 1px rgba(249,177,131,.5),
-    0 26px 48px -28px rgba(0,0,0,1) !important;
-}
-.act-n { font-size: calc(var(--x-lede) * 1.04); }
-.act-c { color: #7FE3C4; }     /* cover is its own idea, so its own hue */
-.act-x { color: #F9B183; }
-
-/* the crossing — the memorable moment, and still legible when static */
-@keyframes cross-in {
-  0%   { transform: translateX(var(--from, 40px)); opacity: 0; }
-  60%  { opacity: 1; }
-  100% { transform: translateX(0); opacity: 1; }
-}
-.zone--may .act--moved { --from: 46px; }
-.zone--ask .act--moved { --from: -46px; }
-.act--moved {
-  animation: cross-in .62s cubic-bezier(.22,.9,.3,1) both;
-  box-shadow:
-    inset 0 1px 0 0 rgba(200,240,255,.5),
-    0 0 0 1px rgba(150,225,255,.6),
-    0 0 64px -10px rgba(140,215,250,.6),
-    0 26px 48px -28px rgba(0,0,0,1);
-}
-@media (prefers-reduced-motion: reduce) { .act--moved { animation: none; } }
-
-/* proposed territory: a dashed field, unmistakably not the active one */
-.zones[data-proposed="1"] .zone--may::before {
-  background: linear-gradient(90deg, transparent 0%, rgba(150,225,255,.05) 86%);
-}
-.zones[data-proposed="1"] .zone--may {
-  outline: 1.5px dashed rgba(150,225,255,.6); outline-offset: -6px;
-}
-
-/* ── screen 3 · one outcome, not KPI tiles ─────────────────────────── */
-.out { grid-template-columns: 1fr; gap: calc(var(--x-gap) * .5); }
-.out-i { display: grid; grid-template-columns: auto 1fr; gap: 0 calc(var(--x-gap) * .9); align-items: baseline; }
-.out-n { font-size: clamp(42px, 2.4vw + 2.8vh, 76px); color: #CFE9F7; text-shadow: 0 0 40px rgba(120,205,245,.35); }
-.out-i--esc .out-n { color: #F9B183; text-shadow: 0 0 40px rgba(245,165,110,.3); }
-.out-l { grid-column: 2; font-size: var(--x-lede); }
-.out-s { grid-column: 2; border-left: 0; padding-left: 0; opacity: .9; }
-.out-s b { color: #7FE3C4; }
-
-.dec-q { text-shadow: 0 0 36px rgba(0,0,0,.6); }
-.dec .xchoice button {
-  border: 0; border-radius: 10px; padding: 0 calc(var(--x-gap) * 1.25);
-  background: linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%);
-  box-shadow: inset 0 1px 0 0 rgba(255,255,255,.2), 0 20px 38px -26px rgba(0,0,0,1);
-}
-.dec .xchoice button[aria-pressed="true"] {
-  background: linear-gradient(165deg, rgba(150,225,255,.95) 0%, rgba(110,195,235,.9) 100%);
-  color: #0B1218;
-  box-shadow: 0 0 56px -12px rgba(140,215,250,.7), 0 20px 38px -26px rgba(0,0,0,1);
-}
-/* The band between the decision and the field was dead rather than held.
-   The decision sits at the top of its band and the field takes the rest, so
-   the eye runs outcome → question → the territory it changes. */
-.dec { align-self: start; }
-.zones--sm { align-self: stretch; }
-.zones--sm .zone { justify-content: flex-start; padding-top: calc(var(--x-gap) * .9); }
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SCREEN 2 · SIMPLIFIED PASS — "Cover moves the line."
-   Scoped to .screen--s2 and s2-* classes only; screens 1 and 3 are untouched.
-
-   One idea: customer authorisation lets a bounded purchase proceed with
-   specified protection attached. The PURCHASE ORDER is the dominant object.
-   The preceding work is one small "Prepared" cluster on the permitted side.
-   The new-supplier exception sits on the approval side, marked ▧ ALWAYS NEEDS
-   A PERSON, and no line or arrow ever sweeps it across.
-
-   The order never moves. THE LINE moves: the tray plate (permitted territory)
-   widens to the order's far side, the state word on the order changes, and a
-   dashed ghost of the old position explains the movement. Zone position, the
-   plate fill and the word all say the same thing, so colour is never the
-   only distinction. Implementation language follows prototype/home-again:
-   flow layout, headline backing as the heading's own box, labels in wrapping
-   areas, state marks with words, Bricolage Grotesque from fonts/.
-   ══════════════════════════════════════════════════════════════════════════ */
-@font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
-  src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); }
-@font-face { font-family: "Bricolage"; font-weight: 400; font-display: swap;
-  src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
-
-.screen--s2 {
-  --s2-cream: #F3EBD7; --s2-ink: #16150F; --s2-mute: #B9B2A0; --s2-sheetm: #5A554A;
-  --s2-block: #6B675E; --s2-tray: #262E36;
-  --s2-ok: #74C79A; --s2-hold: #E2A75C; --s2-exc: #F3977A;
-  --s2-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  --s2-ease: cubic-bezier(.4,0,.2,1);
+.screen {
+  position: absolute; inset: 0;
+  padding: var(--gutter) var(--gutter) calc(var(--chrome-h) + var(--gesture-safe));
   display: flex; flex-direction: column; align-items: stretch; gap: 0;
-  /* a fixed base, so ch/em here never follow the deck's --fit search */
-  font: 400 16px/1.4 "Bricolage", "Helvetica Neue", Arial, sans-serif;
+  pointer-events: none;
+  overflow-y: auto;
 }
-.screen--s2 > * { grid-area: auto; }
-.s2-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.screen > * { min-width: 0; }
+.top, .desk, .micro, .cta, .iconbtn, .picker, select { pointer-events: auto; }
+/* one measure for the whole composition, centred on a wide window */
+.top, .desk, .micro { width: 100%; max-width: 1360px; margin-left: auto; margin-right: auto; }
 
-/* ── the top row: headline left, control right ───────────────────────── */
-.s2-top { display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 18px 32px; flex: 0 0 auto; pointer-events: auto; }
-.s2-head { flex: 0 1 auto; justify-content: flex-start; align-items: flex-start; gap: 0; }
-.screen--s2 .s2-head .xeyebrow { margin: 0 0 10px; font: 400 14px/1.2 "Bricolage";
-  letter-spacing: .12em; text-transform: uppercase; color: var(--s2-cream); }
+/* ── the top row: headline left, the screen's one control right ─────── */
+.top { display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 18px 32px; flex: 0 0 auto; }
+.xhead { flex: 0 1 auto; display: flex; flex-direction: column; align-items: flex-start; }
+.eyebrow { margin: 0 0 10px; font: 400 16px/1.2 var(--sans);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--cream); }
 /* The backing is the heading's own box, so it contains its text at every
    viewport. Torn edge and grain live on a pseudo-element behind the glyphs. */
-.screen--s2 .s2-xd {
+.xd {
   position: relative; isolation: isolate; display: inline-block; max-width: 100%;
   margin: 0; padding: .3em .5em .36em; border-radius: 2px;
-  font: 700 clamp(30px, 2.6vw + 3vh, 56px)/1.08 "Bricolage";
-  letter-spacing: -.022em; color: var(--s2-cream); overflow-wrap: break-word;
+  font: 700 clamp(30px, 2.6vw + 3vh, 56px)/1.08 var(--sans);
+  letter-spacing: -.022em; color: var(--cream); overflow-wrap: break-word;
+  text-wrap: balance;
 }
-.screen--s2 .s2-xd span { display: block; }
-.s2-xd::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
-  background: var(--s2-block) var(--s2-grain); filter: url(#s2-rough); }
+.xd span { display: block; }
+.xd::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+  background: var(--block) var(--grain); filter: url(#rough); }
 
-.s2-auth { flex: 0 0 auto; max-width: 440px; gap: 0; align-items: flex-start; }
-.s2-ctrl-lab { margin: 0 0 8px; font: 400 15px/1.3 "Bricolage"; color: var(--s2-mute); }
-.s2-auth .xchoice { gap: 12px; }
-/* the two-choice control: 46px, 2px border, the pressed one filled and ● */
-.s2-auth .xchoice button {
+.aside { flex: 0 0 auto; max-width: 460px; display: flex; flex-direction: column;
+  align-items: flex-start; gap: 0; }
+.xchoice { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
+/* the choice control: 46px, 2px border, the pressed one filled and ● */
+.xchoice button {
   min-height: 46px; height: 46px; padding: 0 22px; border-radius: 0;
-  border: 2px solid var(--s2-cream); background: transparent; color: var(--s2-cream);
-  font: 700 15px/1 "Bricolage"; letter-spacing: .01em; cursor: pointer;
+  border: 2px solid var(--cream); background: transparent; color: var(--cream);
+  font: 700 16px/1 var(--sans); letter-spacing: .01em; cursor: pointer;
   transition: background .15s linear, color .15s linear;
 }
-.s2-auth .xchoice button[aria-pressed="true"] { background: var(--s2-cream); color: var(--s2-ink); }
-.s2-auth .xchoice button[aria-pressed="true"]::before { content: "● "; }
-.s2-auth .xchoice button:focus-visible { outline: 3px solid var(--s2-hold); outline-offset: 3px; border-radius: 0; }
-.s2-auth .s2-support { margin: 14px 0 0; max-width: 36ch;
-  font: 400 clamp(17px, .5vw + 1.1vh, 20px)/1.4 "Bricolage"; color: var(--s2-cream); }
+.xchoice button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+.xchoice button[aria-pressed="true"]::before { content: "● "; }
+.xchoice button:focus-visible { border-radius: 0; }
+.statement { margin: 14px 0 0; max-width: 34ch;
+  font: 400 clamp(18px, .5vw + 1.1vh, 20px)/1.4 var(--sans); color: var(--cream); }
 
-/* ── the desk ────────────────────────────────────────────────────────── */
-.s2-desk {
-  --s2-sh: clamp(190px, calc(100vh - 560px), 250px);   /* the order's sheet height */
-  --s2-x: 30%; --s2-tray: 30%;                          /* the line, draft only  */
-  position: relative; flex: 1 0 auto; min-height: 0; pointer-events: auto;
-  width: 100%; max-width: 1360px;
+/* screen 3's question is the climax, sized like one */
+.dec-q { margin: 0 0 14px; max-width: 22ch;
+  font: 700 clamp(20px, .7vw + 1.3vh, 26px)/1.2 var(--sans); color: var(--cream); }
+/* the one line Expand adds: dashed, like the proposal it names */
+.dec-said { margin: 14px 0 0; max-width: 34ch; padding: 10px 14px;
+  border: 1.5px dashed color-mix(in srgb, var(--cool) 75%, transparent);
+  font: 400 18px/1.4 var(--sans); color: var(--cream); }
+
+/* the disclosure, once */
+.micro { margin: 14px 0 0; flex: 0 0 auto; font: 400 16px/1.4 var(--sans); color: var(--mute); }
+
+/* ══ THE DESK ═══════════════════════════════════════════════════════════
+   Five columns: three object columns and two gutters. --x is where the line
+   stands, derived per screen from LAYOUT in app.js via data-place. */
+.desk {
+  --sh: clamp(180px, calc(100vh - 560px), 240px);   /* the order's sheet height */
+  --x: 30%;                                          /* the line, draft only */
+  --xp: 30%;                                         /* a proposed line     */
+  position: relative; flex: 1 0 auto; min-height: 0;
   margin-top: 16px; padding: 70px 0 24px;
   display: grid; grid-template-columns: 28% 4% 36% 4% 28%;
   grid-template-rows: auto; align-content: center;
 }
-.s2-desk[data-place="may"] { --s2-x: 70%; --s2-tray: 70%; }   /* the line, moved */
+.desk[data-place="may"] { --x: 70%; }
 
 /* the permitted tray: a lighter plate that stops at the line */
-.s2-tray { position: absolute; z-index: 0; left: 0; top: 22px; bottom: 20px;
-  width: var(--s2-tray); pointer-events: none;
-  background: var(--s2-tray) var(--s2-grain);
-  border-top: 2px solid color-mix(in srgb, var(--s2-ok) 55%, transparent);
-  transition: width .55s var(--s2-ease); }
+.tray { position: absolute; z-index: 0; left: 0; top: 22px; bottom: 20px;
+  width: var(--x); pointer-events: none;
+  background: var(--tray) var(--grain);
+  border-top: 2px solid color-mix(in srgb, var(--ok) 55%, transparent);
+  transition: width .55s var(--ease); }
 
 /* zone words: a mark and a word, never a tint alone */
-.s2-zlab { margin: 0; font: 700 14px/1.2 "Bricolage"; letter-spacing: .09em;
+.zlab { margin: 0; font: 700 16px/1.2 var(--sans); letter-spacing: .09em;
   text-transform: uppercase; white-space: nowrap; }
-.s2-zlab--may { position: absolute; z-index: 2; left: 16px; top: 44px; color: var(--s2-ok); }
-.s2-zlab--may::before { content: "● "; }
-.s2-zlab--ask { color: var(--s2-hold); }
-.s2-zlab--ask::before { content: "○ "; }
+.zlab--may { position: absolute; z-index: 2; left: 16px; top: 44px; color: var(--ok); }
+.zlab--may::before { content: "● "; }
+.zlab--ask { color: var(--hold); }
+.zlab--ask::before { content: "○ "; }
 
-/* the approval line, set by the customer. 3px, ticked, labelled. */
-.s2-line { position: absolute; z-index: 2; top: 0; bottom: 20px; left: var(--s2-x);
-  width: 3px; margin-left: -1.5px; background: var(--s2-hold); pointer-events: none;
-  transition: left .55s var(--s2-ease); }
-.s2-line::before, .s2-line::after { content: ""; position: absolute; left: -5.5px;
-  width: 14px; height: 3px; background: var(--s2-hold); }
-.s2-line::before { top: 0; } .s2-line::after { bottom: 0; }
-.s2-line-lab { position: absolute; left: 14px; top: -3px; white-space: nowrap;
-  font: 400 15px/1.3 "Bricolage"; color: var(--s2-mute); }
-.s2-line--now .s2-zlab--ask { position: absolute; left: 16px; top: 44px; }
+/* the approval line: 3px, ticked, with its zone word */
+.line { position: absolute; z-index: 2; top: 0; bottom: 20px; left: var(--x);
+  width: 3px; margin-left: -1.5px; background: var(--hold); pointer-events: none;
+  transition: left .55s var(--ease); }
+.line::before, .line::after { content: ""; position: absolute; left: -5.5px;
+  width: 14px; height: 3px; background: var(--hold); }
+.line::before { top: 0; } .line::after { bottom: 0; }
+.line--now .zlab--ask { position: absolute; left: 16px; top: 44px; }
+.line-lab { position: absolute; right: 12px; top: -3px; white-space: nowrap;
+  font: 400 16px/1.3 var(--sans); color: var(--mute); }
 /* where the line stood before — a trace, unmistakably not the current line */
-.s2-line--ghost { left: 30%; width: 0; margin-left: 0; background: none;
-  border-left: 1.5px dashed color-mix(in srgb, var(--s2-hold) 55%, transparent);
+.line--ghost { left: 30%; width: 0; margin-left: 0; background: none;
+  border-left: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent);
   opacity: 0; transition: opacity .4s linear; }
-.s2-line--ghost::before, .s2-line--ghost::after { display: none; }
-.s2-line--ghost .s2-line-lab { left: auto; right: 12px; }
-.s2-desk[data-place="may"] .s2-line--ghost { opacity: 1; }
+.line--ghost::before, .line--ghost::after { display: none; }
+.desk[data-place="may"] .line--ghost { opacity: 1; }
 
-/* the three objects: one column each, the order's column the widest */
-/* Each slot is two rows: a fixed art row the sheets sit at the foot of, and
-   a caption row — so the three captions start on one line, as in the study. */
-.s2-slot { position: relative; z-index: 3; grid-row: 1; justify-self: center;
-  display: grid; grid-template-rows: calc(var(--s2-sh) + 16px) auto; row-gap: 12px;
+/* slots: a fixed art row the sheets sit at the foot of, then a caption row,
+   so the captions start on one line */
+.slot { position: relative; z-index: 3; grid-row: 1;
+  display: grid; grid-template-rows: calc(var(--sh) + 16px) auto; row-gap: 12px;
   align-items: end; justify-items: start; max-width: 100%; }
-.s2-slot--prep { grid-column: 1; } .s2-slot--po { grid-column: 3; } .s2-slot--exc { grid-column: 5; }
-.s2-art { display: flex; align-items: flex-end; }
+.slot--prep, .slot--stack { grid-column: 1; justify-self: center; }
+.slot--po, .slot--slip     { grid-column: 3; justify-self: center; }
+.slot--exc                 { grid-column: 5; justify-self: end; padding-right: 4%; }
+.art { display: flex; align-items: flex-end; }
 
 /* a caption is a wrapping label area, never a fixed box */
-.s2-cap { margin: 0; align-self: start; display: grid; gap: 3px; max-width: max(260px, calc(var(--s2-sh) * 1.3));
-  font: 400 16px/1.3 "Bricolage"; color: var(--s2-cream); }
-.s2-cap b { font-weight: 700; }
-.s2-cap span { color: var(--s2-mute); }
-.s2-mark { font-style: normal; font: 700 14px/1.3 "Bricolage"; letter-spacing: .09em;
-  text-transform: uppercase; margin-top: 2px; }
-.s2-mark[data-kind="ask"]  { color: var(--s2-hold); }
-.s2-mark[data-kind="ask"]::before  { content: "○ "; }
-.s2-mark[data-kind="may"]  { color: var(--s2-ok); }
-.s2-mark[data-kind="may"]::before  { content: "● "; }
-.s2-mark[data-kind="hard"] { color: var(--s2-exc); }
-.s2-mark[data-kind="hard"]::before { content: "▧ "; }
+.cap { margin: 0; align-self: start; display: grid; gap: 3px;
+  max-width: max(240px, calc(var(--sh) * 1.2));
+  font: 400 17px/1.3 var(--sans); color: var(--cream); }
+.cap b { font-weight: 700; }
+.cap span { color: var(--mute); font-size: 16px; }
+.mark { font-style: normal; font: 700 16px/1.3 var(--sans); letter-spacing: .09em;
+  text-transform: uppercase; white-space: nowrap; }
+.mark[data-kind="ask"]  { color: var(--hold); }
+.mark[data-kind="ask"]::before  { content: "○ "; }
+.mark[data-kind="hard"] { color: var(--exc); }
+.mark[data-kind="hard"]::before { content: "▧ "; }
 
 /* ── cut-paper sheets ────────────────────────────────────────────────── */
-.s2-sheet { position: relative; display: flex; flex-direction: column; gap: 6px;
-  padding: 12px 14px; background: var(--s2-cream); color: var(--s2-ink); }
-.s2-sheet > svg { display: block; width: 100%; flex: 0 0 auto; }
-.s2-sh { font: 700 12.5px/1.2 "Bricolage"; letter-spacing: .06em; text-transform: uppercase; }
-.s2-sm { font: 400 12.5px/1.2 "Bricolage"; color: var(--s2-sheetm); margin-top: -2px; }
+.sheet { position: relative; display: flex; flex-direction: column; gap: 6px;
+  padding: 12px 14px; background: var(--cream); color: var(--ink); }
+.sheet > svg { display: block; width: 100%; flex: 0 0 auto; }
+.sh { font: 700 16px/1.2 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+.sm { font: 400 16px/1.2 var(--sans); color: var(--sheetm); margin-top: -2px; }
 
-/* Prepared: three small sheets, one cluster */
-.s2-prep { position: relative; width: calc(var(--s2-sh) * .9); height: calc(var(--s2-sh) * .84); }
-.s2-prep .s2-sheet { position: absolute; padding: 10px 10px; gap: 8px; }
-.s2-prep .s2-sh { font-size: 11.5px; }
-.s2-sheet--quotes { left: 0; top: 0; width: 58%; height: 60%; background: #E3D7BA; }
-.s2-sheet--order  { left: 24%; top: 13%; width: 58%; height: 80%; }
-.s2-sheet--qty    { left: 60%; top: 55%; width: 40%; height: 42%; background: #EBE2CB; transform: rotate(-3deg); }
-.s2-sheet--quotes > svg { height: 44%; } .s2-sheet--order > svg { height: 38%; }
-.s2-sheet--qty > svg { height: 34%; width: 92%; }
-.s2-stamp { position: absolute; left: 10%; bottom: 10px; transform: rotate(-12deg);
-  padding: 1px 7px; border: 1.5px solid var(--s2-ink);
-  font: 700 13px/1.3 "Bricolage"; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
+/* Prepared: three small wordless sheets, one cluster */
+.prep { position: relative; width: calc(var(--sh) * .9); height: calc(var(--sh) * .84); }
+.prep .sheet { position: absolute; padding: 10px; }
+.sheet--quotes { left: 0; top: 0; width: 58%; height: 60%; background: #E3D7BA; }
+.sheet--order  { left: 24%; top: 13%; width: 58%; height: 80%; }
+.sheet--qty    { left: 60%; top: 55%; width: 40%; height: 42%; background: #EBE2CB; transform: rotate(-3deg); }
+.sheet--quotes > svg { height: 60%; } .sheet--order > svg { height: 62%; }
+.sheet--qty > svg { height: 60%; width: 92%; }
 
 /* The purchase order: the one dominant object */
-.s2-po { position: relative; padding: 0 54px 14px 0; transition: transform .55s var(--s2-ease); }
-.s2-sheet--po { width: calc(var(--s2-sh) * .86); height: var(--s2-sh);
+.po { position: relative; padding: 0 0 14px 0; transition: transform .55s var(--ease); }
+.screen--s2 .po { padding-right: 60px; }
+.sheet--po { width: calc(var(--sh) * .86); height: var(--sh);
   box-shadow: 4px 4px 0 0 rgba(22,21,15,.38); }
-.s2-po-rules { height: 16px; }
-.s2-fields { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
-.s2-fields li { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 6px;
-  font: 400 13px/1.4 "Bricolage"; color: var(--s2-sheetm); }
-.s2-fields svg { display: block; width: 100%; height: 4px; }
-.s2-desk[data-place="may"] .s2-po { transform: rotate(-3deg); }
-/* the coverage annotation: one slip, the specified mistakes, nothing broader */
-/* pinned to the order's lower-right corner, clear of the field labels */
-.s2-slip { position: absolute; right: 0; bottom: -14px; width: 150px; transform: rotate(3deg);
-  padding: 8px 10px 9px; background: var(--s2-cream); color: var(--s2-ink);
-  border: 1.4px dashed var(--s2-ink); box-shadow: 0 2px 0 0 rgba(22,21,15,.18); }
-.s2-slip-h { margin: 0 0 3px; font: 700 12px/1.3 "Bricolage"; letter-spacing: .06em; text-transform: uppercase; }
-.s2-slip-l { list-style: none; margin: 0; padding: 0; font: 400 13px/1.3 "Bricolage"; }
+.po-rules { height: 16px; }
+.po-fields { height: 44px; margin-top: 2px; }
+.desk[data-place="may"] .po { transform: rotate(-3deg); }
+/* the coverage slip: the specified mistakes, nothing broader */
+.slip { position: absolute; right: 0; bottom: -14px; width: 170px; transform: rotate(3deg);
+  padding: 9px 12px 10px; background: var(--cream); color: var(--ink);
+  border: 1.4px dashed var(--ink); box-shadow: 0 2px 0 0 rgba(22,21,15,.18); }
+.slip-h { margin: 0 0 4px; font: 700 16px/1.25 var(--sans); letter-spacing: .03em; text-transform: uppercase; }
+.slip-l { list-style: none; margin: 0; padding: 0; font: 400 16px/1.3 var(--sans); }
 
 /* The exception: hatched band, a signature line, never moves */
-.s2-sheet--exc { width: calc(var(--s2-sh) * .8); height: calc(var(--s2-sh) * .9); padding-top: 24px; }
-.s2-hatchband { position: absolute; left: 0; top: 0; width: 100%; height: 12px; }
-.s2-sheet--exc > svg:not(.s2-hatchband) { height: 28%; }
-.s2-sign { margin-top: auto; padding-top: 6px; border-top: 1.5px solid var(--s2-ink);
-  display: flex; justify-content: space-between; gap: 6px; white-space: nowrap;
-  font: 400 11.5px/1.3 "Bricolage"; color: var(--s2-sheetm); }
+.sheet--exc { width: calc(var(--sh) * .8); height: calc(var(--sh) * .9); padding-top: 24px; }
+.hatchband { position: absolute; left: 0; top: 0; width: 100%; height: 12px; }
+.sheet--exc > svg:not(.hatchband):not(.sign svg) { height: 24%; }
+.sign { margin-top: auto; display: block; width: 100%; }
+.sign svg { display: block; width: 100%; height: 10px; }
 
-/* the residual responsibility, said once, in the frame */
-.s2-caveat { margin: 12px 0 0; max-width: 60ch; flex: 0 0 auto; pointer-events: auto;
-  font: 400 16px/1.4 "Bricolage"; color: var(--s2-mute); }
+/* ── screen 3's documents ────────────────────────────────────────────── */
+.stack { position: relative; width: calc(var(--sh) * .95); height: calc(var(--sh) * .86); }
+.stack .sheet { position: absolute; width: 56%; height: 68%; padding: 10px; }
+.stack .sheet > svg:not(.tick) { height: 60%; }
+.sheet--s3a { left: 0;   top: 24%; transform: rotate(-5deg); background: #E3D7BA; }
+.sheet--s3b { left: 20%; top: 12%; transform: rotate(2deg);  background: #EBE2CB; }
+.sheet--s3c { left: 42%; top: 0;   transform: rotate(-2deg); box-shadow: 4px 4px 0 0 rgba(22,21,15,.3); }
+.tick { position: absolute !important; right: 8px; bottom: 8px; width: 24px !important; height: 24px; }
+.tick--big { width: 30px !important; height: 30px; right: 10px; bottom: 10px; }
+.paid { position: relative; padding-bottom: 6px; }
+.slip--paid { position: relative; right: auto; bottom: auto; width: calc(var(--sh) * .7);
+  height: calc(var(--sh) * .5); transform: rotate(-2deg); display: flex; flex-direction: column; }
+.slip--paid > svg:first-child { display: block; width: 100%; height: 60%; }
+.sheet--exc3 { width: calc(var(--sh) * .72); height: calc(var(--sh) * .78); }
+.sheet--exc3 > svg:not(.hatchband) { height: 40%; margin-top: 4px; }
 
-/* short landscape windows (1180x740, 1536x740): a little less air above the desk */
-@media (min-width: 900px) and (max-height: 780px) {
-  .s2-desk { --s2-sh: clamp(200px, calc(100vh - 560px), 250px); padding-top: 50px; }
-  .s2-caveat { margin-top: 10px; }
+/* the proposed widening: dashed territory past the line, never a filled tray */
+.prop { position: absolute; z-index: 1; top: 22px; bottom: 20px; left: var(--x); width: 0;
+  pointer-events: none; opacity: 0;
+  border-right: 2px dashed color-mix(in srgb, var(--cool) 75%, transparent);
+  background: repeating-linear-gradient(135deg, rgba(111,195,232,.07) 0 3px, transparent 3px 12px);
+  transition: width .55s var(--ease), opacity .3s linear; }
+.desk[data-proposed="1"] .prop { opacity: 1; width: calc(var(--xp) - var(--x)); }
+/* the zone word stays legible over the hatching */
+.desk[data-proposed="1"] .zlab--ask { background: rgba(12,18,24,.9); padding: 4px 8px; margin: -4px -8px; }
+.screen--s3 .desk { --xp: 80%; }
+/* screen 3's ghost marks where the line stood before the room narrowed it —
+   only after Narrow, and never the screen-2 position */
+.screen--s3 .desk[data-place="may"] .line--ghost { opacity: 0; }
+.screen--s3 .desk[data-place="ask"] .line--ghost { left: 70%; opacity: 1; }
+/* Keep: the line is confirmed — heavier, lit */
+.desk[data-decided="keep"] .line--now { background: var(--ok); box-shadow: 0 0 18px 2px rgba(116,199,154,.45); }
+.desk[data-decided="keep"] .line--now::before, .desk[data-decided="keep"] .line--now::after { background: var(--ok); }
+.desk[data-decided="keep"] .tray { border-top-color: var(--ok); }
+
+/* ══ CHROME ═════════════════════════════════════════════════════════════ */
+
+.chrome {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+  height: calc(var(--chrome-h) + var(--gesture-safe));
+  padding: 0 var(--gutter) calc(var(--gutter) + var(--gesture-safe));
+  display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
+  pointer-events: none;
+}
+.chrome-r { display: flex; align-items: center; gap: 8px; }
+.iconbtn {
+  width: 46px; height: 46px; min-width: 44px; min-height: 44px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  background: var(--panel); color: var(--paper);
+  border: 1px solid var(--line-2); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 16px/1 var(--sans); cursor: pointer;
+}
+.iconbtn:hover { background: #2E3741; }
+.iconbtn[disabled] { color: #A7B3BD; background: #2E3741; border-color: var(--line); cursor: default; }
+.picker select {
+  min-height: 46px; max-width: 34ch; padding: 0 12px;
+  background: var(--panel); color: var(--paper);
+  border: 1px solid var(--line-2); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 16px/1 var(--sans); cursor: pointer;
+}
+.cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 46px; padding: 0 20px;
+  background: var(--paper); color: var(--console);
+  border: 1px solid var(--paper); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
+  font: 700 16px/1 var(--sans); cursor: pointer; white-space: nowrap;
+}
+.cta:hover { background: #ECEADF; border-color: #ECEADF; }
+/* on the last screen the decision is the primary action; Next steps back */
+.cta--quiet { background: transparent; color: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--line-2); }
+
+/* ══ SHORT LANDSCAPE (1180×740, 1536×740) ═════════════════════════════ */
+@media (min-width: 900px) and (max-height: 820px) {
+  :root { --gutter: 13px; --chrome-h: 66px; }
+  .chrome { padding: 0 var(--gutter) calc(10px + var(--gesture-safe)); }
+  .desk { --sh: clamp(176px, calc(100vh - 540px), 240px); padding-top: 54px; margin-top: 10px; }
+  .eyebrow { margin-bottom: 6px; }
 }
 
-/* ── portrait / narrow: stack and scroll ─────────────────────────────── */
+/* ══ NARROW / PORTRAIT: stack and scroll, never shrink ══════════════════ */
 @media (max-width: 899px) {
-  .s2-top { flex-direction: column; align-items: stretch; gap: 16px; }
-  .s2-head { align-items: flex-start; }
-  .screen--s2 .s2-xd { font-size: clamp(30px, 8vw, 46px); }
-  .s2-auth { max-width: none; }
-  .s2-auth .s2-support { max-width: 44ch; font-size: 17px; }
+  :root { --gutter: 13px; --chrome-h: 68px; }
+  .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
+  .screen { padding: var(--gutter) var(--gutter) 8px; }
 
-  .s2-desk { --s2-sh: clamp(168px, 24vw, 210px);
+  .top { flex-direction: column; align-items: stretch; gap: 16px; }
+  .xd { font-size: clamp(30px, 8vw, 46px); }
+  .aside { max-width: none; }
+  .statement { max-width: 44ch; font-size: 18px; }
+  .dec-q { max-width: none; }
+
+  .desk { --sh: clamp(168px, 24vw, 210px); flex: 0 0 auto;
     display: flex; flex-direction: column; margin-top: 18px; padding: 0; }
-  .s2-tray, .s2-zlab--may { position: static; }
-  .s2-tray { display: none; }
-  .s2-zlab--may { order: 1; padding: 10px 16px 0; background: var(--s2-tray) var(--s2-grain);
-    border-top: 2px solid color-mix(in srgb, var(--s2-ok) 55%, transparent); }
+  .tray { display: none; }
+  .zlab--may { position: static; order: 1; padding: 10px 16px 0; margin: 0;
+    background: var(--tray) var(--grain);
+    border-top: 2px solid color-mix(in srgb, var(--ok) 55%, transparent); }
   /* a slot becomes a row: the sheet, then its caption beside it */
-  .s2-slot { order: 2; justify-self: auto; display: flex; flex-direction: row; align-items: flex-end;
-    gap: 18px; padding: 12px 16px 16px; }
-  .s2-slot--prep { background: var(--s2-tray) var(--s2-grain); }
-  .s2-slot--po { order: 4; }
-  .s2-desk[data-place="may"] .s2-slot--po { background: var(--s2-tray) var(--s2-grain); }
-  .s2-slot--exc { order: 6; }
-  .s2-art { flex: 0 0 auto; }
-  .s2-cap { flex: 1 1 auto; max-width: none; min-width: 0; }
-  /* the slip sits under the order rather than across its fields */
-  .s2-po { display: flex; flex-direction: column; align-items: flex-start; padding: 0; }
-  .s2-slip { position: static; width: 140px; margin: -10px 0 0 24%; transform: rotate(2deg); }
-  .s2-desk[data-place="may"] .s2-po { transform: none; }
+  .slot { order: 2; justify-self: auto; display: flex; flex-direction: row; align-items: flex-end;
+    gap: 18px; padding: 12px 16px 16px; max-width: none; }
+  .slot--prep, .slot--stack { background: var(--tray) var(--grain); }
+  .slot--po, .slot--slip { order: 4; }
+  .desk[data-place="may"] .slot--po, .desk[data-place="may"] .slot--slip { background: var(--tray) var(--grain); }
+  .slot--exc { order: 7; padding-right: 16px; }
+  .art { flex: 0 0 auto; }
+  .cap { flex: 1 1 auto; max-width: none; min-width: 0; align-self: center; }
+  .po { display: flex; flex-direction: column; align-items: flex-start; padding: 0 !important; }
+  .slip { position: static; width: 170px; margin: -10px 0 0 24%; transform: rotate(2deg); }
+  .desk[data-place="may"] .po { transform: none; }
 
-  /* the line turns horizontal between the stacked trays */
-  .s2-line { position: relative; top: auto; bottom: auto; left: auto; width: auto;
-    margin: 0; background: none; border-top: 3px solid var(--s2-hold);
+  /* the line turns horizontal between the stacked rows */
+  .line { position: relative; top: auto; bottom: auto; left: auto; width: auto;
+    margin: 0; background: none; border-top: 3px solid var(--hold);
     padding: 8px 16px 12px; transition: none; }
-  .s2-line--now { order: 3; }
-  .s2-desk[data-place="may"] .s2-line--now { order: 5; }
-  .s2-line::before, .s2-line::after { top: -9px; width: 3px; height: 15px; left: 0; }
-  .s2-line::after { left: auto; right: 0; }
-  .s2-line-lab, .s2-line--now .s2-zlab--ask { position: static; display: block; margin: 0; }
-  .s2-line--now .s2-zlab--ask { margin-top: 4px; }
-  .s2-line--ghost { display: none; order: 3; border-left: 0; padding: 4px 16px 6px; opacity: 1;
-    border-top: 1.5px dashed color-mix(in srgb, var(--s2-hold) 55%, transparent); }
-  .s2-desk[data-place="may"] .s2-line--ghost { display: block; }
-  .s2-line--ghost .s2-line-lab { text-align: right; }
+  .line--now { order: 3; }
+  .desk[data-place="may"] .line--now { order: 5; }
+  .line::before, .line::after { top: -9px; width: 3px; height: 15px; left: 0; }
+  .line::after { left: auto; right: 0; }
+  .line-lab, .line--now .zlab--ask { position: static; display: block; margin: 0; }
+  .line--ghost { display: none; order: 3; border-left: 0; padding: 4px 16px 6px; opacity: 1;
+    border-top: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent); }
+  .desk[data-place="may"] .line--ghost { display: block; }
+  .line--ghost .line-lab { text-align: right; }
+  .screen--s3 .desk[data-place="ask"] .line--ghost { display: block; order: 5; left: auto; }
+  .desk[data-decided="keep"] .line--now { background: none; box-shadow: none; border-top-color: var(--ok); }
 
-  .s2-caveat { margin-top: 16px; }
+  /* the proposal is a dashed empty band between the line and the exception */
+  .prop { position: static; display: none; order: 6; width: auto; min-height: 44px;
+    margin: 0 16px; border-right: 0; border: 2px dashed color-mix(in srgb, var(--cool) 75%, transparent); }
+  .desk[data-proposed="1"] .prop { display: block; opacity: 1; width: auto; }
+
+  .micro { margin-top: 16px; }
+
+  .chrome { padding: 0 var(--gutter) calc(11px + var(--gesture-safe)); align-items: center; }
+  .chrome-r { width: 100%; }
+  .picker { flex: 1 1 auto; min-width: 0; }
+  .picker select { width: 100%; max-width: none; }
+  .cta { padding: 0 16px; }
 }
-@media (max-width: 480px) {
-  .s2-slot { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .s2-auth .xchoice button { padding: 0 16px; }
+@media (max-width: 599px) {
+  /* the next label is hidden from SIGHT, not from the accessibility tree */
+  .cta span:first-child {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+  .cta { padding: 0 14px; min-width: 46px; justify-content: center; }
+  .slot { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .xchoice button { padding: 0 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
