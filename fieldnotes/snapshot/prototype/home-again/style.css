@@ -323,20 +323,6 @@ body {
                             box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--edition-ink); }
 .slots--sm .slot { width: calc(var(--fs) * .9); height: calc(var(--fs) * .9); }
 
-.slot-key {
-  display: flex; flex-wrap: wrap; align-items: center;
-  gap: calc(var(--fs) * .25) calc(var(--fs) * .55);
-  margin: calc(var(--fs) * .85) 0 calc(var(--fs) * .5);
-  font: 600 var(--t-lab)/1.5 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft);
-}
-.sk {
-  width: calc(var(--fs) * .72); height: calc(var(--fs) * .72);
-  border-radius: 1px; border: 1.5px solid var(--rule); background: var(--paper);
-  margin-right: calc(var(--fs) * -.3);
-}
-.sk--mine { background: var(--edition-ink); border-color: var(--edition-ink); }
-.sk--held { background: var(--fire); border-color: var(--fire); }
 
 /* the named people — a lead and a builder are the two things a cheque is
    not, so both are set at name size rather than as list rows */
@@ -352,6 +338,28 @@ body {
 }
 .lead-role { margin: 0; font: var(--t-sec)/1.45 var(--sans); color: var(--ink-soft); }
 .lead-role + * { margin-top: calc(var(--fs) * .5); }
+
+/* ══ NEW · .resv — the reservation, without a quantity ══════════════════
+   Replaces the eight-cell slot meter on screen 1. That meter implied a known
+   regional capacity, which is invented precision; what the prototype can
+   honestly claim is that THIS plan is held. So the state is a word on a
+   stamp, with a filled marker beside it, and it survives greyscale because
+   the word does the work rather than a fill. */
+.resv {
+  display: flex; align-items: center; gap: calc(var(--fs) * .45);
+  margin: calc(var(--fs) * .6) 0 calc(var(--fs) * .45);
+  padding: calc(var(--fs) * .4) calc(var(--fs) * .6);
+  border-left: 4px solid var(--edition-ink);
+  border-radius: var(--r-s);
+  background: var(--edition-wash);
+  font: 600 max(11px, calc(var(--t-lab) * .96))/1.5 var(--sans);
+  letter-spacing: .11em; text-transform: uppercase; color: var(--edition-ink);
+}
+.resv-mark {
+  width: calc(var(--fs) * .72); height: calc(var(--fs) * .72);
+  flex: 0 0 auto; border-radius: 50%;
+  background: var(--edition-ink); border: 2px solid var(--edition-ink);
+}
 
 /* ══ NEW · 3  .cm — the commitment card ═════════════════════════════════
    Four things the carrier commits to DELIVER. Each carries a word badge,

@@ -792,3 +792,51 @@ input[type="range"] { height: 44px; }
 @media (max-width: 899px) {
   .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
 }
+
+/* ══ NEW · .choice — the closing decision ═══════════════════════════════
+   Lives on the one LIGHT plate, so everything here is edition ink on paper,
+   not console stock. Three equal answers, none preselected: an unanswered
+   question is the state the screen opens in, and the facilitator takes the
+   hands. The chosen one is marked by a filled ground AND its border AND the
+   pressed state — never by a tint alone — so it survives greyscale.
+   Deliberately not a settings control: choosing changes no limit, it only
+   opens the argument. */
+
+.body--ink { color: var(--edition-ink); }
+
+.choice {
+  display: flex; flex-wrap: wrap; gap: calc(var(--fs) * .45);
+  margin: calc(var(--fs) * .75) 0 0;
+}
+.choice-btn {
+  flex: 1 1 auto;
+  min-height: 44px; min-width: 44px;
+  padding: calc(var(--fs) * .5) calc(var(--fs) * .9);
+  border: 1.5px solid var(--edition-ink);
+  border-radius: var(--r-m);
+  background: var(--paper);
+  color: var(--edition-ink);
+  font: 600 var(--t-sub)/1.2 var(--sans);
+  cursor: pointer;
+  transition: background .15s linear, color .15s linear;
+}
+.choice-btn[aria-pressed="true"] {
+  background: var(--edition-ink);
+  color: var(--paper);
+  border-color: var(--edition-ink);
+}
+.choice-said {
+  margin: calc(var(--fs) * .6) 0 0;
+  padding-left: calc(var(--fs) * .7);
+  border-left: 4px solid var(--edition-ink);
+  font: var(--t-sec)/1.45 var(--sans);
+  color: var(--edition-ink);
+}
+
+/* The forward control steps back on the last screen: the decision above is
+   the primary action there, and two competing pills read as a toolbar. */
+.cta--quiet {
+  background: transparent;
+  color: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--line-2, rgba(251,249,241,.45));
+}

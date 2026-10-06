@@ -445,6 +445,40 @@
      NAVIGATION
      ══════════════════════════════════════════════════════════════════════ */
 
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 3 — the closing decision
+
+     A workshop beat, not a settings control. It changes no limit and writes
+     no state into the story: the point is that the room has just seen what
+     the cover absorbed, and now has to say whether that evidence moves what
+     they would let the software do. Nothing is preselected, and each answer
+     opens an argument rather than confirming a setting.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var CHOICE = {
+    keep:   "The boundary stays. The cover paid for exactly the kind of mistake it was bought for, and a buyer still saw the order that needed one.",
+    narrow: "A tighter boundary means fewer orders placed without a person — and the covered mistake would have waited for one too.",
+    expand: "A wider boundary asks the insurer to price a larger loss, not just the business to tolerate one. The limit is theirs to move, not Calder's alone."
+  };
+
+  (function () {
+    var said = document.getElementById("choice-said");
+    var btns = Array.prototype.slice.call(document.querySelectorAll(".choice-btn"));
+    if (!said || !btns.length) { return; }
+
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.dataset.choice;
+        btns.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+        said.textContent = CHOICE[k];
+        said.hidden = false;
+        var status = document.getElementById("state-status");
+        if (status) { status.textContent = b.textContent.trim() + ". " + CHOICE[k]; }
+      });
+    });
+  }());
+
+
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
   var total = screens.length;
   var picker = document.getElementById("picker");
@@ -454,7 +488,7 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["Grant the authority", "See it act", "Back to the queue"];
+  var CTA = ["Grant the authority", "See it act", "Start again"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -473,6 +507,9 @@
     picker.value = String(n);
     prevBtn.disabled = n === 1;
     nextLabel.textContent = CTA[n - 1];
+    // On the last screen the decision is the primary action, so the forward
+    // control steps back to a quiet treatment rather than pulling the eye.
+    nextBtn.classList.toggle("cta--quiet", n === total);
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
 

@@ -127,7 +127,6 @@
     network: { x: 90,  y: 100, w: 1420, h: 790 },
     ignite:  { x: 740, y: 230, w: 540,  h: 560 },
     flows:   { x: 120, y: 180, w: 1380, h: 740 },
-    loop:    { x: 560, y: 180, w: 900,  h: 640 },
     payoff:  { x: 40,  y: 110, w: 1520, h: 820 }
   };
   /* On a phone the plates stack from the top and the county shows through
@@ -137,7 +136,6 @@
     network: { x: 140, y: 150, w: 1320, h: 760 },
     ignite:  { x: 760, y: 250, w: 520,  h: 520 },
     flows:   { x: 160, y: 300, w: 1300, h: 660 },
-    loop:    { x: 500, y: 240, w: 1000, h: 640 },
     payoff:  { x: 120, y: 240, w: 1360, h: 700 }
   };
 
@@ -648,54 +646,6 @@
     say("All " + tlRows.length + " steps shown.");
   }
 
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 5 — the loop ring
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function drawLoop() {
-    var host = document.getElementById("loop-svg");
-    if (!host) { return; }
-    var R = 76, cx = 100, cy = 100, s = [];
-    var stages = [
-      { n: "01", t: "Observe",   hard: false },
-      { n: "02", t: "Intervene", hard: false },
-      { n: "03", t: "Verify",    hard: true },
-      { n: "04", t: "Measure",   hard: true },
-      { n: "05", t: "Update",    hard: false }
-    ];
-    /* arcs between the nodes; the return arc is drawn heavier */
-    stages.forEach(function (st, i) {
-      var a0 = (i / 5) * Math.PI * 2 - Math.PI / 2;
-      var a1 = ((i + 1) / 5) * Math.PI * 2 - Math.PI / 2;
-      var pad = 0.30;
-      var x0 = cx + Math.cos(a0 + pad) * R, y0 = cy + Math.sin(a0 + pad) * R;
-      var x1 = cx + Math.cos(a1 - pad) * R, y1 = cy + Math.sin(a1 - pad) * R;
-      var ret = i === 4;
-      s.push('<path d="M' + x0.toFixed(1) + " " + y0.toFixed(1) +
-             "A" + R + " " + R + " 0 0 1 " + x1.toFixed(1) + " " + y1.toFixed(1) +
-             '" fill="none" stroke="' + (ret ? INK : RULE) + '" stroke-width="' + (ret ? 2.4 : 1.4) +
-             '" marker-end="url(#ar' + (ret ? "i" : "r") + ')"/>');
-    });
-    stages.forEach(function (st, i) {
-      var a = (i / 5) * Math.PI * 2 - Math.PI / 2;
-      var x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
-      s.push('<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (st.hard ? 11 : 9) +
-             '" fill="' + (st.hard ? INK : PAPER) + '" stroke="' + (st.hard ? INK : RULE) +
-             '" stroke-width="1.6"/>');
-      /* No numerals in the ring. They rendered at 9px — the only text in the
-         publication under the 11px floor — and they duplicated the legend
-         beside them, which already reads "01 Observe". The filled/hollow
-         node now carries the state on its own. */
-    });
-    host.innerHTML =
-      '<defs>' +
-        '<marker id="arr" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto">' +
-          '<path d="M0 0L8 4L0 8Z" fill="' + RULE + '"/></marker>' +
-        '<marker id="ari" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto">' +
-          '<path d="M0 0L8 4L0 8Z" fill="' + INK + '"/></marker>' +
-      "</defs>" + s.join("");
-    host.setAttribute("viewBox", "0 0 200 200");
-  }
 
   /* ══════════════════════════════════════════════════════════════════════
      PER-SCREEN DRAW
@@ -706,8 +656,7 @@
     else if (n === 2) { renderCounty({ layers: layerOn }); }
     else if (n === 3) { paintTl(); }
     else if (n === 4) { renderCounty({ layers: { see: true, act: true } }); }
-    else if (n === 5) { renderCounty({ layers: { see: true, act: true }, ignition: 0.45, spread: false }); }
-    else if (n === 6) { renderCounty({ layers: { see: true, act: true }, protected: true }); }
+    else if (n === 5) { renderCounty({ layers: { see: true, act: true }, protected: true }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -824,7 +773,7 @@
   var current = 1;
 
   var CTA = ["See the network", "Watch an ignition", "Follow the money",
-             "Find the hard part", "See what it creates", "Back to the problem"];
+             "See what it creates", "Back to the problem"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -844,7 +793,6 @@
   if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
   var tlAll = document.getElementById("tl-all");
   if (tlAll) { tlAll.addEventListener("click", tlShowAll); }
-  drawLoop();
   paintLayers();
 
   function show(n, push) {
