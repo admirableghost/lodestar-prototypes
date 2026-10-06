@@ -1244,3 +1244,19 @@ input[type="range"] { height: 44px; }
 
 /* Last two legacy soft-ink classes that ended up on the ground. */
 .illus, .wall-side--hers .wall-i { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }
+
+/* The scrim was painted on the element itself, so its padding grew the box
+   and the detector saw it overlapping whatever sat in the next row. It is a
+   lighting effect, not a layout object, so it moves to a pseudo-element that
+   bleeds past the box without occupying space. */
+.xhead--scrim { position: relative; padding: 0; background: none; }
+.xhead--scrim > * { position: relative; z-index: 1; }
+.xhead--scrim::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  inset: -2.2vh -14vw -2.2vh -3vw;
+  background: radial-gradient(118% 120% at 20% 50%,
+    var(--paper) 0%, var(--paper) 48%,
+    color-mix(in srgb, var(--paper) 68%, transparent) 74%,
+    transparent 100%);
+}
+.wall-h { color: color-mix(in srgb, var(--edition-ink) 82%, var(--paper)); }

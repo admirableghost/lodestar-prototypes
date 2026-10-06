@@ -1,0 +1,200 @@
+{
+  "01-opening": {
+    "slug": "first-move",
+    "title": "Opening — The First Move",
+    "frames": [
+      {
+        "file": "first-move-01-the-analysis.png",
+        "n": "01",
+        "label": "the analysis",
+        "state": false
+      },
+      {
+        "file": "first-move-01-running.png",
+        "n": "01",
+        "label": "running",
+        "state": true
+      },
+      {
+        "file": "first-move-02-the-handoff.png",
+        "n": "02",
+        "label": "the handoff",
+        "state": false
+      }
+    ]
+  },
+  "02-home-again": {
+    "slug": "home-again",
+    "title": "Home Again",
+    "frames": [
+      {
+        "file": "home-again-01-before-the-loss.png",
+        "n": "01",
+        "label": "before the loss",
+        "state": false
+      },
+      {
+        "file": "home-again-01-as-it-stood.png",
+        "n": "01",
+        "label": "as it stood",
+        "state": true
+      },
+      {
+        "file": "home-again-02-the-promise.png",
+        "n": "02",
+        "label": "the promise",
+        "state": false
+      },
+      {
+        "file": "home-again-02-regional-event.png",
+        "n": "02",
+        "label": "regional event",
+        "state": true
+      },
+      {
+        "file": "home-again-03-the-first-days.png",
+        "n": "03",
+        "label": "the first days",
+        "state": false
+      }
+    ]
+  },
+  "03-negotiated-neighborhood": {
+    "slug": "negotiated",
+    "title": "Negotiated Neighborhood",
+    "frames": [
+      {
+        "file": "negotiated-01-acting-alone.png",
+        "n": "01",
+        "label": "acting alone",
+        "state": false
+      },
+      {
+        "file": "negotiated-02-below-threshold.png",
+        "n": "02",
+        "label": "below threshold",
+        "state": false
+      },
+      {
+        "file": "negotiated-02-threshold-met.png",
+        "n": "02",
+        "label": "threshold met",
+        "state": true
+      },
+      {
+        "file": "negotiated-03-the-agreement.png",
+        "n": "03",
+        "label": "the agreement",
+        "state": false
+      }
+    ]
+  },
+  "04-wildfire-protection": {
+    "slug": "resilience-grid",
+    "title": "Wildfire Protection",
+    "frames": [
+      {
+        "file": "resilience-grid-01-priced-unavailable.png",
+        "n": "01",
+        "label": "priced, unavailable",
+        "state": false
+      },
+      {
+        "file": "resilience-grid-02-the-network.png",
+        "n": "02",
+        "label": "the network",
+        "state": false
+      },
+      {
+        "file": "resilience-grid-02-see-only.png",
+        "n": "02",
+        "label": "see only",
+        "state": true
+      },
+      {
+        "file": "resilience-grid-03-the-moment.png",
+        "n": "03",
+        "label": "the moment",
+        "state": false
+      },
+      {
+        "file": "resilience-grid-04-who-pays.png",
+        "n": "04",
+        "label": "who pays",
+        "state": false
+      },
+      {
+        "file": "resilience-grid-05-market-stays-open.png",
+        "n": "05",
+        "label": "market stays open",
+        "state": false
+      }
+    ]
+  },
+  "05-backed-to-act": {
+    "slug": "backed-to-act",
+    "title": "Backed to Act",
+    "frames": [
+      {
+        "file": "backed-to-act-01-cannot-spend.png",
+        "n": "01",
+        "label": "cannot spend",
+        "state": false
+      },
+      {
+        "file": "backed-to-act-02-draft-only.png",
+        "n": "02",
+        "label": "draft only",
+        "state": false
+      },
+      {
+        "file": "backed-to-act-02-act-within-cover.png",
+        "n": "02",
+        "label": "act within cover",
+        "state": true
+      },
+      {
+        "file": "backed-to-act-03-the-outcome.png",
+        "n": "03",
+        "label": "the outcome",
+        "state": false
+      },
+      {
+        "file": "backed-to-act-03-narrow-it.png",
+        "n": "03",
+        "label": "narrow it",
+        "state": true
+      }
+    ]
+  },
+  "06-opencover": {
+    "slug": "opencover",
+    "title": "OpenCover",
+    "frames": [
+      {
+        "file": "opencover-01-set-once.png",
+        "n": "01",
+        "label": "set once",
+        "state": false
+      },
+      {
+        "file": "opencover-02-ranked-by-priorities.png",
+        "n": "02",
+        "label": "ranked by priorities",
+        "state": false
+      },
+      {
+        "file": "opencover-02-ranked-by-price.png",
+        "n": "02",
+        "label": "ranked by price",
+        "state": true
+      },
+      {
+        "file": "opencover-03-renewal-reopened.png",
+        "n": "03",
+        "label": "renewal reopened",
+        "state": false
+      }
+    ]
+  }
+}
