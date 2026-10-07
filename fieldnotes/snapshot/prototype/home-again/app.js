@@ -352,6 +352,11 @@
     var slab = EXTENT.a;
     s.push(rect(427 + slab[0] * .58 + 8, 416, (slab[1] - slab[0]) * .58 - 16, 8, SLAB, { stroke: INK, sw: 1.2 }));
     s.push(commitments(outline({ tx: 427, ty: 70, k: .58 }), "holds", false));
+    /* the family, before what is left of the house: an adult and a child,
+       hand in hand, facing it */
+    s.push(figure(462, 414, { k: .8 }));
+    s.push('<line x1="472" y1="392" x2="492" y2="400" stroke="' + INK + '" stroke-width="3" stroke-linecap="round"/>');
+    s.push(figure(498, 414, { k: .52 }));
     s.push(block(56, 82, 400, 150));
     return s.join("");
   }
@@ -433,7 +438,11 @@
     var s = [sky({ sunX: 1010, sunY: 420, sunR: 170, warm: true })];
     s.push('<g opacity=".22">' + plan({ tx: 70, ticks: false }) + "</g>");
     s.push(path(DOOR_TX[S.home])); s.push(home({ tx: 70, lit: true }));
-    s.push(figure(700, 760, { case_: true, k: .9 }));
+    /* the family on the path, nearly at the door: an adult with the case
+       and a child, hand in hand */
+    s.push(figure(664, 712, { case_: true, k: .95 }));
+    s.push('<line x1="676" y1="684" x2="700" y2="694" stroke="' + INK + '" stroke-width="3.2" stroke-linecap="round"/>');
+    s.push(figure(708, 712, { k: .62 }));
     s.push(block(56, 82, 430, 150));
     return s.join("");
   }

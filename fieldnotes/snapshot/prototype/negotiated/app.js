@@ -166,19 +166,28 @@
   var HD0 = { up: 246, lo: 20 };                          /* both rows face the road */
   var FAR = -1400, NEAR = 2600;                           /* how far the ground runs */
 
-  /* the collective boundary, in street coordinates */
-  var BND = [[X0 - 20, -16], [bx(2) + BW + 14, -16], [bx(2) + BW + 14, 376], [X0 - 20, 376]];
-  /* its perimeter on the drawing, for the stroke-draw on the press that
-     reaches 48 (a few units over, so the round joins close) */
-  var BND_LEN = (function () {
-    var L = 0, i, a, b, dx, dy;
-    for (i = 0; i < 4; i++) {
-      a = BND[i]; b = BND[(i + 1) % 4];
-      dx = X(b[0], b[1]) - X(a[0], a[1]); dy = Y(b[1]) - Y(a[1]);
-      L += Math.sqrt(dx * dx + dy * dy);
+  /* the collective boundary is SEGMENTED: one amber run under each
+     unbroken stretch of participating lots in a row (bridging a block gap
+     when both sides are in), never one outline round the whole street — a
+     home that has not joined sits visibly outside it even mid-street. */
+  function bndRuns(isIn) {
+    var runs = [], row, i, first = -1;
+    function close(r, a, b) {
+      var L = r ? LOT.up : LOT.lo, x0 = hx(a) - 3, x1 = hx(b) + PITCH + 3;
+      var pts = [[x0, L[0] - 6], [x1, L[0] - 6], [x1, L[1] + 6], [x0, L[1] + 6]], len = 0, k, p, q, dx, dy;
+      for (k = 0; k < 4; k++) { p = pts[k]; q = pts[(k + 1) % 4]; dx = X(q[0], q[1]) - X(p[0], p[1]); dy = Y(q[1]) - Y(p[1]); len += Math.sqrt(dx * dx + dy * dy); }
+      runs.push({ pts: pts, len: Math.ceil(len) + 8 });
     }
-    return Math.ceil(L) + 8;
-  })();
+    for (row = 0; row < 2; row++) {
+      first = -1;
+      for (i = row * PER_ROW; i < (row + 1) * PER_ROW; i++) {
+        if (isIn(i)) { if (first < 0) { first = i; } }
+        else if (first >= 0) { close(row === 0, first, i - 1); first = -1; }
+      }
+      if (first >= 0) { close(row === 0, first, (row + 1) * PER_ROW - 1); }
+    }
+    return runs;
+  }
   /* was the boundary on the drawing at the last render? The draw-in runs
      only on the render that first shows it — screen 3, the press reaching
      48 — never again on a repaint or a screen change while it stays. */
@@ -219,6 +228,10 @@
      arrive one by one as the thread reaches them. Consumed by the next
      renderStreet() and never kept, so every later render is static. */
   var round = null;
+  /* the timing of the round the last render animated: when each rank's
+     home filled and when the thread stopped — read by the invite press to
+     tick the count and reveal the agent's log in step with the street */
+  var lastRound = { total: 0, arrive: {} };
 
   /* where a household's pin aims: the ridge of its house */
   function hcx(i) { var up = i < PER_ROW; return X(hx(i) + PITCH / 2, (up ? HD0.up : HD0.lo) + HD / 2); }
@@ -459,6 +472,7 @@
     var thr = (opts.thread && S.joined) ? thread(C, rnd) : null;
     var arriveAt = thr ? thr.arrive : {};
     var roundEnd = thr ? thr.total : 0;
+    if (rnd) { lastRound = { total: roundEnd, arrive: arriveAt }; }
     function arriving(i) { return rnd && S.joined && RANK[i] >= rnd.from && RANK[i] < rnd.to && !reducedMotion(); }
 
     s.push('<defs>' +
@@ -522,9 +536,11 @@
     if (crossed) {
       var draw = !bndShown && S.screen === 3 && !reducedMotion();
       var wait = draw && roundEnd ? ' style="animation-delay:' + (roundEnd + 0.15).toFixed(2) + 's"' : "";
-      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' + wait : "") }));
-      s.push(poly(BND, "none", { st: A, sw: 4, attr: 'data-boundary="edge"' +
-        (draw ? ' data-draw="1" stroke-dasharray="' + BND_LEN + '" stroke-dashoffset="' + BND_LEN + '"' + wait : "") }));
+      bndRuns(isIn).forEach(function (r) {
+        s.push(poly(r.pts, A, { op: .09, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' + wait : "") }));
+        s.push(poly(r.pts, "none", { st: A, sw: 3.5, attr: 'data-boundary="edge"' +
+          (draw ? ' data-draw="1" stroke-dasharray="' + r.len + '" stroke-dashoffset="' + r.len + '"' + wait : "") }));
+      });
     }
     bndShown = crossed;
 
@@ -830,6 +846,15 @@
 
   /* #invite's two states: a round remains, or the street is assembled.
      Unjoined there is no agent to send, so the button is inert too. */
+  /* her agent's work for the round that brought the street to its count:
+     nothing before the first press; then the three lines of that round */
+  var logEl = document.getElementById("agent-log");
+  function logLines() {
+    if (!S.joined || S.committed <= START + 1) { return []; }
+    return ["Proposal sent to the next households", "Their agents respond",
+            S.committed >= NEED ? "Three confirmed · threshold reached" : "Three confirmed · " + S.committed + " of 60"];
+  }
+
   function inviteState() {
     if (!S.joined) { return "none"; }
     return S.committed >= NEED ? "done" : "ready";
@@ -837,6 +862,7 @@
 
   function paint() {
     var open = S.committed >= NEED;
+    var busy = !!(ctlEl && ctlEl.dataset.busy === "1");
 
     /* screen 2 — the one action, or its result (with the live count) */
     if (joinBtn) { joinBtn.hidden = S.joined; }
@@ -845,12 +871,14 @@
 
     /* screen 3 — the count, the agent's one line, the invite button */
     if (countEl) { countEl.textContent = String(S.committed); }
-    if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; ctlEl.dataset.agent = S.joined ? "on" : "off"; }
-    if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
-    if (offerText) { offerText.textContent = conditionLine(open); }
+    if (ctlEl && !busy) { ctlEl.dataset.state = open ? "open" : "closed"; }
+    if (ctlEl) { ctlEl.dataset.agent = S.joined ? "on" : "off"; }
+    if (offerEl && !busy) { offerEl.dataset.state = open ? "open" : "closed"; }
+    if (offerText && !busy) { offerText.textContent = conditionLine(open); }
+    if (logEl) { logEl.innerHTML = logLines().map(function (t) { return '<li data-on="1">' + t + "</li>"; }).join(""); }
     if (inviteBtn) {
       var st = inviteState();
-      inviteBtn.textContent = st === "done" ? "Street assembled" : "Invite the street";
+      if (!busy) { inviteBtn.textContent = st === "done" ? "Street assembled" : "Invite the street"; }
       /* not `disabled` and not aria-disabled: the button stays readable
          and pressable in every state, and the press is simply answered
          (below) when there is nothing to invite */
@@ -921,6 +949,7 @@
      lot and the home fills; the count can only stand at 42, 45 or 48. At
      48 the street is assembled and the press does nothing. Unjoined, the
      button is inert: there is no agent to send. */
+  var roundTimers = [];
   if (inviteBtn) {
     inviteBtn.addEventListener("click", function () {
       var st = inviteState();
@@ -930,6 +959,28 @@
       S.committed = to;
       round = { from: from, to: to };
       repaint();
+      /* the work, in step with the street: the count ticks up as each home
+         fills, the log's lines land as the thread sends, is answered, and
+         confirms — instant under reduced motion */
+      roundTimers.forEach(clearTimeout); roundTimers = [];
+      if (!reducedMotion() && lastRound.total > 0) {
+        var items = logEl ? Array.prototype.slice.call(logEl.children) : [];
+        items.forEach(function (li) { li.dataset.on = "0"; });
+        if (countEl) { countEl.textContent = String(from); }
+        var r, at;
+        for (r = from; r < to; r++) {
+          at = lastRound.arrive[r] || 0;
+          (function (n, at) { roundTimers.push(setTimeout(function () { if (countEl) { countEl.textContent = String(n); } }, Math.round(at * 1000))); })(r + 1, at);
+        }
+        var mid = (lastRound.arrive[from] || lastRound.total / 2) * 1000;
+        [[60, 0], [Math.max(300, mid - 200), 1], [lastRound.total * 1000 + 120, 2]].forEach(function (it) {
+          roundTimers.push(setTimeout(function () { if (items[it[1]]) { items[it[1]].dataset.on = "1"; } }, Math.round(it[0])));
+        });
+        /* while the round runs the state line and the button wait for it:
+           the words change only when the count has arrived */
+        if (ctlEl) { ctlEl.dataset.busy = "1"; }
+        roundTimers.push(setTimeout(function () { if (ctlEl) { delete ctlEl.dataset.busy; } paint(); }, Math.round(lastRound.total * 1000 + 140)));
+      }
       var open = S.committed >= NEED;
       say(open
         ? "Street assembled: " + S.committed + " of 60. Participation reached; improvements and verification still required."
@@ -969,7 +1020,7 @@
         "shading runs from the slope down across every lot, the road and the gaps between blocks, " +
         "ignoring the lot lines: the risk is the street's. Every house is hollow with a dashed " +
         "edge except number 31, Maggie's home, which is solid and ringed and labelled " +
-        "“Maggie's home, No. 31”. She has hardened her own lot and the street still sets her price.";
+        "“Maggie's home, No. 31”. She has protected her own home and still could not get an offer.";
     }
     if (n === 2) {
       return "Close on number 31, Maggie's home, ringed, and the houses either side of it. " +

@@ -1069,6 +1069,8 @@ body { background: var(--paper); color: var(--edition-ink); }
   font: 700 clamp(19px, calc((.62vw + 1.1vh) * var(--k)), 25px)/1.2 var(--sans);
   color: var(--edition-ink);
 }
+.sign { flex-wrap: wrap; gap: calc(8px * var(--k)) calc(16px * var(--k)); }
+.sign-note { margin: 0; font: 700 max(16px, calc(17px * var(--k)))/1.2 var(--sans); color: var(--warm); }
 .sig { display: block; width: calc(140px * var(--k)); height: calc(30px * var(--k)); flex: 0 0 auto; }
 .sig--small { width: calc(96px * var(--k)); height: calc(21px * var(--k)); }
 .sig-path { stroke-dasharray: 260; stroke-dashoffset: 0; }
@@ -1255,7 +1257,25 @@ body { background: var(--paper); color: var(--edition-ink); }
 .paper-corner .sig { width: 100%; height: auto; opacity: 0; }
 .paper-corner[data-signed="1"] .sig { opacity: 1; }
 .oc3-scene { gap: 0; justify-content: center; }
-.stream { display: block; width: 100%; height: clamp(44px, calc(8vh * var(--k)), 80px); }
+/* the review: the marks, one per offer; the lens passing over them */
+.review { position: relative; width: 100%; margin-bottom: calc(10px * var(--k)); }
+.stream { display: block; width: 100%; height: clamp(44px, calc(8vh * var(--k)), 72px); }
+.mark { fill: var(--plum); opacity: .5; transition: opacity .25s ease, fill .25s ease; }
+.mark[data-seen="1"] { opacity: .12; }
+.mark[data-seen="1"][data-short="1"] { opacity: 1; fill: var(--blue); }
+.review-lens {
+  position: absolute; top: 0; left: 0; width: calc(34px * var(--k)); height: calc(34px * var(--k)); color: var(--plum);
+  transform: translate(-50%, 0); opacity: 0; transition: left .06s linear, opacity .2s ease; pointer-events: none;
+}
+.review-lens[data-on="1"] { opacity: 1; }
+/* a card rises when shortlisted; its reason and strike land when judged */
+.of { transition: opacity .3s ease, transform .3s ease; }
+.of[data-in="0"] { opacity: 0; transform: translateY(10px); }
+.of .strike, .of .of-t { transition: opacity .3s ease; }
+.of[data-judged="0"] .strike, .of[data-judged="0"] .of-t { opacity: 0; }
+.of .strike path { stroke-dasharray: 110; stroke-dashoffset: 0; }
+.of[data-judged="1"][data-ok="0"] .strike path { animation: strike-draw .4s ease both; }
+@keyframes strike-draw { from { stroke-dashoffset: 110; } to { stroke-dashoffset: 0; } }
 .shortlist {
   margin: 0; padding: 0; list-style: none;
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(20px * var(--k));
@@ -1285,6 +1305,10 @@ body { background: var(--paper); color: var(--edition-ink); }
 }
 .of-seal[data-on="1"] { opacity: 1; transform: none; }
 .muse--s3 { margin-top: calc(22px * var(--k)); }
+.bubble--run { font-weight: 700; }
+.dots::after { content: "…"; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4, end) infinite; }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+@media (prefers-reduced-motion: reduce) { .dots::after { animation: none; } }
 .muse--s3 .slot { margin-top: calc(4px * var(--k)); }
 /* the thread from the eligible card down into Muse's plate */
 .muse--s3::before {
@@ -1313,6 +1337,27 @@ body { background: var(--paper); color: var(--edition-ink); }
 .ychecks.is-run .ycheck:nth-child(2) .tick { animation-delay: .1s; }
 .ychecks.is-run .ycheck:nth-child(3) .tick { animation-delay: .2s; }
 .ychecks.is-run .ycheck:nth-child(4) .tick { animation-delay: .3s; }
+.ychecks.is-run .ycheck:nth-child(5) .tick { animation-delay: .4s; }
+.ychecks.is-run .ycheck:nth-child(6) .tick { animation-delay: .5s; }
+.ychecks.is-run ~ .verdict { animation: tick-land .25s ease both; animation-delay: .3s; }
+/* the leaving work, prepared and grey: five labelled steps on a dashed line, none taken */
+.prep { display: flex; flex-direction: column; gap: calc(6px * var(--k)); }
+.prep-h { margin: 0; font: 700 max(16px, calc(17px * var(--k)))/1.2 var(--sans); color: var(--ink-soft); }
+.prep-steps {
+  margin: 0; padding: 0; list-style: none; counter-reset: prep;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: calc(10px * var(--k));
+  position: relative;
+}
+.prep-steps::before { content: ""; position: absolute; left: 10px; right: 10px; top: 11px; border-top: 2px dashed #8C8574; opacity: .7; }
+.prep-steps li {
+  position: relative; padding-top: calc(28px * var(--k)); counter-increment: prep;
+  font: 700 max(16px, calc(17px * var(--k)))/1.25 var(--sans); color: var(--ink-soft);
+}
+.prep-steps li::before {
+  content: counter(prep); position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--cream); border: 1.6px solid #8C8574; color: #6D6758;
+  font: 700 12px/20px var(--sans); text-align: center;
+}
 @keyframes tick-land { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .verdict {
   margin: calc(4px * var(--k)) 0 0; align-self: flex-start;
@@ -1335,6 +1380,7 @@ body { background: var(--paper); color: var(--edition-ink); }
 .accept--claim { min-height: 64px; padding: 0 40px; font-size: max(20px, calc(22px * var(--k))); }
 .muse--s5 { flex: 1 1 520px; min-width: 0; }
 .muse--s5::after { width: calc(22px * var(--k)); }
+.bubble--result { max-width: 40ch; font-weight: 700; background: color-mix(in srgb, var(--plum-lt) 22%, transparent); }
 .human--slip { flex: 0 1 300px; min-width: 0; align-self: center; gap: calc(12px * var(--k)); padding: calc(18px * var(--k)) calc(22px * var(--k)); transform: rotate(-1.5deg); }
 .human--slip .sig { opacity: .9; }
 
@@ -1359,6 +1405,9 @@ body { background: var(--paper); color: var(--edition-ink); }
   .record-lens { left: -4px; }
   .paper-corner { width: 100px; }
   .shortlist { grid-template-columns: 1fr; gap: 10px; }
+  .prep-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .prep-steps::before { display: none; }
+  .ychecks { grid-template-columns: 1fr; }
   .of { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 12px 16px; }
   .of-co { flex: 1 1 100%; }
   .of-p { font-size: clamp(24px, 7vw, 36px); }

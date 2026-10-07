@@ -55,7 +55,7 @@
      All of it survives a reload (sessionStorage oc-s as JSON). Restarting
      from screen 5 clears it. The only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { delta: 200, signed: false, purchase: null, month: 0, claim: null };
+  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
 
   function snapshotOf(raw) {
     if (!raw || typeof raw !== "object") { return null; }
@@ -72,6 +72,7 @@
     if (raw && typeof raw === "object") {
       S.delta = raw.delta === 100 ? 100 : 200;
       S.signed = raw.signed === true;
+      S.revoked = raw.revoked === true && !S.signed;
       S.purchase = snapshotOf(raw.purchase);
       S.month = (raw.month >= 1 && raw.month <= 12) ? Math.round(raw.month) : 0;
       S.claim = (raw.claim && typeof raw.claim === "object" && raw.claim.agreed === true)
@@ -113,6 +114,7 @@
 
   function reduce() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
   function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function numWord(n) { return ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"][n] || String(n); }
   function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
   var statusEl = document.getElementById("state-status");
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
@@ -124,6 +126,13 @@
     clearSeq(k);
     if (!animate || reduce()) { fns.forEach(function (f) { f(); }); return; }
     fns.forEach(function (f, i) { timers[k].push(setTimeout(f, 120 + i * gapMs)); });
+  }
+
+  /* a sequence with its own timings: [[ms, fn], …]; instant when not animating */
+  function plan(k, items, animate) {
+    clearSeq(k);
+    if (!animate || reduce()) { items.forEach(function (it) { it[1](); }); return; }
+    items.forEach(function (it) { timers[k].push(setTimeout(it[1], it[0])); });
   }
 
   /* the ONE way back to her rules: a single #to-rules button, moved into
@@ -152,20 +161,27 @@
     if (signed) { signed.hidden = !S.signed; }
     var note = document.getElementById("delta-note");
     if (note) { note.hidden = !bought(); }
+    var sn = document.getElementById("sign-note");
+    if (sn) { sn.hidden = !(S.revoked && !S.signed); }
+    var ask = document.getElementById("muse-ask");
+    if (ask) { ask.textContent = S.signed ? "I'll act within these." : "Can I act within these?"; }
     var corner = document.getElementById("paper-corner");
     if (corner) { corner.dataset.signed = S.signed ? "1" : "0"; }
   }
   Array.prototype.forEach.call(document.querySelectorAll("[data-delta]"), function (b) {
     b.addEventListener("click", function () {
+      var was = S.delta;
       S.delta = parseInt(b.dataset.delta, 10) === 100 ? 100 : 200;
-      persist(); paintRules(); paintAct(false); refit();
-      say("Switch up to " + S.delta + " USD above the cheapest." + (bought() ? " Applies to the next purchase." : ""));
+      /* her rules changed: the earlier authorisation no longer covers them */
+      if (S.delta !== was && S.signed) { S.signed = false; S.revoked = true; }
+      persist(); paintRules(); paintAct(false); paintYear(); refit();
+      say("Switch up to " + S.delta + " USD above the cheapest." + (S.revoked ? " The rules changed; authorise Muse again." : "") + (bought() ? " Applies to the next purchase." : ""));
     });
   });
   var acceptBtn = document.getElementById("rules-accept");
   if (acceptBtn) {
     acceptBtn.addEventListener("click", function () {
-      S.signed = true; persist();
+      S.signed = true; S.revoked = false; persist();
       var sig = document.querySelector("#signed .sig");
       if (sig) { sig.classList.remove("is-drawn"); }
       paintRules(); paintAct(false);
@@ -173,7 +189,7 @@
       if (sig) { requestAnimationFrame(function () { sig.classList.add("is-drawn"); }); }
       var s = document.getElementById("signed"); if (s) { s.focus && s.setAttribute("tabindex", "-1"); }
       refit();
-      say("Signed. Muse holds to her rules: never lapse; Rosa, nineteen, stays covered; excess under 500 USD; switch up to " + S.delta + " USD above the cheapest.");
+      say("Authorised. Muse acts within her rules: never lapse; Rosa, nineteen, stays covered; excess under 500 USD; switch up to " + S.delta + " USD above the cheapest.");
     });
   }
 
@@ -223,20 +239,47 @@
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 3 · Muse acts — the stream, the three cards, the purchase steps
      ══════════════════════════════════════════════════════════════════════ */
+  /* the review strip: N marks, one per offer; three of them are the shortlist
+     and sit over the three cards. The lens passes left to right; each mark it
+     has read falls away unless it is shortlisted. */
+  var MARKS = 72, SHORT = [12, 36, 60];
   function paintStream() {
     var host = document.getElementById("stream");
     if (!host) { return; }
-    var s = [], i, n = 56, W = 1200;
-    /* hundreds of thin lines from the top edge converging on three landings */
-    var landings = [W * 0.167, W * 0.5, W * 0.833];
-    for (i = 0; i < n; i++) {
-      var x0 = 8 + (W - 16) * (i / (n - 1));
-      var tgt = landings[i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2];
-      var mid = x0 + (tgt - x0) * 0.5;
-      var w = (i % 7 === 0) ? 1.6 : 0.9, op = (i % 5 === 0) ? 0.55 : 0.28;
-      s.push('<path d="M' + x0.toFixed(1) + ' 0 C ' + x0.toFixed(1) + ' 40, ' + mid.toFixed(1) + ' 50, ' + tgt.toFixed(1) + ' 88" fill="none" stroke="#8A3450" stroke-width="' + w + '" opacity="' + op + '" vector-effect="non-scaling-stroke"/>');
+    var s = [], i, W = 1200, step = W / MARKS;
+    for (i = 0; i < MARKS; i++) {
+      var x = step * (i + 0.5), h = 18 + ((i * 7) % 5) * 5, isShort = SHORT.indexOf(i) >= 0;
+      s.push('<rect class="mark" data-i="' + i + '" data-short="' + (isShort ? 1 : 0) + '" x="' + (x - 3).toFixed(1) +
+             '" y="' + (62 - h) + '" width="6" height="' + h + '" rx="1" vector-effect="non-scaling-stroke"/>');
     }
     host.innerHTML = s.join("");
+  }
+  function marksAll(state) {
+    Array.prototype.forEach.call(document.querySelectorAll("#stream .mark"), function (m) { m.dataset.seen = state; });
+  }
+  function reviewPlan(ms0, dur) {
+    /* returns [[ms, fn]] that sweep the lens and read each mark in turn */
+    var items = [], i, lens = document.getElementById("review-lens");
+    items.push([ms0, function () { marksAll("0"); if (lens) { lens.dataset.on = "1"; lens.style.left = "0%"; } }]);
+    for (i = 0; i < MARKS; i++) {
+      (function (i) {
+        items.push([ms0 + Math.round(dur * (i + 1) / MARKS), function () {
+          var m = document.querySelector('#stream .mark[data-i="' + i + '"]');
+          if (m) { m.dataset.seen = "1"; }
+          if (lens) { lens.style.left = (100 * (i + 1) / MARKS).toFixed(1) + "%"; }
+        }]);
+      })(i);
+    }
+    items.push([ms0 + dur + 200, function () { if (lens) { lens.dataset.on = "0"; } }]);
+    return items;
+  }
+  function cardsFinal() {
+    var lens = document.getElementById("review-lens"); if (lens) { lens.dataset.on = "0"; }
+    marksAll("1");
+    Array.prototype.forEach.call(document.querySelectorAll("#shortlist .of"), function (li) { li.dataset.in = "1"; li.dataset.judged = "1"; });
+  }
+  function cardsReset() {
+    Array.prototype.forEach.call(document.querySelectorAll("#shortlist .of"), function (li) { li.dataset.in = "0"; li.dataset.judged = "0"; });
   }
 
   function actStatusText() {
@@ -257,11 +300,30 @@
     var hold = document.getElementById("act-hold");
     var seal = document.getElementById("of-seal");
     var act = document.getElementById("act");
+    var cards = Array.prototype.slice.call(document.querySelectorAll("#shortlist .of"));
     clearSeq("act");
 
     var fresh = false;
     if (!bought() && permitted() && animate) { fresh = buy(); }
     var p = bought();
+    var run = animate && !reduce();
+
+    /* the review and the shortlist, the same in every branch: the lens
+       reads the offers, three cards rise, two are struck with the reason */
+    var items = [], runL = document.getElementById("act-run");
+    if (run) {
+      cardsReset();
+      if (runL) { runL.hidden = false; }
+      items = reviewPlan(100, 1200);
+      items.push([1350, function () { if (runL) { runL.hidden = true; } }]);
+      cards.forEach(function (li, i) { items.push([1350 + i * 180, function () { li.dataset.in = "1"; }]); });
+      items.push([2000, function () { cards[0].dataset.judged = "1"; }]);
+      items.push([2250, function () { cards[2].dataset.judged = "1"; }]);
+      items.push([2500, function () { cards[1].dataset.judged = "1"; }]);
+    } else {
+      if (runL) { runL.hidden = true; }
+      items.push([0, cardsFinal]);
+    }
 
     if (p) {
       if (hold) { hold.hidden = true; hold.textContent = ""; }
@@ -278,16 +340,16 @@
           }
         };
       });
-      if (fresh) {
+      if (fresh && run) {
         steps.forEach(function (li) { li.dataset.on = "0"; });
         if (status) { status.hidden = true; }
         if (seal) { seal.dataset.on = "0"; }
-        seq("act", reveal, 650, true);
-        say("Muse acts. Within your allowance, 155 above the cheapest. Bought: " + p.name + " confirms. Old policy ends after confirmation.");
+        reveal.forEach(function (f, i) { items.push([2800 + i * 650, f]); });
+        say("Muse reviews hundreds of offers and shortlists three. Candlewick excludes Rosa. Pell and Roe's excess is 900. Meridian, 155 above the cheapest, within your allowance. Bought: " + p.name + " confirms. Old policy ends after confirmation.");
       } else {
-        reveal.forEach(function (f) { f(); });
-        if (statusT) { statusT.textContent = actStatusText(); }
+        items.push([0, function () { reveal.forEach(function (f) { f(); }); if (statusT) { statusT.textContent = actStatusText(); } }]);
       }
+      plan("act", items, run);
       return;
     }
 
@@ -296,16 +358,19 @@
     if (list) { list.hidden = true; }
     if (status) { status.hidden = true; }
     if (seal) { seal.dataset.on = "0"; }
-    if (hold) { hold.hidden = false; }
+    var holdText, label;
     if (!S.signed) {
       if (act) { act.dataset.state = "unsigned"; }
-      if (hold) { hold.textContent = "No authority yet."; }
-      placeToRules("act-slot", "Back to her rules");
+      holdText = S.revoked ? "Rules changed. No authority yet." : "No authority yet.";
+      label = "Back to her rules";
     } else {
       if (act) { act.dataset.state = "blocked"; }
-      if (hold) { hold.textContent = gap() + " above the cheapest — over your " + S.delta + " USD allowance. Your call."; }
-      placeToRules("act-slot", "Revise the allowance");
+      holdText = "Meridian · " + gap() + " above the cheapest — over your " + S.delta + " USD allowance. Your call.";
+      label = "Revise the allowance";
     }
+    var showHold = function () { if (hold) { hold.hidden = false; hold.textContent = holdText; } placeToRules("act-slot", label); };
+    if (run) { if (hold) { hold.hidden = true; } placeToRules(null); items.push([2800, showHold]); } else { items.push([0, showHold]); }
+    plan("act", items, run);
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -330,15 +395,8 @@
     var mx = x0 + (m - 0.5) * seg;
     s.push('<line x1="' + mx.toFixed(1) + '" y1="22" x2="' + mx.toFixed(1) + '" y2="100" stroke="#8A3450" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>');
     s.push('<circle cx="' + mx.toFixed(1) + '" cy="40" r="9" fill="#262E36" stroke="#8A3450" stroke-width="2.5" vector-effect="non-scaling-stroke"/>');
-    /* the leaving steps, prepared and grey: three nodes on a dashed path
-       under the bar — confirm new, cancel old, requirements — never taken */
-    var py = 126;
-    s.push('<line x1="' + x0 + '" y1="' + py + '" x2="' + x1 + '" y2="' + py + '" stroke="#8C8574" stroke-width="1.6" stroke-dasharray="6 7" opacity=".7" vector-effect="non-scaling-stroke"/>');
-    [0.25, 0.5, 0.75].forEach(function (u) {
-      s.push('<circle cx="' + (x0 + bw * u).toFixed(1) + '" cy="' + py + '" r="7" fill="#FBF6EA" stroke="#8C8574" stroke-width="1.6" vector-effect="non-scaling-stroke"/>');
-    });
     host.innerHTML = s.join("");
-    host.setAttribute("viewBox", "0 0 " + W + " " + H);
+    host.setAttribute("viewBox", "0 0 " + W + " " + (H = 104));
   }
   function paintYear() {
     var p = bought();
@@ -358,6 +416,7 @@
     var r = document.getElementById("year"); if (r) { r.value = String(m); r.setAttribute("aria-valuenow", String(m)); r.setAttribute("aria-valuetext", "Month " + m + " of 12"); }
     var mEl = document.getElementById("year-m"); if (mEl) { mEl.textContent = String(m); }
     var left = document.getElementById("year-left"); if (left) { left.textContent = String(12 - m); }
+    var auth = document.getElementById("year-auth"); if (auth) { auth.textContent = String(p.within); }
     paintYearBar();
     /* the check re-runs: the ticks land again for the shown month */
     var ul = document.getElementById("ychecks");
@@ -369,7 +428,7 @@
       var v = parseInt(yearRange.value, 10);
       S.month = (v >= 1 && v <= 12) ? v : 1;
       persist(); paintYear();
-      say("Month " + S.month + ". Eligible alternatives, none. Prepaid value remaining, " + (12 - S.month) + " months. Switching requirements prepared. Continuity: replacement first, then cancel. Stay.");
+      say("Month " + S.month + ". Muse checks: eligible alternatives, none; coverage requirements met; prepaid, " + (12 - S.month) + " months; switching conditions prepared; authority " + (bought() ? bought().within : "") + " USD; continuity, replacement first. Stay: nothing eligible is cheaper.");
     };
     yearRange.addEventListener("input", onYear);
     yearRange.addEventListener("change", onYear);
@@ -428,6 +487,7 @@
       if (btn) { btn.hidden = false; }
       if (enforce) { enforce.hidden = true; }
       if (slip) { slip.hidden = true; }
+      var r0 = document.getElementById("claim-result"); if (r0) { r0.hidden = true; }
       steps.forEach(function (li) { li.dataset.on = "0"; });
       return;
     }
@@ -436,16 +496,18 @@
     if (btn) { btn.hidden = true; }
     if (enforce) { enforce.hidden = false; }
     var late = Math.max(0, S.claim.settled - p.settleDays), remedy = late * p.remedyPerDay;
-    var last = steps[4];
+    var last = steps[4], result = document.getElementById("claim-result");
     if (last) {
-      last.innerHTML = '<span class="astep-a" aria-hidden="true">→</span>' + late + " late × " + p.remedyPerDay + " USD = " + grp(remedy) + " USD remedy applied under the policy";
+      last.innerHTML = '<span class="astep-a" aria-hidden="true">→</span>' + late + " late × " + p.remedyPerDay + " USD = " + grp(remedy) + " USD";
     }
+    var resultText = "Settled. " + p.name.split(" ")[0] + " missed its " + numWord(p.settleDays) + "-day promise by " + numWord(late) + " days. I applied your " + grp(remedy) + " USD remedy.";
     var fns = steps.map(function (li, i) {
       return function () {
         li.dataset.on = "1";
         if (i === 3) { paintClock(p, true); }
         if (i === 4) {
-          if (head) { head.textContent = "Settled on day nine. The remedy applied."; }
+          if (head) { head.textContent = "Settled. The remedy applied."; }
+          if (result) { result.hidden = false; result.textContent = resultText; }
           if (slip) { slip.hidden = false; }
           refit();
         }
@@ -454,6 +516,7 @@
     if (animate) {
       steps.forEach(function (li) { li.dataset.on = "0"; });
       if (slip) { slip.hidden = true; }
+      if (result) { result.hidden = true; }
       if (head) { head.textContent = "A promise her agent can enforce."; }
       paintClock(p, false);
       seq("claim", fns, 600, true);
@@ -470,14 +533,14 @@
       persist();
       paintClaim(true);
       var e = document.getElementById("enforce"); if (e) { e.setAttribute("tabindex", "-1"); e.focus(); }
-      say("Claim reported. Liability agreed, clock starts. 5 working days promised. Settled on day nine. 4 late times 50 USD, 200 USD remedy applied under the policy. No separate claim needed.");
+      say("Claim reported. Liability agreed, clock starts. 5 working days promised. Settled on day nine. 4 late times 50 USD, 200 USD. Muse: settled; Meridian missed its five-day promise by four days; I applied your 200 USD remedy. No separate claim needed.");
     });
   }
 
   /* starting over: nothing signed, nothing bought — the state the first
      screen describes. Called when the deck wraps from screen 5 to screen 1. */
   function restart() {
-    S = { delta: 200, signed: false, purchase: null, month: 0, claim: null };
+    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
     persist();
     var sig = document.querySelector("#signed .sig"); if (sig) { sig.classList.remove("is-drawn"); }
     paintAll(false);

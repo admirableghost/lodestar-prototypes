@@ -37,9 +37,8 @@
      and its labels change; the terrain, vegetation and buildings do not. -->
 <section class="screen" data-screen="1" data-label="The problem" data-state="now">
   <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">Resilience Grid · Alder County · 2036</p>
-    <h1 class="xd" tabindex="-1"><span>Priced precisely.</span><span>Increasingly unavailable.</span></h1>
-    <p class="xlede xlede--line">The homes remain. Insurance availability retreats.</p>
+    <p class="xeyebrow">01 / Alder County · 2036</p>
+    <h1 class="xd" tabindex="-1"><span>The homes remain.</span><span>Insurance retreats.</span></h1>
   </div>
   <div class="compare" role="group" aria-label="Insurance availability, earlier or now" style="grid-area:1/9/2/13">
     <button type="button" id="st-earlier" data-set="earlier" aria-pressed="false">Earlier</button>
@@ -65,7 +64,7 @@
      amounts or returns anywhere. No availability layer on this screen. -->
 <section class="screen" data-screen="2" data-label="The business">
   <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">01 / The business</p>
+    <p class="xeyebrow">02 / The business</p>
     <h2 class="xd" tabindex="-1"><span>Prevention as a service,</span><span>paid for by everyone it protects.</span></h2>
     <p class="xlede xlede--line">Paid before any fire — not from losses avoided.</p>
   </div>
@@ -89,12 +88,13 @@
      avoided. -->
 <section class="screen" data-screen="3" data-label="The moment">
   <div class="xhead" style="grid-area:1/1/4/6">
-    <p class="xeyebrow">02 / The moment</p>
+    <p class="xeyebrow">03 / The moment</p>
     <h2 class="xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
   </div>
   <p class="sr-only">The event, 14:31 to 14:47, on the canyon above Mill Creek, in four steps. Detect: the operation's line sensor on the Mill Creek lateral flags a fault at 14:31; its Alder Peak ridge camera sees smoke at the same span at 14:33; a thermal satellite pass confirms heat at the same coordinates at 14:34. Coordinate: the utility de-energises its lateral at 14:36, within its own authority; the operation's spread model runs the canyon corridor at 14:38 — a forecast, not a decision. Act: Fire District 3 sends two engines to the canyon mouth and holds the one road out, the Mill Creek spur, open at 14:41; the operation's four contracted aircraft launch from the Mill Creek pad at 14:43 and hold. Decision: the evacuation of 320 homes and the suppression drop over occupied parcels wait on the duty chief's approval. The operation cannot make either call. Next step advances one step; Replay plays the eight events in order; Show all marks all four steps at once.</p>
   <div class="gw"></div>
   <div class="s3-ctl" style="grid-area:8/1/9/6">
+    <p class="tl-now" id="tl-now"><b>1 of 4</b> · Detect</p>
     <div class="tl-controls" role="group" aria-label="The moment, step by step">
       <button class="tl-play tl-step" type="button" id="tl-step">Next step</button>
       <button class="tl-play" type="button" id="tl-play">Replay</button>
@@ -110,25 +110,25 @@
      no results. -->
 <section class="screen" data-screen="4" data-label="The evidence">
   <div class="xhead" style="grid-area:1/1/4/9">
-    <p class="xeyebrow">03 / The evidence</p>
-    <h2 class="xd" tabindex="-1"><span>What the operation did —</span><span>and what still</span><span>needs evaluating.</span></h2>
+    <p class="xeyebrow">04 / The evidence</p>
+    <h2 class="xd" tabindex="-1"><span>The road out</span><span>stayed open.</span></h2>
   </div>
-  <p class="sr-only">Three plates over the quiet county, joined left to right by arrows, with the eight marks of the moment faint on the terrain beneath. Done: eight actions recorded between 14:31 and 14:47. Observed: the road out was held open; the drop and the decision are pending. To evaluate: independently, before underwriting relies on it. The record is what happened; it is not a result, and the independent evaluation is still to come.</p>
+  <p class="sr-only">The county with the moment's marks faint on the terrain and the one road out of Mill Creek drawn at full strength: it stayed open. Three plates, joined left to right by arrows. Observed: the road out stayed open; the drop and the decision are pending. Recorded: eight actions and their timing, 14:31 to 14:47. Not yet established: whether risk or losses fell; independent evaluation comes first. The record is what happened; it is not a result.</p>
   <div class="gw"></div>
   <ul class="ev" style="grid-area:4/1/7/10" aria-label="The evidence, left to right">
-    <li class="ev-col">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Done</span>
-      <span class="ev-v" id="ev-recorded">8 actions recorded, 14:31–14:47</span>
+    <li class="ev-col ev-col--hero">
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Observed</span>
+      <span class="ev-v">the road out stayed open; drop and decision pending</span>
     </li>
     <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
     <li class="ev-col">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Observed</span>
-      <span class="ev-v">road held open; drop and decision pending</span>
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Recorded</span>
+      <span class="ev-v" id="ev-recorded">8 actions and their timing, 14:31–14:47</span>
     </li>
     <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
     <li class="ev-col ev-col--open">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>To evaluate</span>
-      <span class="ev-v ev-v--open">independently, before underwriting relies on it</span>
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>Not yet established</span>
+      <span class="ev-v ev-v--open">risk reduction · independent evaluation first</span>
     </li>
   </ul>
 </section>
@@ -143,15 +143,12 @@
      here. -->
 <section class="screen" data-screen="5" data-label="Market creation">
   <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">04 / Market creation</p>
+    <p class="xeyebrow">05 / Market creation</p>
     <h2 class="xd" tabindex="-1"><span>Prevention can</span><span>move the line.</span></h2>
     <p class="xlede">With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes.</p>
   </div>
   <p class="sr-only">The same county as screen one, with the current availability limit drawn solid through the three communities, where it was, and one dashed sage line a little upslope of it, labelled potential frontier, with evidence and capital: a possibility, distinct from the confirmed limit. Three small arrows between the two lines point upslope, the opposite direction to the retreat on screen one. Nothing between them is filled. With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes; none of it has happened on this screen.</p>
   <div class="gw"></div>
-  <div class="xask" style="grid-area:6/7/9/13">
-    <p class="xq" tabindex="-1">What if prevention is infrastructure that keeps difficult risks insurable?</p>
-  </div>
 </section>
 
 </main>

@@ -566,6 +566,10 @@
   function drawS5(f) {
     var A = [], T = [], q = availPaths(), px = function (n) { return n * f.upp; };
     A.push('<path d="' + area(q.edge) + '" fill="' + C.avail + '" opacity=".11"/>');
+    /* the band between the confirmed limit and the possible frontier: a
+       light sage wash, so the homes it holds are the focal point. Washed,
+       not filled as available — the frontier stays dashed and hypothetical. */
+    A.push('<path d="' + SC.smooth(q.cond) + SC.smooth(q.edge.slice().reverse()).replace(/^M/, "L") + 'Z" fill="' + SAGE + '" opacity=".16"/>');
     A.push('<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + C.paper + '" stroke-width="5" opacity=".45"/>' +
            '<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + SAGE + '" stroke-width="2.4" stroke-dasharray="9 7" stroke-linecap="round"/>');
     A.push('<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/>' +
@@ -638,7 +642,9 @@
     /* the four parts: a ring on each physical thing, nothing joining them */
     PARTS.forEach(function (pt) {
       var a = SC.P(pt.at[0], pt.at[1]);
-      s.push('<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(5)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2)) + '"/>');
+      s.push('<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(11)) + '" fill="' + PAPER + '" opacity=".75"/>' +
+             '<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(8)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2.6)) + '"/>' +
+             '<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(3.2)) + '" fill="' + INK + '"/>');
     });
 
     /* a quadratic from a to b, bent by `bend`, trimmed so it starts and
@@ -657,7 +663,7 @@
       var qp = SC.P(q.x, q.y);
       var d = linkPath(qp, MARK_R + px(2), cp, CORE_R + px(4), px(q.bend));
       s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(6)) + '" opacity=".55"/>');
-      s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '" opacity=".9" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
+      s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(2)) + '" opacity=".7" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
       s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(MARK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '"/>');
       s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(px(4)) + '" fill="' + q.c + '"/>');
     });
@@ -780,6 +786,14 @@
   var S3_GATE    = [968, 696];
   var S3_FEEDERS = [[800, 352], [1130, 356]];
 
+  /* the one road out of Mill Creek, held open: the hero of Act, Decision
+     and the evidence screen. Drawn at full strength wherever it appears. */
+  function roadHold(s, px) {
+    s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(12)) + '" opacity=".7"/>');
+    s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(8)) + '" opacity=".28"/>');
+    s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2.4)) + '"/>');
+  }
+
   /* o.step  events reached, 0..8 · o.mode "step" | "all" · o.live a replay
      is running (the newest event gets a ring) · o.upp design units per px */
   function drawS3(s, o, label) {
@@ -790,10 +804,26 @@
        unlabelled ridge marks — the three signal marks, their sight lines
        and the locked-out reclosers — sit faint. They are full on the
        earlier steps and in "Show all". */
-    var faint = o.mode === "step" && cur === 3;
+    /* in step mode only the step in progress is at full strength; what
+       earlier steps drew sits faint beneath it. The road, once held, and
+       the threatened community stay full on every later step: they are
+       the two heroes of the moment. */
+    var stepping = o.mode === "step";
+    var faint = stepping && cur === 3;
     var FAINT = '<g opacity=".35">', END = '</g>';
+    function was(k) { return stepping && k < cur; }   /* step k is behind the one in progress */
+    function dimOpen(k) { if (was(k)) { s.push(FAINT); } }
+    function dimClose(k) { if (was(k)) { s.push(END); } }
+    /* the threatened community, from the first step: a soft halo under
+       Mill Creek's homes, alarm-coloured, no words */
+    if (step >= 1) {
+      var mc = SC.P(962, 712); mc[1] += px(4);
+      s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="' + ALARM + '" opacity="' + (cur === 0 ? '.10' : '.06') + '"/>' +
+             '<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + ALARM + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity="' + (cur === 0 ? '.8' : '.35') + '"/>');
+    }
 
     if (step >= 1) {
+      dimOpen(0);
       s.push('<path d="' + wpath(LATERAL) + '" fill="none" stroke="' + (step >= 4 ? S3_HOLD : ALARM) +
              '" stroke-width="' + n1(px(2.2)) + '" stroke-dasharray="' + n1(px(7)) + ' ' + n1(px(5)) + '" opacity=".9"/>');
     }
@@ -816,7 +846,9 @@
       s.push('</g>');
       s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(5)) + '" fill="' + ALARM + '"/>');
     }
+    if (step >= 1) { dimClose(0); }
     if (step >= 4) {
+      dimOpen(1);
       if (faint) { s.push(FAINT); }
       S3_FEEDERS.forEach(function (q) {
         var f = SC.P(q[0], q[1]), r = px(9);
@@ -833,9 +865,11 @@
       s.push('<path d="' + wd + '" fill="' + FIRE + '" opacity=".26"/>');
       s.push('<path d="' + wd + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(1.8)) + '" stroke-dasharray="' + n1(px(6)) + ' ' + n1(px(5)) + '" opacity=".95"/>');
     }
+    if (step >= 4) { dimClose(1); }
     if (step >= 6) {
-      s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(8)) + '" opacity=".28"/>');
-      s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2)) + '"/>');
+      /* the road out, held open: never faint once it is held */
+      roadHold(s, px);
+      dimOpen(2);
       s.push('<path d="' + wpath(S3_ENGINES) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2.6)) + '"/>');
       [[1016, 752], [996, 700]].forEach(function (q) {
         var e = SC.P(q[0], q[1]);
@@ -851,6 +885,7 @@
         s.push('<path d="M-7 4L0 -4L7 4" fill="none" stroke="' + S3_HOLD + '" stroke-width="2.2" transform="translate(' + n1(c[0]) + ' ' + n1(c[1]) + ') rotate(' + q[2] + ') scale(' + n1(o.upp) + ')"/>');
       });
     }
+    if (step >= 6) { dimClose(2); }
     if (step >= 8) {
       /* the two paths that wait on one person: dashed because pending.
          The decision is not executed here — nothing closes these. */
@@ -868,7 +903,7 @@
     /* ── the marks: ○ observed · ● bounded action · ◇ forecast · ■ decision ── */
     function mark(ev, emph) {
       var m = SC.P(ev.at[0], ev.at[1]), x = n1(m[0]), y = n1(m[1]), k = ev.kind, r;
-      var dim = faint && ev.n <= 3;
+      var dim = (faint && ev.n <= 3) || was(s3StepOf(ev.n));
       if (dim) { s.push(FAINT); }
       if (o.live && emph) {
         s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(k === "dec" ? 34 : 22)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.2)) + '" opacity=".45"/>');
@@ -927,9 +962,10 @@
      "all" so every mark of the record is drawn at one strength (the
      screen-3 end-state fade does not apply); no labels are asked for. */
   function drawS4(f) {
-    var s = [];
+    var s = [], r = [], px = function (n) { return n * f.upp; };
     drawS3(s, { step: S3_EVENTS.length, mode: "all", live: false, upp: f.upp }, null);
-    G["rg-incident"].innerHTML = '<g opacity=".45">' + s.join("") + '</g>';
+    roadHold(r, px);
+    G["rg-incident"].innerHTML = '<g opacity=".38">' + s.join("") + '</g>' + r.join("");
   }
 
   function paintTl() {
@@ -941,6 +977,11 @@
        Replay starts the walk again */
     var nx = document.getElementById("tl-step");
     if (nx) { nx.disabled = tlStep >= S3_EVENTS.length; }
+    var now = document.getElementById("tl-now");
+    if (now) {
+      var k = s3StepOf(Math.max(1, tlStep));
+      now.innerHTML = tlMode === "all" ? "<b>All four steps</b>" : "<b>" + (k + 1) + " of " + S3_STEPS.length + "</b> · " + S3_STEPS[k].title;
+    }
     if (current === 3 && SC) { renderS3(); }
     persist();
   }

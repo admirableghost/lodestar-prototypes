@@ -93,13 +93,14 @@
       </svg>
       <p class="human-q"><span class="human-mark" aria-hidden="true">“</span>Renewal's due. Four quotes came in. Find the one that actually covers us.<span class="human-mark" aria-hidden="true">”</span></p>
       <div class="sign" id="sign">
-        <button class="accept" type="button" id="rules-accept">Accept and sign</button>
+        <button class="accept" type="button" id="rules-accept">Authorise Muse</button>
         <p class="signed" id="signed" role="status" hidden>
           <svg class="sig" viewBox="0 0 140 30" aria-hidden="true" focusable="false">
             <path class="sig-path" d="M4 20 C 18 2, 30 28, 46 15 S 72 4, 90 17 S 118 8, 136 14" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
           </svg>
-          <span>Signed</span>
+          <span>Authorised</span>
         </p>
+        <p class="sign-note" id="sign-note" hidden>Changed · authorise again</p>
       </div>
     </article>
 
@@ -109,7 +110,7 @@
     <!-- MUSE: the dark plate, the lens, the rules it will hold to -->
     <article class="muse muse--s1" aria-label="Muse, her agent">
       <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg>Muse</p>
-      <p class="bubble">I'll hold to these:</p>
+      <p class="bubble" id="muse-ask">Can I act within these?</p>
       <ul class="rules" id="rules">
         <li class="rule">Never lapse</li>
         <li class="rule">Rosa, nineteen, stays covered</li>
@@ -185,8 +186,12 @@
   </header>
 
   <div class="oc-scene oc3-scene">
-    <!-- the stream of offers compressing to three -->
-    <svg class="stream" id="stream" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+    <!-- the review: hundreds of offers as marks; the lens passes over them,
+         most fall away, three rise to the shortlist -->
+    <div class="review" id="review" aria-hidden="true">
+      <svg class="stream" id="stream" viewBox="0 0 1200 70" preserveAspectRatio="none" focusable="false"></svg>
+      <svg class="review-lens" id="review-lens" focusable="false"><use href="#lens"/></svg>
+    </div>
 
     <ol class="shortlist" id="shortlist" aria-label="Three shortlisted">
       <li class="of" data-id="candlewick" data-ok="0">
@@ -212,8 +217,9 @@
     <!-- MUSE acting: painted by paintAct() from permitted() and the snapshot -->
     <article class="muse muse--s3" id="act" aria-label="Muse acting" aria-live="polite">
       <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+      <p class="bubble bubble--run" id="act-run" hidden>Reviewing hundreds of offers<span class="dots" aria-hidden="true"></span></p>
       <ol class="steps" id="act-steps" hidden>
-        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Within your allowance · 155 above the cheapest</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Meridian · 155 above the cheapest · within your allowance</li>
         <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Bought · Meridian Mutual confirms</li>
         <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Old policy ends after confirmation</li>
       </ol>
@@ -249,12 +255,26 @@
         <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
         <ul class="ychecks" id="ychecks">
           <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Eligible alternatives · none</span></li>
-          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Prepaid value remaining · <b id="year-left">11</b> months</span></li>
-          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Switching requirements · prepared</span></li>
-          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Continuity · replacement first, then cancel</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Coverage requirements · met</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Prepaid · <b id="year-left">11</b> months</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Switching conditions · prepared</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Authority · <b id="year-auth">200</b> USD</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Continuity · replacement first</span></li>
         </ul>
-        <p class="verdict" id="year-verdict">Stay.</p>
+        <p class="verdict" id="year-verdict">Stay. Nothing eligible is cheaper.</p>
       </article>
+
+      <!-- the leaving work, prepared and grey: five steps Muse would run, none run -->
+      <div class="prep" aria-label="The switch Muse has prepared, not run">
+        <p class="prep-h">Prepared · not needed yet</p>
+        <ol class="prep-steps">
+          <li>Evaluate replacement</li>
+          <li>Establish replacement cover</li>
+          <li>Obtain confirmation</li>
+          <li>Cancel the old policy</li>
+          <li>Preserve continuity</li>
+        </ol>
+      </div>
     </div>
 
     <div class="pending" id="year-pending">
@@ -290,8 +310,9 @@
             <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Liability agreed · clock starts</li>
             <li class="astep"><span class="astep-a" aria-hidden="true">→</span>5 working days promised</li>
             <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Settled on day nine</li>
-            <li class="astep astep--remedy"><span class="astep-a" aria-hidden="true">→</span>4 late × 50 USD = 200 USD remedy applied under the policy</li>
+            <li class="astep astep--remedy"><span class="astep-a" aria-hidden="true">→</span>4 late × 50 USD = 200 USD</li>
           </ol>
+          <p class="bubble bubble--result" id="claim-result" hidden></p>
         </article>
         <!-- it ends on HER paper: the remedy applied, no transfer, no bank -->
         <aside class="human human--slip" id="slip" hidden aria-label="Her note">
