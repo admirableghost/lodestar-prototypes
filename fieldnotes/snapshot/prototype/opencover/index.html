@@ -63,11 +63,15 @@
      Everything else is said aloud by the facilitator
      (design-study/brief-align/opencover/FACILITATOR-NOTES.md).
 
-     THE AGENT STRIP. One line, the same place on every screen (top left,
-     above the eyebrow), painted by paintAgent() from the purchase state:
-     what her agent is doing at this beat. It is the thread that makes the
-     five screens one relationship — your protection, your agent — and it
-     counts toward each screen's sixty words.
+     THE AGENT DEVICE. The lens mark and a two-or-three-word state, the
+     same place on every screen (top left, above the eyebrow), painted by
+     paintAgent() from the purchase state: instructed · reading ·
+     recommends / bought · awaiting your permission / bought · confirmed ·
+     watched · remedied / nothing bought (CONTRACT-POLISH.md § OpenCover).
+     A thin plum thread runs from the mark down the left edge (decorative,
+     part of the screen's background, so nothing announces it): the five
+     screens read as one relationship — your protection, your agent. The
+     words count toward each screen's sixty.
 
      DEEP LINKS. The hashes are #s/1 … #s/5 for the five screens above.
      Links minted for the three-screen build map by BEAT, not by number:
@@ -165,26 +169,16 @@
       <!-- painted by paintOffer() -->
     </article>
 
+    <!-- who publishes it, who reads it: on the card's right edge, the two
+         phrases joined by one arrow that ends at the agent's lens mark —
+         the same mark the device at the top left carries -->
     <aside class="pub" aria-label="Who publishes the offer and who reads it">
-      <svg class="pub-art" viewBox="0 0 120 220" aria-hidden="true" focusable="false">
-        <!-- the insurer's seal, the published sheet travelling down the
-             register, the agent's reading lens -->
-        <circle cx="60" cy="30" r="22" fill="none" stroke="#16150F" stroke-width="3"/>
-        <circle cx="60" cy="30" r="11" fill="#16150F"/>
-        <path d="M60 58 V118" stroke="#16150F" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
-        <rect x="42" y="92" width="36" height="46" rx="3" fill="#FBF6EA" stroke="#16150F" stroke-width="2.5"/>
-        <g stroke="#16150F" stroke-width="2.5" stroke-linecap="round" opacity=".55">
-          <line x1="49" y1="104" x2="66" y2="104"/>
-          <line x1="49" y1="113" x2="71" y2="113"/>
-          <line x1="49" y1="122" x2="60" y2="122"/>
-        </g>
-        <path d="M60 140 V160" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
-        <path d="M50 152 L60 163 L70 152" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="56" cy="188" r="18" fill="none" stroke="#8A3450" stroke-width="3.5"/>
-        <line x1="69" y1="201" x2="84" y2="216" stroke="#8A3450" stroke-width="4" stroke-linecap="round"/>
-      </svg>
       <p class="pub-l pub-l--ins">Published by the insurer.</p>
-      <p class="pub-l pub-l--agt">Read by her agent.</p>
+      <svg class="pub-arrow" viewBox="0 0 24 54" aria-hidden="true" focusable="false">
+        <path d="M10 2 V50" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/>
+        <path d="M1 42 L10 52 L19 42" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="pub-l pub-l--agt"><svg class="pub-lens" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg>Read by her agent.</p>
     </aside>
   </div>
 

@@ -133,8 +133,17 @@ body.rg {
 .rg svg[data-screen="5"] #rg-veil { opacity: .06; }
 .rg svg[data-screen="1"] .rg-util, .rg svg[data-screen="5"] .rg-util,
 .rg svg[data-screen="1"] .rg-nodes, .rg svg[data-screen="5"] .rg-nodes, .rg svg[data-screen="4"] .rg-nodes { opacity: 0; }
+/* screen 2 names its four parts itself; the unlabelled sensors, stations
+   and pads would only compete with them */
+.rg svg[data-screen="2"] .rg-nodes { opacity: 0; }
 .rg svg[data-screen="4"] .rg-util { opacity: .4; }
 .rg svg[data-screen="3"][data-act="0"] .rg-node--act { opacity: .25; }
+/* screen 3: only the station and pad the response works from light at
+   step 6; the county's other stations and pads stay faint */
+.rg svg[data-screen="3"] .rg-node--act:not(.rg-node--incident) { opacity: .25; }
+/* screen 3: the ridge sensors light only during replay stage 1 (data-see);
+   in the default end state they sit faint under the incident */
+.rg svg[data-screen="3"][data-see="0"] .rg-node--see { opacity: .3; }
 
 /* labels drawn on the terrain by app.js */
 .rg .lab { font-family: var(--sans); }

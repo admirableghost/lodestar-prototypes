@@ -23,6 +23,8 @@
      #236548 ok    on #FBF9F1 paper         6.0 : 1   "Placed"
      #7A4610 hold  on #FBF9F1 paper         6.2 : 1   "Returned", waiting
      #8E3418 exc   on #FBF9F1 paper         6.3 : 1   "Always you"
+     #8A3450 plum  on #FBF9F1 paper         7.4 : 1   "covered mistake" (the hero)
+     #5A554A dim   on #FBF9F1 paper         6.2 : 1   the quiet rows
      #74C79A ok    on #0C1218 field         9.1 : 1   "agent may act"
      #E2A75C hold  on #0C1218 field         8.6 : 1   "needs your approval"
    ══════════════════════════════════════════════════════════════════════════ */
@@ -47,6 +49,7 @@
   --block:  #6B675E;  --tray: #262E36;
   --ok:     #74C79A;  --hold: #E2A75C;  --exc: #F3977A;
   --ok-ink: #236548;  --hold-ink: #7A4610;  --exc-ink: #8E3418;
+  --plum:   #8A3450;   /* the covered mistake — the cover's own colour */
   --rule:   rgba(22,21,15,.22);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   --grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -264,7 +267,13 @@ body {
 #auth-card[data-decided="none"] .primary { background: transparent; color: var(--ink); box-shadow: none; }
 #auth-card[data-decided="none"] .primary:hover { background: rgba(22,21,15,.07); }
 
-/* ══ SCREEN 4 · completion rows ═════════════════════════════════════════ */
+/* ══ SCREEN 4 · the day ═══════════════════════════════════════════════════
+   Authorised, the covered mistake is the hero: the cover's slip steps out
+   of the ledger on its own paper, ≈1.6× the row type, plum and green.
+   The placed rows and the returned row are quiet evidence beside it —
+   smaller (17px, never under 16) and dimmer (6.2:1) — and the totals line
+   under them keeps the unit. Reading order: headline → three placed →
+   the slip → one returned → totals. */
 .done { list-style: none; margin: 0; padding: 0; }
 .done-row { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content;
   gap: 2px 16px; align-items: baseline; padding: 10px 0 11px; border-top: 1px solid var(--rule);
@@ -283,16 +292,35 @@ body {
 .done--ask { margin: 16px 0 0 14%; }
 .done--ask .done-row { border-top: 3px solid var(--hold); padding: 10px 14px 12px;
   background: rgba(226,167,92,.14); }
-/* the cover's slip, attached to the row it remedied — never a row of its own */
-.done-row--slip { padding-bottom: 14px; }
-.slip { grid-column: 2 / 4; justify-self: start; position: relative; margin-top: 8px;
-  max-width: 100%; padding: 8px 44px 9px 12px; transform: rotate(-1.2deg);
-  background: var(--cream); color: var(--ink); border: 1.4px dashed var(--ink);
-  box-shadow: 0 2px 0 0 rgba(22,21,15,.18);
-  font: 400 18px/1.35 var(--sans); }
-.slip b { font-weight: 700; }
+/* the authorised day only (the draft-only rows keep the base): the placed
+   rows and the returned row are quiet evidence — 17px, dim, a lighter rule */
+#day-auth .done-row { padding: 8px 0 9px; color: var(--dim); }
+#day-auth .done > .done-row:first-child { padding-top: 0; }
+#day-auth .done-row .what, #day-auth .done-row .amt { font-size: 17px; }
+#day-auth .done-row .why { font-size: 16px; }
+#day-auth .done--ask { margin-top: 18px; }
+#day-auth .done--ask .done-row { border-top-width: 2px; padding: 9px 14px 10px; background: rgba(226,167,92,.10); }
+/* THE HERO · the cover's slip, its own paper between the placed rows and
+   the returned one. 28.8px = 1.6 × the 18px slip it grew from; plum for
+   the kind, ink for what was done, the green check. It steps a little
+   past the ledger's left edge, into the message gutter. (.msg .slip: it is
+   a p in a message, and must outrank .msg p.) */
+.msg .slip { display: block; position: relative; z-index: 1; width: fit-content; max-width: calc(100% + 16px);
+  margin: 18px 0 4px -16px; padding: 13px 66px 15px 20px; transform: rotate(-1.2deg);
+  background: var(--paper); color: var(--ink);
+  border: 2px solid var(--plum);
+  box-shadow: 5px 5px 0 0 rgba(138,52,80,.28), 0 0 0 1px rgba(22,21,15,.08);
+  font: 400 28.8px/1.22 var(--sans); letter-spacing: -.012em; text-wrap: balance; }
+.slip b { font-weight: 700; color: var(--plum); }
 .tick { position: absolute; width: 24px; height: 24px; }
-.tick--slip { right: 10px; top: 50%; margin-top: -12px; }
+.tick--slip { right: 18px; top: 50%; width: 36px; height: 36px; margin-top: -18px; }
+/* the reveal when the screen opens: a short slide and scale into place.
+   The reduced-motion rule at the foot cancels it, so the slip is simply there. */
+@keyframes slip-in {
+  from { opacity: 0; transform: translateY(14px) scale(.9) rotate(-1.2deg); }
+  to   { opacity: 1; transform: translateY(0)    scale(1)  rotate(-1.2deg); }
+}
+.slip--in { animation: slip-in .4s var(--ease) both; }
 /* the day summed, under the rows: one line, amounts bold and tabular */
 .sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--rule);
   font: 400 var(--body)/1.4 var(--sans); color: var(--dim); }
@@ -488,9 +516,13 @@ body {
   .acts--dec button { width: auto; flex: 1 1 auto; min-width: 0; padding: 10px 10px; }
   .done-row { grid-template-columns: max-content minmax(0, 1fr); }
   .done-row .amt { grid-column: 2; justify-self: start; }
-  .done-row .why, .slip { grid-column: 1 / 3; }
+  .done-row .why { grid-column: 1 / 3; }
   .done--ask { margin-left: 8%; }
-  .slip { padding-right: 40px; }
+  /* the hero on a phone: still the largest thing on the paper (26px, 1.44×),
+     stepping out by the gutter only */
+  .msg .slip { margin: 14px 0 2px -10px; max-width: calc(100% + 10px); padding: 12px 56px 13px 16px; font-size: 26px; }
+  .tick--slip { right: 12px; width: 32px; height: 32px; margin-top: -16px; }
+  #day-auth .done--ask { margin-top: 14px; }
   .done-row--wait { grid-template-columns: 1fr; }
   .done-row--wait .why { grid-column: 1; }
 

@@ -290,16 +290,18 @@
   if (btnDraft) { btnDraft.addEventListener("click", function () { setMode(false); }); }
 
   /* ── SCREEN 4 · the day that follows ────────────────────────────────
-     Derived from ORDERS under S.mode and nothing else. Authorised: one
-     completion row per order — placed rows, the covered mistake a slip on
-     the row it remedied (never a row of its own), the returned row set on
-     the approval side — and one totals line. Draft only shows the day as
-     it really would be: nothing placed, every order waiting, one way back
-     to the decision. */
+     Derived from ORDERS under S.mode and nothing else. Authorised: the
+     covered mistake is the hero — the cover's slip, its own paper between
+     the placed rows and the returned row, tied to the order it remedied
+     by data-order; the placed rows and the returned row are quiet
+     evidence (the unit lives on the totals line); one totals line. Draft
+     only shows the day as it really would be: nothing placed, every order
+     waiting, one way back to the decision. */
   var s4h = document.getElementById("s4-h");
   var dayAuth = document.getElementById("day-auth");
   var dayDraft = document.getElementById("day-draft");
   var dayRows = document.getElementById("day-rows");
+  var daySlip = document.getElementById("day-slip");
   var dayAsk = document.getElementById("day-ask");
   var daySum = document.getElementById("day-sum");
   var dayWait = document.getElementById("day-wait");
@@ -307,18 +309,28 @@
 
   function doneRow(o, st) {
     var ok = st === "placed";
-    var cls = "done-row " + (ok ? "done-row--ok" : "done-row--ask") + (o.remedy ? " done-row--slip" : "");
-    var h = '<li class="' + cls + '" data-order="' + esc(o.id) + '">' +
+    var h = '<li class="done-row ' + (ok ? "done-row--ok" : "done-row--ask") + '" data-order="' + esc(o.id) + '">' +
       '<span class="st">' + (ok ? "Placed" : "Returned") + '</span>' +
       '<span class="what">' + esc(lc(o.item)) + '</span>' +
-      '<span class="amt">' + fmt(o.amount) + ' USD</span>';
-    if (ok && o.remedy) {
-      h += '<span class="slip"><b>' + esc(o.remedy.kind) + ':</b> ' + esc(o.remedy.what) + ', ' + esc(o.remedy.done) +
-        '<svg class="tick tick--slip" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-        '</span>';
-    }
+      '<span class="amt">' + fmt(o.amount) + '</span>';
     if (!ok && o.why) { h += '<span class="why">' + esc(o.why) + '</span>'; }
     return h + "</li>";
+  }
+
+  /* the slip: kind, what, done — and the check mark */
+  function slipHTML(o) {
+    return '<b>' + esc(o.remedy.kind) + ':</b> ' + esc(o.remedy.what) + ', ' + esc(o.remedy.done) +
+      '<svg class="tick tick--slip" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  /* the reveal: 400ms slide/scale when screen 4 opens on the authorised
+     day; restarted on every open; instant under reduced motion (the CSS
+     cancels the animation). Nothing but the class is touched. */
+  function revealSlip() {
+    if (!daySlip || daySlip.hidden) { return; }
+    daySlip.classList.remove("slip--in");
+    void daySlip.offsetWidth;
+    daySlip.classList.add("slip--in");
   }
 
   function renderS4() {
@@ -332,6 +344,11 @@
          Returned row says the exception came back. No separate line. */
       headline(s4h, word(d.placed.length) + " orders placed without a buyer.", word(d.returned.length) + " needed you.");
       if (dayRows) { dayRows.innerHTML = d.placed.map(function (o) { return doneRow(o, "placed"); }).join(""); }
+      if (daySlip) {
+        var r = d.remedied[0];
+        daySlip.hidden = !r;
+        if (r) { daySlip.innerHTML = slipHTML(r); daySlip.dataset.order = r.id; } else { delete daySlip.dataset.order; }
+      }
       if (dayAsk)  { dayAsk.innerHTML = d.returned.map(function (o) { return doneRow(o, "returned"); }).join(""); dayAsk.hidden = !d.returned.length; }
       if (daySum)  { daySum.innerHTML = 'Placed <b>' + fmt(sum(d.placed)) + ' USD</b> · awaiting your approval <b>' + fmt(sum(d.awaiting)) + ' USD</b>'; }
     } else {
@@ -435,6 +452,7 @@
 
     /* every screen renders from S as it stands — moving never authorises */
     renderS3(); renderS4(); renderS5();
+    if (n === 4) { revealSlip(); }
 
     moveCamera(sc.dataset.cam);
 

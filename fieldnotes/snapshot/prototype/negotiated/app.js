@@ -41,11 +41,15 @@
      screen 4.
    · "Back to the start" from screen 5 is the one action that resets all
      three.
-   · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is an
-     offer Maggie could not get alone — coverage for participating homes,
-     three years, while 48 stay in — with her share and premium still to be
-     set and accepted. Nothing on the screen says in force, active, signed
-     or begun. Pressing Next never produces "ready"; only the two facts do.
+   · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is
+     the payoff that returns to Maggie — together, the offer she could not
+     get alone (alone · no offer → together · coverage offer, final terms
+     pending) — with her share and premium still to be set and accepted.
+     Nothing on the screen says in force, active, signed or begun. Pressing
+     Next never produces "ready"; only the two facts do.
+   · the amber boundary draws itself in the first time the slider reaches
+     48 on screen 3 (a short stroke-draw; instant under reduced motion) and
+     is static on every later render.
    · DISCOVERABILITY: the customer action is the primary control on its
      screen. The chrome's Next is a quiet paper button on screen 2 until
      #join is pressed and on screen 4 until #verify-toggle is pressed
@@ -121,6 +125,22 @@
 
   /* the collective boundary, in street coordinates */
   var BND = [[X0 - 20, -16], [bx(2) + BW + 14, -16], [bx(2) + BW + 14, 376], [X0 - 20, 376]];
+  /* its perimeter on the drawing, for the stroke-draw the first time the
+     slider reaches 48 (a few units over, so the round joins close) */
+  var BND_LEN = (function () {
+    var L = 0, i, a, b, dx, dy;
+    for (i = 0; i < 4; i++) {
+      a = BND[i]; b = BND[(i + 1) % 4];
+      dx = X(b[0], b[1]) - X(a[0], a[1]); dy = Y(b[1]) - Y(a[1]);
+      L += Math.sqrt(dx * dx + dy * dy);
+    }
+    return Math.ceil(L) + 8;
+  })();
+  /* was the boundary on the drawing at the last render? The draw-in runs
+     only on the render that first shows it — screen 3, the slider reaching
+     48 — never again on a repaint or a screen change while it stays. */
+  var bndShown = false;
+  function reducedMotion() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
 
   /* where a household's pin aims: the ridge of its house */
   function hcx(i) { var up = i < PER_ROW; return X(hx(i) + PITCH / 2, (up ? HD0.up : HD0.lo) + HD / 2); }
@@ -341,11 +361,18 @@
       s.push(line(X(lx, L[0]), Y(L[0]), X(lx, L[1]), Y(L[1]), INK, 1, { op: .14 }));
     }
 
-    /* ── the collective boundary: the threshold EVENT, the only amber ── */
+    /* ── the collective boundary: the threshold EVENT, the only amber ──
+       The first time it appears — screen 3, the slider reaching 48 — the
+       edge draws itself in: a short stroke-draw from a full-perimeter dash
+       (style.css, @keyframes bnd-draw). Under reduced motion it is simply
+       there. Any later render at or above 48 draws it static. */
     if (crossed) {
-      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' }));
-      s.push(poly(BND, "none", { st: A, sw: 4, attr: 'data-boundary="edge"' }));
+      var draw = !bndShown && S.screen === 3 && !reducedMotion();
+      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' : "") }));
+      s.push(poly(BND, "none", { st: A, sw: 4, attr: 'data-boundary="edge"' +
+        (draw ? ' data-draw="1" stroke-dasharray="' + BND_LEN + '" stroke-dashoffset="' + BND_LEN + '"' : "") }));
     }
+    bndShown = crossed;
 
     /* planting behind the upper row (far), the upper row, strips, then the
        near row and its garden */
@@ -449,15 +476,24 @@
   }
   function pinSet(n) {
     /* Screen 1 carries one artwork label: Maggie's home, no. 31. Screen 5,
-       once the street is ready, labels one house that has not joined — the
-       next in the commitment order, which is where a run of committed
-       frontage breaks. At sixty there is no such house and no label. */
+       once the street is ready, returns to her — "Maggie's home" on no. 31,
+       in screen 1's own ink label — and labels one house that has not
+       joined: the next in the commitment order, which is where a run of
+       committed frontage breaks. At sixty there is no such house and no
+       second label. */
     if (n === 1) { return [pinAt("ink", "Maggie's home · No. 31", ROSA, -44)]; }
-    if (n === 5 && ready() && S.committed < HOMES) {
-      /* the first house outside the set, in the commitment order. When she
-         never authorised, that house is no. 31 herself. */
-      var out = S.joined ? ORDER[S.committed] : ROSA;
-      return [pinAt("out", "outside the arrangement", out, -44)];
+    if (n === 5 && ready()) {
+      var pins = [pinAt("ink", "Maggie's home", ROSA, -44)];
+      if (S.committed < HOMES) {
+        /* the first house outside the set, in the commitment order. When
+           she never authorised, that house is no. 31 herself: her label
+           keeps the roof and this one sits on the road in front of her
+           house (stacking it above would put it under the headline block
+           on a phone, where placePins() rightly hides it). */
+        var out = S.joined ? ORDER[S.committed] : ROSA;
+        pins.push(pinAt("out", "outside the arrangement", out, out === ROSA ? 62 : -44));
+      }
+      return pins;
     }
     return [];
   }
@@ -601,6 +637,20 @@
     return lines.map(function (t) { return "<span>" + t + "</span>"; }).join(" ");
   }
 
+  /* Screen 5's READY line: the contrast, as two tabs joined by an arrow.
+     "Alone · no offer" wears screen 1's state — muted, the hollow dashed
+     mark of a pending step — and "Together · coverage offer, final terms
+     pending" the green and the solid met mark of screen 4's chips. The
+     arrow is artwork; the spaces around it keep the words apart in
+     textContent. Nothing here says active, in force, signed or begun. */
+  var MARK = '<svg class="xtab-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false">' +
+             '<circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>';
+  function tabs() {
+    return '<span class="xtab xtab--alone">' + MARK + '<span class="xtab-t">Alone · no offer</span></span> ' +
+           '<span class="xtab-arrow" aria-hidden="true">→</span> ' +
+           '<span class="xtab xtab--together">' + MARK + '<span class="xtab-t">Together · coverage offer, final terms pending</span></span>';
+  }
+
   function paint() {
     var open = S.committed >= NEED;
     var lo = floor(), hi = ceil();
@@ -634,17 +684,20 @@
     if (verState) { verState.textContent = S.verified ? "Verified" : "Pending"; }
     if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
 
-    /* screen 5 — derived. Ready: the street holds an offer Maggie could
-       not get alone; the line names its shape (coverage for participating
-       homes, three years, while 48 stay in). The three status chips name
-       what is settled (participation, the live count; verification) and
-       what is not (her share and premium — set before she accepts). */
+    /* screen 5 — derived. Ready: the payoff returns to Maggie. The line is
+       the contrast, two tabs joined by an arrow: Alone (screen 1's state —
+       muted, the hollow dashed mark) → Together (green, the met mark): a
+       coverage offer with the final terms still pending. The three status
+       chips name what is settled (participation, the live count;
+       verification) and what is not (her share and premium — set before
+       she accepts). */
     if (arrHead && arrLine) {
       if (ready()) {
-        arrHead.innerHTML = spans(["An offer Maggie", "couldn't get alone."]);
-        /* the dots stay with the word before them, so a wrapped line never
-           opens with a separator */
-        arrLine.innerHTML = spans(["Coverage for participating homes · three years · while 48 stay in"]);
+        arrHead.innerHTML = spans(["Together, the offer", "Maggie couldn't get alone."]);
+        arrLine.innerHTML = tabs();
+        /* (the former single green line, kept here for the record:
+           "Coverage for participating homes · three years · while 48 stay
+           in" — now facilitator material) */
       } else {
         arrHead.innerHTML = spans(["Still pending."]);
         arrLine.innerHTML = spans(missing());
@@ -743,7 +796,8 @@
     if (n === 3) { return streetState; }
     if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
     return streetState + (ready()
-      ? "The street holds an offer Maggie could not get alone; her share and premium are set before she accepts" +
+      ? "Together, the street holds the offer Maggie could not get alone; her share and premium are set before " +
+        "she accepts. Number 31 is labelled “Maggie's home”" +
         (c < HOMES ? "; one house that has not joined is labelled “outside the arrangement”." : ".")
       : "The street is still pending.");
   }
@@ -915,7 +969,7 @@
       : sc.dataset.label;
     if (n === 5) {
       said += " " + (ready()
-        ? "Coverage for participating homes, three years, while 48 stay in. Participation " + S.committed +
+        ? "Alone, no offer; together, a coverage offer, final terms pending. Participation " + S.committed +
           " of 60; verification complete; your share and premium, set before you accept. " +
           "Arranged by the service; it earns when coverage starts."
         : missing().join(". ") + ".");

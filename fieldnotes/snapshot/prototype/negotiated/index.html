@@ -40,9 +40,11 @@
 
 <!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
      1 acting alone fails · 2 the deal, before joining · 3 the street reaches
-     the threshold · 4 participation is not the final condition · 5 an offer
-     Maggie couldn't get alone, her share and premium set before she
-     accepts (or it is still pending).
+     the threshold (the boundary draws itself in at 48) · 4 participation
+     is not the final condition · 5 together, the offer Maggie couldn't get
+     alone — alone, no offer; together, a coverage offer with the final
+     terms pending, her share and premium set before she accepts (or it is
+     still pending).
      Copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md,
      NEGOTIATED). Everything the facilitator says aloud lives in
      FACILITATOR-NOTES.md, not here. Empty space is the street showing
@@ -207,16 +209,21 @@
 
 <!-- ══════ 5 · THE STREET, READY OR PENDING ══════
      DERIVED, never navigated into: ready = committed ≥ 48 AND verified.
-     "Ready" is an offer Maggie could not get alone — coverage for
-     participating homes, three years, while 48 stay in — with her SHARE
-     AND PREMIUM still to be set and accepted: no contribution, price or
-     acceptance exists in any source, so nothing here may say in force,
-     active, signed or begun. Headline, state line, the live count in the
-     chips, the boundary and the "outside the arrangement" label are all
-     written by app.js from the state object. -->
+     "Ready" is the payoff that returns to Maggie: "Together, the offer
+     Maggie couldn't get alone." The line is the contrast, two tabs joined
+     by an arrow — Alone · no offer (screen 1's state: muted, hollow mark)
+     → Together · coverage offer, final terms pending (green, met mark) —
+     with her SHARE AND PREMIUM still to be set and accepted: no
+     contribution, price or acceptance exists in any source, so nothing
+     here may say in force, active, signed or begun. Headline, the tabs,
+     the live count in the chips, the boundary, the "Maggie's home" label
+     on no. 31 and the "outside the arrangement" label are all written by
+     app.js from the state object. The headline block takes eight columns
+     here (the other screens' six) so the two tabs sit on one line at
+     1180px; the street band below is empty at those rows. -->
 <section class="screen screen--arr" data-screen="5" data-label="The street" data-cam="ready" data-veil="soft">
 
-  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
+  <div class="xhead xhead--block" style="grid-area:1/1/4/9">
     <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
     <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification pending</span></p>
     <!-- READY state only: who arranged it and when it earns -->

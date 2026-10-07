@@ -680,7 +680,7 @@
     "Prior claim: rated differently by each of the four.",
     "Ranked against her needs, not just the price. The cheapest, Quote C, came third.",
     /* the reply, as it appears on the glass */
-    "Quote D. It covers the garage, and its treatment of your prior claim is acceptable. Quote C is cheapest, but it excludes the garage — ranked third."
+    "Quote D. It covers the garage and treats your prior claim acceptably. Quote C is cheaper, but excludes the garage."
   ];
 
   function paintRead() {

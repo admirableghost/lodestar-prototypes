@@ -197,11 +197,12 @@
 <!-- ══════ 4 · THE DAY ══════
      Read from ORDERS under the mode set on screen 3; every row, count and
      total is rendered by app.js. Authorised: the headline carries the
-     benefit ("… placed without a buyer."); one completion row per order —
-     the placed ones (the covered mistake a slip on the row it remedied,
-     never a row of its own), the returned one set on the approval side —
-     and one totals line. Draft-only: nothing placed, one waiting row, one
-     authority row, one way back. No simulation. -->
+     benefit ("… placed without a buyer."); the covered mistake is the hero
+     — the cover's slip steps out of the ledger as its own paper, between
+     the three placed rows and the returned one, still tied to the order it
+     remedied by data-order; the rows are quiet evidence; one totals line.
+     Draft-only: nothing placed, one waiting row, one authority row, one
+     way back. No simulation. -->
 <section class="screen screen--s4" data-screen="4" data-label="The day" data-cam="run" data-veil="soft">
 
   <div class="top">
@@ -216,8 +217,11 @@
       <div class="thread">
 
         <div class="msg msg--ai" id="day-auth" hidden>
-          <!-- placed orders; the cover's slip attached to the order it remedied -->
+          <!-- placed orders: quiet evidence -->
           <ul class="done" id="day-rows"></ul>
+          <!-- the hero: the cover's slip, its own paper, tied to the order it
+               remedied (data-order); revealed when the screen opens -->
+          <p class="slip" id="day-slip" hidden></p>
           <!-- the one that needed a person: set apart, on the approval side -->
           <ul class="done done--ask" id="day-ask"></ul>
           <!-- the day summed: placed, and what awaits approval -->

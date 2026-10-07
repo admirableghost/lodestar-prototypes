@@ -1244,3 +1244,57 @@ body { background: var(--paper); }
   .step-val, .tm, .vbtn, .jbtn, .joined { font-size: 18px; }
   .leg--chip .leg-i, .step-name, .step-state, .tm dt { font-size: 16px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   STORY POLISH — the return to Maggie
+   (design-study/brief-align/CONTRACT-POLISH.md § Negotiated Neighborhood).
+   Two things, local layout only: on screen 3 the boundary draws itself in
+   the moment the slider reaches 48; on screen 5 the ready line becomes the
+   contrast — two tabs joined by an arrow — and no. 31 gets her label back.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── screen 3 · the boundary draws itself in ──────────────────────────────
+   app.js writes a full-perimeter dash and offset on the edge the first
+   time the slider shows it, and only then; the keyframe runs the offset to
+   zero so the amber line is drawn round the street. Under reduced motion
+   app.js writes no dash and the global rule above kills animation anyway:
+   the boundary is simply there. */
+@keyframes bnd-draw { to { stroke-dashoffset: 0; } }
+@keyframes bnd-fill { from { opacity: 0; } to { opacity: .07; } }
+#plan [data-boundary="edge"][data-draw] { animation: bnd-draw .8s cubic-bezier(.45, 0, .2, 1) forwards; }
+#plan [data-boundary="fill"][data-draw] { animation: bnd-fill .8s linear forwards; }
+
+/* ── screen 5 · the contrast, as two tabs joined by an arrow ──────────────
+   The container keeps .xcons's type scale (every media rule above still
+   applies) but gives up its own paper: each tab is its own chip. "Alone"
+   wears screen 1's state — regular weight, muted ink, the hollow dashed
+   ring a pending step carries; "Together" the green and the solid met mark
+   of screen 4's chips. The arrow sits on a sliver of paper of its own, so
+   no glyph is ever set straight on the drawing. */
+.screen--arr[data-state="ready"] .xcons--arr {
+  display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+  max-width: none; padding: 0; background: none; box-shadow: none;
+  color: var(--edition-ink); font-weight: 400; text-wrap: initial;
+}
+.xcons--arr .xtab {
+  display: inline-flex; align-items: center; gap: .45em;
+  padding: .3em .7em .34em; border-radius: 3px;
+  background: var(--paper); font-weight: 700;
+}
+.xcons--arr .xtab-t { display: inline; }
+.xcons--arr .xtab-mark { width: 22px; height: 22px; flex: 0 0 auto; }
+.xcons--arr .xtab--alone {
+  color: var(--ink-soft); font-weight: 400;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 14%, transparent);
+  outline: 2px dashed var(--ink-soft); outline-offset: -2px;
+}
+.xcons--arr .xtab--alone .xtab-mark circle { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.8; stroke-dasharray: 3 2.4; }
+.xcons--arr .xtab--alone .xtab-mark path { fill: none; stroke: none; }
+.xcons--arr .xtab--together { color: var(--green); box-shadow: 0 0 0 1.5px var(--green); }
+.xcons--arr .xtab--together .xtab-mark circle { fill: var(--green); stroke: var(--green-2); stroke-width: 1.8; }
+.xcons--arr .xtab--together .xtab-mark path { fill: none; stroke: var(--paper); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.xcons--arr .xtab-arrow {
+  display: inline-block; padding: .05em .3em; border-radius: 3px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  font-weight: 700; font-size: 1.25em; line-height: 1; color: var(--edition-ink);
+}

@@ -114,9 +114,9 @@
     { k: "line", layer: "see",  x: 1300, y: 330 },
     { k: "stn",  layer: "act",  x: 298,  y: 868 },
     { k: "stn",  layer: "act",  x: 702,  y: 848 },
-    { k: "stn",  layer: "act",  x: 1032, y: 806 },
+    { k: "stn",  layer: "act",  x: 1032, y: 806, incident: true },
     { k: "stn",  layer: "act",  x: 1386, y: 838 },
-    { k: "pad",  layer: "act",  x: 1006, y: 772 },
+    { k: "pad",  layer: "act",  x: 1006, y: 772, incident: true },
     { k: "pad",  layer: "act",  x: 426,  y: 884 }
   ];
   var ALL_ON = { see: true, know: true, act: true, fund: true };
@@ -279,7 +279,8 @@
        at the crest, where the ridge would show it */
     var wy = n.y < crestY(n.x) ? crestY(n.x) + 8 : n.y;
     var p = P(n.x, wy), x = n1(p[0]), y = +p[1].toFixed(1);
-    var g = '<g class="rg-node rg-node--' + n.layer + '">';
+    /* `incident`: the station and pad screen 3's response works from */
+    var g = '<g class="rg-node rg-node--' + n.layer + (n.incident ? ' rg-node--incident' : '') + '">';
     if (n.k === "cam") {
       g += '<line x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y + 12) + '" stroke="' + c + '" stroke-width="2"/>' +
            '<path d="M' + n1(p[0] - 6) + " " + y + "L" + n1(p[0] + 6) + " " + y + "L" + x + " " + (y - 9) + 'Z" fill="' + c + '"/>';
@@ -552,20 +553,38 @@
     G["rg-labels"].innerHTML = T.join("");
   }
 
-  /* ══ screen 5: the current limit, and ONE conditional limit upslope ══ */
+  /* ══ screen 5: the current limit, and ONE conditional limit upslope.
+     Between the two, three small sage arrows point upslope — the
+     counter-movement to screen 1's retreat (which has none). They sit on
+     open ground between the communities; nothing between the limits is
+     filled. ══ */
   var SAGE_INK = "#3E5640";
+  var S5_ARROWS = [240, 745, 1150];
   function drawS5(f) {
-    var A = [], T = [], q = availPaths();
+    var A = [], T = [], q = availPaths(), px = function (n) { return n * f.upp; };
     A.push('<path d="' + area(q.edge) + '" fill="' + C.avail + '" opacity=".11"/>');
     A.push('<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + C.paper + '" stroke-width="5" opacity=".45"/>' +
            '<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + SAGE + '" stroke-width="2.4" stroke-dasharray="9 7" stroke-linecap="round"/>');
     A.push('<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/>' +
            '<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="2.2"/>');
+    var arrowBoxes = [];
+    S5_ARROWS.forEach(function (x) {
+      /* from just above the current limit to just below the conditional one */
+      var a = SC.P(x, edgeY(x)), b = SC.P(x, condY(x));
+      var y0 = a[1] - px(7), y1 = b[1] + px(7), cx = (a[0] + b[0]) / 2, hw = px(4.5), hl = px(6);
+      if (y0 - y1 < px(12)) { return; }
+      var d = 'M' + n1(cx) + ' ' + n1(y0) + 'L' + n1(cx) + ' ' + n1(y1) + 'M' + n1(cx - hw) + ' ' + n1(y1 + hl) + 'L' + n1(cx) + ' ' + n1(y1) + 'L' + n1(cx + hw) + ' ' + n1(y1 + hl);
+      A.push('<path d="' + d + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(5.5)) + '" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>' +
+             '<path d="' + d + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(2.2)) + '" stroke-linecap="round" stroke-linejoin="round"/>');
+      var s0 = f.proj(x, edgeY(x)), s1 = f.proj(x, condY(x));
+      arrowBoxes.push({ left: s0[0] - 8, right: s0[0] + 8, top: s1[1] + 4, bottom: s0[1] - 4 });
+    });
     G["rg-availability"].innerHTML = A.join("");
     var label = labeller(T, f), LH = f.size * 1.3;
     var CURRENT = isPhone() ? [["Current", "b", C.label], ["availability limit", "b", C.label]] : [["Current availability limit", "b", C.label]];
-    var COULD = narrow ? [["Could change with", "b", SAGE_INK], ["evidence and capital", "b", SAGE_INK]] : [["Could change with evidence and capital", "b", SAGE_INK]];
+    var COULD = narrow ? [["Could become", "b", SAGE_INK], ["insurable again", "b", SAGE_INK]] : [["Could become insurable again", "b", SAGE_INK]];
     f.avoidSolids = true; f.strictSolids = true;
+    f.placed = f.placed.concat(arrowBoxes);
     label(130, edgeY(130), CURRENT, 0, 12, "middle");
     label(620, condY(620), COULD, 0, -LH * COULD.length - 12, "middle");
     G["rg-labels"].innerHTML = T.join("");
@@ -596,13 +615,15 @@
       { at: [1006, 772], lines: [["Equipment", "b"]], dx: 16, dy: -10, anc: "start" },
       { at: [1032, 806], lines: [["Response crews", "b"], ["contracted", "r"]], dx: 16, dy: 2, anc: "start" }
     ];
+    /* one short label per relationship: the line style carries the rest
+       (the actors are in the screen-reader paragraph, not on the terrain) */
     var LINKS = [
-      { k: "fund", dir: "in",  x: 400,  y: 440, c: VENDOR,  bend: 40,  ldy: -74,
-        lines: [["Build or fund", "b", VENDOR], ["insurer, utility, community", "r"], ["proposed", "b", VENDOR]] },
-      { k: "buy",  dir: "in",  x: 250,  y: 640, c: PUBLIC,  bend: -40, ldy: -6,
-        lines: [["Buy defined services", "b", PUBLIC], ["utility, communities, owners", "r"]] },
-      { k: "use",  dir: "out", x: 1300, y: 520, c: CARRIER, bend: 0,   ldy: -22,
-        lines: [["Use evidence", "b", CARRIER], ["insurer, for underwriting", "r"]] }
+      { k: "fund", dir: "in",  x: 400,  y: 440, c: VENDOR,  bend: 40,  ldy: -30,
+        lines: [["Build or fund · proposed", "b", VENDOR]] },
+      { k: "buy",  dir: "in",  x: 250,  y: 640, c: PUBLIC,  bend: -40, ldy: -10,
+        lines: [["Buy services", "b", PUBLIC]] },
+      { k: "use",  dir: "out", x: 1300, y: 520, c: CARRIER, bend: 0,   ldy: -10,
+        lines: [["Use evidence", "b", CARRIER]] }
     ];
 
     /* the corridor: a thinned, lighter band in the forest below the ridge */
@@ -744,21 +765,25 @@
     { at: [1130, 356], lines: [["Response 14:36–14:43", "b"]], dx: 22, dy: -24, anc: "start" }
   ];
 
-  /* the end state's words (stage 3, the default): places and the two paths
-     that wait on one person. `from` is the step they appear at. */
+  /* the end state's words (stage 3, the default): the incident is the hero —
+     the community, the road, the aircraft and ONE decision tab. The drop
+     target and the evacuation footprint are drawn but carry no words of
+     their own in the default state; "Show all" (`allOnly`) keeps its
+     grouped set. `from` is the step they appear at. */
   var S3_PLACES = [
     { id: "mill",  from: 8, at: [842, 736],  dx: -6,  dy: -18, anc: "end",
       lines: [["Mill Creek", "b"], ["320 homes", "r"]] },
     { id: "road",  from: 8, at: [968, 800],  dx: -16, dy: -12, anc: "end",
       lines: [["Road held open", "b", FIRE]] },
-    { id: "air",   from: 8, at: [1100, 650], dx: 18,  dy: -4,  anc: "start",
+    { id: "air",   from: 8, at: [1100, 650], dx: 18,  dy: -4,  anc: "start", ph: { dx: 18, dy: -34, anc: "start" },
       lines: [["Aircraft holding", "b"]] },
-    { id: "evac",  from: 8, at: [968, 696],  dx: -22, dy: -48, anc: "end",
+    { id: "evac",  from: 8, at: [968, 696],  dx: -30, dy: -92, anc: "end", allOnly: true, ph: { dx: -22, dy: -48, anc: "end" },
       lines: [["Evacuation", "b"]] },
-    { id: "drop",  from: 8, at: [972, 636],  dx: 0,   dy: -50, anc: "middle",
+    { id: "drop",  from: 8, at: [972, 636],  dx: 0,   dy: -50, anc: "middle", allOnly: true,
       lines: [["Suppression drop", "b"]] },
-    { id: "chief", from: 8, at: [1124, 566], dx: 40,  dy: -34, anc: "start",
-      lines: [["Duty chief", "b"], ["approval required", "r"]],
+    { id: "chief", from: 8, at: [1124, 566], dx: 40,  dy: -34, anc: "start", ph: { dx: -34, dy: -50, anc: "end" },
+      lines: [["Duty chief", "b"], ["evacuation and drop await approval", "r"]],
+      phone: [["Duty chief", "b"], ["evacuation and drop", "r"], ["await approval", "r"]],
       all:   [["Decision 14:47 · pending", "b"], ["Duty chief", "b"], ["approval required", "r"]] }
   ];
 
@@ -777,6 +802,12 @@
     var step = o.step, px = function (n) { return n * o.upp; };
     var stg = s3StageOf(Math.max(1, step));
     var ig = SC.P(IGNITION.x, IGNITION.y), a, p;
+    /* the end state (stage 3, the default): the incident is the hero, so
+       the earlier stages' unlabelled ridge marks — the three signal marks,
+       their sight lines and the locked-out reclosers — sit faint. They are
+       full while the replay is in their stage and in "Show all". */
+    var faint = o.mode === "focus" && stg === 3;
+    var FAINT = '<g opacity=".35">', END = '</g>';
 
     if (step >= 1) {
       s.push('<path d="' + wpath(LATERAL) + '" fill="none" stroke="' + (step >= 4 ? S3_HOLD : ALARM) +
@@ -784,14 +815,14 @@
     }
     if (step >= 2) {
       p = SC.P(1186, 240);
-      s.push('<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1]) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>');
+      s.push((faint ? FAINT : '') + '<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1]) +
+             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>' + (faint ? END : ''));
       s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(step >= 3 ? 46 : 26)) + '" fill="url(#heat)"/>');
     }
     if (step >= 3) {
       p = SC.P(IGNITION.x, 120);
-      s.push('<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1] - px(16)) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>');
+      s.push((faint ? FAINT : '') + '<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1] - px(16)) +
+             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>' + (faint ? END : ''));
       s.push('<g stroke="' + ALARM + '" stroke-width="' + n1(px(2.2)) + '">');
       for (a = 0; a < 8; a++) {
         var th = (a / 8) * Math.PI * 2;
@@ -802,12 +833,14 @@
       s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(5)) + '" fill="' + ALARM + '"/>');
     }
     if (step >= 4) {
+      if (faint) { s.push(FAINT); }
       S3_FEEDERS.forEach(function (q) {
         var f = SC.P(q[0], q[1]), r = px(9);
         s.push('<rect x="' + n1(f[0] - r) + '" y="' + n1(f[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="' + PAPER +
                '" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.8)) + '"/>' +
                '<rect x="' + n1(f[0] - r) + '" y="' + n1(f[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="url(#s3-hatch)"/>');
       });
+      if (faint) { s.push(END); }
     }
     if (step >= 5) {
       /* the modelled corridor: translucent, dashed edge — a forecast */
@@ -851,6 +884,8 @@
     /* ── the marks: ○ observed · ● bounded action · ◇ forecast · ■ decision ── */
     function mark(ev, emph) {
       var m = SC.P(ev.at[0], ev.at[1]), x = n1(m[0]), y = n1(m[1]), k = ev.kind, r;
+      var dim = faint && ev.stage === 1;
+      if (dim) { s.push(FAINT); }
       if (o.live && emph) {
         s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(k === "dec" ? 34 : 22)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.2)) + '" opacity=".45"/>');
       }
@@ -868,6 +903,7 @@
         s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(26)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity=".8"/>');
         s.push('<rect x="' + n1(m[0] - r) + '" y="' + n1(m[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" rx="' + n1(px(2)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.4)) + '"/>');
       }
+      if (dim) { s.push(END); }
     }
     S3_EVENTS.forEach(function (ev, i) { if (i < step) { mark(ev, i === step - 1); } });
 
@@ -885,7 +921,13 @@
     }
     S3_PLACES.forEach(function (q) {
       if (step < q.from) { return; }
-      label(q.at[0], q.at[1], (o.mode === "all" && q.all) || q.lines, q.dx, q.dy, q.anc);
+      if (q.allOnly && o.mode !== "all") { return; }
+      /* a phone's short stage: shorter lines (`phone`) and, where the
+         authored side would sit on the roofs or the drop target, an
+         authored phone offset (`ph`) */
+      var lines = o.mode === "all" && q.all ? q.all : (isPhone() && q.phone) || q.lines;
+      var at = (isPhone() && q.ph) || q;
+      label(q.at[0], q.at[1], lines, at.dx, at.dy, at.anc);
     });
     if (o.mode === "all") {
       S3_GROUPS.forEach(function (g) { label(g.at[0], g.at[1], g.lines, g.dx, g.dy, g.anc); });
@@ -903,12 +945,17 @@
     G["rg-incident"].innerHTML = s.join("");
     G["rg-labels"].innerHTML = T.join("");
     svg.dataset.act = tlStep >= 6 ? "1" : "0";
+    /* the unlabelled sensors on the ridge light only while the replay is
+       in stage 1 (signals); otherwise they sit faint under the incident */
+    svg.dataset.see = (tlMode === "focus" && tlStep >= 1 && tlStep <= 3) ? "1" : "0";
   }
 
-  /* screen 4: the record, faint and wordless, under the columns */
+  /* screen 4: the record, faint and wordless, under the columns. Mode
+     "all" so every mark of the record is drawn at one strength (the
+     screen-3 end-state fade does not apply); no labels are asked for. */
   function drawS4(f) {
     var s = [];
-    drawS3(s, { step: S3_EVENTS.length, mode: "focus", live: false, upp: f.upp }, null);
+    drawS3(s, { step: S3_EVENTS.length, mode: "all", live: false, upp: f.upp }, null);
     G["rg-incident"].innerHTML = '<g opacity=".45">' + s.join("") + '</g>';
   }
 

@@ -975,32 +975,51 @@ body { background: var(--paper); color: var(--edition-ink); }
      when the composition would leave the stage; the floors below hold the
      iPad minimums (18px running text, 16px labels) whatever --fit does */
   --k: var(--fit);
+  /* the thread's centre, measured from the screen's left edge; the stage
+     steps right of it so nothing on the glass sits on the thread */
+  --thread-x: 9px;
+  padding-left: calc(var(--gutter) + var(--thread-x));
   display: flex; flex-direction: column; align-items: stretch;
   gap: calc(16px * var(--k));
   pointer-events: auto;
   color: var(--edition-ink);
   font-family: var(--sans);
-  /* the paper is the screen's own: a warm sheet with a faint ruled register */
+  /* the paper is the screen's own: a warm sheet with a faint ruled
+     register — and the agent's thread: a thin plum line from the lens
+     mark at the top left down the left edge, drawn as a background so it
+     is decorative by construction (no element, nothing announced). It is
+     attached to the content, so on a phone it runs the whole scrolled
+     screen, not just the first fold. */
   background:
+    linear-gradient(color-mix(in srgb, var(--plum) 42%, transparent), color-mix(in srgb, var(--plum) 42%, transparent))
+      calc(var(--thread-x) - 1px) calc(var(--gutter) + 12px) / 2px calc(100% - var(--gutter) - 12px - var(--chrome-h) - 10px) no-repeat,
     repeating-linear-gradient(180deg, transparent 0 111px, color-mix(in srgb, var(--edition-ink) 6%, transparent) 111px 112px),
     var(--paper);
+  background-attachment: local, local, local;
 }
 .screen.oc > * { min-width: 0; }
 
-/* ── the agent strip: one line, top left, the same place on every screen,
-   in the agent's plum, under a hairline so it reads as a strip and not as
-   a second eyebrow. The mark is the reading lens from screen 2's drawing.
-   Painted by paintAgent() from the purchase state. ─────────────────────── */
+/* ── the agent device: the lens mark and a two-or-three-word state, top
+   left, the same place on every screen, in the agent's plum. The mark sits
+   on the thread (its centre over --thread-x, so it is pulled back across
+   the gutter) and its circle is filled with the paper so the thread begins
+   at the mark rather than running through it. Painted by paintAgent()
+   from the purchase state. ───────────────────────────────────────────── */
 .agent {
   flex: 0 0 auto; margin: 0; display: flex; align-items: center; gap: .45em;
-  padding-bottom: calc(8px * var(--k));
-  border-bottom: 1px solid color-mix(in srgb, var(--plum) 35%, transparent);
+  padding-bottom: calc(4px * var(--k));
   font: 400 max(18px, calc(18px * var(--k)))/1.3 var(--sans);
   color: var(--plum); letter-spacing: -.005em;
 }
 .agent b { font-weight: 700; }
 .agent-sep { color: color-mix(in srgb, var(--plum) 55%, transparent); }
-.agent-mark { flex: 0 0 auto; width: 1.15em; height: 1.15em; }
+/* 1.15em of 18px is 20.7px wide; the lens circle's centre is 10/24 of that
+   (8.6px) from the mark's left edge */
+.agent-mark {
+  flex: 0 0 auto; width: 1.15em; height: 1.15em;
+  margin-left: calc(-8.6px - var(--gutter));
+}
+.agent-mark circle { fill: var(--paper); }
 .agent-t { min-width: 0; }
 
 /* ── head: eyebrow, the headline on its own backing, one line at the right ── */
@@ -1104,11 +1123,12 @@ body { background: var(--paper); color: var(--edition-ink); }
 .perm-dot { stroke: var(--sheet); stroke-width: 2; }
 
 /* ══ SCREEN 2 · the offer, with its remedy, and who reads it ════════════ */
-/* the sheet takes what the drawing beside it leaves; the pair sits centred */
+/* the sheet takes what the line beside it leaves; the pair sits centred,
+   the line directly on the sheet's right edge */
 .oc2-scene {
   display: grid; grid-template-columns: minmax(0, 820px) auto;
   justify-content: center; align-items: center;
-  gap: calc(22px * var(--k)) calc(56px * var(--k));
+  gap: calc(22px * var(--k)) calc(20px * var(--k));
 }
 
 /* the offer: a sheet the insurer publishes. Ruled strips stand for the rest
@@ -1152,21 +1172,25 @@ body { background: var(--paper); color: var(--edition-ink); }
 }
 .remedy-mark { flex: 0 0 auto; width: 1.05em; height: 1.05em; }
 
-/* who publishes it, who reads it: one line in two halves, each beside its
-   mark on the drawing */
+/* who publishes it, who reads it: the two phrases, one over the other on
+   the sheet's right edge, joined by the arrow that ends at the agent's
+   lens mark. Larger than the sheet's terms: this is the screen's point. */
 .pub {
-  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr 1fr;
-  align-items: center; column-gap: calc(18px * var(--k)); row-gap: calc(24px * var(--k));
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: calc(8px * var(--k));
   justify-self: start; max-width: 100%;
 }
-.pub-art { grid-row: 1 / 3; grid-column: 1; display: block; width: calc(96px * var(--k)); height: calc(176px * var(--k)); }
 .pub-l {
-  margin: 0; grid-column: 2; max-width: 14ch;
-  font: 700 clamp(18px, calc((.6vw + 1.05vh) * var(--k)), 24px)/1.25 var(--sans);
-  text-wrap: balance;
+  margin: 0; max-width: 13ch;
+  font: 700 clamp(20px, calc((.9vw + 1.5vh) * var(--k)), 28px)/1.2 var(--sans);
+  letter-spacing: -.01em; text-wrap: balance;
 }
-.pub-l--ins { grid-row: 1; align-self: start; padding-top: calc(4px * var(--k)); }
-.pub-l--agt { grid-row: 2; align-self: end; color: var(--plum); padding-bottom: calc(6px * var(--k)); }
+/* the lens sits on the phrase's first line, not the middle of a wrapped pair */
+.pub-l--agt { display: flex; align-items: flex-start; gap: .4em; color: var(--plum); }
+/* the arrow's shaft is at 10/24 of its width, over the lens circle below;
+   its box ends at the arrowhead, so the head sits just above the lens */
+.pub-arrow { display: block; width: 1.15em; height: calc(1.15em * 54 / 24); font-size: clamp(20px, calc((.9vw + 1.5vh) * var(--k)), 28px); margin: calc(2px * var(--k)) 0 calc(-2px * var(--k)); }
+.pub-lens { flex: 0 0 auto; width: 1.15em; height: 1.15em; margin-top: .025em; }
 
 /* ══ SCREEN 3 · the three offers, one term each, a verdict word ═════════ */
 .rank { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -1218,6 +1242,9 @@ body { background: var(--paper); color: var(--edition-ink); }
    not on who it covers), the term set quiet, the verdict word in ink after
    a warm boundary mark */
 .of[data-ok="0"] {
+  /* the two the agent cannot buy step back: the recommended card is the
+     one thing on the screen at full strength */
+  opacity: .7;
   border-left: 6px solid var(--warm);
   background:
     repeating-linear-gradient(-45deg, var(--warm) 0 3px, transparent 3px 9px) top / 100% 8px no-repeat,
@@ -1328,9 +1355,21 @@ body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-co
 .calc {
   margin: 0; display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1.2fr);
-  grid-template-rows: auto auto; align-items: end;
+  grid-template-rows: auto auto auto; align-items: end;
   gap: calc(14px * var(--k)) calc(14px * var(--k));
 }
+/* the loop, under the three figures: five small labels joined by arrows,
+   in soft ink, so the row reads as the agent's rhythm and not as a fourth
+   figure. Painted by paintPerformance() with the calculation. */
+.calc-loop {
+  grid-column: 1 / -1; grid-row: 3; margin: 0;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px .45em;
+  font: 400 max(16px, calc(16px * var(--k)))/1.3 var(--sans);
+  letter-spacing: .02em; color: var(--ink-soft);
+}
+/* each arrow is bound to the word it points at, so a wrap breaks before
+   "→ recorded", never after a bare arrow */
+.calc-loop-a { margin-right: .45em; color: color-mix(in srgb, var(--plum) 60%, transparent); }
 /* the clock, over the two figures it produces: the promised days in ledger
    blue, the late ones hatched in plum. The cells carry no numbers. */
 .calc-days { grid-column: 1 / 4; grid-row: 1; }
@@ -1363,7 +1402,12 @@ body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-co
 
 /* ── narrow: one column, the scene stacks, the screen scrolls ─────────── */
 @media (max-width: 899px) {
-  .screen.oc { gap: 14px; padding-bottom: 16px; }
+  .screen.oc {
+    gap: 14px; padding-bottom: 16px;
+    /* the phone's deck stops above the chrome, so the thread ends at the
+       screen's own 16px foot, and runs the whole scrolled height */
+    background-size: 2px calc(100% - var(--gutter) - 12px - 16px), auto, auto;
+  }
   .screen.oc .oc-headline { font-size: clamp(28px, 7.4vw, 44px); }
   /* the text wraps beside the mark, never under it */
   .agent { padding-bottom: 6px; align-items: flex-start; }
@@ -1380,10 +1424,9 @@ body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-co
   .rule-art { width: 88px; height: 53px; flex: 0 0 auto; }
   .rule-p { max-width: none; }
   .oc2-scene { grid-template-columns: 1fr; gap: 14px; justify-items: stretch; }
-  .pub { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 14px; row-gap: 8px; justify-self: stretch; }
-  .pub-art { width: 56px; height: 104px; }
-  .pub-l { max-width: none; }
-  .pub-l--ins, .pub-l--agt { padding: 0; align-self: center; }
+  .pub { gap: 4px; justify-self: stretch; }
+  .pub-l { max-width: none; font-size: 20px; }
+  .pub-arrow { font-size: 20px; height: 44px; margin: 0; }
   .oc3-scene { grid-template-columns: 1fr; gap: 12px; }
   .of { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; min-height: 0; }
   .of-co { flex: 1 1 100%; }
@@ -1402,6 +1445,7 @@ body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-co
   .calc-step, .calc-link { grid-row: auto; }
   .calc-link { transform: rotate(90deg); margin-left: 8px; }
   .calc-strip { height: clamp(44px, 12vw, 64px); }
+  .calc-loop { grid-column: 1; grid-row: auto; }
   .oc3-foot { padding-right: 0; margin-top: auto; }
   .oc-foot { padding-right: 0; }
   .oc5-pending { max-width: none; gap: 16px; }
@@ -1415,11 +1459,9 @@ body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-co
   .oc3-scene { align-content: center; }
   .rule-g { padding: 20px 24px; }
   .rule-art { width: 110px; height: 66px; }
-  .oc2-scene { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 28px; }
-  .pub { grid-template-rows: 1fr 1fr; row-gap: 20px; }
-  .pub-art { width: 84px; height: 154px; }
-  .pub-l--ins { align-self: start; padding-top: 4px; }
-  .pub-l--agt { align-self: end; padding-bottom: 6px; }
+  .oc2-scene { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; }
+  .pub { gap: 8px; justify-self: start; }
+  .pub-l { max-width: 13ch; }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .step { display: flex; flex-direction: column; padding: 16px 18px 18px; }
   .step-art { width: 100%; max-width: 200px; margin: 0 0 8px; }

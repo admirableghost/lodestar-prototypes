@@ -323,28 +323,38 @@
       .map(function (o) { return o.explain; }).join(" ");
   }
 
-  /* ── the agent strip: one line, the same place on every screen, read
-     from the purchase state. The thread that makes five screens one
-     relationship: what her agent holds, reads, recommends, buys, watches.
-     Named from the model (the recommended offer, the snapshot), never
-     from a literal, so the strip can only name what the screen shows. */
+  /* ── the agent device: the lens mark and a two-or-three-word state, the
+     same place on every screen, read from the purchase state
+     (design-study/brief-align/CONTRACT-POLISH.md § OpenCover). The plum
+     thread that runs from the mark down the left edge is drawn by the
+     stylesheet (.screen.oc's background), so the five screens read as one
+     relationship. Named from the model (the recommended offer, the
+     snapshot), never from a literal, so the device can only name what the
+     screen shows. */
+  function shortName(o) {
+    /* the snapshot carries the full name; the device shows the table's
+       short form for the same id, and the snapshot's name if there is none */
+    var row = OC.filter(function (x) { return x.id === o.id; })[0];
+    return (row && row.short) || o.name;
+  }
   function agentLine(n) {
     var p = bought();
     switch (n) {
-      case 1: return "holds these instructions";
-      case 2: return "reading the offer";
-      /* before the purchase the short name: screen 3's three cards and the
-         agent's reason line leave the strip four words at the cap */
-      case 3: return p ? "bought " + p.name : "recommends " + (recommended().short || recommended().name);
-      case 4: return p ? "bought and confirmed" : "ready to buy inside your rules";
-      case 5: return p ? "watched the promise, applied the remedy" : "nothing bought yet";
+      case 1: return "instructed";
+      case 2: return "reading";
+      case 3: return p ? "bought " + shortName(p) : "recommends " + shortName(recommended());
+      case 4: return p ? "bought · confirmed" : "awaiting your permission";
+      case 5: return p ? "watched · remedied" : "nothing bought";
     }
     return "";
   }
+  /* the state, said aloud: the middle dot becomes a pause */
+  function agentSaid(n) { return agentLine(n).replace(/ · /g, ", "); }
   function paintAgent() {
     Array.prototype.forEach.call(document.querySelectorAll("[data-agent]"), function (el) {
       el.innerHTML = "<b>Your agent</b><span class=\"agent-sep\"> · </span>" +
-                     esc(agentLine(parseInt(el.dataset.agent, 10)));
+                     esc(agentLine(parseInt(el.dataset.agent, 10)))
+                       .split(" · ").join("<span class=\"agent-sep\"> · </span>");
     });
   }
 
@@ -628,7 +638,17 @@
           '<p class="calc-n"><span class="calc-big">' + grp(remedy) + '</span><span class="calc-u">USD</span></p>' +
           '<p class="calc-w">applied automatically</p>' +
           '<p class="calc-s">no separate claim needed</p>' +
-        "</div>";
+        "</div>" +
+        /* the loop, under the figures: the five beats the agent runs, as
+           one quiet row — what was promised, what was observed, the miss,
+           the remedy, and the record the next check reads from */
+        '<p class="calc-loop" aria-label="The loop: promise, observed, miss, remedy, recorded">' +
+          ["promise", "observed", "miss", "remedy", "recorded"].map(function (w, i) {
+            /* each arrow is bound to the word it points at, so a wrap on a
+               phone breaks before "→ recorded", never after a bare arrow */
+            return "<span>" + (i ? '<span class="calc-loop-a" aria-hidden="true">→</span>' : "") + w + "</span>";
+          }).join("") +
+        "</p>";
     } else if (calc) {
       /* no published settlement time means nothing to check and nothing
          owed. Unreachable with the current model, where the only offer that
@@ -1192,7 +1212,7 @@
     if (n === 4) { extra = p ? " Bought: " + p.name + "." : " Not yet bought. One action: buy inside her rules."; }
     if (n === 5) { extra = p ? " Bought: " + p.name + ". The agent watched the promise and applied the remedy." : " No policy to check. The recommendation was not bought. One action: back to the purchase."; }
     announce.textContent = "Screen " + n + " of " + total + ". " +
-      "Your agent: " + agentLine(n) + ". " + said.replace(/\s+/g, " ").trim() + extra;
+      "Your agent: " + agentSaid(n) + ". " + said.replace(/\s+/g, " ").trim() + extra;
 
     if (push !== false) {
       try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }
