@@ -585,7 +585,7 @@
       s.push('<line x1="' + f1(b.x + 16) + '" y1="' + f1(ly) + '" x2="' + f1(b.x + 16 + len) + '" y2="' + f1(ly) +
              '" stroke="' + S.muted + '" stroke-width="2" opacity=".35"/>');
     }
-    s.push(label(b.x + b.w / 2, b.y + b.h + 26, "Bound policy", null, { anchor: "middle" }));
+    s.push(label(b.x + b.w / 2, b.y + b.h + 26, "Not bound yet", null, { anchor: "middle" }));
     return s.join("");
   }
 
