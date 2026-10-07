@@ -678,8 +678,8 @@
           : "Below the threshold at " + S.committed + " of 60. " + (NEED - S.committed) + " more needed.");
       } else {
         say(open
-          ? S.committed + " of 60 committed. The threshold of 48 is met."
-          : S.committed + " of 60 committed, " + (NEED - S.committed) + " short of 48.");
+          ? S.committed + " of 60 joined. The threshold of 48 is met."
+          : S.committed + " of 60 joined, " + (NEED - S.committed) + " short of 48.");
       }
       lastOpen = open;
     });
@@ -701,12 +701,12 @@
 
   function altFor(n) {
     var c = S.committed, hollow = HOMES - c;
-    var streetState = "The street with " + c + " of the sixty houses committed: each solid green with a " +
+    var streetState = "The street with " + c + " of the sixty houses joined: each solid green with a " +
       "cleared frontage strip at the road. The remaining " + hollow + " are hollow with dashed edges and no strip. " +
       (c >= NEED
         ? "An amber boundary encloses the whole street, hollow houses included. "
         : "There is no boundary around the street. ") +
-      (S.verified ? "Every committed house carries a small ochre check: the surveyor's mark. " : "");
+      (S.verified ? "Every joined house carries a small ochre check: the surveyor's mark. " : "");
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
         "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
@@ -897,7 +897,7 @@
     if (n === 5) {
       said += " " + (ready()
         ? "Final terms need your approval. Participation " + S.committed + " of 60; verification complete; " +
-          "cost and cover, terms pending. Arranged by the service, paid from the cover it assembles, proposed."
+          "cost and cover, terms pending. Arranged by the service; it earns when coverage starts."
         : missing().join(". ") + ".");
     }
     announce.textContent = "Screen " + n + " of " + total + ". " +
@@ -917,7 +917,7 @@
     S.verified = false;
     lastOpen = null;
     show(1);
-    say("Back to the start. Not joined; 41 of 60 committed; verification pending.");
+    say("Back to the start. Not joined; 41 of 60 joined; verification pending.");
   }
   function next() {
     if (S.screen === total) { restart(); } else { show(S.screen + 1); }
