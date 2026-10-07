@@ -12,9 +12,11 @@
                   household are lit across the four and pulled out onto the
                   path. No table, no score — the differences, named.
        screen 3   from the two clauses the path climbs to ONE quote, lifted
-                  out of the fan as the recommendation — not the cheapest.
-                  The path runs on, quietly, toward the edge. A replay
-                  control runs the read again from the unread fan.
+                  out of the fan as the recommendation, and runs on into
+                  the assistant's reply beside it: her request echoed, then
+                  the reply that names the quote and says why. A replay
+                  control runs the read again from the unread fan; the
+                  reply appears only once the read is complete.
        screen 4   the same path, carried on from the recommendation, meets
                   a wall. The purchase beyond it is the customer's.
 
@@ -210,8 +212,12 @@
      path mid-right, recommendation top-right. The fan and the clause band
      sit in the SAME place on all three screens, so moving between them
      reads as the same sheets changing state, not as a new picture.
-     Portrait: the same beats as bands, top to bottom. CSS px. */
-  function geomFan(W, H, portrait, headEl, mode) {
+     Portrait: the same beats as bands, top to bottom. CSS px.
+     `m` (screen 3, landscape only): measurements paintFan takes from the
+     DOM — the headline's right edge and the height of her echoed message —
+     so the conversation column can be laid out around them. */
+  var ECHO_TOP = 56;   /* the echo's top in landscape; matches the CSS */
+  function geomFan(W, H, portrait, headEl, mode, m) {
     var g = { W: W, H: H, portrait: portrait, mode: mode };
     var s, SW, SH, k, left;
     if (!portrait) {
@@ -244,8 +250,33 @@
       g.edge = { y: g.rec.y + g.rec.h * 0.5 };
       /* screen 1: her message, beside the fan at its height */
       g.msg = { x: g.fanExit.x + 56 * s, cy: g.fanMid };
-      /* screen 3: the reason, under the lifted sheet */
-      g.reason = { x: g.rec.x, y: g.rec.y + g.rec.h + 18, w: Math.max(230, W - 56 - g.rec.x) };
+      /* screen 3: the conversation column, right of the headline. Her echo
+         sits top right (CSS); the lifted sheet goes under it with the reply
+         beside, so the path runs clauses → Quote D → reply. The clause band
+         keeps the place screens 2 and 3 share (computed above from the
+         nominal sheet slot); if the sheet would reach down to the band, the
+         column is pushed right of the clause chips instead. */
+      if (mode === 3) {
+        var colR = W - 56;
+        var headR = (m && m.headR) ? m.headR : 56 + 640;
+        var colL = Math.max(headR + 28, colR - 520);
+        var recY = ECHO_TOP + ((m && m.echoH) || 46) + 30;
+        var c1x = g.cmp.x, chipR = c1x + 14 + 34;
+        if (recY + SH + 16 > y1) {
+          /* the sheet reaches down to the band: keep it right of the chips */
+          colL = Math.max(colL, chipR + 24);
+        } else if (colL < c1x + 24) {
+          /* the sheet sits over the clauses: the path will climb straight
+             up into it from below, so bring the entry 40px inside its edge */
+          colL = Math.max(headR + 28, Math.min(colL, c1x - 40));
+        }
+        colL = Math.min(colL, colR - (SW + 18 + 200));   /* the reply never narrower than 200 */
+        g.rec = { x: colL, y: recY, w: SW, h: SH };
+        g.edge = { y: recY + SH * 0.5 };
+        g.recFromBelow = (colL + 10 <= c1x && c1x <= colL + SW - 10);
+        g.reply = { x: colL + SW + 18, y: recY, w: colR - (colL + SW + 18) };
+        g.echoMax = Math.max(200, colR - colL - 140);   /* clear of the Recommended label */
+      }
       return g;
     }
     /* portrait: bands. On a tablet the recommendation sits beside the two
@@ -324,7 +355,11 @@
     }
     if (mode === 3 && step >= 5) {
       var from = g.portrait ? c2 : c1;
-      if (!g.portrait) {
+      if (!g.portrait && g.recFromBelow) {
+        /* straight up from the first clause into the sheet's bottom edge;
+           the rest of the climb is under the sheet, which is drawn over it */
+        P.push(" L" + f1(from.x) + " " + f1(g.rec.y + g.rec.h) + " L" + f1(from.x) + " " + f1(rIn.y));
+      } else if (!g.portrait) {
         P.push(" C" + f1(from.x) + " " + f1(from.y - 90) + " " + f1(rIn.x - 70) + " " + f1(rIn.y) + " " + f1(rIn.x) + " " + f1(rIn.y));
       } else if (g.side) {
         /* tablet: the recommendation is beside the clauses, so the path
@@ -336,12 +371,16 @@
         P.push(" C" + f1(from.x) + " " + f1(from.y + 120) + " " + f1(rIn.x - 60) + " " + f1(rIn.y) + " " + f1(rIn.x) + " " + f1(rIn.y));
       }
       P.push(" L" + f1(rOut.x) + " " + f1(rOut.y));
+      /* landscape: on from the sheet into the reply beside it (the bubble
+         sits over the SVG, so the line runs a little way under its edge) */
+      if (g.reply) { P.push(" L" + f1(g.reply.x + 8) + " " + f1(rOut.y)); }
     }
     if (P.length) {
       s.push('<path d="' + P.join("") + '" fill="none" stroke="' + S.aihi + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>');
     }
-    /* the quiet callback: the path keeps going, and fades before the edge */
-    if (mode === 3 && step >= 5) {
+    /* the quiet callback (portrait, where the reply is below the drawing):
+       the path keeps going, and fades before the edge */
+    if (mode === 3 && step >= 5 && !g.reply) {
       s.push('<linearGradient id="' + p + 'fade" gradientUnits="userSpaceOnUse" x1="' + f1(rOut.x) + '" y1="0" x2="' + f1(g.W) + '" y2="0">' +
              '<stop offset="0" stop-color="' + S.aihi + '" stop-opacity="1"/><stop offset="1" stop-color="' + S.aihi + '" stop-opacity="0"/></linearGradient>');
       s.push('<line x1="' + f1(rOut.x) + '" y1="' + f1(rOut.y) + '" x2="' + f1(g.W + 2) + '" y2="' + f1(rOut.y) +
@@ -395,21 +434,30 @@
     if (step >= 5) {
       var r = g.rec;
       s.push(quoteSheet(p, SW, SH, { x: r.x, y: r.y, a: 0 }, QUOTES[3], { paper: true, garage: true, claim: true, title: true }));
-      var rx = g.portrait ? Math.max(12, r.x + r.w - 290) : Math.min(r.x, g.W - 12 - 290);
-      s.push(label(rx, r.y - 18, "Recommended", "not the cheapest", { size: 18 }));
+      s.push(label(r.x, r.y - 18, "Recommended", null, { size: 18 }));
     }
     return s.join("");
   }
 
   /* lay one fan screen out: size its SVG, draw it, and place the HTML
-     objects that belong to the drawing (her message, the reason) */
+     objects that belong to the drawing (her message, the conversation) */
   function paintFan(el, headEl, mode, step) {
     if (!el) { return; }
     var portrait = isPortrait();
     var box = el.getBoundingClientRect();
     var W = Math.max(280, Math.round(portrait ? box.width : window.innerWidth));
     var H = Math.round(window.innerHeight);
-    var g = geomFan(W, H, portrait, headEl, mode);
+    /* screen 3, landscape: the column is laid out around the headline and
+       her echo. Two passes — the first sizes the echo's box, the second
+       takes its height. */
+    var m = null;
+    if (mode === 3 && !portrait && echoEl) {
+      var hl = headEl && headEl.querySelector(".fm-headline");
+      m = { headR: hl ? hl.getBoundingClientRect().right : 0, echoH: 0 };
+      echoEl.style.maxWidth = f1(geomFan(W, H, portrait, headEl, mode, m).echoMax) + "px";
+      m.echoH = echoEl.offsetHeight;
+    } else if (mode === 3 && echoEl) { echoEl.style.maxWidth = ""; }
+    var g = geomFan(W, H, portrait, headEl, mode, m);
     if (portrait) { el.style.height = Math.round(g.H) + "px"; H = g.H; }
     else { el.style.height = ""; }
     el.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
@@ -433,13 +481,15 @@
         evidenceEl.style.width = f1(g.fanBox.w) + "px";
       }
     }
-    if (mode === 3 && reasonEl) {
-      reasonEl.classList.toggle("is-off", step < 5);
-      if (portrait) { reasonEl.style.left = reasonEl.style.top = reasonEl.style.width = ""; }
+    /* the reply: beside the lifted sheet in landscape, in flow under the
+       drawing in portrait; hidden until the read completes */
+    if (mode === 3 && replyEl) {
+      replyEl.classList.toggle("is-off", step < 5);
+      if (portrait || !g.reply) { replyEl.style.left = replyEl.style.top = replyEl.style.width = ""; }
       else {
-        reasonEl.style.left = f1(g.reason.x) + "px";
-        reasonEl.style.top = f1(g.reason.y) + "px";
-        reasonEl.style.width = f1(g.reason.w) + "px";
+        replyEl.style.left = f1(g.reply.x) + "px";
+        replyEl.style.top = f1(g.reply.y) + "px";
+        replyEl.style.width = f1(g.reply.w) + "px";
       }
     }
   }
@@ -448,7 +498,8 @@
   var scene2El = document.getElementById("scene2"), head2El = document.getElementById("s2-head");
   var scene3El = document.getElementById("scene3"), head3El = document.getElementById("s3-head");
   var msgEl = document.getElementById("s1-msg");
-  var reasonEl = document.getElementById("s3-reason");
+  var echoEl = document.getElementById("s3-echo");
+  var replyEl = document.getElementById("s3-reply");
 
   /* ── EVIDENCE INTEGRATION POINT (see the comment on #fm-evidence in
      index.html). The figure is born hidden and stays hidden unless the
@@ -628,7 +679,8 @@
     "Garage exclusion: found in two of the four, Quote B and Quote C.",
     "Prior claim: rated differently by each of the four.",
     "Ranked against her needs, not just the price. The cheapest, Quote C, came third.",
-    "Recommended: Quote D, not the cheapest. Covers the garage. Prior claim rated."
+    /* the reply, as it appears on the glass */
+    "Quote D. It covers the garage, and its treatment of your prior claim is acceptable. Quote C is cheapest, but it excludes the garage — ranked third."
   ];
 
   function paintRead() {

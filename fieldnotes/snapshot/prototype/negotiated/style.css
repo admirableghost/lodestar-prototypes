@@ -390,6 +390,14 @@ input[type="range"]::-moz-range-thumb {
   font: 600 16px/1 var(--sans); cursor: pointer; white-space: nowrap;
 }
 .cta:hover { background: #31473B; border-color: #31473B; }
+/* While a screen's own action is still to be taken (screen 2 until joined,
+   screen 4 until verified) Next steps aside: paper, not ink, so the one
+   dark button in view is the customer's action. Same size, same label;
+   app.js paint() toggles the class. */
+.cta--quiet, .chrome .cta--quiet {
+  background: var(--paper); color: var(--edition-ink); border-color: var(--edition-ink);
+}
+.cta--quiet:hover, .chrome .cta--quiet:hover { background: var(--edition-wash); border-color: var(--edition-ink); }
 
 /* ── .gw, the ground window ───────────────────────────────────────────
    In the sibling prototype this is a phone-only device: the hole the ground
@@ -1050,10 +1058,12 @@ body { background: var(--paper); }
   border-top: 1.5px solid var(--edition-ink);
 }
 /* the action: ink on paper, the deck's primary-button vocabulary, full width
-   of the sheet so it reads as the sheet's signature line */
+   of the sheet so it reads as the sheet's signature line. It is the PRIMARY
+   control of screen 2 — taller and heavier than the chrome's Next (46px,
+   16px), which goes quiet on this screen until it is pressed. */
 .jbtn {
   display: flex; align-items: center; justify-content: center; width: 100%;
-  min-height: 52px; padding: 0 20px;
+  min-height: 56px; padding: 0 20px;
   background: var(--edition-ink); color: var(--paper);
   border: 2px solid var(--edition-ink); border-radius: var(--r-m);
   box-shadow: 0 10px 24px -16px rgba(22,21,15,.55);
@@ -1073,22 +1083,24 @@ body { background: var(--paper); }
 /* the tether is artwork in the pins layer: fixed, full-window, no events */
 .tether { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
 
-/* ── screen 4 · the toggle and its note ─────────────────────────────────
-   One control. Pressed, it fills — like the thumb on screen 3 — and the
-   note under it says what the illustration is. */
+/* ── screen 4 · the toggle ──────────────────────────────────────────────
+   One control, and the PRIMARY control of the screen: ink on paper like
+   #join, taller and heavier than the chrome's Next, which goes quiet here
+   until it is pressed. Pressed, it takes the surveyor's ochre — like the
+   thumb on screen 3 — and the hollow dashed mark becomes a solid check. */
 .plate--verify { max-width: 460px; justify-self: end; align-items: flex-start; }
 .vbtn {
   display: inline-flex; align-items: center; gap: 12px;
-  min-height: 52px; padding: 0 20px 0 14px;
-  background: var(--paper); color: var(--edition-ink);
+  min-height: 56px; padding: 0 20px 0 14px;
+  background: var(--edition-ink); color: var(--paper);
   border: 2px solid var(--edition-ink); border-radius: var(--r-m);
   box-shadow: 0 10px 24px -16px rgba(22,21,15,.55);
   font: 700 clamp(18px, .45vw + 1vh, 21px)/1.2 var(--sans);
   text-align: left; cursor: pointer; white-space: normal;
 }
-.vbtn:hover { background: var(--edition-wash); }
+.vbtn:hover { background: #31473B; border-color: #31473B; }
 .vbtn-mark { width: 24px; height: 24px; flex: 0 0 auto; }
-.vbtn-mark circle { fill: var(--paper); stroke: var(--edition-ink); stroke-width: 1.8; stroke-dasharray: 3 2.4; }
+.vbtn-mark circle { fill: none; stroke: var(--paper); stroke-width: 1.8; stroke-dasharray: 3 2.4; }
 .vbtn-mark path { fill: none; stroke: none; }
 .vbtn[aria-pressed="true"] { background: var(--survey); border-color: var(--survey); color: var(--paper); }
 .vbtn[aria-pressed="true"]:hover { background: #6A4D12; }
@@ -1141,7 +1153,10 @@ body { background: var(--paper); }
 .xcons--arr { max-width: 30ch; display: inline-grid; gap: .15em; text-wrap: initial; }
 .xcons--arr span { display: block; }
 .screen--arr[data-state="pending"] .xcons--arr { color: var(--warn); font-weight: 700; }
-.screen--arr[data-state="ready"]   .xcons--arr { color: var(--green); font-weight: 700; }
+/* the ready line names the offer's shape in one line of three parts
+   ("Coverage for participating homes · three years · while 48 stay in");
+   a little wider than the pending list so it breaks at the dots */
+.screen--arr[data-state="ready"]   .xcons--arr { color: var(--green); font-weight: 700; max-width: 36ch; text-wrap: balance; }
 /* the ready state's one further line: who arranged it and how it is paid,
    marked proposed. Regular weight and the plain ink, under the green line,
    so it reads as a note on the proposal and not as a second verdict. */
@@ -1185,14 +1200,15 @@ body { background: var(--paper); }
   .tm { font-size: 18px; }
   .sheet { gap: 7px; }
   .sheet-act { margin-top: 10px; padding-top: 9px; }
-  .jbtn, .joined { font-size: 18px; min-height: 46px; }
+  /* still a step above the 46px chrome, so the action stays the larger button */
+  .jbtn, .joined { font-size: 18px; min-height: 50px; }
   .plate--agree { padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9) calc(var(--x-gap) * .7); }
   .xcons--prov { font-size: 16px; }
   .step { padding-top: calc(var(--x-gap) * .45); padding-bottom: calc(var(--x-gap) * .5); }
   .step-mark { top: calc(var(--x-gap) * .45 - 1px); }
   .step-val { font-size: 18px; }
   .step-state { margin-top: 6px; }
-  .vbtn { min-height: 48px; }
+  .vbtn { min-height: 50px; }
 }
 
 /* ── narrow: stacked ─────────────────────────────────────────────────────── */

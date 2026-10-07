@@ -27,12 +27,12 @@
 
    THE STATE OBJECT — one source of truth,
    S = { screen, joined, committed, verified }
-   · joined starts false and is set ONLY by #join on screen 2: the household
-     authorises its agent to DEVELOP the proposal. It is never acceptance of
-     terms — no contribution, price or acceptance mechanism exists in any
-     source, so there is no acceptance flag because there is nothing to
-     accept yet. Joining moves committed from 41 (the others) to 42 (the
-     others plus no. 31).
+   · joined starts false and is set ONLY by #join on screen 2: Maggie
+     (no. 31) authorises her agent to ASSEMBLE the proposal. It is never
+     acceptance of terms — no contribution, price or acceptance mechanism
+     exists in any source, so there is no acceptance flag because there is
+     nothing to accept yet. Joining moves committed from 41 (the others) to
+     42 (the others plus no. 31).
    · committed starts at 41 and is otherwise moved ONLY by the slider on
      screen 3 — floor 42 when joined, 41 when not (no. 31 stays hollow and
      the ceiling is 59, because no. 31 is not among the others). It is
@@ -41,10 +41,15 @@
      screen 4.
    · "Back to the start" from screen 5 is the one action that resets all
      three.
-   · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is a
-     successful collective proposal with final terms pending — nothing on
-     the screen says in force, active, signed or begun. Pressing Next never
-     produces "ready"; only the two facts do.
+   · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is an
+     offer Maggie could not get alone — coverage for participating homes,
+     three years, while 48 stay in — with her share and premium still to be
+     set and accepted. Nothing on the screen says in force, active, signed
+     or begun. Pressing Next never produces "ready"; only the two facts do.
+   · DISCOVERABILITY: the customer action is the primary control on its
+     screen. The chrome's Next is a quiet paper button on screen 2 until
+     #join is pressed and on screen 4 until #verify-toggle is pressed
+     (paint() toggles .cta--quiet); it never performs either action.
 
    DEEP LINKS — five screens, #s/1 … #s/5. The three-screen build's links
    map as: old #s/1 → 1 (unchanged), old #s/2 (the threshold) → #s/3, old
@@ -69,8 +74,9 @@
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
   var S = { screen: 1, joined: false, committed: START, verified: false };
-  /* the street is READY — participation reached and verified — with final
-     terms pending. Not "in force": there are no terms to be in force yet. */
+  /* the street is READY — participation reached and verified — and holds
+     an offer Maggie could not get alone, her share and premium still to be
+     set and accepted. Not "in force": there are no terms to be in force yet. */
   function ready() { return S.committed >= NEED && S.verified; }
   /* the slider's bounds follow `joined`: no. 31 is counted only once she
      has authorised, so the others alone can never number sixty */
@@ -442,11 +448,11 @@
     return { cls: cls, label: label, wx: hcx(i), wy: hcy(i), dy: dy };
   }
   function pinSet(n) {
-    /* Screen 1 carries one artwork label: no. 31. Screen 5, once the
-       street is ready, labels one house that has not joined — the next in
-       the commitment order, which is where a run of committed frontage
-       breaks. At sixty there is no such house and no label. */
-    if (n === 1) { return [pinAt("ink", "No. 31 · prepared", ROSA, -44)]; }
+    /* Screen 1 carries one artwork label: Maggie's home, no. 31. Screen 5,
+       once the street is ready, labels one house that has not joined — the
+       next in the commitment order, which is where a run of committed
+       frontage breaks. At sixty there is no such house and no label. */
+    if (n === 1) { return [pinAt("ink", "Maggie's home · No. 31", ROSA, -44)]; }
     if (n === 5 && ready() && S.committed < HOMES) {
       /* the first house outside the set, in the commitment order. When she
          never authorised, that house is no. 31 herself. */
@@ -565,6 +571,7 @@
   var arrProv = document.getElementById("arr-prov");
   var arrStatus = document.getElementById("arr-status");
   var arrN = document.getElementById("arr-n");
+  var nextBtnEl = document.getElementById("next");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
                "eight", "nine", "ten", "eleven", "twelve"];
@@ -627,13 +634,17 @@
     if (verState) { verState.textContent = S.verified ? "Verified" : "Pending"; }
     if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
 
-    /* screen 5 — derived. Ready: the proposal stands, final terms pending.
-       The three status chips name what is settled (participation, the
-       live count; verification) and what is not (cost and cover). */
+    /* screen 5 — derived. Ready: the street holds an offer Maggie could
+       not get alone; the line names its shape (coverage for participating
+       homes, three years, while 48 stay in). The three status chips name
+       what is settled (participation, the live count; verification) and
+       what is not (her share and premium — set before she accepts). */
     if (arrHead && arrLine) {
       if (ready()) {
-        arrHead.innerHTML = spans(["The street", "is ready."]);
-        arrLine.innerHTML = spans(["Final terms need your approval."]);
+        arrHead.innerHTML = spans(["An offer Maggie", "couldn't get alone."]);
+        /* the dots stay with the word before them, so a wrapped line never
+           opens with a separator */
+        arrLine.innerHTML = spans(["Coverage for participating homes · three years · while 48 stay in"]);
       } else {
         arrHead.innerHTML = spans(["Still pending."]);
         arrLine.innerHTML = spans(missing());
@@ -642,6 +653,14 @@
       if (arrStatus) { arrStatus.hidden = !ready(); }
       if (arrN) { arrN.textContent = String(S.committed); }
       screens[4].dataset.state = ready() ? "ready" : "pending";
+    }
+
+    /* chrome — Next steps aside while the screen's own action is still to
+       be taken: quiet paper on screen 2 until joined, on screen 4 until
+       verified. Its label and behaviour never change; only its weight. */
+    if (nextBtnEl) {
+      nextBtnEl.classList.toggle("cta--quiet",
+        (S.screen === 2 && !S.joined) || (S.screen === 4 && !S.verified));
     }
   }
 
@@ -652,10 +671,10 @@
     refit();
   }
 
-  /* #join — the household authorises its agent to develop the proposal.
-     The only thing that sets `joined`; it counts no. 31 in. It accepts
-     nothing: the cost is set before acceptance, and acceptance is not
-     modelled because nothing exists to accept. */
+  /* #join — Maggie authorises her agent to assemble the proposal. The only
+     thing that sets `joined`; it counts no. 31 in. It accepts nothing: her
+     share is set before she accepts, and acceptance is not modelled because
+     nothing exists to accept. */
   if (joinBtn) {
     joinBtn.addEventListener("click", function () {
       if (S.joined) { return; }
@@ -710,12 +729,12 @@
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
         "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
-        "hollow with a dashed edge except number 31, which is solid and ringed: the one prepared " +
-        "home, labelled “No. 31, prepared”. It has hardened its own lot and still has no offer, " +
-        "because the street around it sets the price.";
+        "hollow with a dashed edge except number 31, Maggie's home, which is solid and ringed and " +
+        "labelled “Maggie's home, No. 31”. She has hardened her own lot and still has no offer, " +
+        "because the street around her sets the price.";
     }
     if (n === 2) {
-      return "Close on number 31, ringed, and the houses either side of it. " +
+      return "Close on number 31, Maggie's home, ringed, and the houses either side of it. " +
         (S.joined
           ? "Number 31 is solid: she has joined, and the count is " + c + " of sixty. "
           : "Number 31 is hollow with a dashed edge: she has not joined; " + c + " others are solid. ") +
@@ -724,7 +743,7 @@
     if (n === 3) { return streetState; }
     if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
     return streetState + (ready()
-      ? "The street is ready and final terms are pending" +
+      ? "The street holds an offer Maggie could not get alone; her share and premium are set before she accepts" +
         (c < HOMES ? "; one house that has not joined is labelled “outside the arrangement”." : ".")
       : "The street is still pending.");
   }
@@ -896,8 +915,9 @@
       : sc.dataset.label;
     if (n === 5) {
       said += " " + (ready()
-        ? "Final terms need your approval. Participation " + S.committed + " of 60; verification complete; " +
-          "cost and cover, terms pending. Arranged by the service; it earns when coverage starts."
+        ? "Coverage for participating homes, three years, while 48 stay in. Participation " + S.committed +
+          " of 60; verification complete; your share and premium, set before you accept. " +
+          "Arranged by the service; it earns when coverage starts."
         : missing().join(". ") + ".");
     }
     announce.textContent = "Screen " + n + " of " + total + ". " +

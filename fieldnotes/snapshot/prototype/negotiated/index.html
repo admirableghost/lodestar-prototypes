@@ -40,27 +40,34 @@
 
 <!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
      1 acting alone fails · 2 the deal, before joining · 3 the street reaches
-     the threshold · 4 participation is not the final condition · 5 the
-     street is ready and final terms need approval (or it is still pending).
+     the threshold · 4 participation is not the final condition · 5 an offer
+     Maggie couldn't get alone, her share and premium set before she
+     accepts (or it is still pending).
      Copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md,
      NEGOTIATED). Everything the facilitator says aloud lives in
      FACILITATOR-NOTES.md, not here. Empty space is the street showing
      through, and is deliberate.
 
      STATE — one object in app.js: { screen, joined, committed, verified }.
-     `joined` means the household has authorised its agent to DEVELOP the
-     proposal — never that it has accepted terms: no contribution, price or
-     acceptance mechanism exists in any source, so there is nothing to
-     accept yet. It is false on entry and set only by the #join button on
-     screen 2, which also moves `committed` from 41 (the others) to 42 (the
-     others plus no. 31). `committed` is moved otherwise only by the slider
-     on screen 3 — floor 42 when joined, 41 when not — and never reset by
-     navigation; `verified` is false until the surveyor control on screen 4
-     is pressed. Only "Back to the start" from screen 5 resets all three.
-     Screen 5 is DERIVED: ready = committed ≥ 48 AND verified, and "ready"
-     means the collective proposal stands with final terms pending — never
-     that anything is in force. Nothing on screen 5 is ever reached merely
-     by pressing Next. -->
+     `joined` means the household (Maggie, no. 31) has authorised its agent
+     to ASSEMBLE the proposal — never that it has accepted terms: no
+     contribution, price or acceptance mechanism exists in any source, so
+     there is nothing to accept yet. It is false on entry and set only by
+     the #join button on screen 2, which also moves `committed` from 41 (the
+     others) to 42 (the others plus no. 31). `committed` is moved otherwise
+     only by the slider on screen 3 — floor 42 when joined, 41 when not —
+     and never reset by navigation; `verified` is false until the surveyor
+     control on screen 4 is pressed. Only "Back to the start" from screen 5
+     resets all three. Screen 5 is DERIVED: ready = committed ≥ 48 AND
+     verified, and "ready" means the street holds a conditional offer with
+     Maggie's share and premium still to be set and accepted — never that
+     anything is in force. Nothing on screen 5 is ever reached merely by
+     pressing Next.
+
+     DISCOVERABILITY — the customer action is the primary control on its
+     screen: #join on screen 2 and #verify-toggle on screen 4 are the dark
+     buttons; the chrome's Next drops to a quiet paper button on those two
+     screens until the action has been taken (app.js, paint()). -->
 <main class="deck" id="deck">
 
 <!-- ══════ 1 · ACTING ALONE ══════ -->
@@ -76,15 +83,21 @@
 </section>
 
 <!-- ══════ 2 · THE DEAL, BEFORE JOINING ══════
-     ONE THOUGHT: a household sees the terms and the protection that would
-     follow BEFORE committing anything. One terms sheet, tied to no. 31's
-     roof by a line, five terms, no amounts, and ONE action: the household
-     authorises its agent to develop the proposal. Joining is not acceptance
-     of a price — the cost line says it is set before acceptance, and cover
-     starts only once the work is verified AND terms are accepted. The agent
-     assembles participation; it does not invent terms or sign for anyone
-     else. The street shows what the count says: 41 others already in,
-     no. 31 hollow until she joins. -->
+     ONE THOUGHT: Maggie sees the terms and the coverage that would follow
+     BEFORE committing anything. One terms sheet, tied to no. 31's roof by
+     a line, five terms, no amounts, and ONE action: she authorises her
+     agent to assemble the proposal. Joining is not acceptance of a price —
+     her share is set before she accepts; the financing is a REPAYMENT (the
+     fund pays contractors now; she repays on her property bill over twelve
+     years), not a grant; the coverage is for participating homes, never
+     "one master policy"; and it starts only after verified work and
+     accepted terms. The agent assembles participation; it does not invent
+     terms or sign for anyone else. The street shows what the count says:
+     41 others already in, no. 31 hollow until she joins.
+     WORDS: exactly 60 on the gate. The Financing value is the compressed
+     form of "the fund pays contractors now; you repay on your property
+     bill over twelve years" (63 on the gate) — every noun kept, the
+     repayment kept, three function words dropped. -->
 <section class="screen screen--deal" data-screen="2" data-label="The deal" data-cam="deal" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
@@ -95,15 +108,15 @@
        each with the mark of the party that carries it (households green,
        fund plum, carrier blue, surveyor ochre), then the one action. -->
   <div class="plate plate--agree" id="deal-card" style="grid-area:1/8/9/13">
-    <dl class="sheet" aria-label="The terms attached to no. 31">
+    <dl class="sheet" aria-label="The terms attached to Maggie's home, no. 31">
       <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Work</dt> <dd>harden your lot</dd></div>
-      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Cost to you</dt> <dd>set before acceptance</dd></div>
-      <div class="tm tm--fund"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Financing</dt> <dd>fund pays now, repaid on the bill over twelve years</dd></div>
-      <div class="tm tm--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Protection</dt> <dd>one street risk, three years, while 48 stay in</dd></div>
-      <div class="tm tm--survey"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Cover starts</dt> <dd>work verified, terms accepted</dd></div>
+      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Your share</dt> <dd>set before you accept</dd></div>
+      <div class="tm tm--fund"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Financing</dt> <dd>fund pays contractors now; repaid via property bill over twelve years</dd></div>
+      <div class="tm tm--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Coverage</dt> <dd>for participating homes, three years, while 48 stay in</dd></div>
+      <div class="tm tm--survey"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Starts</dt> <dd>after verified work and accepted terms</dd></div>
     </dl>
     <div class="sheet-act">
-      <button type="button" class="jbtn" id="join">Authorise my agent to develop the proposal</button>
+      <button type="button" class="jbtn" id="join">Authorise my agent to assemble the proposal</button>
       <!-- the count is written by paint() from S.committed, so the result
            line and the street can never disagree -->
       <p class="joined" id="joined" hidden><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>Joined the proposal · <span id="joined-n">42</span> of 60</span></p>
@@ -194,17 +207,19 @@
 
 <!-- ══════ 5 · THE STREET, READY OR PENDING ══════
      DERIVED, never navigated into: ready = committed ≥ 48 AND verified.
-     "Ready" is a successful collective proposal with FINAL TERMS PENDING:
-     no contribution, price or acceptance exists in any source, so nothing
-     here may say in force, active, signed or begun. Headline, state line,
-     the three status chips, the boundary and the "outside the arrangement"
-     label are all written by app.js from the state object. -->
+     "Ready" is an offer Maggie could not get alone — coverage for
+     participating homes, three years, while 48 stay in — with her SHARE
+     AND PREMIUM still to be set and accepted: no contribution, price or
+     acceptance exists in any source, so nothing here may say in force,
+     active, signed or begun. Headline, state line, the live count in the
+     chips, the boundary and the "outside the arrangement" label are all
+     written by app.js from the state object. -->
 <section class="screen screen--arr" data-screen="5" data-label="The street" data-cam="ready" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
     <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification pending</span></p>
-    <!-- READY state only: who arranged it and how it is paid, marked proposed -->
+    <!-- READY state only: who arranged it and when it earns -->
     <p class="xcons xcons--prov" id="arr-prov" hidden>Arranged by the service · earns when coverage starts</p>
   </div>
 
@@ -227,8 +242,8 @@
       </li>
       <li class="step" data-state="pending">
         <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-        <p class="step-name">Cost and cover</p>
-        <p class="step-val">terms pending</p>
+        <p class="step-name">Your share and premium</p>
+        <p class="step-val">set before you accept</p>
       </li>
     </ol>
     <p class="leg leg--chip">

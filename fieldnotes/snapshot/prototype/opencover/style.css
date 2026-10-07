@@ -987,6 +987,22 @@ body { background: var(--paper); color: var(--edition-ink); }
 }
 .screen.oc > * { min-width: 0; }
 
+/* ── the agent strip: one line, top left, the same place on every screen,
+   in the agent's plum, under a hairline so it reads as a strip and not as
+   a second eyebrow. The mark is the reading lens from screen 2's drawing.
+   Painted by paintAgent() from the purchase state. ─────────────────────── */
+.agent {
+  flex: 0 0 auto; margin: 0; display: flex; align-items: center; gap: .45em;
+  padding-bottom: calc(8px * var(--k));
+  border-bottom: 1px solid color-mix(in srgb, var(--plum) 35%, transparent);
+  font: 400 max(18px, calc(18px * var(--k)))/1.3 var(--sans);
+  color: var(--plum); letter-spacing: -.005em;
+}
+.agent b { font-weight: 700; }
+.agent-sep { color: color-mix(in srgb, var(--plum) 55%, transparent); }
+.agent-mark { flex: 0 0 auto; width: 1.15em; height: 1.15em; }
+.agent-t { min-width: 0; }
+
 /* ── head: eyebrow, the headline on its own backing, one line at the right ── */
 .oc-head {
   display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
@@ -1038,6 +1054,14 @@ body { background: var(--paper); color: var(--edition-ink); }
   color: var(--plum);
 }
 .oc-dot { flex: 0 0 auto; width: .55em; height: .55em; border-radius: 50%; background: var(--plum); }
+/* screen 3's foot is the agent's reason for each offer: a longer line, so
+   it runs a step smaller than a state word and the dot sits on its first
+   line when it wraps */
+.oc-state--why {
+  align-items: flex-start;
+  font-size: clamp(18px, calc((.5vw + .85vh) * var(--k)), 22px);
+}
+.oc-state--why .oc-dot { margin-top: .4em; }
 
 /* ══ SCREEN 1 · her standing instructions, in three groups ══════════════
    One object: a note she owns, on the warm boundary rule. Three groups
@@ -1205,9 +1229,10 @@ body { background: var(--paper); color: var(--edition-ink); }
   background: var(--warm); transform: rotate(45deg); vertical-align: .02em;
 }
 
-/* ══ SCREEN 4 · the purchase, in three steps, simulated ═════════════════
+/* ══ SCREEN 4 · the purchase, in three steps ════════════════════════════
    The steps are the object. Each is a drawing over a title; the mark before
-   the title is hollow until the step is done. One action under the rail. */
+   the title is hollow until the step is done. One action under the rail,
+   and it is the primary control of the screen. */
 .oc4-scene { justify-content: center; gap: calc(26px * var(--k)); }
 .steps {
   margin: 0; padding: 0; list-style: none;
@@ -1242,9 +1267,9 @@ body { background: var(--paper); color: var(--edition-ink); }
 .step[data-done="1"] .step-new { fill: #8A3450; }
 .step[data-done="1"] .step-now { stroke: #8A3450; stroke-dasharray: none; }
 .step .step-seal, .step .step-new, .step .step-now { transition: fill .25s linear, stroke .25s linear; }
-/* the old cover runs on with no end (to the drawing's edge) until the
+/* the old coverage runs on with no end (to the drawing's edge) until the
    CONFIRMATION step is done; only then does it end — at 138, after the
-   mark at 104 the new cover starts at. The end is a sibling rule on the
+   mark at 104 the new coverage starts at. The end is a sibling rule on the
    confirmation step's data-done, so it cannot be drawn before that mark
    fills, whatever order timers fire in. */
 .step-old { width: 200px; transition: width .25s linear; }
@@ -1261,6 +1286,18 @@ body { background: var(--paper); color: var(--edition-ink); }
   cursor: pointer;
 }
 .buy:hover { background: #2E2C24; border-color: #2E2C24; }
+/* #buy is the ONE purchase and the primary control of screen 4: taller and
+   heavier than any chrome button, and while it is available the chrome's
+   Next steps back to a secondary (body[data-primary="buy"], set by app.js
+   markPrimary()). After the purchase, Next is the way on and is primary
+   again. */
+.buy-row .buy {
+  min-height: 64px; padding: 0 40px;
+  font-size: max(20px, calc(22px * var(--k)));
+  box-shadow: 0 10px 0 -3px color-mix(in srgb, var(--edition-ink) 28%, transparent);
+}
+body[data-primary="buy"] .cta { background: var(--sheet); color: var(--edition-ink); border-color: var(--edition-ink); }
+body[data-primary="buy"] .cta:hover { background: var(--edition-wash); border-color: var(--edition-ink); }
 .bought {
   margin: 0; display: inline-flex; align-items: center; gap: .5em;
   min-height: 56px; padding: 0 22px 0 16px;
@@ -1328,6 +1365,11 @@ body { background: var(--paper); color: var(--edition-ink); }
 @media (max-width: 899px) {
   .screen.oc { gap: 14px; padding-bottom: 16px; }
   .screen.oc .oc-headline { font-size: clamp(28px, 7.4vw, 44px); }
+  /* the text wraps beside the mark, never under it */
+  .agent { padding-bottom: 6px; align-items: flex-start; }
+  .agent-mark { margin-top: .08em; }
+  .oc-state--why { font-size: 18px; }
+  .buy-row .buy { min-height: 60px; padding: 0 24px; }
   .oc-head { align-items: flex-start; }
   .oc-micro, .oc3-id { text-align: left; }
   .oc-scene { flex: 0 0 auto; justify-content: flex-start; }

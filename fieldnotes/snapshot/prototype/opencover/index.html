@@ -52,13 +52,22 @@
      the copy and state contract, verbatim, nothing added.
      1 — her priorities and her permission: three groups, one object.
      2 — the offer, with its remedy, published for an agent to read.
-     3 — the best fit inside her rules; recommended, not bought.
+     3 — the best fit inside her rules; recommended, with the agent's
+         one-line reason for each offer; not bought.
      4 — her instructions become a permitted purchase: the ONE place a
          purchase is made, as a snapshot of the offer's terms.
      5 — eleven months on: nothing to check until something was bought;
-         once bought, the promise is checked against performance.
+         once bought: covered, watched, remedied — the promise checked
+         against performance, the remedy applied.
+     "Coverage", never "cover", wherever the noun is on the glass.
      Everything else is said aloud by the facilitator
      (design-study/brief-align/opencover/FACILITATOR-NOTES.md).
+
+     THE AGENT STRIP. One line, the same place on every screen (top left,
+     above the eyebrow), painted by paintAgent() from the purchase state:
+     what her agent is doing at this beat. It is the thread that makes the
+     five screens one relationship — your protection, your agent — and it
+     counts toward each screen's sixty words.
 
      DEEP LINKS. The hashes are #s/1 … #s/5 for the five screens above.
      Links minted for the three-screen build map by BEAT, not by number:
@@ -76,6 +85,8 @@
      the one number the agent tests before it buys or switches. "Never
      lapse" is HER requirement of the agent, not a guarantee by anyone. -->
 <section class="screen oc oc1" data-screen="1" data-label="What she sets" data-cam="set" data-veil="soft">
+
+  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="1"></span></p>
 
   <header class="oc-head">
     <div class="oc-title">
@@ -140,6 +151,8 @@
      settlement promise. Published here; checked on screen 5. -->
 <section class="screen oc oc2" data-screen="2" data-label="The offer" data-cam="offers" data-veil="">
 
+  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="2"></span></p>
+
   <header class="oc-head">
     <div class="oc-title">
       <p class="oc-eyebrow">02 / The offer</p>
@@ -180,16 +193,23 @@
 <!-- ══════ 3 · THE BEST FIT INSIDE HER RULES ══════
      Eligibility is the hard filter; the preference only decides which term
      each offer shows and the order the three are ranked in. The eligible
-     offer is RECOMMENDED here. Nothing is bought on this screen. -->
+     offer is RECOMMENDED here, and the foot line is the agent's one-line
+     reason for each of the three (OC[*].explain). Nothing is bought on
+     this screen. -->
 <section class="screen oc oc3" data-screen="3" data-label="The choice" data-cam="offers" data-veil="">
+
+  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="3"></span></p>
 
   <header class="oc-head">
     <div class="oc-title">
       <p class="oc-eyebrow">03 / The choice</p>
       <h2 class="display oc-headline" tabindex="-1">The best fit inside her rules.</h2>
     </div>
+    <!-- the group's name is for assistive tech only: with the agent strip
+         and the agent's reason line, the three cards leave the sixty words
+         no room for a visible label the buttons do not need -->
     <div class="rank" role="group" aria-labelledby="rank-l">
-      <p class="rank-l" id="rank-l">Rank on</p>
+      <p class="rank-l sr-only" id="rank-l">Rank on</p>
       <div class="xchoice">
         <button type="button" data-pref="price"  aria-pressed="true">Price</button>
         <button type="button" data-pref="excl"   aria-pressed="false">Fewest exclusions</button>
@@ -202,10 +222,11 @@
     <!-- painted by paintCompare() -->
   </div>
 
-  <!-- the foot line reads the purchase (paintCompare): recommended until
-       #buy on screen 4; after it, ranking is presentation only -->
+  <!-- the foot line reads the purchase (paintCompare): until #buy on
+       screen 4 it is the agent's reason for each offer; after it, ranking
+       is presentation only and the line says so -->
   <footer class="oc-line oc3-foot-line">
-    <p class="oc-state"><span class="oc-dot" aria-hidden="true"></span><span id="s3-state">Recommended. Not bought yet.</span></p>
+    <p class="oc-state oc-state--why"><span class="oc-dot" aria-hidden="true"></span><span id="s3-state">Meridian fits all three rules. Candlewick excludes Rosa. Pell &amp; Roe's excess is 900.</span></p>
   </footer>
 
 </section>
@@ -214,15 +235,19 @@
      Three steps, one action. #buy is the ONE place a purchase is made: it
      copies the recommended offer's name and terms into S.purchase (a
      snapshot) if permitted(). The marks fill in order — permission, then
-     confirmation, then cover — and the prior cover is never cancelled
-     before the insurer confirms: step three's old-cover bar runs on with
+     confirmation, then coverage — and the prior coverage is never cancelled
+     before the insurer confirms: step three's old-coverage bar runs on with
      no end until the confirmation step is done (a stylesheet sibling rule
      on data-done, so timing cannot draw the end first). Her standing
      permission and the offer's published terms are what let the agent
      complete this without her — identity and payment are on file, the
      requirements are met, not waived. No external transaction is made
-     (provenance and build status: FACILITATOR-NOTES.md). -->
+     (provenance and build status: FACILITATOR-NOTES.md).
+     #buy is the PRIMARY control here: while it is available the chrome's
+     Next is drawn as a secondary (body[data-primary="buy"]). -->
 <section class="screen oc oc4" data-screen="4" data-label="The purchase" data-cam="offers" data-veil="soft">
+
+  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="4"></span></p>
 
   <header class="oc-head">
     <div class="oc-title">
@@ -262,16 +287,16 @@
 
       <li class="step" data-step="cover" data-done="0">
         <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
-          <!-- two covers on one line of time: the old one runs on with no
-               end (width 200, to the edge) until the confirmation step is
-               done; then the stylesheet ends it at 138, past the mark the
-               new one starts at (104). They overlap; there is no gap. -->
+          <!-- two coverages on one line of time: the old one runs on with
+               no end (width 200, to the edge) until the confirmation step
+               is done; then the stylesheet ends it at 138, past the mark
+               the new one starts at (104). They overlap; there is no gap. -->
           <line x1="10" y1="92" x2="210" y2="92" stroke="#16150F" stroke-width="2" opacity=".35"/>
           <line class="step-now" x1="104" y1="12" x2="104" y2="100" stroke="#16150F" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/>
           <rect class="step-old" x="10" y="54" width="200" height="20" rx="3" fill="#16150F" opacity=".32"/>
           <rect class="step-new" x="104" y="24" width="106" height="20" rx="3" fill="none" stroke="#8A3450" stroke-width="2.5"/>
         </svg>
-        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Cover in place</p>
+        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Coverage in place</p>
         <p class="step-s">old policy ends after confirmation</p>
       </li>
 
@@ -296,12 +321,15 @@
      else. PENDING (no snapshot — fresh load, deep link, picker, back, reload
      before any purchase): "Nothing bought yet.", one line, one button back
      to the purchase; no calculation, no insurer line, no "retained".
-     BOUGHT: one calculation from the snapshot's settlement days and remedy
+     BOUGHT: the benefit as the headline — "Covered, watched, remedied." —
+     then one calculation from the snapshot's settlement days and remedy
      and the one missed entry in LEDGER. The clock starts at agreed
      liability; the remedy is a published term that applied on the miss,
      with no separate claim. Then the continuing selection: alternatives
-     rechecked, none eligible, cover retained, the miss recorded. -->
+     rechecked, none eligible, coverage retained, the miss recorded. -->
 <section class="screen oc oc5" data-screen="5" data-label="Eleven months on" data-cam="after" data-veil="soft">
+
+  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="5"></span></p>
 
   <header class="oc-head">
     <div class="oc-title">

@@ -2,16 +2,17 @@
    Resilience Grid · 2036 prototype · Alder County
    A wildfire protection network, told from the region rather than the house.
 
-   Forked from prototype/micromutual/style.css: the ground-is-the-page
-   layout, the per-screen --fit, the chrome and the narrow stack are
-   inherited. The type language is the one the design study settled on for
-   screen 3 and now carries every screen: Bricolage Grotesque on a charcoal
-   block that is the headline's OWN box (sized to its text, with the grain
-   and torn edge on a pseudo-element behind the glyphs), short lines on
-   paper, and labels on the terrain as SVG text with a paper halo.
+   The stage is the approved regional illustration (app.js draws it into
+   #plan), the page behind the copy on a wide viewport and a scrolling
+   panel after the copy on a narrow one. The type language: Bricolage
+   Grotesque on a charcoal block that is the headline's OWN box (sized to
+   its text, with the grain and torn edge on a pseudo-element behind the
+   glyphs), short lines on paper, and labels on the terrain as SVG text on
+   paper tabs.
 
-   STOCK — paper #FBF9F1, ink #36414A. Cool graphite, so it cannot be
-   mistaken for Emberwatch's warm brown. Fonts are local; no external request.
+   STOCK — the scene's own sky #E6E0D0 and paper #F3EBD7, graphite ink
+   #36414A. Fonts are local; no external request. Every rule here is
+   scoped to this prototype's page (body.rg).
    ══════════════════════════════════════════════════════════════════════════ */
 
 @font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
@@ -20,10 +21,11 @@
   src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); }
 
 :root {
-  --paper:        #FBF9F1;
-  --edition-ink:  #36414A;   /*  9.90 : 1 on paper */
-  --edition-wash: #E6E7E7;
-  --ink-soft:     #5C6872;   /*  5.42 on paper */
+  --paper:        #F3EBD7;
+  --sky:          #E6E0D0;
+  --edition-ink:  #36414A;   /*  8.6 : 1 on paper */
+  --edition-wash: #E6E0D0;
+  --ink-soft:     #5C6872;
   --rule:         #8A959C;   /*  hairlines and strokes, never type */
   --hair:         #DCDDD8;
 
@@ -34,8 +36,8 @@
   --vendor:   #7A5A17;
   --alarm:    #A33322;
 
-  --block:    #6B675E;       /* the headline's charcoal block */
-  --cream:    #F3EBD7;       /* the type on it: 5.6 : 1 */
+  --block:    #3F3B33;       /* the headline's charcoal block */
+  --cream:    #F3EBD7;       /* the type on it */
 
   --r-s: 3px; --r-m: 6px; --r-l: 10px;
 
@@ -70,22 +72,22 @@ html { -webkit-text-size-adjust: 100%; height: 100%; }
    [hidden]; without this a hidden screen still paints */
 [hidden] { display: none !important; }
 
-body {
+body.rg {
   margin: 0;
   height: 100%;
-  background: #E0E2DE;
+  background: var(--sky);
   color: var(--edition-ink);
   font: var(--fs-base)/1.5 var(--sans);
   overflow: hidden;
 }
 
-.sr-only {
+.rg .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
   white-space: nowrap; border: 0;
 }
 
-.skip {
+.rg .skip {
   position: fixed; left: 16px; top: 12px; z-index: 60;
   width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
@@ -93,57 +95,57 @@ body {
   border-radius: var(--r-m); text-decoration: none;
   font: 600 14px/1 var(--sans); cursor: pointer;
 }
-.skip:focus {
+.rg .skip:focus {
   width: auto; height: auto; overflow: visible;
   clip: auto; clip-path: none; padding: 12px 14px;
 }
 /* the heading receives focus from the skip button; it must not draw a ring
    when it is reached by a mouse click on the page */
-.xd:focus, .xq:focus { outline: none; }
-.xd:focus-visible, .xq:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
+.rg .xd:focus, .rg .xq:focus { outline: none; }
+.rg .xd:focus-visible, .rg .xq:focus-visible { outline: 2px solid var(--edition-ink); outline-offset: 4px; }
 
-:where(a, button, select, input, [tabindex]):focus-visible {
+.rg :where(a, button, select, input, [tabindex]):focus-visible {
   outline: 2px solid var(--edition-ink);
   outline-offset: 2px;
   border-radius: var(--r-s);
 }
 
-/* ══ THE GROUND ═════════════════════════════════════════════════════════ */
+/* ══ THE STAGE ══════════════════════════════════════════════════════════
+   One stage, moved by app.js into the open screen. Wide: fixed behind the
+   copy, the whole viewport. Narrow: in the flow, after the copy. */
+.rg .gw { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.rg .stage { position: absolute; inset: 0; }
+.rg .stage svg { display: block; width: 100%; height: 100%; }
 
-/* inset past every edge, so Alder County is cropped by the viewport rather
-   than framed by it */
-.world { position: fixed; inset: -8% -11%; z-index: 0; }
-.world svg { display: block; width: 100%; height: 100%; }
+/* availability states (screen 1): only the availability group and its
+   labels change; the scene underneath does not */
+.rg .avail-state { transition: opacity .3s ease; }
+.rg .screen[data-state="now"] .avail-state[data-state="earlier"],
+.rg .screen[data-state="earlier"] .avail-state[data-state="now"] { opacity: 0; pointer-events: none; }
 
-/* per-screen wash. Every word on the ground carries its own paper, so this
-   only sets how loudly the ground speaks. */
-.veil {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  transition: background .45s cubic-bezier(.4,0,.2,1);
-  background: radial-gradient(130% 100% at 50% 45%,
-              rgba(251,249,241,0) 38%, rgba(224,226,222,.55) 100%);
-}
-.veil[data-veil="soft"] {
-  background: radial-gradient(135% 105% at 50% 45%,
-              rgba(251,249,241,0) 44%, rgba(216,219,220,.60) 100%);
-}
-/* screen 3 only: the ground is the event, so the wash pulls back and warms */
-.veil[data-veil="ignite"] {
-  background: radial-gradient(90% 75% at 62% 56%,
-              rgba(163,51,34,.07) 0%, rgba(251,249,241,0) 45%, rgba(224,226,222,.52) 100%);
-}
+/* per-screen reading of the shared scene: the utility line, the service's
+   nodes and the veil are drawn once and lit by data-screen */
+.rg #rg-veil, .rg .rg-util, .rg .rg-nodes, .rg .rg-node { transition: opacity .3s ease; }
+.rg #rg-veil { opacity: 0; }
+.rg svg[data-screen="2"] #rg-veil { opacity: .28; }
+.rg svg[data-screen="3"] #rg-veil { opacity: .14; }
+.rg svg[data-screen="4"] #rg-veil { opacity: .62; }
+.rg svg[data-screen="5"] #rg-veil { opacity: .06; }
+.rg svg[data-screen="1"] .rg-util, .rg svg[data-screen="5"] .rg-util,
+.rg svg[data-screen="1"] .rg-nodes, .rg svg[data-screen="5"] .rg-nodes, .rg svg[data-screen="4"] .rg-nodes { opacity: 0; }
+.rg svg[data-screen="4"] .rg-util { opacity: .4; }
+.rg svg[data-screen="3"][data-act="0"] .rg-node--act { opacity: .25; }
 
 /* labels drawn on the terrain by app.js */
-.lab { font-family: var(--sans); }
+.rg .lab { font-family: var(--sans); }
 
 /* ══ THE DECK ═══════════════════════════════════════════════════════════ */
 
-/* the deck covers the whole viewport above the ground, so it has to be
-   transparent to the pointer as well as to the eye; blocks switch pointer
-   events back on */
-.deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+/* the deck covers the whole viewport; it is transparent to the pointer as
+   well as to the eye; blocks switch pointer events back on */
+.rg .deck { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
 
-.screen {
+.rg .screen {
   position: absolute; inset: 0;
   padding: var(--gutter) var(--gutter) var(--chrome-h);
   display: grid;
@@ -157,21 +159,21 @@ body {
   /* last resort on a stage too short to hold the composition: scroll */
   overflow-y: auto;
 }
-.screen > * { min-width: 0; }
+.rg .screen > * { min-width: 0; }
 
-.xhead, .wf-micro, .xask, .s3-ctl, .ev, .ev-line, .tl-play, .cta, .iconbtn, .picker, select {
+.rg .xhead, .rg .compare, .rg .xask, .rg .s3-ctl, .rg .ev, .rg .ev-line, .rg .tl-play, .rg .cta, .rg .iconbtn, .rg .picker, .rg select {
   pointer-events: auto;
 }
 
 /* ══ TYPE ═══════════════════════════════════════════════════════════════ */
 
 /* ── the headline region: eyebrow, block, one qualifier ── */
-.xhead {
+.rg .xhead {
   display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;
   gap: calc(var(--x-gap) * .4);
   z-index: 1;
 }
-.xeyebrow {
+.rg .xeyebrow {
   margin: 0; padding: 3px 8px;
   background: var(--paper); border-radius: var(--r-s);
   font: 700 max(13px, calc(var(--x-label) * .85))/1.3 var(--sans);
@@ -180,7 +182,7 @@ body {
 }
 /* the block is the headline's OWN box: inline-block, so it is exactly as
    wide as its longest line and as tall as its lines */
-.xd {
+.rg .xd {
   position: relative; z-index: 1;
   display: inline-block; max-width: 100%;
   margin: 0; padding: .3em .5em .36em;
@@ -188,14 +190,14 @@ body {
   letter-spacing: -.022em; color: var(--cream);
   overflow-wrap: break-word;
 }
-.xd span { display: block; }
-.xd::before {
+.rg .xd span { display: block; }
+.rg .xd::before {
   content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
   background: var(--block) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   filter: url(#s3-rough);
 }
 /* the one qualifier under a headline, on paper */
-.xlede {
+.rg .xlede {
   margin: 0; max-width: 32ch; padding: 4px 9px;
   background: var(--paper); border-radius: var(--r-s);
   font: 400 var(--x-lede)/1.38 var(--sans);
@@ -204,20 +206,27 @@ body {
 
 /* a qualifier that is one short sentence: let it sit on one line rather
    than break after its last word */
-.xlede--line { max-width: 48ch; text-wrap: balance; }
+.rg .xlede--line { max-width: 48ch; text-wrap: balance; }
 
-/* ── the single disclosure ── */
-.xmicro {
-  margin: 0; max-width: 46ch; padding: 3px 7px;
-  background: color-mix(in srgb, var(--paper) 88%, transparent); border-radius: var(--r-s);
-  font: 400 var(--x-micro)/1.4 var(--sans);
-  color: var(--edition-ink);
+/* ── screen 1: the Earlier / Now control, top right ── */
+.rg .compare {
+  z-index: 3; justify-self: end; align-self: start;
+  display: inline-flex; gap: 0;
+  border: 1.5px solid var(--edition-ink); border-radius: var(--r-m);
+  overflow: hidden; background: var(--paper); box-shadow: var(--plate-shadow);
 }
-.wf-micro { z-index: 3; align-self: end; justify-self: start; }
+.rg .compare button {
+  min-width: 84px; min-height: 44px; padding: 0 16px; border: 0;
+  background: transparent; font: 700 16px/1 var(--sans);
+  color: var(--edition-ink); cursor: pointer; border-radius: 0;
+}
+.rg .compare button + button { border-left: 1.5px solid var(--edition-ink); }
+.rg .compare button[aria-pressed="true"] { background: var(--edition-ink); color: var(--paper); }
+.rg .compare button:focus-visible { outline: 3px solid var(--carrier); outline-offset: -4px; border-radius: 0; }
 
 /* ── the closing question, screen 5 ── */
-.xask { align-self: end; justify-self: end; z-index: 3; max-width: 100%; }
-.xq {
+.rg .xask { align-self: end; justify-self: end; z-index: 3; max-width: 100%; }
+.rg .xq {
   margin: 0; padding: .45em .7em;
   background: var(--paper); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
@@ -230,68 +239,70 @@ body {
    Three paper plates in a row: the record, what was observed, and the
    question that stays open. The open column is drawn as an outline on
    thinner paper, so "needs independent evaluation" looks unfilled rather
-   than finished. The screen-2 layer chips that used to live here are retired. */
-.ev {
+   than finished. */
+.rg .ev {
   z-index: 3; align-self: center;
   margin: 0; padding: 0; list-style: none;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 6px;
 }
-.ev-col {
+.rg .ev-col {
   display: flex; flex-direction: column; gap: 5px;
   padding: 12px 14px 14px;
   background: var(--paper); border-radius: var(--r-m);
   box-shadow: var(--plate-shadow);
   border-top: 4px solid var(--edition-ink);
 }
-.ev-col--open {
-  background: color-mix(in srgb, var(--paper) 72%, transparent);
+.rg .ev-col--open {
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
   border-top: 4px dashed var(--rule);
 }
-.ev-k {
+.rg .ev-k {
   display: flex; align-items: center; gap: 8px;
   font: 700 var(--x-lede)/1.2 var(--sans); color: var(--edition-ink);
 }
-.ev-mark { width: 18px; height: 18px; flex: 0 0 auto; color: var(--edition-ink); }
-.ev-v { font: 400 var(--x-lede)/1.3 var(--sans); color: var(--edition-ink); }
-.ev-v--open { color: var(--ink-soft); }
+.rg .ev-mark { width: 18px; height: 18px; flex: 0 0 auto; color: var(--edition-ink); }
+.rg .ev-v { font: 400 var(--x-lede)/1.3 var(--sans); color: var(--edition-ink); }
+.rg .ev-v--open { color: var(--ink-soft); }
 /* one sentence: let it sit on one line where there is room, and break
    evenly rather than orphan its last word where there is not */
-.ev-line { z-index: 3; align-self: end; max-width: 52ch; text-wrap: balance; }
+.rg .ev-line { z-index: 3; align-self: end; max-width: 52ch; text-wrap: balance; }
 
 /* ══ CONTROLS ═══════════════════════════════════════════════════════════ */
 
-.tl-play {
+.rg .tl-play {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 44px; min-width: 44px; padding: 0 16px;
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
+  box-shadow: var(--plate-shadow);
   font: 700 var(--x-label)/1 var(--sans); cursor: pointer;
 }
-.tl-play:hover { background: var(--edition-wash); }
-.tl-play[disabled] {
+.rg .tl-play:hover { background: var(--edition-wash); }
+.rg .tl-play[disabled] {
   color: var(--ink-soft); background: var(--edition-wash);
   border-color: var(--hair); cursor: default;
 }
 
-/* screen 3: replay controls and the disclosure, bottom left */
-.s3-ctl {
+/* screen 3: replay controls, bottom left */
+.rg .s3-ctl {
   z-index: 3; align-self: end; justify-self: start;
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
 }
-.tl-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.rg .tl-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
 
 /* ══ CHROME ═════════════════════════════════════════════════════════════ */
 
-.chrome {
+.rg .chrome {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
   height: var(--chrome-h);
   padding: 0 var(--gutter) var(--gutter);
   display: flex; align-items: flex-end; justify-content: flex-end; gap: 14px;
   pointer-events: none;
 }
-.chrome-r { display: flex; align-items: center; gap: 8px; }
-.iconbtn {
+.rg .chrome-r { display: flex; align-items: center; gap: 8px; }
+.rg .iconbtn {
   width: 46px; height: 46px; min-width: 44px; min-height: 44px; flex: 0 0 auto;
   display: grid; place-items: center;
   background: var(--paper); color: var(--edition-ink);
@@ -299,14 +310,14 @@ body {
   box-shadow: var(--plate-shadow);
   font: 16px/1 var(--sans); cursor: pointer;
 }
-.iconbtn:hover { background: var(--edition-wash); }
-.iconbtn[disabled] {
+.rg .iconbtn:hover { background: var(--edition-wash); }
+.rg .iconbtn[disabled] {
   color: var(--ink-soft); background: var(--edition-wash);
   border-color: var(--hair); cursor: default;
 }
-.iconbtn[disabled]:hover { background: var(--edition-wash); }
+.rg .iconbtn[disabled]:hover { background: var(--edition-wash); }
 
-.picker select {
+.rg .picker select {
   min-height: 46px; max-width: 34ch; padding: 0 12px;
   background: var(--paper); color: var(--edition-ink);
   border: 1px solid var(--rule); border-radius: var(--r-m);
@@ -315,7 +326,7 @@ body {
 }
 
 /* the primary action is the ink, not an accent */
-.cta {
+.rg .cta {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
   min-height: 46px; min-width: 46px; padding: 0 20px;
   background: var(--edition-ink); color: var(--paper);
@@ -323,21 +334,18 @@ body {
   box-shadow: var(--plate-shadow);
   font: 700 16px/1 var(--sans); cursor: pointer; white-space: nowrap;
 }
-.cta:hover { background: #2A333B; border-color: #2A333B; }
-
-/* the ground window is a desktop no-op. On a narrow stage it is the hole
-   the county shows through, and it takes whatever height the blocks have
-   not claimed. */
-.gw { display: none; }
+.rg .cta:hover { background: #2A333B; border-color: #2A333B; }
 
 /* ══ SHORT WINDOWS ══════════════════════════════════════════════════════ */
 
 @media (min-width: 900px) and (max-height: 820px) {
   :root { --gutter: 13px; --chrome-h: 66px; }
-  .chrome { padding: 0 var(--gutter) 10px; }
+  .rg .chrome { padding: 0 var(--gutter) 10px; }
 }
 
-/* ══ NARROW ═════════════════════════════════════════════════════════════ */
+/* ══ NARROW: the flow layout ════════════════════════════════════════════
+   copy, then the control, then the stage, then whatever else the screen
+   has — top to bottom, scrolling; never a shrunken landscape */
 
 @media (max-width: 899px) {
   :root {
@@ -348,70 +356,73 @@ body {
     --x-ask: clamp(20px, 5vw, 26px);
   }
 
-  .world { inset: -5% -9%; }
-
   /* the deck stops at the controls rather than scrolling underneath them */
-  .deck { inset: 0 0 var(--chrome-h) 0; }
+  .rg .deck { inset: 0 0 var(--chrome-h) 0; }
 
-  /* one screenful, top to bottom: blocks take the height they need, the
-     county window takes what is left */
-  .screen {
+  .rg .screen {
     display: flex; flex-direction: column; gap: 10px;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     padding: var(--gutter) var(--gutter) 8px;
   }
-  .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
-  .gw { display: block; flex: 1 1 0; min-height: 0; }
-  .gw--map { flex: 1 0 auto; min-height: min(24vh, 180px); }
+  .rg .screen > * { grid-area: auto !important; margin: 0; flex: 0 0 auto; }
+
+  /* the stage sits in the flow; app.js sets its height to the scene's */
+  .rg .gw { position: relative; inset: auto; width: 100%; z-index: 0; }
+  .rg .stage { position: relative; inset: auto; width: 100%; height: 300px; }
+
+  .rg .compare { align-self: flex-start; justify-self: start; }
 
   /* the desktop `align-self: end` would push these to the right of a
      column; on a stack everything hangs from the left edge */
-  .s3-ctl, .wf-micro, .ev-line { align-self: flex-start; }
-  .xask, .ev { align-self: stretch; }
-  .xq { max-width: 100%; }
-  .ev-line { max-width: 100%; }
+  .rg .s3-ctl, .rg .ev-line { align-self: flex-start; }
+  .rg .xask, .rg .ev { align-self: stretch; }
+  .rg .xq { max-width: 100%; }
+  .rg .ev-line { max-width: 100%; }
 
-  .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
-  .chrome-r { width: 100%; }
-  .picker { flex: 1 1 auto; min-width: 0; }
-  .picker select { width: 100%; max-width: none; }
-  .cta { padding: 0 14px; font-size: 15px; }
+  .rg .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
+  .rg .chrome-r { width: 100%; }
+  .rg .picker { flex: 1 1 auto; min-width: 0; }
+  .rg .picker select { width: 100%; max-width: none; }
+  .rg .cta { padding: 0 14px; font-size: 15px; }
   /* the label is hidden from SIGHT, not from the accessibility tree */
-  .cta span:first-child {
+  .rg .cta span:first-child {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
     white-space: nowrap; border: 0;
   }
 }
 
-/* a phone shorter than about 740px: the blocks come first and the county
-   takes what is left */
-@media (max-width: 899px) and (max-height: 739px) {
-  .gw--map { flex: 1 1 0; min-height: 0; }
-}
+/* the small arrows that join the columns left to right: a bridge, not a
+   result — they carry no words */
+.rg .ev-arrow { display: flex; align-items: center; justify-content: center; align-self: center; width: 22px; color: var(--edition-ink); }
+.rg .ev-arrow svg { width: 22px; height: 22px; display: block; }
 
-/* a phone: the three columns stack, each a short row */
+/* a phone: the three columns stack, each a short row; the arrows point
+   down the stack */
 @media (max-width: 599px) {
-  .ev { grid-template-columns: 1fr; gap: 8px; }
-  .ev-col { padding: 9px 12px 11px; gap: 3px; }
+  .rg .ev { grid-template-columns: 1fr; gap: 6px; }
+  .rg .ev-arrow { width: 100%; height: 22px; }
+  .rg .ev-arrow svg { transform: rotate(90deg); }
+  .rg .ev-col { padding: 9px 12px 11px; gap: 3px; }
+  .rg .compare button { min-width: 72px; padding: 0 14px; }
 }
 
 /* iPad portrait (600–899px) keeps the Next label: a tablet with 820px of
    width losing the one word that says where Next goes is not right */
 @media (min-width: 600px) and (max-width: 899px) {
-  .cta span:first-child,
-  .chrome .cta span:first-child {
+  .rg .cta span:first-child,
+  .rg .chrome .cta span:first-child {
     position: static; width: auto; height: auto; padding: 0; margin: 0;
     overflow: visible; clip: auto; clip-path: none; white-space: nowrap; border: 0;
   }
-  .cta { padding: 0 18px; }
+  .rg .cta { padding: 0 18px; }
 }
 
 /* ══ MOTION ═════════════════════════════════════════════════════════════
-   The camera is a JS tween that app.js already skips under this query;
-   nothing else on the page moves. */
+   The zoom on screens 3 and 4 is a JS tween that app.js skips under this
+   query; nothing else on the page moves. */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  .rg * { transition: none !important; animation: none !important; }
 }
 
 /* ══ iPAD GESTURE CLEARANCE ═════════════════════════════════════════════
@@ -419,12 +430,12 @@ body {
    strip. Everything that reserves room for the chrome grows by the same
    amount or the content slides under it. */
 :root { --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px)); }
-.chrome {
+.rg .chrome {
   height: calc(var(--chrome-h) + var(--gesture-safe));
   padding-bottom: calc(var(--gutter) + var(--gesture-safe));
 }
-.screen { padding-bottom: calc(var(--chrome-h) + var(--gesture-safe)); }
+.rg .screen { padding-bottom: calc(var(--chrome-h) + var(--gesture-safe)); }
 @media (max-width: 899px) {
-  .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
-  .screen { padding-bottom: 8px; }
+  .rg .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
+  .rg .screen { padding-bottom: 8px; }
 }

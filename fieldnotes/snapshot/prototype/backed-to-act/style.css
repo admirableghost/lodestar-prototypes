@@ -160,8 +160,8 @@ body {
 /* no support beside the panel (1, 4): one wider panel, centred on the field.
    The three-party drawing (2) stays beside its card; the pair is centred. */
 .screen--s1 .stage, .screen--s4 .stage { grid-template-columns: minmax(0, 840px); justify-content: center; }
-.screen--s2 .stage { grid-template-columns: minmax(0, 700px) 300px; justify-content: center; }
-.screen--s2 .support { max-width: 300px; }
+.screen--s2 .stage { grid-template-columns: minmax(0, 700px) 220px; justify-content: center; }
+.screen--s2 .support { max-width: 220px; }
 .support { grid-column: 2; justify-self: start; width: 100%; max-width: 440px;
   margin: 0; display: flex; align-items: center; justify-content: flex-start; }
 .support--triad { align-self: center; justify-content: center; }
@@ -218,6 +218,12 @@ body {
   font: 700 16px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
 .card .rows { margin-top: 10px; }
 .card .rows li:first-child { border-top: 0; padding-top: 2px; }
+/* the assistant's message, then its card (2) */
+.msg p + .card { margin-top: 14px; }
+/* the card heading above the terms (3): "For this restock" */
+.card-h + .terms { margin-top: 8px; }
+.card-h + .terms > div:first-child { border-top: 1px solid var(--rule); }
+.card-h + .terms > div:first-child dt, .card-h + .terms > div:first-child dd { padding-top: 9px; }
 .note { margin: 14px 0 0; font: 400 18px/1.4 var(--sans); color: var(--dim); }
 
 /* the authorisation card: five terms, two buttons */
@@ -244,6 +250,19 @@ body {
 .acts button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
 .acts button[aria-pressed="true"]::before { content: "● "; }
 .acts button:focus-visible { border-radius: 0; }
+
+/* the authorisation pair (3): Authorise is the primary control — filled,
+   full width, 54px, 18px — and stays so until Keep draft-only is the pressed
+   one (data-decided="none" on the card), when it falls back to the outline.
+   The pressed button, whichever it is, is filled and carries ●. */
+.acts--auth { flex-wrap: wrap; align-items: stretch; gap: 10px 12px; margin-top: 18px; }
+.acts--auth .primary { flex: 1 1 320px; min-height: 54px; padding: 12px 22px; font-size: 18px; text-align: center;
+  background: var(--ink); color: var(--cream); box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
+.acts--auth #draft-only { flex: 0 0 auto; }
+.acts--auth .primary:hover { background: #2C2A22; }
+.acts--auth .primary[aria-pressed="true"] { box-shadow: none; }
+#auth-card[data-decided="none"] .primary { background: transparent; color: var(--ink); box-shadow: none; }
+#auth-card[data-decided="none"] .primary:hover { background: rgba(22,21,15,.07); }
 
 /* ══ SCREEN 4 · completion rows ═════════════════════════════════════════ */
 .done { list-style: none; margin: 0; padding: 0; }
@@ -290,16 +309,18 @@ body {
 .dec-said { margin: 14px 0 0; max-width: 44ch; padding: 10px 14px;
   border: 1.5px dashed var(--cool-ink); font: 400 18px/1.4 var(--sans); color: var(--ink); }
 
-/* ══ SUPPORT · the three parties (screen 2) ═════════════════════════════ */
-.triad { position: relative; width: 300px; height: 230px; }
+/* ══ SUPPORT · the three parties (screen 2) ═════════════════════════════
+   Small and secondary: 220×176, tag labels still 16px, drawn a little
+   quieter than the card it sits beside. */
+.triad { position: relative; width: 220px; height: 176px; opacity: .88; }
 .triad-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ptag { position: absolute; padding: 9px 14px 10px; background: var(--cream); color: var(--ink);
-  box-shadow: 3px 3px 0 0 rgba(22,21,15,.35); font: 700 16px/1.2 var(--sans);
+.ptag { position: absolute; padding: 7px 11px 8px; background: var(--cream); color: var(--ink);
+  box-shadow: 2px 2px 0 0 rgba(22,21,15,.35); font: 700 16px/1.2 var(--sans);
   letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
-.ptag--ai  { left: 0;   top: 18px;  background: var(--cream-3); transform: rotate(-2deg); }
-.ptag--ins { right: 0;  top: 18px;  background: #EBE2CB; transform: rotate(2deg); }
+.ptag--ai  { left: 0;   top: 10px;  background: var(--cream-3); transform: rotate(-2deg); }
+.ptag--ins { right: 0;  top: 10px;  background: #EBE2CB; transform: rotate(2deg); }
 .ptag--you { left: 50%; bottom: 0;  transform: translateX(-50%) rotate(-1deg); border-top: 3px solid var(--hold); }
-.sheet--mini-c { left: 50%; top: 92px; margin-left: -32px; }
+.triad .sheet--mini-c { left: 50%; top: 62px; margin-left: -24px; width: 48px; height: 62px; padding: 8px 7px; }
 
 /* ══ SUPPORT · the zone band (screens 3, 5) ═════════════════════════════
    --x is where the line stands, from data-level; --xp the end of a
@@ -414,9 +435,13 @@ body {
   .thread { padding-top: 16px; gap: 14px; }
   .ws { padding-bottom: 18px; }
   .band { height: 176px; }
-  .triad { height: 210px; }
-  .ptag--ai, .ptag--ins { top: 12px; }
-  .sheet--mini-c { top: 80px; }
+  .triad { height: 164px; }
+  .ptag--ai, .ptag--ins { top: 8px; }
+  .triad .sheet--mini-c { top: 56px; }
+  /* the authorisation card keeps clear of the chrome at 740 high */
+  .terms dt, .terms dd { padding-top: 7px; padding-bottom: 7px; }
+  .card-h + .terms > div:first-child dt, .card-h + .terms > div:first-child dd { padding-top: 7px; }
+  .acts--auth { margin-top: 14px; }
 }
 
 /* ══ NARROW / PORTRAIT: stack and scroll, never shrink ══════════════════ */

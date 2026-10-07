@@ -37,7 +37,7 @@
   var PRIORITIES = [
     { id: "lapse",  name: "Never lapse",
       k: "continuity.no_lapse = required",
-      said: "Cover must never have a gap, including at renewal." },
+      said: "Coverage must never have a gap, including at renewal." },
     { id: "excess", name: "Cap the excess",
       k: "excess.max_usd = 500",
       said: "No excess above 500 USD on any claim." },
@@ -206,7 +206,7 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   var OC = [
-    { id: "meridian", name: "Meridian Mutual", price: "1,340.00", num: 1340,
+    { id: "meridian", name: "Meridian Mutual", short: "Meridian", price: "1,340.00", num: 1340,
       excess: "450.00 USD", excessNum: 450, driver: "Every named driver, no age condition",
       settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true, settleDays: 5,
       /* the published remedy, USD per working day late; null where no
@@ -217,6 +217,9 @@
       /* the one term each preference turns on, three words or fewer. This is
          what the glass shows; the long forms above stay for the notes. */
       term: { price: "1,340 USD", excl: "No age condition", settle: "5 working days" },
+      /* the agent's one clause on this offer, for screen 3's foot line;
+         the three clauses are joined winner first, then table order */
+      explain: "Meridian fits all three rules.",
       eligible: true, bar: null, verdict: "Fits",
       why: { price:  "the lowest price she can actually buy",
              excl:   "no exclusion that reaches her household",
@@ -227,6 +230,7 @@
       remedyPerDay: null,
       hits: 1,
       term: { price: "1,185 USD", excl: "Under 25 excluded", settle: "None published" },
+      explain: "Candlewick excludes Rosa.",
       eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep.",
       barShort: "excludes drivers under 25 — Rosa is nineteen", verdict: "Excludes Rosa" },
     { id: "pell", name: "Pell & Roe", longName: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
@@ -235,6 +239,7 @@
       remedyPerDay: 20,
       hits: 0,
       term: { price: "1,420 USD", excl: "No age condition", settle: "10 working days" },
+      explain: "Pell & Roe's excess is 900.",
       eligible: false, bar: "The excess is 900 USD, twice the 500 she capped.",
       barShort: "excess 900 USD, twice her 500 cap", verdict: "Excess 900" }
   ];
@@ -307,6 +312,46 @@
      permission is measured from */
   function cheapest() {
     return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; });
+  }
+
+  /* the agent's reason for each of the three, as one line: the recommended
+     offer's clause first, then the others in table order. Screen 3's foot
+     until the purchase. */
+  function explainLine() {
+    var win = recommended();
+    return [win].concat(OC.filter(function (o) { return o !== win; }))
+      .map(function (o) { return o.explain; }).join(" ");
+  }
+
+  /* ── the agent strip: one line, the same place on every screen, read
+     from the purchase state. The thread that makes five screens one
+     relationship: what her agent holds, reads, recommends, buys, watches.
+     Named from the model (the recommended offer, the snapshot), never
+     from a literal, so the strip can only name what the screen shows. */
+  function agentLine(n) {
+    var p = bought();
+    switch (n) {
+      case 1: return "holds these instructions";
+      case 2: return "reading the offer";
+      /* before the purchase the short name: screen 3's three cards and the
+         agent's reason line leave the strip four words at the cap */
+      case 3: return p ? "bought " + p.name : "recommends " + (recommended().short || recommended().name);
+      case 4: return p ? "bought and confirmed" : "ready to buy inside your rules";
+      case 5: return p ? "watched the promise, applied the remedy" : "nothing bought yet";
+    }
+    return "";
+  }
+  function paintAgent() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-agent]"), function (el) {
+      el.innerHTML = "<b>Your agent</b><span class=\"agent-sep\"> · </span>" +
+                     esc(agentLine(parseInt(el.dataset.agent, 10)));
+    });
+  }
+
+  /* on screen 4, until the purchase, #buy is the primary control and the
+     chrome's Next is drawn as a secondary; everywhere else Next is primary */
+  function markPrimary() {
+    document.body.dataset.primary = (current === 4 && !bought()) ? "buy" : "";
   }
 
   /* ── screen 1: the permission span, drawn from the model ───────────────
@@ -390,17 +435,18 @@
     Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
     });
-    /* the foot line reads the purchase: before it, this screen recommends;
-       after it, re-ranking is presentation only and the policy stands */
+    /* the foot line reads the purchase: before it, the agent's reason for
+       each of the three; after it, re-ranking is presentation only and the
+       policy stands */
     var p = bought();
     var line = document.getElementById("s3-state");
     if (line) {
       line.textContent = p ? "Already bought. Ranking does not change the policy."
-                           : "Recommended. Not bought yet.";
+                           : explainLine();
     }
     say("Ranked on " + PREF_SAID[pref] + ". " +
         (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
-           : "The agent recommends " + win.name + ". Not bought yet."));
+           : "The agent recommends " + win.name + ". " + explainLine() + " Not bought yet."));
   }
 
   /* ── screen 4: the purchase, in three steps ───────────────────────────
@@ -408,7 +454,7 @@
      permission span as screen 1, with the offer's price inside it: the one
      number the agent tests (the snapshot's premium once bought, the
      recommended offer's until then). The marks fill IN ORDER — permission,
-     then confirmation, then cover — and the prior cover is never cancelled
+     then confirmation, then coverage — and the prior coverage is never cancelled
      before the insurer confirms: step three's old-cover bar runs on with no
      end until the confirmation step is done, and only then ends, after the
      mark the new cover starts at. That order is enforced in the stylesheet
@@ -471,9 +517,11 @@
     paintSteps(true);
     paintCompare();
     paintPerformance();
+    paintAgent();
+    markPrimary();
     refit();
     say("Bought: " + S.purchase.name + ". Permission checked, within " + DELTA +
-        " USD. Insurer confirms, identity and payment on file. Cover in place; the old policy ends after confirmation.");
+        " USD. Insurer confirms, identity and payment on file. Coverage in place; the old policy ends after confirmation.");
   }
 
   /* starting over: back to price, nothing bought — the state the first
@@ -484,6 +532,7 @@
     paintCompare();
     paintSteps(false);
     paintPerformance();
+    paintAgent();
   }
 
   /* ── screen 5 reads the SNAPSHOT, and only the snapshot ──────────────
@@ -494,8 +543,9 @@
      liability) → observed (the one missed entry in LEDGER) → the remedy
      (late days × the snapshot's published remedy), applied on the miss with
      no separate claim; then the continuing selection, computed from the
-     table: alternatives rechecked, none eligible, cover retained, the miss
-     recorded. The arithmetic is done here, in code, from those numbers. */
+     table: alternatives rechecked, none eligible, coverage retained, the
+     miss recorded. The arithmetic is done here, in code, from those
+     numbers. The headline is the benefit: covered, watched, remedied. */
   function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
   function paintPerformance() {
@@ -520,7 +570,7 @@
 
     /* BOUGHT. Every term below is the snapshot's — the name on the line,
        the promised days, the remedy per day — not the live table's. */
-    if (head) { head.textContent = "The promise is checkable."; }
+    if (head) { head.textContent = "Covered, watched, remedied."; }
     if (pending) { pending.hidden = true; }
     if (id) {
       id.hidden = false;
@@ -589,8 +639,8 @@
     /* continuing selection: a missed commitment re-opens the agent's
        permission to re-shop, not her instructions. Whether any other offer
        clears them is computed from the same table screen 3 reads; today none
-       does, so cover is retained and the miss is recorded. Nothing switches
-       by itself, and nothing here says the service was good. */
+       does, so coverage is retained and the miss is recorded. Nothing
+       switches by itself, and nothing here says the service was good. */
     if (foot) {
       var others = OC.filter(function (x) { return x.id !== p.id; });
       var clears = others.filter(function (x) { return x.eligible; });
@@ -598,7 +648,7 @@
       foot.innerHTML =
         '<p class="oc3-end">Alternatives rechecked · ' +
           (clears.length ? esc(clears[0].name) + " eligible" : "none eligible") + "</p>" +
-        '<p class="oc3-end oc3-end--k">Cover retained. Missed commitment recorded.</p>';
+        '<p class="oc3-end oc3-end--k">Coverage retained. Missed commitment recorded.</p>';
     }
     reserveNav();
   }
@@ -631,6 +681,7 @@
   paintCompare();
   paintSteps(false);
   paintPerformance();
+  paintAgent();
 
   /* Restored: the world palette and its frame sat inside the state block the
      recomposition replaced, and renderWorld below is still its consumer. */
@@ -1110,6 +1161,7 @@
     nextLabel.textContent = CTA[n - 1];
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
+    markPrimary();
 
     drawFor(n);
     /* the chrome's width changes with the picker's and the CTA's labels, so
@@ -1135,12 +1187,12 @@
     if (n === 3) {
       extra = " Ranked on " + PREF_SAID[S.pref] + ". " +
               (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
-                 : "Recommended: " + recommended().name + ". Not bought yet.");
+                 : "Recommended: " + recommended().name + ". " + explainLine() + " Not bought yet.");
     }
     if (n === 4) { extra = p ? " Bought: " + p.name + "." : " Not yet bought. One action: buy inside her rules."; }
-    if (n === 5) { extra = p ? " Bought: " + p.name + "." : " No policy to check. The recommendation was not bought. One action: back to the purchase."; }
+    if (n === 5) { extra = p ? " Bought: " + p.name + ". The agent watched the promise and applied the remedy." : " No policy to check. The recommendation was not bought. One action: back to the purchase."; }
     announce.textContent = "Screen " + n + " of " + total + ". " +
-      said.replace(/\s+/g, " ").trim() + extra;
+      "Your agent: " + agentLine(n) + ". " + said.replace(/\s+/g, " ").trim() + extra;
 
     if (push !== false) {
       try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }

@@ -82,9 +82,11 @@
 </section>
 
 <!-- ══════ 2 · THE ARRANGEMENT ══════
-     The assistant's offer card, dashed because it is proposed — the tag on
-     the card carries that status. Beside it, a small drawing of the three
-     parties around one order. No premium, share or limit is drawn. -->
+     A contextual assistant message, not a diagram: the assistant names why
+     this task needs protection (placing = spending without the customer in
+     the room), then offers the arrangement as a dashed card — dashed because
+     it is proposed. The three-party drawing is small and secondary beside
+     it. No premium, share or limit is drawn. -->
 <section class="screen screen--s2" data-screen="2" data-label="The arrangement" data-cam="boundary" data-veil="">
 
   <div class="top">
@@ -98,6 +100,7 @@
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
         <div class="msg msg--ai">
+          <p>Placing these means spending without you in the room. Protection comes with that authority.</p>
           <div class="card card--offer">
             <p class="card-h">Act within cover</p>
             <ul class="rows rows--lines">
@@ -111,12 +114,12 @@
     </div>
 
     <aside class="support support--triad">
-      <div class="triad" role="img" aria-label="Three paper tags, Halden, an insurer and you, joined by dashed threads around one purchase order.">
-        <svg class="triad-lines" viewBox="0 0 300 230" aria-hidden="true">
+      <div class="triad" role="img" aria-label="A small drawing of three paper tags, Halden, an insurer and you, joined by dashed threads around one purchase order.">
+        <svg class="triad-lines" viewBox="0 0 220 176" aria-hidden="true">
           <g fill="none" stroke="#B9B2A0" stroke-width="2" stroke-dasharray="6 6">
-            <line x1="62" y1="52" x2="128" y2="104"/>
-            <line x1="238" y1="52" x2="172" y2="104"/>
-            <line x1="150" y1="150" x2="150" y2="190"/>
+            <line x1="46" y1="42" x2="92" y2="78"/>
+            <line x1="174" y1="42" x2="128" y2="78"/>
+            <line x1="110" y1="124" x2="110" y2="146"/>
           </g>
         </svg>
         <span class="ptag ptag--ai"><b>Halden</b></span>
@@ -132,10 +135,13 @@
 </section>
 
 <!-- ══════ 3 · AUTHORISE ══════
-     ONE card. Two buttons, nothing preselected; Next is never consent.
-     Beside the card, a wordless support band: the permitted tray and its
-     line, a small order, the hatched exception. After a press the line
-     moves (or stays). The exception never moves. The card stays. -->
+     ONE card, framed as applying to this task ("For this restock"). Two
+     buttons, nothing preselected; Next is never consent. Authorise is the
+     primary control — filled, wider, taller — so a fresh participant finds
+     it before Next; Keep draft-only is the secondary outline. Beside the
+     card, a wordless support band: the permitted tray and its line, a
+     small order, the hatched exception. After a press the line moves (or
+     stays). The exception never moves. The card stays. -->
 <section class="screen screen--s3" data-screen="3" data-label="Authorise" data-cam="boundary" data-veil="">
 
   <div class="top">
@@ -149,7 +155,8 @@
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
         <div class="msg msg--ai">
-          <div class="card card--auth" id="auth-card">
+          <div class="card card--auth" id="auth-card" data-decided="">
+            <p class="card-h">For this restock</p>
             <dl class="terms">
               <div><dt>Permitted</dt><dd>reorder stocked parts from approved suppliers</dd></div>
               <div><dt>Limit</dt><dd>25,000 USD per order, 180,000 weekly</dd></div>
@@ -157,8 +164,8 @@
               <div><dt>Yours</dt><dd>the demand forecast you supplied</dd></div>
               <div class="hard"><dt>Always you</dt><dd>new supplier, over the limit</dd></div>
             </dl>
-            <div class="acts" role="group" aria-label="Your decision">
-              <button type="button" id="authorise" aria-pressed="false">Authorise within these limits</button>
+            <div class="acts acts--auth" role="group" aria-label="Your decision">
+              <button type="button" id="authorise" class="primary" aria-pressed="false">Authorise within these limits</button>
               <button type="button" id="draft-only" aria-pressed="false">Keep draft-only</button>
             </div>
           </div>
@@ -189,7 +196,8 @@
 
 <!-- ══════ 4 · THE DAY ══════
      Read from ORDERS under the mode set on screen 3; every row, count and
-     total is rendered by app.js. Authorised: one completion row per order —
+     total is rendered by app.js. Authorised: the headline carries the
+     benefit ("… placed without a buyer."); one completion row per order —
      the placed ones (the covered mistake a slip on the row it remedied,
      never a row of its own), the returned one set on the approval side —
      and one totals line. Draft-only: nothing placed, one waiting row, one

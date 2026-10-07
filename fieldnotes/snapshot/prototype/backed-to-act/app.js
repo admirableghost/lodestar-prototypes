@@ -264,14 +264,19 @@
     }
   }
 
-  /* ── SCREEN 3 · the customer authorises ────────────────────────────── */
+  /* ── SCREEN 3 · the customer authorises ──────────────────────────────
+     The card carries data-decided ("" | "bounded" | "none") so the CSS can
+     keep Authorise as the primary control until Keep draft-only is the
+     pressed one. Nothing here sets S.mode. */
   var btnAuth = document.getElementById("authorise");
   var btnDraft = document.getElementById("draft-only");
+  var authCard = document.getElementById("auth-card");
   function renderS3() {
     var on = S.mode === "bounded";
     setBand("band3", S.mode, { ghost: (on && S.decided) ? "none" : null });
     if (btnAuth)  { btnAuth.setAttribute("aria-pressed",  String(S.decided && on)); }
     if (btnDraft) { btnDraft.setAttribute("aria-pressed", String(S.decided && !on)); }
+    if (authCard) { authCard.dataset.decided = S.decided ? S.mode : ""; }
   }
   function setMode(on) {
     S.mode = on ? "bounded" : "none";
@@ -322,7 +327,10 @@
     if (dayAuth)  { dayAuth.hidden = !real; }
     if (dayDraft) { dayDraft.hidden = real; }
     if (real) {
-      headline(s4h, word(d.placed.length) + " orders placed.", word(d.returned.length) + " needed you.");
+      /* the headline carries the benefit: the placed orders went out
+         without a buyer. The slip says the mistake was covered; the
+         Returned row says the exception came back. No separate line. */
+      headline(s4h, word(d.placed.length) + " orders placed without a buyer.", word(d.returned.length) + " needed you.");
       if (dayRows) { dayRows.innerHTML = d.placed.map(function (o) { return doneRow(o, "placed"); }).join(""); }
       if (dayAsk)  { dayAsk.innerHTML = d.returned.map(function (o) { return doneRow(o, "returned"); }).join(""); dayAsk.hidden = !d.returned.length; }
       if (daySum)  { daySum.innerHTML = 'Placed <b>' + fmt(sum(d.placed)) + ' USD</b> · awaiting your approval <b>' + fmt(sum(d.awaiting)) + ' USD</b>'; }

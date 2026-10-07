@@ -1366,16 +1366,6 @@ body.fm .fm-sc .fm-msg::before {
   filter: url(#rough);
 }
 
-/* ── screen 3: the reason, under the lifted sheet ───────────────────────
-   Two short sentences in the cream, set on the field. app.js places it
-   under the recommendation in landscape; hidden until the read completes. */
-body.fm .fm-sc .fm-reason {
-  z-index: 2; margin: 0;
-  font: 400 clamp(18px, .7vw + 1vh, 22px)/1.35 var(--fm-font);
-  letter-spacing: -.008em; color: var(--fm-cream);
-}
-body.fm .fm-sc .fm-reason.is-off { visibility: hidden; }
-
 /* ── screen 3's foot: the one control. Bottom right ─────────────────────── */
 body.fm .fm-sc .fm-foot {
   z-index: 2; right: 56px;
@@ -1472,11 +1462,9 @@ body.fm :focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 2px
   /* screen 4's two sentences flow as one block on a phone: as two forced
      lines they broke into four */
   body.fm .fm-s4 .fm-headline span { display: inline; }
-  /* her message and the reason line join the flow: head, message, drawing,
-     foot on screen 1; head, drawing, reason, control on screen 3 */
+  /* her message joins the flow: head, message, drawing, foot on screen 1
+     (screen 3's conversation has its own portrait rules, below) */
   body.fm .fm-sc .fm-msg { position: relative; width: auto; max-width: 30ch; margin: 18px 0 0; font-size: 20px; }
-  body.fm .fm-sc .fm-reason { width: auto; max-width: 36ch; margin: 18px 0 0; font-size: 19px; }
-  body.fm .fm-sc .fm-reason.is-off { display: none; }
   body.fm .fm-sc .fm-lede { font-size: clamp(18px, 4.4vw, 21px); margin: 14px 0 0; }
   body.fm .fm-sc .fm-scene { position: static; width: 100%; height: auto; margin: 18px 0 0; }
   body.fm .fm-s1 .fm-evidence { width: 100%; margin: 18px 0 0; }
@@ -1495,4 +1483,45 @@ body.fm :focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 2px
 }
 @media (prefers-reduced-motion: reduce) {
   body.fm .fm-sc .fm-run { transition: none; }
+}
+
+/* ── screen 3: the conversation ───────────────────────────────────────────
+   Her request, echoed in the same cut-paper note as screen 1 (.fm-msg),
+   and under it the assistant's reply on a dark plate with the trace for
+   an edge, beside the lifted Quote D. Landscape: app.js sizes the echo and
+   places the reply beside the sheet (the echo sits top right in CSS).
+   Portrait: both join the flow under the drawing — hers to the right,
+   the reply to the left, as a chat reads. The reply is hidden until the
+   read completes. */
+body.fm .fm-s3 .fm-echo {
+  left: auto; right: 56px; top: 56px; width: auto; max-width: min(360px, 30vw);
+  padding: .55em .8em .62em;
+  font-size: clamp(19px, .9vw + 1vh, 22px);
+}
+body.fm .fm-s3 .fm-reply {
+  z-index: 2; margin: 0;
+  padding: .7em .9em .78em;
+  font: 400 clamp(18px, .55vw + .8vh, 20px)/1.32 var(--fm-font);
+  letter-spacing: -.008em; color: var(--fm-cream);
+}
+body.fm .fm-s3 .fm-reply p { margin: 0; }
+body.fm .fm-s3 .fm-reply::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 3px;
+  border: 2px solid var(--fm-trace);
+  background: var(--fm-chrome) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  filter: url(#rough);
+}
+body.fm .fm-s3 .fm-reply.is-off { visibility: hidden; }
+@media (max-width: 899px) {
+  body.fm .fm-s3 .fm-scene { margin-top: 14px; }
+  body.fm .fm-s3 .fm-echo {
+    position: relative; top: auto; right: auto; left: auto;
+    align-self: flex-end; width: auto; max-width: 30ch;
+    margin: 12px 0 0; font-size: 19px;
+  }
+  body.fm .fm-s3 .fm-reply {
+    position: relative; align-self: flex-start; width: auto; max-width: 52ch;
+    margin: 8px 0 0; font-size: 19px;
+  }
+  body.fm .fm-s3 .fm-reply.is-off { display: none; }
 }

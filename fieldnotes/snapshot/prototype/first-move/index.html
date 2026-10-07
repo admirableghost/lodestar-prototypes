@@ -89,8 +89,11 @@
 
 <!-- ══════ 3 · A RECOMMENDATION EMERGES ═════════════════════════════════
      From the two clauses the path climbs to Quote D, lifted out of the fan
-     onto paper: recommended, not the cheapest. The cheapest, Quote C, is
-     marked ranked third. The replay control runs the read again. -->
+     onto paper and marked Recommended. Beside it, the conversation: her
+     request echoed, then the assistant's reply, which names the quote and
+     says why. The cheapest, Quote C, stays in the fan marked ranked third.
+     The replay control runs the read again; the reply appears only once
+     the read is complete. -->
 <section class="screen fm-sc fm-s3" data-screen="3" data-label="The recommendation">
 
   <header class="fm-head" id="s3-head">
@@ -98,9 +101,15 @@
   </header>
 
   <svg class="fm-scene" id="scene3" role="img"
-       aria-label="The four quotes again. The reasoning path runs through them, out to the two clauses it pulled, and up to Quote D, lifted out of the fan and marked Recommended, not the cheapest. The cheapest quote, Quote C, stays in the fan marked ranked third. The path runs on past the recommendation toward the right edge."></svg>
+       aria-label="The four quotes again. The reasoning path runs through them, out to the two clauses it pulled, and up to Quote D, lifted out of the fan and marked Recommended. The cheapest quote, Quote C, stays in the fan marked ranked third. The path runs on from Quote D into the assistant's reply beside it."></svg>
 
-  <p class="fm-reason" id="s3-reason">Covers the garage. Prior claim rated.</p>
+  <blockquote class="fm-msg fm-echo" id="s3-echo">
+    <p>“Which one actually covers us?”</p>
+  </blockquote>
+
+  <div class="fm-reply" id="s3-reply">
+    <p>Quote D. It covers the garage, and its treatment of your prior claim is acceptable. Quote C is cheapest, but it excludes the garage — ranked third.</p>
+  </div>
 
   <div class="fm-foot" id="s3-foot">
     <button class="fm-run" type="button" id="read-play">Run it again</button>
