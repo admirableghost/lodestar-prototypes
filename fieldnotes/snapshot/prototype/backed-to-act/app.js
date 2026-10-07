@@ -5,7 +5,9 @@
    The navigation, the camera, the hash router, the live regions and the
    skip-to-heading behaviour are inherited from prototype/resilience-grid.
    What is this prototype's own is the ground it draws, ONE table — LAYOUT —
-   that says where the line stands for each level of authority, and ONE
+   that says where the line stands for each level of authority, ONE
+   collection — ORDERS — the four orders of the approved day that every
+   count, total and row on screens 1, 4 and 5 is derived from, and ONE
    state object — S — that every screen renders from.
 
    STATE   S = { mode, choice }   kept in sessionStorage
@@ -146,6 +148,62 @@
     return LEVELS[Math.max(0, i - 1)];
   }
 
+  /* ══════════════════════════════════════════════════════════════════════
+     THE ORDERS — ONE COLLECTION, THE APPROVED DAY
+
+     The four orders the agent drafted on the request. Screen 1 lists them
+     as drafts; screen 4 reads what became of each under the authority set
+     on screen 3; screen 5 sums the day. Nothing about them is written
+     anywhere else: every count and every total is derived here.
+       supplier  "approved" — a stocked part from an approved supplier
+                 "single"   — a single source, not an approved supplier
+       remedy    the one covered mistake, attached to the order it remedied
+                 (its 6,240 USD restocking and freight stays in the notes)
+     ══════════════════════════════════════════════════════════════════════ */
+  var LIMIT = 25000;   /* USD per order — the figure on the authorisation card */
+  var ORDERS = [
+    { id: "PO-4471", item: "Copper fittings",      branch: "Branch 7",   amount: 8420,  supplier: "approved" },
+    { id: "PO-4472", item: "Condenser fan motors", branch: "3 branches", amount: 14960, supplier: "approved" },
+    { id: "PO-4473", item: "Valve bodies",         branch: "Branch 2",   amount: 9750,  supplier: "approved",
+      remedy: { kind: "covered mistake", what: "wrong valve body", done: "restocking paid" } },
+    { id: "PO-4475", item: "Control boards",       branch: null,         amount: 31500, supplier: "single",
+      why: "single source, over the limit" }
+  ];
+
+  /* What placing this order asks of the authority: "place" for a stocked
+     part from an approved supplier within the limit; "newsup" — always a
+     person — for a new or single source, or anything over the limit. */
+  function action(o) {
+    return (o.supplier !== "approved" || o.amount > LIMIT) ? "newsup" : "place";
+  }
+
+  /* placed    the agent placed it inside its authority
+     returned  the agent acted that day but this one was outside; it came
+               back for approval
+     waiting   the agent only drafts; the order waits for approval */
+  function evaluate(o, mode) {
+    var plan = LAYOUT[mode] || LAYOUT.none;
+    if (plan.may.indexOf(action(o)) >= 0) { return "placed"; }
+    return plan.may.indexOf("place") >= 0 ? "returned" : "waiting";
+  }
+
+  function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  var WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  function word(n, lower) { var w = WORDS[n] || String(n); return lower ? w.toLowerCase() : w; }
+  function sum(list) { return list.reduce(function (a, o) { return a + o.amount; }, 0); }
+  function lc(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  /* the day under a mode, grouped by outcome — the one read every screen shares */
+  function day(mode) {
+    var d = { placed: [], returned: [], waiting: [] };
+    ORDERS.forEach(function (o) { d[evaluate(o, mode)].push(o); });
+    d.remedied = d.placed.filter(function (o) { return !!o.remedy; });
+    d.awaiting = d.returned.concat(d.waiting);
+    return d;
+  }
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
   /* ── THE ONE STATE, kept across reloads in sessionStorage ─────────────
      S.mode is written by #authorise / #draft-only and by restart, nowhere
      else. "decided" records that one of the two buttons has been pressed,
@@ -190,6 +248,22 @@
     if (sp.length === 2) { sp[0].textContent = a; sp[1].textContent = b; }
   }
 
+  /* ── SCREEN 1 · the drafted work ────────────────────────────────────
+     Every order is a draft here, whatever the authority: the reply and
+     the rows are the collection, counted and summed. Rendered once. */
+  var s1Reply = document.getElementById("s1-reply");
+  var s1Rows = document.getElementById("s1-rows");
+  function renderS1() {
+    if (s1Reply) {
+      s1Reply.textContent = word(ORDERS.length) + " orders drafted · " + fmt(sum(ORDERS)) + " USD. Placing them needs your authorisation.";
+    }
+    if (s1Rows) {
+      s1Rows.innerHTML = ORDERS.map(function (o) {
+        return '<li data-order="' + esc(o.id) + '"><span class="what">' + esc(o.item) + '</span><span class="amt">' + fmt(o.amount) + ' USD</span></li>';
+      }).join("");
+    }
+  }
+
   /* ── SCREEN 3 · the customer authorises ────────────────────────────── */
   var btnAuth = document.getElementById("authorise");
   var btnDraft = document.getElementById("draft-only");
@@ -204,26 +278,62 @@
     S.decided = true;
     save();
     renderS3(); renderS4(); renderS5();
-    say(on ? "Authorised within these limits. The agent may place orders for stocked parts from approved suppliers, up to 25,000 USD per order and 180,000 weekly. A new supplier or anything over the limit always comes to you."
+    say(on ? "Authorised within these limits. The agent may place orders for stocked parts from approved suppliers, up to " + fmt(LIMIT) + " USD per order and 180,000 weekly. A new supplier or anything over the limit always comes to you."
            : "Draft only. The agent drafts; placing any order waits for your approval.");
   }
   if (btnAuth)  { btnAuth.addEventListener("click",  function () { setMode(true); }); }
   if (btnDraft) { btnDraft.addEventListener("click", function () { setMode(false); }); }
 
   /* ── SCREEN 4 · the day that follows ────────────────────────────────
-     Derived from S.mode and nothing else. Draft only shows the day as it
-     really would be: nothing placed, one way back to the decision. */
+     Derived from ORDERS under S.mode and nothing else. Authorised: one
+     completion row per order — placed rows, the covered mistake a slip on
+     the row it remedied (never a row of its own), the returned row set on
+     the approval side — and one totals line. Draft only shows the day as
+     it really would be: nothing placed, every order waiting, one way back
+     to the decision. */
   var s4h = document.getElementById("s4-h");
   var dayAuth = document.getElementById("day-auth");
   var dayDraft = document.getElementById("day-draft");
+  var dayRows = document.getElementById("day-rows");
+  var dayAsk = document.getElementById("day-ask");
+  var daySum = document.getElementById("day-sum");
+  var dayWait = document.getElementById("day-wait");
   var toAuth = document.getElementById("to-authorise");
+
+  function doneRow(o, st) {
+    var ok = st === "placed";
+    var cls = "done-row " + (ok ? "done-row--ok" : "done-row--ask") + (o.remedy ? " done-row--slip" : "");
+    var h = '<li class="' + cls + '" data-order="' + esc(o.id) + '">' +
+      '<span class="st">' + (ok ? "Placed" : "Returned") + '</span>' +
+      '<span class="what">' + esc(lc(o.item)) + '</span>' +
+      '<span class="amt">' + fmt(o.amount) + ' USD</span>';
+    if (ok && o.remedy) {
+      h += '<span class="slip"><b>' + esc(o.remedy.kind) + ':</b> ' + esc(o.remedy.what) + ', ' + esc(o.remedy.done) +
+        '<svg class="tick tick--slip" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '</span>';
+    }
+    if (!ok && o.why) { h += '<span class="why">' + esc(o.why) + '</span>'; }
+    return h + "</li>";
+  }
 
   function renderS4() {
     var real = S.mode === "bounded";
+    var d = day(S.mode);
     if (dayAuth)  { dayAuth.hidden = !real; }
     if (dayDraft) { dayDraft.hidden = real; }
-    if (real) { headline(s4h, "Three orders placed.", "One needed you."); }
-    else      { headline(s4h, "Nothing placed.", "Everything waits for you."); }
+    if (real) {
+      headline(s4h, word(d.placed.length) + " orders placed.", word(d.returned.length) + " needed you.");
+      if (dayRows) { dayRows.innerHTML = d.placed.map(function (o) { return doneRow(o, "placed"); }).join(""); }
+      if (dayAsk)  { dayAsk.innerHTML = d.returned.map(function (o) { return doneRow(o, "returned"); }).join(""); dayAsk.hidden = !d.returned.length; }
+      if (daySum)  { daySum.innerHTML = 'Placed <b>' + fmt(sum(d.placed)) + ' USD</b> · awaiting your approval <b>' + fmt(sum(d.awaiting)) + ' USD</b>'; }
+    } else {
+      headline(s4h, "Nothing placed.", "Everything waits for you.");
+      if (dayWait) {
+        dayWait.setAttribute("data-orders", d.waiting.map(function (o) { return o.id; }).join(" "));
+        dayWait.innerHTML = '<span class="st">' + word(d.waiting.length) + ' orders drafted</span>' +
+          '<span class="amt">' + fmt(sum(d.waiting)) + ' USD</span><span class="why">awaiting your approval</span>';
+      }
+    }
   }
   if (toAuth) { toAuth.addEventListener("click", function () { show(3); }); }
 
@@ -239,7 +349,7 @@
       t: { bounded: "Keep. The line stays where you set it: placing orders stays with the agent; a new supplier over the limit still comes to you.",
            none:    "Keep. The line stays where you set it: the agent drafts; placing orders stays with you." } },
     narrow: { step: -1, prop: false,
-      t: { bounded: "Narrow. The line moves back: placing orders returns to you. Today's three orders are unchanged — this is about what happens next.",
+      t: { bounded: "Narrow. The line moves back: placing orders returns to you. Today's orders are unchanged — this is about what happens next.",
            none:    "Narrow. Already draft only: there is nothing further to withdraw. Today's results stand." } },
     expand: { step: 0,  prop: true,
       t: { bounded: "Expand. Proposed expansion, hatched: not in force. Approval and protection review required. The new supplier over the limit stays with you.",
@@ -258,9 +368,10 @@
     });
     if (decSaid) { decSaid.hidden = !(d && d.prop); }
     if (ctx) {
+      var d = day(base);
       ctx.textContent = base === "bounded"
-        ? "Today: three placed, one covered mistake, one returned."
-        : "Today: nothing placed. Five orders waited.";
+        ? "Today: " + word(d.placed.length, true) + " placed, " + word(d.remedied.length, true) + " covered mistake, " + word(d.returned.length, true) + " returned."
+        : "Today: nothing placed. " + word(d.waiting.length) + " orders waited.";
     }
   }
   function decide(k) {
@@ -282,7 +393,7 @@
   }
 
   load();
-  renderS3(); renderS4(); renderS5();
+  renderS1(); renderS3(); renderS4(); renderS5();
 
   /* ══ NAVIGATION (inherited) ═════════════════════════════════════════ */
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
@@ -390,6 +501,10 @@
   show(fromHash() || 1, false);
   moveCamera(screens[current - 1].dataset.cam, true);
 
-  /* read-only view of the state, for QA scripts */
-  window.BTA = { state: function () { return { screen: S.screen, mode: S.mode, decided: S.decided, choice: S.choice }; } };
+  /* read-only view of the state and the collection, for QA scripts */
+  window.BTA = {
+    state: function () { return { screen: S.screen, mode: S.mode, decided: S.decided, choice: S.choice }; },
+    orders: function () { return JSON.parse(JSON.stringify(ORDERS)); },
+    evaluate: function (id, mode) { var o = ORDERS.filter(function (x) { return x.id === id; })[0]; return o ? evaluate(o, mode) : null; }
+  };
 })();

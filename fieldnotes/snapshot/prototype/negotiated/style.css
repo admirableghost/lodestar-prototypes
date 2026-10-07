@@ -1141,15 +1141,26 @@ body { background: var(--paper); }
 .xcons--arr { max-width: 30ch; display: inline-grid; gap: .15em; text-wrap: initial; }
 .xcons--arr span { display: block; }
 .screen--arr[data-state="pending"] .xcons--arr { color: var(--warn); font-weight: 700; }
-.screen--arr[data-state="begin"]   .xcons--arr { color: var(--green); font-weight: 700; }
-/* the begin state's one further line: who arranged it and how it is paid,
+.screen--arr[data-state="ready"]   .xcons--arr { color: var(--green); font-weight: 700; }
+/* the ready state's one further line: who arranged it and how it is paid,
    marked proposed. Regular weight and the plain ink, under the green line,
-   so it reads as a note on the arrangement and not as a second verdict. */
+   so it reads as a note on the proposal and not as a second verdict. */
 .xcons--prov {
   max-width: 34ch;
   font-size: clamp(16px, .45vw + .95vh, 20px); font-weight: 400;
   color: var(--edition-ink); text-wrap: pretty;
 }
+
+/* the foot of screen 5: the three status chips (ready state only; screen
+   4's .step vocabulary, unchanged) stacked over the key. Anchored to the
+   bottom of its band like screen 4's steps; the key keeps its own width. */
+.arr-foot {
+  align-self: end; justify-self: stretch; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: clamp(8px, 1.2vh, 12px);
+}
+.arr-foot .steps { align-self: stretch; }
+.arr-foot .leg--chip { align-self: flex-start; }
 
 /* the key, as a chip at the foot — the same two entries as screen 3 */
 .leg--chip {
@@ -1208,6 +1219,10 @@ body { background: var(--paper); }
   .leg--chip { align-self: flex-start; }
   .leg--chip .leg-i { font-size: 15px; }
   .xcons--arr { max-width: none; }
+  /* in the stacked column align-self:end would shrink-wrap the foot to the
+     right edge; the chips run full width here, as screen 4's do, and the
+     key keeps to the left */
+  .arr-foot { align-self: stretch; gap: 8px; }
 }
 @media (min-width: 600px) and (max-width: 899px) {
   .step-val, .tm, .vbtn, .jbtn, .joined { font-size: 18px; }

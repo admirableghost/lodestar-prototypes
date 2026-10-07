@@ -362,7 +362,7 @@
         (perDay != null && full
           ? '<li class="is-remedy"><svg class="remedy-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
               '<path d="M6 3 V14 H18 M13 9 L19 14 L13 19" fill="none" stroke="#8A3450" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
-            "</svg>Remedy " + perDay + " USD a day late, no claim needed</li>"
+            "</svg>Remedy " + perDay + " USD a day late, no separate claim needed</li>"
           : "") +
       "</ul>";
   }
@@ -576,7 +576,8 @@
         arrow +
         '<div class="calc-step calc-step--r">' +
           '<p class="calc-n"><span class="calc-big">' + grp(remedy) + '</span><span class="calc-u">USD</span></p>' +
-          '<p class="calc-w">published remedy, no claim</p>' +
+          '<p class="calc-w">applied automatically</p>' +
+          '<p class="calc-s">no separate claim needed</p>' +
         "</div>";
     } else if (calc) {
       /* no published settlement time means nothing to check and nothing

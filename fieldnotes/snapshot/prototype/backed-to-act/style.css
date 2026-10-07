@@ -202,7 +202,10 @@ body {
 /* compact rows: a hairline between, one line each, 18px */
 .rows { list-style: none; margin: 12px 0 0; padding: 0; }
 .rows li { padding: 8px 0 9px; border-top: 1px solid var(--rule); font: 400 18px/1.35 var(--sans); }
-.rows--parts { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+/* the drafted orders: one row each, item left, amount right, tabular */
+.rows--parts { max-width: 520px; }
+.rows--parts li { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 0 20px; align-items: baseline; }
+.rows--parts .amt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rows--lines li { font-size: var(--body); line-height: 1.4; }
 
 /* a card: the assistant's object inside the thread */
@@ -271,6 +274,10 @@ body {
 .slip b { font-weight: 700; }
 .tick { position: absolute; width: 24px; height: 24px; }
 .tick--slip { right: 10px; top: 50%; margin-top: -12px; }
+/* the day summed, under the rows: one line, amounts bold and tabular */
+.sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--rule);
+  font: 400 var(--body)/1.4 var(--sans); color: var(--dim); }
+.sum b { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* the draft-only waiting row */
 .done-row--wait { grid-template-columns: max-content max-content; }
 .done-row--wait .why { grid-column: 1 / 3; }
@@ -447,7 +454,7 @@ body {
   .thread { padding: 16px 16px 0; }
   .ws { padding-bottom: 18px; }
   .msg--you { max-width: 100%; }
-  .rows--parts { grid-template-columns: 1fr; }
+  .rows--parts { max-width: none; }
   .card { padding: 12px 14px 16px; }
   .terms > div { grid-template-columns: 1fr; gap: 0; }
   .terms dt { padding-bottom: 0; }

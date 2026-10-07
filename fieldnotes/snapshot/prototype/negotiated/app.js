@@ -28,8 +28,11 @@
    THE STATE OBJECT — one source of truth,
    S = { screen, joined, committed, verified }
    · joined starts false and is set ONLY by #join on screen 2: the household
-     authorises its agent to join on the pre-negotiated terms. Joining moves
-     committed from 41 (the others) to 42 (the others plus no. 31).
+     authorises its agent to DEVELOP the proposal. It is never acceptance of
+     terms — no contribution, price or acceptance mechanism exists in any
+     source, so there is no acceptance flag because there is nothing to
+     accept yet. Joining moves committed from 41 (the others) to 42 (the
+     others plus no. 31).
    · committed starts at 41 and is otherwise moved ONLY by the slider on
      screen 3 — floor 42 when joined, 41 when not (no. 31 stays hollow and
      the ceiling is 59, because no. 31 is not among the others). It is
@@ -38,8 +41,10 @@
      screen 4.
    · "Back to the start" from screen 5 is the one action that resets all
      three.
-   · screen 5 is derived: begin = committed ≥ 48 && verified. Pressing Next
-     never produces "begin"; only the two facts do.
+   · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is a
+     successful collective proposal with final terms pending — nothing on
+     the screen says in force, active, signed or begun. Pressing Next never
+     produces "ready"; only the two facts do.
 
    DEEP LINKS — five screens, #s/1 … #s/5. The three-screen build's links
    map as: old #s/1 → 1 (unchanged), old #s/2 (the threshold) → #s/3, old
@@ -64,7 +69,9 @@
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
   var S = { screen: 1, joined: false, committed: START, verified: false };
-  function begin() { return S.committed >= NEED && S.verified; }
+  /* the street is READY — participation reached and verified — with final
+     terms pending. Not "in force": there are no terms to be in force yet. */
+  function ready() { return S.committed >= NEED && S.verified; }
   /* the slider's bounds follow `joined`: no. 31 is counted only once she
      has authorised, so the others alone can never number sixty */
   function floor() { return S.joined ? START + 1 : START; }
@@ -127,7 +134,7 @@
        attached to one home among others */
     deal:   { x: 420, y: 404, w: 420, h: 180 },
     commit: { x: 0, y: 282, w: 1180, h: 334 },
-    signed: { x: -70, y: 282, w: 1320, h: 360 }
+    ready:  { x: -70, y: 282, w: 1320, h: 360 }
   };
   /* A phone gets the same landscape world, framed tighter: both rows and
      the road still, but a run of the street rather than all sixty, because
@@ -137,7 +144,7 @@
     street: { x: 330, y: 282, w: 560, h: 334 },
     deal:   { x: 500, y: 404, w: 260, h: 180 },
     commit: { x: 330, y: 282, w: 560, h: 334 },
-    signed: { x: 330, y: 282, w: 560, h: 360 }
+    ready:  { x: 330, y: 282, w: 560, h: 360 }
   };
 
   var narrow = false;
@@ -436,11 +443,11 @@
   }
   function pinSet(n) {
     /* Screen 1 carries one artwork label: no. 31. Screen 5, once the
-       arrangement can begin, labels one house that has not joined — the
-       next in the commitment order, which is where a run of committed
-       frontage breaks. At sixty there is no such house and no label. */
+       street is ready, labels one house that has not joined — the next in
+       the commitment order, which is where a run of committed frontage
+       breaks. At sixty there is no such house and no label. */
     if (n === 1) { return [pinAt("ink", "No. 31 · prepared", ROSA, -44)]; }
-    if (n === 5 && begin() && S.committed < HOMES) {
+    if (n === 5 && ready() && S.committed < HOMES) {
       /* the first house outside the set, in the commitment order. When she
          never authorised, that house is no. 31 herself. */
       var out = S.joined ? ORDER[S.committed] : ROSA;
@@ -540,6 +547,7 @@
 
   var joinBtn = document.getElementById("join");
   var joinedEl = document.getElementById("joined");
+  var joinedN = document.getElementById("joined-n");
   var range = document.getElementById("thr-range");
   var railEl = range ? range.parentNode : null;
   var ctlEl = document.getElementById("ctl");
@@ -555,6 +563,8 @@
   var arrHead = document.getElementById("arr-head");
   var arrLine = document.getElementById("arr-line");
   var arrProv = document.getElementById("arr-prov");
+  var arrStatus = document.getElementById("arr-status");
+  var arrN = document.getElementById("arr-n");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
                "eight", "nine", "ten", "eleven", "twelve"];
@@ -588,9 +598,10 @@
     var open = S.committed >= NEED;
     var lo = floor(), hi = ceil();
 
-    /* screen 2 — the one action, or its result */
+    /* screen 2 — the one action, or its result (with the live count) */
     if (joinBtn) { joinBtn.hidden = S.joined; }
     if (joinedEl) { joinedEl.hidden = !S.joined; }
+    if (joinedN) { joinedN.textContent = String(S.committed); }
 
     /* screen 3 — the slider's bounds follow `joined` */
     if (range) {
@@ -616,17 +627,21 @@
     if (verState) { verState.textContent = S.verified ? "Verified" : "Pending"; }
     if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
 
-    /* screen 5 — derived */
+    /* screen 5 — derived. Ready: the proposal stands, final terms pending.
+       The three status chips name what is settled (participation, the
+       live count; verification) and what is not (cost and cover). */
     if (arrHead && arrLine) {
-      if (begin()) {
-        arrHead.innerHTML = spans(["The arrangement", "can begin."]);
-        arrLine.innerHTML = spans(["Conditional terms in force while 48 stay in and checks continue."]);
+      if (ready()) {
+        arrHead.innerHTML = spans(["The street", "is ready."]);
+        arrLine.innerHTML = spans(["Final terms need your approval."]);
       } else {
         arrHead.innerHTML = spans(["Still pending."]);
         arrLine.innerHTML = spans(missing());
       }
-      if (arrProv) { arrProv.hidden = !begin(); }
-      screens[4].dataset.state = begin() ? "begin" : "pending";
+      if (arrProv) { arrProv.hidden = !ready(); }
+      if (arrStatus) { arrStatus.hidden = !ready(); }
+      if (arrN) { arrN.textContent = String(S.committed); }
+      screens[4].dataset.state = ready() ? "ready" : "pending";
     }
   }
 
@@ -637,15 +652,17 @@
     refit();
   }
 
-  /* #join — the household authorises its agent to join on the terms on the
-     sheet. The only thing that sets `joined`; it counts no. 31 in. */
+  /* #join — the household authorises its agent to develop the proposal.
+     The only thing that sets `joined`; it counts no. 31 in. It accepts
+     nothing: the cost is set before acceptance, and acceptance is not
+     modelled because nothing exists to accept. */
   if (joinBtn) {
     joinBtn.addEventListener("click", function () {
       if (S.joined) { return; }
       S.joined = true;
       S.committed = clampCommitted(S.committed + 1);
       repaint();
-      say("Joined. " + S.committed + " of 60 committed. No. 31 is now counted in.");
+      say("Joined the proposal. " + S.committed + " of 60. No. 31 is now counted in; no terms accepted yet.");
     });
   }
 
@@ -706,9 +723,10 @@
     }
     if (n === 3) { return streetState; }
     if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
-    return streetState + (begin()
-      ? "The arrangement can begin; one house that has not joined is labelled “outside the arrangement”."
-      : "The arrangement is still pending.");
+    return streetState + (ready()
+      ? "The street is ready and final terms are pending" +
+        (c < HOMES ? "; one house that has not joined is labelled “outside the arrangement”." : ".")
+      : "The street is still pending.");
   }
 
   function drawFor(n) {
@@ -833,7 +851,7 @@
   var nextBtn = document.getElementById("next");
   var nextLabel = document.getElementById("next-label");
 
-  var CTA = ["Know the deal", "Assemble the street", "Verify the conditions", "Can it begin?", "Back to the start"];
+  var CTA = ["Know the deal", "Assemble the street", "Verify the conditions", "Is the street ready?", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -877,8 +895,9 @@
           : h.textContent)
       : sc.dataset.label;
     if (n === 5) {
-      said += " " + (begin()
-        ? "Conditional terms in force while 48 stay in and checks continue. Arranged by the service, paid from the cover it assembles, proposed."
+      said += " " + (ready()
+        ? "Final terms need your approval. Participation " + S.committed + " of 60; verification complete; " +
+          "cost and cover, terms pending. Arranged by the service, paid from the cover it assembles, proposed."
         : missing().join(". ") + ".");
     }
     announce.textContent = "Screen " + n + " of " + total + ". " +

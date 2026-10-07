@@ -41,21 +41,26 @@
 <!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
      1 acting alone fails · 2 the deal, before joining · 3 the street reaches
      the threshold · 4 participation is not the final condition · 5 the
-     arrangement can begin (or is still pending).
+     street is ready and final terms need approval (or it is still pending).
      Copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md,
      NEGOTIATED). Everything the facilitator says aloud lives in
      FACILITATOR-NOTES.md, not here. Empty space is the street showing
      through, and is deliberate.
 
      STATE — one object in app.js: { screen, joined, committed, verified }.
-     `joined` is false on entry and set only by the #join button on screen 2,
-     which also moves `committed` from 41 (the others) to 42 (the others plus
-     no. 31). `committed` is moved otherwise only by the slider on screen 3 —
-     floor 42 when joined, 41 when not — and never reset by navigation;
-     `verified` is false until the surveyor control on screen 4 is pressed.
-     Only "Back to the start" from screen 5 resets all three. Screen 5 is
-     DERIVED: begin = committed ≥ 48 AND verified. Nothing on screen 5 is
-     ever reached merely by pressing Next. -->
+     `joined` means the household has authorised its agent to DEVELOP the
+     proposal — never that it has accepted terms: no contribution, price or
+     acceptance mechanism exists in any source, so there is nothing to
+     accept yet. It is false on entry and set only by the #join button on
+     screen 2, which also moves `committed` from 41 (the others) to 42 (the
+     others plus no. 31). `committed` is moved otherwise only by the slider
+     on screen 3 — floor 42 when joined, 41 when not — and never reset by
+     navigation; `verified` is false until the surveyor control on screen 4
+     is pressed. Only "Back to the start" from screen 5 resets all three.
+     Screen 5 is DERIVED: ready = committed ≥ 48 AND verified, and "ready"
+     means the collective proposal stands with final terms pending — never
+     that anything is in force. Nothing on screen 5 is ever reached merely
+     by pressing Next. -->
 <main class="deck" id="deck">
 
 <!-- ══════ 1 · ACTING ALONE ══════ -->
@@ -73,11 +78,13 @@
 <!-- ══════ 2 · THE DEAL, BEFORE JOINING ══════
      ONE THOUGHT: a household sees the terms and the protection that would
      follow BEFORE committing anything. One terms sheet, tied to no. 31's
-     roof by a line, five pre-negotiated terms, no amounts, and ONE action:
-     the household authorises its agent to join. The agent assembles
-     participation on these terms; it does not invent terms or sign for
-     anyone else. The street shows what the count says: 41 others already
-     in, no. 31 hollow until she joins. -->
+     roof by a line, five terms, no amounts, and ONE action: the household
+     authorises its agent to develop the proposal. Joining is not acceptance
+     of a price — the cost line says it is set before acceptance, and cover
+     starts only once the work is verified AND terms are accepted. The agent
+     assembles participation; it does not invent terms or sign for anyone
+     else. The street shows what the count says: 41 others already in,
+     no. 31 hollow until she joins. -->
 <section class="screen screen--deal" data-screen="2" data-label="The deal" data-cam="deal" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
@@ -90,14 +97,16 @@
   <div class="plate plate--agree" id="deal-card" style="grid-area:1/8/9/13">
     <dl class="sheet" aria-label="The terms attached to no. 31">
       <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Work</dt> <dd>harden your lot</dd></div>
-      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Cost to you</dt> <dd>not set</dd></div>
+      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Cost to you</dt> <dd>set before acceptance</dd></div>
       <div class="tm tm--fund"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Financing</dt> <dd>fund pays now, repaid on the bill over twelve years</dd></div>
-      <div class="tm tm--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Protection</dt> <dd>the street as one risk for three years while 48 stay in</dd></div>
-      <div class="tm tm--survey"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Cover starts</dt> <dd>work done and verified</dd></div>
+      <div class="tm tm--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Protection</dt> <dd>one street risk, three years, while 48 stay in</dd></div>
+      <div class="tm tm--survey"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Cover starts</dt> <dd>work verified, terms accepted</dd></div>
     </dl>
     <div class="sheet-act">
-      <button type="button" class="jbtn" id="join">Authorise my agent to join</button>
-      <p class="joined" id="joined" hidden><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>Joined · 42 of 60 committed</span></p>
+      <button type="button" class="jbtn" id="join">Authorise my agent to develop the proposal</button>
+      <!-- the count is written by paint() from S.committed, so the result
+           line and the street can never disagree -->
+      <p class="joined" id="joined" hidden><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>Joined the proposal · <span id="joined-n">42</span> of 60</span></p>
     </div>
   </div>
 
@@ -183,25 +192,50 @@
 
 </section>
 
-<!-- ══════ 5 · THE ARRANGEMENT ══════
-     DERIVED, never navigated into: begin = committed ≥ 48 AND verified.
-     Headline, state line, boundary and the "outside the arrangement" label
-     are all written by app.js from the state object. -->
-<section class="screen screen--arr" data-screen="5" data-label="The arrangement" data-cam="signed" data-veil="soft">
+<!-- ══════ 5 · THE STREET, READY OR PENDING ══════
+     DERIVED, never navigated into: ready = committed ≥ 48 AND verified.
+     "Ready" is a successful collective proposal with FINAL TERMS PENDING:
+     no contribution, price or acceptance exists in any source, so nothing
+     here may say in force, active, signed or begun. Headline, state line,
+     the three status chips, the boundary and the "outside the arrangement"
+     label are all written by app.js from the state object. -->
+<section class="screen screen--arr" data-screen="5" data-label="The street" data-cam="ready" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
     <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification pending</span></p>
-    <!-- BEGIN state only: who arranged it and how it is paid, marked proposed -->
+    <!-- READY state only: who arranged it and how it is paid, marked proposed -->
     <p class="xcons xcons--prov" id="arr-prov" hidden>Arranged by the service · paid from the cover it assembles · proposed</p>
   </div>
 
-  <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/8/13"></div>
 
-  <p class="leg leg--chip" style="grid-area:8/1/9/6">
-    <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Committed</span>
-    <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
-  </p>
+  <!-- the foot: in the READY state the three status chips, in screen 4's
+       chip vocabulary (met = solid green check, pending = dashed hollow
+       circle), then the key. In every pending state only the key. -->
+  <div class="arr-foot" style="grid-area:7/1/9/13">
+    <ol class="steps steps--arr" id="arr-status" aria-label="Status of the proposal" hidden>
+      <li class="step" data-state="met">
+        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+        <p class="step-name">Participation</p>
+        <p class="step-val"><span class="step-n" id="arr-n">48</span> of 60</p>
+      </li>
+      <li class="step" data-state="met">
+        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+        <p class="step-name">Verification</p>
+        <p class="step-val">complete</p>
+      </li>
+      <li class="step" data-state="pending">
+        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+        <p class="step-name">Cost and cover</p>
+        <p class="step-val">terms pending</p>
+      </li>
+    </ol>
+    <p class="leg leg--chip">
+      <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Committed</span>
+      <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
+    </p>
+  </div>
 
 </section>
 
