@@ -483,16 +483,17 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 4 — the same path, carried on, and stopped
+     SCREEN 4 — the same path, carried on, and handed over
      ══════════════════════════════════════════════════════════════════════
      Landscape: the recommendation left-middle (the other three faded behind
-     it), the path runs right into a vertical wall that stands between the
-     headline and the chrome, and the bound policy sits beyond it as an
-     outline. Portrait: the same beats top to bottom, the wall horizontal. */
+     it), the path runs right to a compact paper slip — "Handoff to you",
+     carrying the five transaction words in two rows — and the bound policy
+     sits beyond it as a dashed outline, not reached. Portrait: the same
+     beats top to bottom. The slip is artwork, not a control. */
   var scene4El = document.getElementById("scene4");
   var head4El = document.getElementById("s4-head");
   var ask4El = document.getElementById("s4-ask");
-  var WORDS = ["Buy", "Bind", "Sign", "Identity", "Payment"];
+  var ROWS4 = [["Buy", "Bind", "Sign"], ["Identity", "Payment"]];
 
   function geomWall(W, H, portrait) {
     var g = { W: W, H: H, portrait: portrait };
@@ -500,28 +501,23 @@
     if (!portrait) {
       var headB = head4El ? head4El.getBoundingClientRect().bottom : H * 0.32;
       var askT = ask4El ? ask4El.getBoundingClientRect().top : H - 220;
-      var chromeT = chromeTop(H);
       s = clamp(Math.min(W / 1180, H / 820), 0.6, 1.15);
       var bandT = headB + 20, bandB = askT - 20;
       SH = Math.min(262 * s, bandB - bandT); SW = SH * 0.76;
       g.SW = SW; g.SH = SH;
       g.mid = (bandT + bandB) / 2;
-      /* the recommendation, with the other three receding behind it */
       g.sheet = { x: 56 + 14 * s + 3 * 18 * s, y: g.mid - SH / 2, a: 0 };
       g.behind = [];
       for (var k = 0; k < 3; k++) { g.behind.push({ x: g.sheet.x - (3 - k) * 18 * s, y: g.sheet.y + (3 - k) * 6 * s, a: -6 + k * 2 }); }
-      /* the wall and what lies beyond it */
+      /* the slip and the policy form one horizontal group on the right */
       g.policy = { w: 150 * s, h: 170 * s };
-      var ww = clamp(112 * s, 104, 124);   /* "Identity" at 18px bold needs ~92px */
-      g.wall = { x: W - 56 - (g.policy.w + 64 * s) - ww, w: ww, y: -20, h: chromeT - 12 + 20 };
-      g.impact = { x: g.wall.x, y: g.mid };
-      g.policy.x = g.wall.x + ww + 56 * s;
-      g.policy.y = g.mid - g.policy.h / 2 - 12;
-      /* five words, stacked about the path's height, kept inside the wall */
-      var wallB = g.wall.y + g.wall.h;
-      var sp = Math.min(104 * s, (g.mid - 44) / 2, (wallB - 36 - g.mid) / 2);
-      g.words = [];
-      for (k = 0; k < 5; k++) { g.words.push({ x: g.wall.x + ww / 2, y: g.mid + (k - 2) * sp + 6 }); }
+      g.slip = { w: clamp(232 * s, 212, 252), h: clamp(150 * s, 138, 164) };
+      var gap = 48 * s;
+      var groupW = g.slip.w + gap + g.policy.w;
+      var right = W - 56 - 16 * s;
+      g.slip.x = right - groupW; g.slip.y = g.mid - g.slip.h / 2;
+      g.policy.x = g.slip.x + g.slip.w + gap; g.policy.y = g.mid - g.policy.h / 2 - 12;
+      g.end = { x: g.slip.x, y: g.mid };
       return g;
     }
     s = clamp(W / 720, 0.5, 1.0);
@@ -531,25 +527,35 @@
     g.behind = [];
     for (var j = 0; j < 3; j++) { g.behind.push({ x: g.sheet.x - (3 - j) * 16 * s, y: g.sheet.y - (3 - j) * 6 * s, a: -6 + j * 2 }); }
     var sheetB = g.sheet.y + SH;
-    g.wall = { x: -20, w: W + 40, y: sheetB + 72, h: 124 };
     g.mid = g.sheet.x + SW / 2;
-    g.impact = { x: g.mid, y: g.wall.y };
-    var ROWS = [["Buy", "Bind", "Sign"], ["Identity", "Payment"]];
-    g.words = [];
-    for (var r = 0; r < 2; r++) {
-      for (var c = 0; c < ROWS[r].length; c++) {
-        g.words.push({ x: W / 2 + (c - (ROWS[r].length - 1) / 2) * 112, y: g.wall.y + 46 + r * 44, t: ROWS[r][c] });
-      }
-    }
+    g.slip = { w: Math.min(252, W - 48), h: 150 };
+    g.slip.x = W / 2 - g.slip.w / 2; g.slip.y = sheetB + 64;
+    g.end = { x: g.mid, y: g.slip.y };
     g.policy = { w: 150 * s, h: 170 * s };
     g.policy.x = W / 2 - g.policy.w / 2;
-    g.policy.y = g.wall.y + g.wall.h + 36;
+    g.policy.y = g.slip.y + g.slip.h + 44;
     g.H = g.policy.y + g.policy.h + 40;
     return g;
   }
 
+  /* the handoff slip: warm paper, dark ink, one fine rule, a soft shadow */
+  function handoffSlip(p, sl) {
+    var s = [], x = sl.x, y = sl.y, w = sl.w, h = sl.h;
+    s.push('<rect x="' + f1(x + 6) + '" y="' + f1(y + 8) + '" width="' + f1(w) + '" height="' + f1(h) + '" fill="#000" opacity=".28"/>');
+    s.push('<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) + '" fill="' + S.paper + '" filter="url(#' + p + 'grain)"/>');
+    s.push('<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) + '" fill="none" stroke="' + S.ink + '" stroke-width="1.5" opacity=".55"/>');
+    s.push('<text x="' + f1(x + 18) + '" y="' + f1(y + 34) + '" font-size="18" font-weight="700" fill="' + S.ink + '">Handoff to you</text>');
+    s.push('<line x1="' + f1(x + 18) + '" y1="' + f1(y + 48) + '" x2="' + f1(x + w - 18) + '" y2="' + f1(y + 48) + '" stroke="' + S.ink + '" stroke-width="1" opacity=".45"/>');
+    var rowY = [y + 84, y + 122];
+    for (var r = 0; r < 2; r++) {
+      var t = ROWS4[r].join('<tspan fill="' + S.ink + '" opacity=".4"> · </tspan>');
+      s.push('<text x="' + f1(x + 18) + '" y="' + f1(rowY[r]) + '" font-size="17" font-weight="700" letter-spacing=".02em" fill="' + S.ink + '">' + t + '</text>');
+    }
+    return s.join("");
+  }
+
   function wallScene(hit, g) {
-    var s = [], i, p = "s4", SW = g.SW, SH = g.SH, w = g.wall;
+    var s = [], i, p = "s4", SW = g.SW, SH = g.SH;
     s.push(defs(p));
 
     /* the three not chosen, behind and quiet; then the recommendation */
@@ -558,43 +564,19 @@
     }
     s.push(quoteSheet(p, SW, SH, g.sheet, QUOTES[3], { paper: true, garage: true, claim: true }));
 
-    /* the path runs on, straight at the wall */
+    /* one clean path from the recommendation to the slip's leading edge */
     var from = g.portrait ? { x: g.mid, y: g.sheet.y + SH } : { x: g.sheet.x + SW, y: g.mid };
-    s.push('<line x1="' + f1(from.x) + '" y1="' + f1(from.y) + '" x2="' + f1(g.impact.x) + '" y2="' + f1(g.impact.y) +
+    s.push('<line x1="' + f1(from.x) + '" y1="' + f1(from.y) + '" x2="' + f1(g.end.x) + '" y2="' + f1(g.end.y) +
            '" stroke="' + S.aihi + '" stroke-width="3.5" stroke-linecap="round"/>');
 
-    /* THE WALL — solid, and the only warm object on this screen */
-    s.push('<rect x="' + f1(w.x) + '" y="' + f1(w.y) + '" width="' + f1(w.w) + '" height="' + f1(w.h) + '" fill="' + S.warm + '"/>');
-    /* a lit leading edge on the side the path arrives from */
-    if (!g.portrait) {
-      s.push('<rect x="' + f1(w.x - 2) + '" y="' + f1(w.y) + '" width="4" height="' + f1(w.h) + '" fill="' + S.warmhi + '"/>');
-    } else {
-      s.push('<rect x="' + f1(w.x) + '" y="' + f1(w.y - 2) + '" width="' + f1(w.w) + '" height="4" fill="' + S.warmhi + '"/>');
-    }
-    /* the five things written on the wall itself */
-    for (i = 0; i < g.words.length; i++) {
-      var wd = g.words[i], t = wd.t || WORDS[i];
-      s.push('<text x="' + f1(wd.x) + '" y="' + f1(wd.y) + '" text-anchor="middle" font-size="18" font-weight="700" letter-spacing=".04em" fill="' +
-             S.cream + '">' + t + '</text>');
-    }
-
-    /* the impact: the flow does not pass, it scatters back */
+    /* the handoff, with the path's endpoint on its edge */
+    s.push(handoffSlip(p, g.slip));
     if (hit) {
-      var ix = g.impact.x, iy = g.impact.y;
-      s.push('<circle cx="' + f1(ix) + '" cy="' + f1(iy) + '" r="16" fill="' + S.aihi + '" opacity=".35"/>');
-      s.push('<circle cx="' + f1(ix) + '" cy="' + f1(iy) + '" r="6" fill="' + S.aihi + '"/>');
-      seed = 19;
-      for (i = 0; i < 16; i++) {
-        var ang = (g.portrait ? 90 : 0) + (rnd() - 0.5) * 150;
-        var rad = (ang + 180) * Math.PI / 180;
-        var len = 24 + rnd() * 90;
-        s.push('<line x1="' + f1(ix) + '" y1="' + f1(iy) + '" x2="' + f1(ix + Math.cos(rad) * len) +
-               '" y2="' + f1(iy + Math.sin(rad) * len) + '" stroke="' + S.aihi +
-               '" stroke-width="1.6" opacity="' + (0.25 + rnd() * 0.5).toFixed(2) + '" stroke-linecap="round"/>');
-      }
+      s.push('<circle cx="' + f1(g.end.x) + '" cy="' + f1(g.end.y) + '" r="9" fill="' + S.aihi + '" opacity=".3"/>');
     }
+    s.push('<circle cx="' + f1(g.end.x) + '" cy="' + f1(g.end.y) + '" r="5" fill="' + S.aihi + '"/>');
 
-    /* beyond the wall: the bound policy, drawn but not reached */
+    /* beyond the handoff: the bound policy, drawn but not reached */
     var b = g.policy;
     s.push('<rect x="' + f1(b.x) + '" y="' + f1(b.y) + '" width="' + f1(b.w) + '" height="' + f1(b.h) +
            '" fill="none" stroke="' + S.muted + '" stroke-width="2" stroke-dasharray="8 7" opacity=".8"/>');
