@@ -14,7 +14,7 @@
 
 <button class="skip" type="button" id="skip">Skip to this screen's content</button>
 
-<!-- filters the headline backing borrows (a rough edge on a CSS pseudo-element) -->
+<!-- filters the headline backing and her message borrow (a rough edge on a CSS pseudo-element) -->
 <svg class="fm-defs" aria-hidden="true" focusable="false" width="0" height="0">
   <defs>
     <filter id="rough" x="-4%" y="-6%" width="108%" height="112%">
@@ -25,7 +25,7 @@
 </svg>
 
 <!-- ═══════════════ THE GROUND ═══════════════
-     One charcoal field under both screens: a faint texture of receding
+     One charcoal field under all four screens: a faint texture of receding
      documents. Drawn in app.js — no images, no external request. -->
 <div class="world" id="world">
   <svg id="field" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
@@ -33,41 +33,79 @@
 
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · WHAT IT ALREADY DOES ══════════════════════════════════════
-     One flow: four quotes → the two clauses that matter to this household
-     → one recommended quote. Text is HTML in flow; the drawing is one SVG
-     laid out in CSS pixels, so its labels are the same size as the type. -->
-<section class="screen fm-sc fm-s1" data-screen="1" data-label="What it already does">
+<!-- ══════ 1 · THE CUSTOMER DELEGATES ═══════════════════════════════════
+     Her request, as the message she sent, beside the four quotes that go
+     into the comparison. The path starts; nothing has come out yet.
+     Copy: design-study/story-expansion/SCREEN-COPY.md · FIRST MOVE · S1 -->
+<section class="screen fm-sc fm-s1" data-screen="1" data-label="The request">
 
   <header class="fm-head" id="s1-head">
     <h1 class="display fm-headline" tabindex="-1"><span>She stopped reading</span> <span>the policies herself.</span></h1>
-    <p class="fm-lede">Four quotes compared against her needs.</p>
   </header>
 
+  <blockquote class="fm-msg" id="s1-msg">
+    <p>“Four renewals came in. Find me the one that actually covers us.”</p>
+  </blockquote>
+
   <svg class="fm-scene" id="scene1" role="img"
-       aria-label="Four renewal quotes, Quote A to Quote D, fanned on a dark field. One reasoning path runs through all four and pulls two clauses out onto the path: a garage exclusion, marked on Quote B and Quote C, and a prior claim, rated at a different point on each of the four. The cheapest quote, Quote C, is marked ranked third. The path arrives at Quote D, lifted out of the fan and marked Recommended, not the cheapest, then runs on toward the right edge."></svg>
+       aria-label="Four renewal quotes, Quote A to Quote D, fanned on a dark field. One reasoning path enters from the left edge and runs into the fan. Nothing has been pulled out of the quotes yet. Beside the fan sits her message, quoted."></svg>
 
   <div class="fm-foot" id="s1-foot">
-    <button class="fm-run" type="button" id="read-play">Run it again</button>
     <p class="fm-micro">Invented person and quotes. A reconstruction, not a recording.</p>
   </div>
 
 </section>
 
-<!-- ══════ 2 · WHERE IT STOPS ═════════════════════════════════════════════
-     The same path, carried on from the recommendation, meets a wall the
-     assistant does not pass. The purchase beyond it is hers to make.
-     Headline → wall → question. -->
-<section class="screen fm-sc fm-s2" data-screen="2" data-label="Where it stops">
+<!-- ══════ 2 · THE DIFFERENCES MATTER ═══════════════════════════════════
+     The same fan, now read: the garage exclusion lit on two of the four,
+     the prior claim lit on all four at a different point on each. The two
+     clauses are pulled out onto the path and named. No table, no score. -->
+<section class="screen fm-sc fm-s2" data-screen="2" data-label="The differences">
 
   <header class="fm-head" id="s2-head">
-    <h2 class="display fm-headline" tabindex="-1"><span>The recommendation is ready.</span> <span>You complete the purchase.</span></h2>
+    <h2 class="display fm-headline" tabindex="-1"><span>Same purchase.</span> <span>Different protection.</span></h2>
   </header>
 
   <svg class="fm-scene" id="scene2" role="img"
+       aria-label="The same four quotes, Quote A to Quote D. The reasoning path runs through all four and pulls two clauses out onto the path. A garage exclusion, hatched on Quote B and Quote C: in two of the four. A prior claim, a bar on every quote with its rating mark at a different point on each: rated differently by each. The path stops at the two clauses."></svg>
+
+</section>
+
+<!-- ══════ 3 · A RECOMMENDATION EMERGES ═════════════════════════════════
+     From the two clauses the path climbs to Quote D, lifted out of the fan
+     onto paper: recommended, not the cheapest. The cheapest, Quote C, is
+     marked ranked third. The replay control runs the read again. -->
+<section class="screen fm-sc fm-s3" data-screen="3" data-label="The recommendation">
+
+  <header class="fm-head" id="s3-head">
+    <h2 class="display fm-headline" tabindex="-1"><span>The cheapest quote</span> <span>does not win.</span></h2>
+  </header>
+
+  <svg class="fm-scene" id="scene3" role="img"
+       aria-label="The four quotes again. The reasoning path runs through them, out to the two clauses it pulled, and up to Quote D, lifted out of the fan and marked Recommended, not the cheapest. The cheapest quote, Quote C, stays in the fan marked ranked third. The path runs on past the recommendation toward the right edge."></svg>
+
+  <p class="fm-reason" id="s3-reason">Covers the garage. Rates her claim fairly.</p>
+
+  <div class="fm-foot" id="s3-foot">
+    <button class="fm-run" type="button" id="read-play">Run it again</button>
+  </div>
+
+</section>
+
+<!-- ══════ 4 · THE HUMAN HANDOFF ════════════════════════════════════════
+     The same path, carried on from the recommendation, meets a wall the
+     assistant does not pass. The purchase beyond it is hers to make.
+     Headline → wall → question. Unchanged from the two-screen build. -->
+<section class="screen fm-sc fm-s4" data-screen="4" data-label="The handoff">
+
+  <header class="fm-head" id="s4-head">
+    <h2 class="display fm-headline" tabindex="-1"><span>The recommendation is ready.</span> <span>You complete the purchase.</span></h2>
+  </header>
+
+  <svg class="fm-scene" id="scene4" role="img"
        aria-label="The recommended quote sits at the left with the other three faded behind it. The reasoning path runs from it straight into a solid warm wall that spans the stage and carries five words: Buy, Bind, Sign, Identity, Payment. The path scatters against the wall and does not pass. Beyond the wall, drawn only as a dashed outline, is the bound policy."></svg>
 
-  <div class="fm-ask" id="s2-ask">
+  <div class="fm-ask" id="s4-ask">
     <p class="fm-ask-q" tabindex="-1">What happens when she delegates the next step too?</p>
   </div>
 
@@ -85,7 +123,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">Where it stops</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">See the differences</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

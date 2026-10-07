@@ -1,23 +1,30 @@
 /* ══════════════════════════════════════════════════════════════════════════
    First Move · the opening bookend
-   Two screens. No framework, no build step, no external request.
+   Four screens. No framework, no build step, no external request.
 
    THE ARGUMENT AS A PLACE
    A charcoal information field with one directional axis running through it.
 
-       screen 1   four quotes are read, the two clauses that matter to this
-                  household are pulled out onto the path, and ONE quote is
-                  lifted out of the fan as the recommendation — not the
-                  cheapest. The path runs on, quietly, toward the edge.
-       screen 2   the same path, carried on from the recommendation, meets
+       screen 1   her request, as the message she sent, beside four renewal
+                  quotes fanned on the field. The path starts into the fan.
+                  Nothing has come out yet.
+       screen 2   the same fan, read: the two clauses that matter to this
+                  household are lit across the four and pulled out onto the
+                  path. No table, no score — the differences, named.
+       screen 3   from the two clauses the path climbs to ONE quote, lifted
+                  out of the fan as the recommendation — not the cheapest.
+                  The path runs on, quietly, toward the edge. A replay
+                  control runs the read again from the unread fan.
+       screen 4   the same path, carried on from the recommendation, meets
                   a wall. The purchase beyond it is the customer's.
 
-   Both screens are drawn into their own SVG in CSS PIXELS: the viewBox is the
+   Each screen is drawn into its own SVG in CSS PIXELS: the viewBox is the
    element's own box, so a 16px label here is 16px on the glass, on a phone as
    much as on a 1536 desktop. The world SVG behind them carries only the
    ground. All words on the glass are the ones in the copy contract
-   (design-study/density-pass/SCREEN-COPY.md · FIRST MOVE); everything else is
-   geometry. Screen-reader text (aria-labels, the live region) stays detailed.
+   (design-study/story-expansion/SCREEN-COPY.md · FIRST MOVE); everything else
+   is geometry. Screen-reader text (aria-labels, the live region) stays
+   detailed.
 
    WHAT THIS IS, AND IS NOT
    A clearly-labelled RECONSTRUCTION of the kind of exchange a person can
@@ -38,7 +45,7 @@
 
   /* ── palette: the design study's ───────────────────────────────────────
      charcoal ground, cut-paper lavender quotes, a paper recommendation,
-     cool traces, one warm family (the hatch on screen 1, the wall on 2). */
+     cool traces, one warm family (the hatch on 2 and 3, the wall on 4). */
   var S = {
     ground: "#1E242B", paper: "#F3EBD7", cream: "#F3EBD7", muted: "#B4AE9C",
     doc: "#8F8CB8", rule: "#4A4870", ink: "#16150F",
@@ -55,6 +62,7 @@
   function f1(n) { return (+n).toFixed(1); }
   function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
   function isPortrait() { return window.innerWidth < 900; }
+  function chromeTop(H) { return chromeEl ? chromeEl.getBoundingClientRect().top : H - 96; }
 
   /* deterministic noise, so the field never flickers between renders */
   var seed = 7;
@@ -93,7 +101,7 @@
   }
 
   /* shared defs: paper grain and the one warm hatch. Ids are prefixed per
-     scene because both SVGs live in the same document. */
+     scene because all four SVGs live in the same document. */
   function defs(p) {
     return '<defs>' +
       '<filter id="' + p + 'grain" x="-2%" y="-2%" width="104%" height="104%">' +
@@ -158,14 +166,7 @@
     return s.join("");
   }
 
-  /* the slot a quote has left: a flat shade, no outline, no label */
-  function vacatedSlot(SW, SH, sh) {
-    var cx = sh.x + SW / 2, cy = sh.y + SH / 2;
-    return '<rect x="' + f1(sh.x) + '" y="' + f1(sh.y) + '" width="' + f1(SW) + '" height="' + f1(SH) +
-           '" fill="' + S.doc + '" opacity=".14" transform="rotate(' + sh.a + ' ' + f1(cx) + ' ' + f1(cy) + ')"/>';
-  }
-
-  /* the clause mark, excerpted onto the path beside its label */
+  /* the clause mark, excerpted onto the path */
   function clauseChip(p, x, y, kind) {
     var w = 34, h = 14, s = [];
     if (kind === "garage") {
@@ -179,36 +180,46 @@
   }
 
   /* a two-part label: bold lead, muted tail. Used for every artwork label
-     so the type is one voice across both screens. */
-  function label(x, y, lead, tail, anchor) {
-    return '<text x="' + f1(x) + '" y="' + f1(y) + '" font-size="16"' + (anchor ? ' text-anchor="' + anchor + '"' : "") +
-           ' fill="' + S.cream + '"><tspan font-weight="700">' + esc(lead) + '</tspan>' +
-           (tail ? '<tspan fill="' + S.muted + '"> · ' + esc(tail) + '</tspan>' : "") + '</text>';
+     so the type is one voice across the four screens. `stack` drops the
+     tail onto a second line, for a phone. */
+  function label(x, y, lead, tail, o) {
+    o = o || {};
+    var size = o.size || 16;
+    var t = '<text x="' + f1(x) + '" y="' + f1(y) + '" font-size="' + size + '"' + (o.anchor ? ' text-anchor="' + o.anchor + '"' : "") +
+            ' fill="' + S.cream + '"><tspan font-weight="700">' + esc(lead) + '</tspan>';
+    if (tail && o.stack) {
+      t += '<tspan x="' + f1(x) + '" dy="1.3em" fill="' + S.muted + '">' + esc(tail) + '</tspan>';
+    } else if (tail) {
+      t += '<tspan fill="' + S.muted + '"> · ' + esc(tail) + '</tspan>';
+    }
+    return t + '</text>';
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 1 — four quotes, the comparison that matters, one recommendation
+     THE FAN — screens 1, 2 and 3 share one composition
      ══════════════════════════════════════════════════════════════════════
-     step 0..5 — 0 unread · 1 read · 2 garage exclusion · 3 prior claim ·
-                 4 ranked (cheapest third) · 5 recommended */
-  var scene1El = document.getElementById("scene1");
-  var head1El = document.getElementById("s1-head");
-  var foot1El = document.getElementById("s1-foot");
+     mode 1   her message beside the fan; the path starts into it
+     mode 2   the two clauses lit across the fan and named on the path
+     mode 3   the recommendation lifted out; replayable, step 0..5 —
+              0 unread · 1 read · 2 garage exclusion · 3 prior claim ·
+              4 ranked (cheapest third) · 5 recommended
 
-  /* Landscape: fan bottom-left under the headline, the two clauses on the
-     path mid-right, recommendation top-right, foot bottom-right.
-     Portrait: the same three beats as bands, top to bottom. CSS px. */
-  function geom1(W, H, portrait) {
-    var g = { W: W, H: H, portrait: portrait };
+     Landscape: fan bottom-left under the headline, the two clauses on the
+     path mid-right, recommendation top-right. The fan and the clause band
+     sit in the SAME place on all three screens, so moving between them
+     reads as the same sheets changing state, not as a new picture.
+     Portrait: the same beats as bands, top to bottom. CSS px. */
+  function geomFan(W, H, portrait, headEl, mode) {
+    var g = { W: W, H: H, portrait: portrait, mode: mode };
     var s, SW, SH, k, left;
     if (!portrait) {
-      var headB = head1El ? head1El.getBoundingClientRect().bottom : H * 0.36;
-      var footT = foot1El ? foot1El.getBoundingClientRect().top : H - 200;
+      var headB = headEl ? headEl.getBoundingClientRect().bottom : H * 0.36;
+      var chromeT = chromeTop(H);
       s = clamp(Math.min(W / 1180, H / 820), 0.6, 1.15);
       var fanTop = Math.max(headB + 44, H * 0.30), fanBottom = H - 48;
       SH = Math.min(262 * s, fanBottom - fanTop - 24 * s);
       SW = SH * 0.76;
-      g.SW = SW; g.SH = SH;
+      g.SW = SW; g.SH = SH; g.s = s;
       g.fan = [];
       left = 56 + 12 * s;
       /* the exposed strip of each sheet holds "Quote X" at 16px: never narrower than 84px */
@@ -216,24 +227,35 @@
       for (k = 0; k < 4; k++) { g.fan.push({ x: left + k * step, y: fanTop + 8, a: -7.5 + k * 5 }); }
       g.fanExit = { x: left + 3 * step + SW + 4, y: fanTop + 8 + SH * 0.5 };
       g.fanMid = fanTop + 8 + SH * 0.5;
+      g.fanCentre = left + 1.5 * step + SW / 2;
       /* recommendation, top right, with room to its right for the path to run on */
       g.rec = { x: W - 56 - 64 * s - SW, y: 60 + 36, w: SW, h: SH };
-      /* the two clauses, on the path, in the band between the recommendation and the foot */
-      var bandT = g.rec.y + g.rec.h + 36, bandB = footT - 24;
-      var gap = clamp((bandB - bandT) / 2, 56, 84);
-      var mid = (bandT + bandB) / 2;
-      g.cmp = { x: g.fanExit.x + 56 * s, y1: mid - gap / 2, y2: mid + gap / 2 };
+      /* the two clauses, on the path, just below the fan's mid-height so
+         they stay with the sheets they were taken from on any stage, kept
+         clear of the recommendation above and the foot below. Computed on
+         every mode so the band does not move between screens 2 and 3. */
+      var bandT = g.rec.y + g.rec.h + 36, bandB = chromeT - 110;
+      var y1 = Math.max(g.fanMid + 60, bandT);
+      var gap = clamp(bandB - y1, 56, 84);
+      g.cmp = { x: g.fanExit.x + 56 * s, y1: y1, y2: y1 + gap };
       g.edge = { y: g.rec.y + g.rec.h * 0.5 };
+      /* screen 1: her message, beside the fan at its height */
+      g.msg = { x: g.fanExit.x + 56 * s, cy: g.fanMid };
+      /* screen 3: the reason, under the lifted sheet */
+      g.reason = { x: g.rec.x, y: g.rec.y + g.rec.h + 18, w: Math.max(230, W - 56 - g.rec.x) };
       return g;
     }
     /* portrait: bands. On a tablet the recommendation sits beside the two
        clauses so the whole composition fits one screen; on a phone it
        drops below them and the screen scrolls. */
-    s = clamp(W / 720, 0.5, 1.0);
+    /* a tablet held upright has the width for a larger fan than a phone */
+    s = clamp(W / 720, 0.5, 1.2);
     SW = 200 * s; SH = 262 * s;
-    g.SW = SW; g.SH = SH;
+    g.SW = SW; g.SH = SH; g.s = s;
     var side = W >= 600;
-    var ft = 48;   /* room above the fan for the cheapest label */
+    g.side = side;
+    g.stack = W < 600;   /* a phone stacks the label tails */
+    var ft = mode === 3 ? 48 : 16;   /* room above the fan for the cheapest label */
     var pstep = Math.max(0.5 * SW, 84);
     var fanW = 3 * pstep + SW;
     var fl = Math.max(12, (W - fanW) / 2);
@@ -242,9 +264,17 @@
     /* the path leaves through the bottom edge of the fan, not its side */
     g.fanExit = { x: fl + 0.9 * SW, y: ft + SH * 0.5 };
     g.fanMid = ft + SH * 0.5;
+    g.fanCentre = fl + 1.5 * pstep + SW / 2;
     var fanB = ft + SH + 14 * s;
+    if (mode === 1) { g.H = fanB + 10; return g; }
     var recT;
-    g.side = side;
+    if (mode === 2) {
+      /* the two named clauses, as a band under the fan */
+      var rowGap = g.stack ? 64 : 48;
+      g.cmp = { x: 24, y1: fanB + 44, y2: fanB + 44 + rowGap };
+      g.H = g.cmp.y2 + (g.stack ? 48 : 36);
+      return g;
+    }
     if (side) {
       recT = fanB + 44;
       g.cmp = { x: 24, y1: recT + SH * 0.5 - 24, y2: recT + SH * 0.5 + 24 };
@@ -258,15 +288,25 @@
     return g;
   }
 
-  function scene1(step, g) {
-    var s = [], i, SW = g.SW, SH = g.SH, p = "s1";
+  function fanScene(step, g, p) {
+    var s = [], i, SW = g.SW, SH = g.SH, mode = g.mode;
     s.push(defs(p));
+    var o = { garage: step >= 2, claim: step >= 3, title: true };
+    var rowH = (SH - 56) / 10;
+
+    /* ── mode 1: the path starts into the fan and stops there ──────────── */
+    if (mode === 1) {
+      s.push('<path d="M-10 ' + f1(g.fanMid) + ' L' + f1(g.fanCentre) + ' ' + f1(g.fanMid) +
+             '" fill="none" stroke="' + S.aihi + '" stroke-width="3.5" stroke-linecap="round"/>');
+      for (i = 3; i >= 0; i--) { s.push(quoteSheet(p, SW, SH, g.fan[i], QUOTES[i], o)); }
+      return s.join("");
+    }
 
     /* ── the one path: in from the left, through the four, out to the two
-       clauses, up to the recommendation, on toward the edge ─────────── */
+       clauses, (mode 3) up to the recommendation, on toward the edge ─── */
     var P = [];
     var ex = g.fanExit, c1 = { x: g.cmp.x, y: g.cmp.y1 }, c2 = { x: g.cmp.x, y: g.cmp.y2 };
-    var rIn = { x: g.rec.x, y: g.edge.y }, rOut = { x: g.rec.x + g.rec.w, y: g.edge.y };
+    var rIn = g.rec ? { x: g.rec.x, y: g.edge.y } : null, rOut = g.rec ? { x: g.rec.x + g.rec.w, y: g.edge.y } : null;
     if (step >= 1) {
       P.push("M-10 " + f1(g.fanMid) + " L" + f1(ex.x) + " " + f1(ex.y));
     }
@@ -279,13 +319,13 @@
         P.push(" L" + f1(c2.x) + " " + f1(c2.y));
       }
     }
-    if (step >= 5) {
+    if (mode === 3 && step >= 5) {
       var from = g.portrait ? c2 : c1;
       if (!g.portrait) {
         P.push(" C" + f1(from.x) + " " + f1(from.y - 90) + " " + f1(rIn.x - 70) + " " + f1(rIn.y) + " " + f1(rIn.x) + " " + f1(rIn.y));
       } else if (g.side) {
         /* tablet: the recommendation is beside the clauses, so the path
-           dips under the second label and runs across to it */
+           dips under the second mark and runs across to it */
         P.push(" L" + f1(from.x) + " " + f1(from.y + 36));
         P.push(" C" + f1(from.x) + " " + f1(from.y + 70) + " " + f1(rIn.x - 70) + " " + f1(rIn.y + 50) + " " + f1(rIn.x) + " " + f1(rIn.y));
       } else {
@@ -298,24 +338,25 @@
       s.push('<path d="' + P.join("") + '" fill="none" stroke="' + S.aihi + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>');
     }
     /* the quiet callback: the path keeps going, and fades before the edge */
-    if (step >= 5) {
-      s.push('<linearGradient id="s1fade" gradientUnits="userSpaceOnUse" x1="' + f1(rOut.x) + '" y1="0" x2="' + f1(g.W) + '" y2="0">' +
+    if (mode === 3 && step >= 5) {
+      s.push('<linearGradient id="' + p + 'fade" gradientUnits="userSpaceOnUse" x1="' + f1(rOut.x) + '" y1="0" x2="' + f1(g.W) + '" y2="0">' +
              '<stop offset="0" stop-color="' + S.aihi + '" stop-opacity="1"/><stop offset="1" stop-color="' + S.aihi + '" stop-opacity="0"/></linearGradient>');
       s.push('<line x1="' + f1(rOut.x) + '" y1="' + f1(rOut.y) + '" x2="' + f1(g.W + 2) + '" y2="' + f1(rOut.y) +
-             '" stroke="url(#s1fade)" stroke-width="3.5"/>');
+             '" stroke="url(#' + p + 'fade)" stroke-width="3.5"/>');
     }
 
     /* ── the fan, back to front. Quote D stays in its slot until it is
-       recommended; then the slot is left as a flat shade. ────────────── */
-    var o = { garage: step >= 2, claim: step >= 3, title: true };
+       recommended; then it is simply gone from the fan — no shade, no
+       outline, nothing that could be read as a fifth sheet. ──────────── */
     for (i = 3; i >= 0; i--) {
-      if (i === 3 && step >= 5) { s.push(vacatedSlot(SW, SH, g.fan[3])); continue; }
+      if (i === 3 && mode === 3 && step >= 5) { continue; }
       s.push(quoteSheet(p, SW, SH, g.fan[i], QUOTES[i], o));
     }
 
     /* ── the two clauses that matter, excerpted onto the path. In landscape
-       a hairline tethers each to the mark it was taken from on Quote C. ── */
-    var rowH = (SH - 56) / 10;
+       a hairline tethers each to the mark it was taken from on Quote C.
+       Screen 2 names them; screen 3 shows them as marks only. ─────────── */
+    var lo = { size: 18, stack: g.stack };
     if (step >= 2) {
       s.push('<circle cx="' + f1(c1.x) + '" cy="' + f1(c1.y) + '" r="5" fill="' + S.aihi + '"/>');
       if (!g.portrait) {
@@ -324,7 +365,7 @@
                '" stroke="' + S.muted + '" stroke-width="1.2" stroke-dasharray="3 4" opacity=".7"/>');
       }
       s.push(clauseChip(p, c1.x + 14, c1.y, "garage"));
-      s.push(label(c1.x + 14 + 34 + 10, c1.y + 6, "Garage exclusion", null));
+      if (mode === 2) { s.push(label(c1.x + 14 + 34 + 12, c1.y + 6, "Garage exclusion", "in two of the four", lo)); }
     }
     if (step >= 3) {
       s.push('<circle cx="' + f1(c2.x) + '" cy="' + f1(c2.y) + '" r="5" fill="' + S.aihi + '"/>');
@@ -334,61 +375,87 @@
                '" stroke="' + S.muted + '" stroke-width="1.2" stroke-dasharray="3 4" opacity=".7"/>');
       }
       s.push(clauseChip(p, c2.x + 14, c2.y, "claim"));
-      s.push(label(c2.x + 14 + 34 + 10, c2.y + 6, "Prior claim", null));
+      if (mode === 2) { s.push(label(c2.x + 14 + 34 + 12, c2.y + 6, "Prior claim", "rated differently by each", lo)); }
     }
+    if (mode !== 3) { return s.join(""); }
 
     /* the cheapest quote, labelled on its own sheet's top edge */
     if (step >= 4) {
       var tp = sheetPt(g.fan[2], SW, SH, 0.5, 0);
-      var lx0 = Math.min(tp.x - 4, g.W - 12 - 200);   /* never off the right edge */
+      var lx0 = Math.min(tp.x - 4, g.W - 12 - 230);   /* never off the right edge */
       s.push('<line x1="' + f1(tp.x) + '" y1="' + f1(tp.y) + '" x2="' + f1(tp.x) + '" y2="' + f1(tp.y - 16) +
              '" stroke="' + S.cream + '" stroke-width="1.6" opacity=".8"/>');
-      s.push(label(lx0, tp.y - 24, "Cheapest", "ranked third"));
+      s.push(label(lx0, tp.y - 24, "Cheapest", "ranked third", { size: 18 }));
     }
 
     /* ── the recommendation: Quote D, out of the fan, upright, on paper ── */
     if (step >= 5) {
       var r = g.rec;
       s.push(quoteSheet(p, SW, SH, { x: r.x, y: r.y, a: 0 }, QUOTES[3], { paper: true, garage: true, claim: true, title: true }));
-      var rx = g.portrait ? Math.max(12, r.x + r.w - 250) : Math.min(r.x, g.W - 12 - 250);
-      s.push(label(rx, r.y - 18, "Recommended", "not the cheapest"));
+      var rx = g.portrait ? Math.max(12, r.x + r.w - 290) : Math.min(r.x, g.W - 12 - 290);
+      s.push(label(rx, r.y - 18, "Recommended", "not the cheapest", { size: 18 }));
     }
     return s.join("");
   }
 
-  function paintScene1(step) {
-    if (!scene1El) { return; }
+  /* lay one fan screen out: size its SVG, draw it, and place the HTML
+     objects that belong to the drawing (her message, the reason) */
+  function paintFan(el, headEl, mode, step) {
+    if (!el) { return; }
     var portrait = isPortrait();
-    var box = scene1El.getBoundingClientRect();
+    var box = el.getBoundingClientRect();
     var W = Math.max(280, Math.round(portrait ? box.width : window.innerWidth));
     var H = Math.round(window.innerHeight);
-    var g = geom1(W, H, portrait);
-    if (portrait) { scene1El.style.height = Math.round(g.H) + "px"; H = g.H; }
-    else { scene1El.style.height = ""; }
-    scene1El.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
-    scene1El.setAttribute("preserveAspectRatio", portrait ? "xMinYMin meet" : "none");
-    scene1El.innerHTML = scene1(step, g);
+    var g = geomFan(W, H, portrait, headEl, mode);
+    if (portrait) { el.style.height = Math.round(g.H) + "px"; H = g.H; }
+    else { el.style.height = ""; }
+    el.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
+    el.setAttribute("preserveAspectRatio", portrait ? "xMinYMin meet" : "none");
+    el.innerHTML = fanScene(step, g, "s" + mode);
+
+    if (mode === 1 && msgEl) {
+      if (portrait) { msgEl.style.left = msgEl.style.top = ""; }
+      else {
+        msgEl.style.left = f1(g.msg.x) + "px";
+        msgEl.style.top = f1(Math.max(g.msg.cy - msgEl.offsetHeight / 2, 24)) + "px";
+      }
+    }
+    if (mode === 3 && reasonEl) {
+      reasonEl.classList.toggle("is-off", step < 5);
+      if (portrait) { reasonEl.style.left = reasonEl.style.top = reasonEl.style.width = ""; }
+      else {
+        reasonEl.style.left = f1(g.reason.x) + "px";
+        reasonEl.style.top = f1(g.reason.y) + "px";
+        reasonEl.style.width = f1(g.reason.w) + "px";
+      }
+    }
   }
 
+  var scene1El = document.getElementById("scene1"), head1El = document.getElementById("s1-head");
+  var scene2El = document.getElementById("scene2"), head2El = document.getElementById("s2-head");
+  var scene3El = document.getElementById("scene3"), head3El = document.getElementById("s3-head");
+  var msgEl = document.getElementById("s1-msg");
+  var reasonEl = document.getElementById("s3-reason");
+
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — the same path, carried on, and stopped
+     SCREEN 4 — the same path, carried on, and stopped
      ══════════════════════════════════════════════════════════════════════
      Landscape: the recommendation left-middle (the other three faded behind
      it), the path runs right into a vertical wall that stands between the
      headline and the chrome, and the bound policy sits beyond it as an
      outline. Portrait: the same beats top to bottom, the wall horizontal. */
-  var scene2El = document.getElementById("scene2");
-  var head2El = document.getElementById("s2-head");
-  var ask2El = document.getElementById("s2-ask");
+  var scene4El = document.getElementById("scene4");
+  var head4El = document.getElementById("s4-head");
+  var ask4El = document.getElementById("s4-ask");
   var WORDS = ["Buy", "Bind", "Sign", "Identity", "Payment"];
 
-  function geom2(W, H, portrait) {
+  function geomWall(W, H, portrait) {
     var g = { W: W, H: H, portrait: portrait };
     var s, SW, SH;
     if (!portrait) {
-      var headB = head2El ? head2El.getBoundingClientRect().bottom : H * 0.32;
-      var askT = ask2El ? ask2El.getBoundingClientRect().top : H - 220;
-      var chromeT = chromeEl ? chromeEl.getBoundingClientRect().top : H - 96;
+      var headB = head4El ? head4El.getBoundingClientRect().bottom : H * 0.32;
+      var askT = ask4El ? ask4El.getBoundingClientRect().top : H - 220;
+      var chromeT = chromeTop(H);
       s = clamp(Math.min(W / 1180, H / 820), 0.6, 1.15);
       var bandT = headB + 20, bandB = askT - 20;
       SH = Math.min(262 * s, bandB - bandT); SW = SH * 0.76;
@@ -436,8 +503,8 @@
     return g;
   }
 
-  function scene2(hit, g) {
-    var s = [], i, p = "s2", SW = g.SW, SH = g.SH, w = g.wall;
+  function wallScene(hit, g) {
+    var s = [], i, p = "s4", SW = g.SW, SH = g.SH, w = g.wall;
     s.push(defs(p));
 
     /* the three not chosen, behind and quiet; then the recommendation */
@@ -491,32 +558,35 @@
       s.push('<line x1="' + f1(b.x + 16) + '" y1="' + f1(ly) + '" x2="' + f1(b.x + 16 + len) + '" y2="' + f1(ly) +
              '" stroke="' + S.muted + '" stroke-width="2" opacity=".35"/>');
     }
-    s.push(label(b.x + b.w / 2, b.y + b.h + 26, "Bound policy", null, "middle"));
+    s.push(label(b.x + b.w / 2, b.y + b.h + 26, "Bound policy", null, { anchor: "middle" }));
     return s.join("");
   }
 
   var hitShown = false;
-  function paintScene2() {
-    if (!scene2El) { return; }
+  function paintWall() {
+    if (!scene4El) { return; }
     var portrait = isPortrait();
-    var box = scene2El.getBoundingClientRect();
+    var box = scene4El.getBoundingClientRect();
     var W = Math.max(280, Math.round(portrait ? box.width : window.innerWidth));
     var H = Math.round(window.innerHeight);
-    var g = geom2(W, H, portrait);
-    if (portrait) { scene2El.style.height = Math.round(g.H) + "px"; H = g.H; }
-    else { scene2El.style.height = ""; }
-    scene2El.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
-    scene2El.setAttribute("preserveAspectRatio", portrait ? "xMinYMin meet" : "none");
-    scene2El.innerHTML = scene2(hitShown, g);
+    var g = geomWall(W, H, portrait);
+    if (portrait) { scene4El.style.height = Math.round(g.H) + "px"; H = g.H; }
+    else { scene4El.style.height = ""; }
+    scene4El.setAttribute("viewBox", "0 0 " + f1(W) + " " + f1(H));
+    scene4El.setAttribute("preserveAspectRatio", portrait ? "xMinYMin meet" : "none");
+    scene4El.innerHTML = wallScene(hitShown, g);
   }
 
   function paintWorld() {
     paintGround();
-    if (current === 1) { paintScene1(readStep); } else { paintScene2(); }
+    if (current === 1) { paintFan(scene1El, head1El, 1, 1); }
+    else if (current === 2) { paintFan(scene2El, head2El, 2, 3); }
+    else if (current === 3) { paintFan(scene3El, head3El, 3, readStep); }
+    else { paintWall(); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     THE READ — screen 1's one interaction. The flow itself is the control.
+     THE READ — screen 3's one interaction. The flow itself is the control.
      The state line is spoken to assistive tech only; on the glass, the
      drawing is the state.
      ══════════════════════════════════════════════════════════════════════ */
@@ -531,7 +601,7 @@
     "Garage exclusion: found in two of the four, Quote B and Quote C.",
     "Prior claim: rated differently by each of the four.",
     "Ranked against her needs, not just the price. The cheapest, Quote C, came third.",
-    "Recommended: Quote D, not the cheapest. Ranked against what her household needs, not just the price."
+    "Recommended: Quote D, not the cheapest. Covers the garage. Rates her claim fairly."
   ];
 
   function paintRead() {
@@ -556,7 +626,10 @@
 
   /* ══════════════════════════════════════════════════════════════════════
      NAVIGATION — inherited
-     ══════════════════════════════════════════════════════════════════════ */
+     ══════════════════════════════════════════════════════════════════════
+     Hashes are #s/1..#s/4. The two-screen build's #s/1 is still screen 1;
+     its #s/2 (the handoff) is now #s/4 — #s/2 is a real screen here, so
+     the old address cannot be redirected and is documented instead. */
 
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
   var total = screens.length;
@@ -567,7 +640,7 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["Where it stops", "Back to the start"];
+  var CTA = ["See the differences", "See the recommendation", "The handoff", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -584,14 +657,15 @@
     picker.value = String(n);
     prevBtn.disabled = n === 1;
     nextLabel.textContent = CTA[n - 1];
-    if (n !== 1) { readStop(); }
+    /* leaving the recommendation mid-replay: it is complete when you return */
+    if (n !== 3) { readStop(); readStep = 5; }
 
     /* the wall lands a beat after the screen does, so the stop is an event */
     hitShown = false;
-    paintWorld();
-    if (n === 2 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setTimeout(function () { if (current === 2) { hitShown = true; paintWorld(); } }, 480);
-    } else if (n === 2) {
+    paintRead();
+    if (n === 4 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTimeout(function () { if (current === 4) { hitShown = true; paintWorld(); } }, 480);
+    } else if (n === 4) {
       hitShown = true; paintWorld();
     }
 
@@ -643,6 +717,5 @@
     document.fonts.ready.then(function () { paintWorld(); });
   }
 
-  paintRead();
   show(fromHash() || 1, false);
 })();

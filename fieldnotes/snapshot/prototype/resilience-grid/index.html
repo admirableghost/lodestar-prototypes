@@ -24,14 +24,21 @@
      is read by the word gate, and is never hidden from assistive tech. -->
 <div class="world" id="world">
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
-       aria-label="Plan of Alder County: a ridge system above three settlement clusters in a wildland-urban interface valley, with one canyon corridor, a transmission line crossing the ridge saddle, four fire-district boundaries, and the protection network's cameras, sensors, fire stations and suppression pads."></svg>
+       aria-label="Plan of Alder County: a ridge system above three settlement clusters in a wildland-urban interface valley, with one canyon corridor, a transmission line crossing the ridge saddle, four fire-district boundaries, a managed vegetation corridor on the slope below the ridge, and the prevention service's cameras, sensors, fire stations and suppression pads."></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 
 <!-- ONE THOUGHT PER SCREEN, under 60 visible words per state. The copy is
-     the locked contract (design-study/density-pass/SCREEN-COPY.md). What a
-     facilitator says aloud lives in FACILITATOR-NOTES.md; what a screen
-     reader hears stays detailed in the .sr-only paragraphs below. -->
+     the locked contract (design-study/story-expansion/SCREEN-COPY.md
+     § WILDFIRE; screens 1, 3 and 5 carry forward the density-pass
+     contract). What a facilitator says aloud lives in FACILITATOR-NOTES.md;
+     what a screen reader hears stays detailed in the .sr-only paragraphs.
+
+     SEQUENCE (story-expansion): 1 Market retreat · 2 A paid prevention
+     business · 3 Coordinated action · 4 Evidence, not assumed success ·
+     5 Possible availability. The hashes #s/1..5 keep their numbers, so an
+     old link to #s/2 (the standing network) now opens the business, and an
+     old link to #s/4 (who pays) now opens the evidence. -->
 <main class="deck" id="deck">
 
 <!-- ══════ 1 · MARKET RETREAT ══════ -->
@@ -46,21 +53,21 @@
   <p class="xmicro wf-micro" style="grid-area:8/1/9/7">Invented county. No real insurer operates this network.</p>
 </section>
 
-<!-- ══════ 2 · STANDING NETWORK ══════ -->
-<section class="screen" data-screen="2" data-label="The network" data-cam="network" data-veil="">
+<!-- ══════ 2 · A PAID PREVENTION BUSINESS ══════
+     The payer diagram that used to be screen 4, moved here and given its
+     physical side: three services on the terrain (a managed corridor, the
+     cameras and sensors, the stations and pads) and four buyers, each
+     with what it buys, converging on the one operating business. The old
+     layer toggles (See / Understand / Act / Fund) are retired: the node
+     data keeps its layer field; every layer is simply on. -->
+<section class="screen" data-screen="2" data-label="The business" data-cam="business" data-veil="">
   <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">01 / The network</p>
-    <h2 class="xd" tabindex="-1"><span>The pieces exist.</span><span>The agreement is the proposition.</span></h2>
+    <p class="xeyebrow">01 / The business</p>
+    <h2 class="xd" tabindex="-1"><span>Different buyers fund</span><span>one prevention service.</span></h2>
+    <p class="xlede xlede--line">Paid before any fire — not from losses avoided.</p>
   </div>
-  <p class="sr-only">The technology already exists: ridge cameras, forest gas sensors and line sensors that see; an operations hub that understands; fire stations and autonomous suppression pads that act; and the standing agreement that funds the whole as one network. What is missing is that agreement — who acts, who pays, and what evidence changes an insurance decision. The four buttons switch one layer off at a time to show what the network is without it.</p>
+  <p class="sr-only">The county with the three parts of the prevention service marked on the terrain: a managed vegetation corridor on the slope below the ridge; the ridge cameras and line sensors that detect; and the fire stations and suppression pads the response crews work from. Four buyers converge on the one operating business, each buying something different: the utility buys outage avoidance; communities buy readiness; insurers buy verified risk change; property owners buy a kept perimeter. The business is paid before any fire, for the service it runs, not from losses avoided. No amounts or shares are modelled, and no single buyer is the anchor funder.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
-  <div class="wf-chips" style="grid-area:8/1/9/9" role="group" aria-label="Network layers">
-    <button class="chipbtn" type="button" data-layer="see" aria-pressed="true">See</button>
-    <button class="chipbtn" type="button" data-layer="know" aria-pressed="true">Understand</button>
-    <button class="chipbtn" type="button" data-layer="act" aria-pressed="true">Act</button>
-    <button class="chipbtn" type="button" data-layer="fund" aria-pressed="true">Fund</button>
-    <button class="chipbtn" type="button" id="reveal-all">Show all four</button>
-  </div>
 </section>
 
 <!-- ══════ 3 · COORDINATED RESPONSE, HUMAN AUTHORITY ══════
@@ -83,24 +90,44 @@
   </div>
 </section>
 
-<!-- ══════ 4 · WHO PAYS ══════ -->
-<section class="screen" data-screen="4" data-label="Why anyone pays" data-cam="flows" data-veil="soft">
+<!-- ══════ 4 · EVIDENCE, NOT ASSUMED SUCCESS ══════
+     Three columns over the quiet county. "Recorded" is derived from
+     S3_EVENTS by app.js (count, first time, last time); nothing here is a
+     result. The only state is recorded, not established. -->
+<section class="screen" data-screen="4" data-label="The evidence" data-cam="evidence" data-veil="soft">
   <div class="xhead" style="grid-area:1/1/4/9">
-    <p class="xeyebrow">03 / Why anyone pays</p>
-    <h2 class="xd" tabindex="-1"><span>A business that gets paid</span><span>to change the risk.</span></h2>
+    <p class="xeyebrow">03 / The evidence</p>
+    <h2 class="xd" tabindex="-1"><span>An intervention record is</span><span>not proof of risk reduction.</span></h2>
   </div>
-  <p class="sr-only">A diagram of four payers converging on one operating business. The utility pays for avoided outage and its own exposure. Public agencies pay for regional resilience. Property owners pay for a maintained perimeter. The insurer pays for a verified change in risk. Everyone pays for a different reason, and the insurer is one participant among four, not the anchor funder.</p>
+  <p class="sr-only">Three columns over the quiet county, with the eight marks of the moment faint on the terrain beneath. Recorded: eight actions between 14:31 and 14:47, the event record from the moment. Observed: the road out is open, the drop is pending, the decision is pending. Risk reduction: not yet established. The record is what happened; it is not a result. Independent evaluation decides what the record is worth, and no evaluation has been completed.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
+  <ul class="ev" style="grid-area:4/1/7/9" aria-label="The evidence record">
+    <li class="ev-col">
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Recorded</span>
+      <span class="ev-v" id="ev-recorded">8 actions, 14:31–14:47</span>
+    </li>
+    <li class="ev-col">
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Observed</span>
+      <span class="ev-v">road open, drop pending, decision pending</span>
+    </li>
+    <li class="ev-col ev-col--open">
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>Risk reduction</span>
+      <span class="ev-v ev-v--open">not yet established</span>
+    </li>
+  </ul>
+  <p class="xlede ev-line" style="grid-area:7/1/9/8">Independent evaluation decides what the record is worth.</p>
 </section>
 
-<!-- ══════ 5 · MARKET CONSEQUENCE ══════ -->
+<!-- ══════ 5 · POSSIBLE AVAILABILITY ══════
+     Nothing becomes available because the viewer arrived: the higher line
+     is where cover MIGHT be offered, and the lede names the conditions. -->
 <section class="screen" data-screen="5" data-label="Market creation" data-cam="payoff" data-veil="">
   <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">04 / Market creation</p>
     <h2 class="xd" tabindex="-1"><span>Not the drone.</span><span>A market that might stay open.</span></h2>
-    <p class="xlede">Reduced risk, credible evidence and willing capital may keep cover available.</p>
+    <p class="xlede">Credible evidence, acceptable remaining risk and willing capital may keep cover available.</p>
   </div>
-  <p class="sr-only">The same county as screen one, with two boundaries: the dashed line where the market had retreated to, and a solid line higher on the slope where cover might be offered again, with arrows between them. Each step in that movement is conditional. The settlements are shaded as protected. Invented county; no real insurer operates this network.</p>
+  <p class="sr-only">The same county as screen one, with two boundaries: the dashed line where the market had retreated to, and a solid line higher on the slope where cover might be offered again, with arrows between them. Each step in that movement is conditional on credible evidence, acceptable remaining risk and willing capital; none of it has happened on this screen. The settlements are shaded as the ground the service keeps. Invented county; no real insurer operates this network.</p>
   <div class="gw gw--map" aria-hidden="true"></div>
   <div class="xask" style="grid-area:6/7/9/13">
     <p class="xq" tabindex="-1">What if prevention is infrastructure that keeps difficult risks insurable?</p>
@@ -120,7 +147,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">See the network</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">See the business</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

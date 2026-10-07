@@ -32,15 +32,27 @@
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <!-- Pins are real labels on the drawing: visible words, read by assistive
-     tech as well, so they are not aria-hidden. -->
-<div class="pins" id="pins"></div>
+     tech as well, so they are not aria-hidden. The tether is artwork: the
+     line that ties screen 2's agreement to no. 31's roof. -->
+<div class="pins" id="pins">
+  <svg class="tether" id="tether" aria-hidden="true" focusable="false"></svg>
+</div>
 
 <!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
-     1 acting alone fails · 2 the conditional offer · 3 the agreement.
-     Copy is the locked contract (design-study/density-pass/SCREEN-COPY.md,
+     1 acting alone fails · 2 the deal, before joining · 3 the street reaches
+     the threshold · 4 participation is not the final condition · 5 the
+     arrangement can begin (or is still pending).
+     Copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md,
      NEGOTIATED). Everything the facilitator says aloud lives in
      FACILITATOR-NOTES.md, not here. Empty space is the street showing
-     through, and is deliberate. -->
+     through, and is deliberate.
+
+     STATE — one object in app.js: { screen, committed, verified }.
+     `committed` is 41 on entry, moved only by the slider on screen 3, and
+     never reset by navigation; `verified` is false until the toggle on
+     screen 4 illustrates it. Only "Back to the start" from screen 5 resets
+     both. Screen 5 is DERIVED from the two: begin = committed ≥ 48 AND
+     verified. Nothing on screen 5 is ever reached merely by pressing Next. -->
 <main class="deck" id="deck">
 
 <!-- ══════ 1 · ACTING ALONE ══════ -->
@@ -57,21 +69,48 @@
 
 </section>
 
-<!-- ══════ 2 · THE CONDITIONAL OFFER — the central screen ══════
-     ONE THOUGHT: the participation threshold makes a conditional collective
-     offer possible. The street is the hero; the count is said once; the
-     condition is one line. What the offer is made of — the fund, the
-     surveyor, the hardening, the 48 staying in — lives on screen 3, where
-     the parties who carry each clause are named. -->
-<section class="screen screen--offer" data-screen="2" data-label="The conditional offer" data-cam="commit" data-veil="">
+<!-- ══════ 2 · THE DEAL, BEFORE JOINING ══════
+     ONE THOUGHT: a household sees its obligations and the protection that
+     would follow BEFORE committing anything. One agreement object, tied to
+     no. 31's roof by a line, four qualitative clauses, no amounts, no
+     binding action. The street is still hollow: nobody has joined yet. -->
+<section class="screen screen--deal" data-screen="2" data-label="The deal" data-cam="deal" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h2 class="display xd" tabindex="-1"><span>The offer exists.</span><span>It is conditional</span><span>on the street.</span></h2>
+    <h2 class="display xd" tabindex="-1"><span>Know the deal</span><span>before you join.</span></h2>
   </div>
 
-  <!-- The hero control. The threshold IS the product, so it is the only
-       thing on this screen the viewer can move. The count appears here and
-       nowhere else. -->
+  <!-- The agreement. A paper object, not a form: the four clauses are read,
+       the authorisation line is a sentence, not a button. Marks are the
+       party colours (households green, fund plum, carrier blue) so the
+       facilitator's five-party economics can be pointed at without words. -->
+  <div class="plate plate--agree" id="deal-card" style="grid-area:1/8/6/13">
+    <ol class="agree" aria-label="The agreement attached to no. 31">
+      <li class="ag ag--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>You harden your lot</span></li>
+      <li class="ag ag--fund"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><span>The fund pays the contractor now</span></li>
+      <li class="ag ag--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>You repay it on the bill</span></li>
+      <li class="ag ag--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><span>The carrier offers conditional terms</span></li>
+    </ol>
+    <p class="ag-auth">You authorise participation in the proposal.</p>
+  </div>
+
+  <div class="gw" aria-hidden="true" style="grid-area:4/4/9/13"></div>
+
+  <p class="xmicro xmicro--chip" style="grid-area:8/1/9/6">Illustrative terms; amounts not modelled.</p>
+
+</section>
+
+<!-- ══════ 3 · THE THRESHOLD ══════
+     ONE THOUGHT: the participation threshold is the product. The street is
+     the hero; the count is said once; the condition is one line. The slider
+     is the only place in the deck that moves `committed`, and the value it
+     sets is what screens 4 and 5 read. -->
+<section class="screen screen--offer" data-screen="3" data-label="The threshold" data-cam="commit" data-veil="">
+
+  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
+    <h2 class="display xd" tabindex="-1"><span>The street reaches</span><span>the threshold.</span></h2>
+  </div>
+
   <div class="plate plate--ctl" id="ctl" data-state="closed" style="grid-area:1/8/5/13">
     <p class="eyebrow" id="thr-label">Households committed</p>
     <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60</span></p>
@@ -84,7 +123,7 @@
       <p class="offer-line" id="offer-line">
         <svg class="offer-mark offer-mark--closed" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><defs><pattern id="warnhatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="10" height="10" fill="url(#warnhatch)" stroke="currentColor" stroke-width="1.6"/></svg>
         <svg class="offer-mark offer-mark--open" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-        <span id="offer-text">Not available. Seven more households needed.</span>
+        <span id="offer-text">Not yet. Seven more households needed.</span>
       </p>
     </div>
     <p class="leg">
@@ -97,47 +136,65 @@
 
 </section>
 
-<!-- ══════ 3 · WHAT EVERYONE SIGNED ══════
-     One arrangement diagram: five parties as objects on one contract spine,
-     one short contribution each. The count persists from the slider. -->
-<section class="screen" data-screen="3" data-label="The agreement" data-cam="signed" data-veil="soft">
+<!-- ══════ 4 · THE CONDITIONS ══════
+     ONE THOUGHT: participation is one of three conditions, not the last.
+     Three separated steps on the street scene. Participation reads the
+     live count; Improvements and Verification are illustrated, never
+     asserted, by one toggle that says so in its own note. -->
+<section class="screen screen--cond" data-screen="4" data-label="The conditions" data-cam="street" data-veil="">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h2 class="display xd" tabindex="-1"><span>What everyone</span><span>actually signed.</span></h2>
-    <p class="xcons xcons--count"><span class="xcount" id="sign-n">48</span> households</p>
+    <h2 class="display xd" tabindex="-1"><span>Participation is not</span><span>the final condition.</span></h2>
   </div>
 
-  <div class="gw" aria-hidden="true" style="grid-area:3/1/7/13"></div>
-
-  <div class="plate plate--thin plate--deal" style="grid-area:6/1/9/13">
-    <ul class="deal" aria-label="The five parties and what each contributes">
-      <li class="dp dp--house">
-        <svg class="dp-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>
-        <p class="dp-who">Households</p>
-        <p class="dp-what">harden their lots</p>
-      </li>
-      <li class="dp dp--carrier">
-        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
-        <p class="dp-who">Carrier</p>
-        <p class="dp-what">conditional terms, while 48 stay in</p>
-      </li>
-      <li class="dp dp--fund">
-        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
-        <p class="dp-who">Fund</p>
-        <p class="dp-what">finances the work, repaid on the bill</p>
-      </li>
-      <li class="dp dp--survey">
-        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
-        <p class="dp-who">Surveyor</p>
-        <p class="dp-what">verifies every season</p>
-      </li>
-      <li class="dp dp--broker">
-        <svg class="dp-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg>
-        <p class="dp-who">Broker</p>
-        <p class="dp-what">assembled it, paid a placement fee</p>
-      </li>
-    </ul>
+  <div class="plate plate--ctl plate--verify" style="grid-area:1/8/4/13">
+    <button type="button" class="vbtn" id="verify-toggle" aria-pressed="false" aria-describedby="vnote">
+      <svg class="vbtn-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+      <span>Illustrate verified completion</span>
+    </button>
+    <p class="vnote" id="vnote">Simulated for discussion. Not evidence of work done.</p>
   </div>
+
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/8/13"></div>
+
+  <ol class="steps" style="grid-area:7/1/9/13" aria-label="The three conditions">
+    <li class="step" id="step-part" data-state="pending">
+      <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+      <p class="step-name">Participation</p>
+      <p class="step-val"><span class="step-n" id="cond-n">41</span> of 60</p>
+    </li>
+    <li class="step" id="step-impr" data-state="pending">
+      <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+      <p class="step-name">Improvements</p>
+      <p class="step-val">each lot hardened</p>
+    </li>
+    <li class="step" id="step-ver" data-state="pending">
+      <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+      <p class="step-name">Verification</p>
+      <p class="step-val">independent surveyor, every season</p>
+      <p class="step-state" id="ver-state">Pending</p>
+    </li>
+  </ol>
+
+</section>
+
+<!-- ══════ 5 · THE ARRANGEMENT ══════
+     DERIVED, never navigated into: begin = committed ≥ 48 AND verified.
+     Headline, state line, boundary and the "outside the arrangement" label
+     are all written by app.js from the state object. -->
+<section class="screen screen--arr" data-screen="5" data-label="The arrangement" data-cam="signed" data-veil="soft">
+
+  <div class="xhead xhead--block" style="grid-area:1/1/4/7">
+    <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
+    <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification not illustrated</span></p>
+  </div>
+
+  <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
+
+  <p class="leg leg--chip" style="grid-area:8/1/9/6">
+    <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Committed</span>
+    <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
+  </p>
 
 </section>
 
@@ -156,7 +213,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">See the offer</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">Know the deal</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

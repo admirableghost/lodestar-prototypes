@@ -841,7 +841,7 @@ body { background: var(--paper); }
   filter: url(#rough);
 }
 
-/* ── screen 2 · the one control, on the paper, not in a panel ──────────── */
+/* ── screen 3 · the one control, on the paper, not in a panel ──────────── */
 .plate--ctl {
   background: none; box-shadow: none; padding: 0;
   gap: 0; max-width: 520px;
@@ -942,15 +942,16 @@ body { background: var(--paper); }
 
 /* ══════════════════════════════════════════════════════════════════════════
    DENSITY PASS — the sixty-word copy contract
-   (design-study/density-pass/SCREEN-COPY.md, NEGOTIATED). Three screens,
-   one composition each, at most three reading regions: the headline on its
-   own block, the street, and one object — a consequence line, the threshold
-   control, or the five-party diagram. Every size here is a fixed clamp, not
+   (now design-study/story-expansion/SCREEN-COPY.md, NEGOTIATED). Five
+   screens, one composition each, at most three reading regions: the headline
+   on its own block, the street, and one object — a consequence line, the
+   agreement, the threshold control, the three condition steps, or the
+   arrangement state. Every size here is a fixed clamp, not
    the --fs unit, because the copy is now short enough that the iPad floors
    (explanatory 18px, labels 16px) can simply hold.
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── the consequence, under the headline (screens 1 and 3) ──────────────
+/* ── the consequence, under the headline (screens 1 and 5) ──────────────
    The one explanatory line a screen is allowed. It sits on its own paper
    chip, so it is never set directly on the drawing. */
 .xcons {
@@ -962,14 +963,6 @@ body { background: var(--paper); }
   letter-spacing: -.01em; color: var(--edition-ink);
   text-wrap: balance;
 }
-/* screen 3's count: the figure persists from the slider, so it is a number
-   first and a word second */
-.xcons--count { display: inline-flex; align-items: baseline; gap: .3em; max-width: none; text-wrap: initial; }
-.xcount {
-  font: 700 clamp(30px, 1.6vw + 2.6vh, 48px)/1 var(--sans);
-  letter-spacing: -.025em; font-variant-numeric: tabular-nums;
-}
-
 /* ── the disclosure ──────────────────────────────────────────────────────
    One micro line, on its own chip at the foot of screen 1, clear of the
    chrome on the right. 16px, the label floor. */
@@ -982,77 +975,24 @@ body { background: var(--paper); }
   max-width: none; pointer-events: auto;
 }
 
-/* ── screen 3 · the arrangement diagram ─────────────────────────────────
-   Five parties as objects on ONE spine — the contract — in the same colours
-   as the four marks at the boundary's corners on the street (households are
-   the green of the houses themselves). Each object: a mark on the spine, a
-   name, one contribution. Desktop: a row. Narrow: a column, same spine. */
-.plate--deal { padding: calc(var(--x-gap) * .75) calc(var(--x-gap) * 1.1) calc(var(--x-gap) * .8); }
-.deal {
-  --deal-gap: clamp(14px, 1.6vw, 28px);
-  position: relative; list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0 var(--deal-gap);
-}
-/* the spine: one rule from mark to mark, drawn as a segment per party so
-   it starts at the first mark and ends at the last */
-.dp { position: relative; min-width: 0; padding-top: 32px; }
-.dp:not(:last-child)::before {
-  content: ""; position: absolute; left: 12px; right: calc(-1 * var(--deal-gap) - 12px);
-  top: 11px; height: 2px;
-  background: var(--edition-ink); opacity: .5;
-}
-.dp-mark {
-  position: absolute; left: 0; top: 0; width: 24px; height: 24px; display: block;
-  background: var(--paper); border-radius: 50%; padding: 1px;
-  box-shadow: 0 0 0 3px var(--paper);
-}
-.dp--house .dp-mark { border-radius: 2px; }
-.dp--house   .dp-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
-.dp--carrier .dp-mark circle { fill: var(--carrier); }
-.dp--fund    .dp-mark circle { fill: var(--fund); }
-.dp--survey  .dp-mark circle { fill: var(--survey); }
-.dp--broker  .dp-mark circle { fill: var(--broker); }
-.dp-who {
-  margin: 0 0 4px;
-  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
-  color: var(--edition-ink);
-}
-.dp--carrier .dp-who { color: var(--carrier); }
-.dp--fund    .dp-who { color: var(--fund); }
-.dp--survey  .dp-who { color: var(--survey); }
-.dp--broker  .dp-who { color: var(--broker); }
-.dp--house   .dp-who { color: var(--green); }
-.dp-what {
-  margin: 0;
-  font: 400 clamp(18px, .45vw + 1vh, 21px)/1.35 var(--sans);
-  color: var(--edition-ink); text-wrap: pretty;
-}
+/* (The five-party arrangement band — .plate--deal / .deal / .dp — left the
+   deck in the story expansion. The parties are now facilitator material on
+   screen 2; see FACILITATOR-NOTES.md.) */
 
 /* ── short desktop windows: the band gets no shorter, the street does ──── */
 @media (min-width: 900px) and (max-height: 760px) {
   .xcons { font-size: 18px; }
-  .dp-what { font-size: 18px; }
-  .plate--deal { padding-top: calc(var(--x-gap) * .55); padding-bottom: calc(var(--x-gap) * .6); }
 }
 
 /* ── narrow: the same hierarchy, stacked ────────────────────────────────── */
 @media (max-width: 899px) {
   .xcons { font-size: clamp(17px, 4.6vw, 22px); max-width: none; }
-  .xcount { font-size: clamp(30px, 9vw, 44px); }
   .xmicro--chip { align-self: flex-start; font-size: 15px; }
   .pin { font-size: 15px; padding: 5px 10px; }
   /* a plate in the stacked column takes the full width: anchorPlates()
      writes align-self:end inline for the grid, and a flex column would
      read that as "shrink-wrap, right-aligned" */
   .screen > .plate { align-self: stretch !important; }
-  .plate--deal { padding: 14px 14px 12px; }
-  .deal { --deal-gap: 10px; grid-template-columns: 1fr; gap: var(--deal-gap) 0; }
-  /* the spine turns vertical, through the marks */
-  .dp:not(:last-child)::before { left: 11px; right: auto; width: 2px; top: 12px; bottom: calc(-1 * var(--deal-gap) - 12px); height: auto; }
-  .dp { padding: 0 0 0 38px; min-height: 24px; }
-  .dp-who { display: inline; margin: 0 .5em 0 0; }
-  .dp-what { display: inline; font-size: 17px; }
   .plate--ctl .leg-i { font-size: 15px; }
   .plate--ctl .thr-tick { font-size: 15px; }
   .plate--ctl .eyebrow { font-size: 15px; }
@@ -1060,7 +1000,178 @@ body { background: var(--paper); }
 }
 /* iPad portrait (820px) is narrow but is still the iPad: labels hold 16px */
 @media (min-width: 600px) and (max-width: 899px) {
-  .xmicro--chip, .pin, .dp-who, .plate--ctl .leg-i, .plate--ctl .thr-tick, .plate--ctl .eyebrow { font-size: 16px; }
-  .dp-what { font-size: 18px; }
+  .xmicro--chip, .pin, .plate--ctl .leg-i, .plate--ctl .thr-tick, .plate--ctl .eyebrow { font-size: 16px; }
   .xcons { font-size: 20px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   STORY EXPANSION — five screens
+   (design-study/story-expansion/SCREEN-COPY.md § NEGOTIATED). Two screens
+   are new: 2, the agreement attached to no. 31's home, and 4, the three
+   conditions with the one toggle. Screen 5 is written by app.js from the
+   state object. Same stock, same type, same rule: every word on paper.
+   iPad floors hold: explanatory text ≥ 18px, labels ≥ 16px.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── screen 2 · the agreement object ─────────────────────────────────────
+   A sheet of paper tied to the house by the tether (drawn in the pins
+   layer). Four clauses, each with the mark of the party that carries it,
+   in the five-party colours; then the authorisation sentence as the
+   sheet's foot. It is not a form: nothing here can be pressed. */
+.plate--agree {
+  max-width: 460px; justify-self: end;
+  padding: calc(var(--x-gap) * .85) calc(var(--x-gap) * 1.05) calc(var(--x-gap) * .9);
+  background: var(--paper);
+  box-shadow: 0 0 0 1.5px var(--edition-ink), 0 16px 34px -20px rgba(22,21,15,.55);
+  border-radius: 3px;
+}
+.agree { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 1.3vh, 16px); }
+.ag {
+  display: flex; align-items: flex-start; gap: 12px;
+  font: 400 clamp(18px, .5vw + 1.15vh, 23px)/1.3 var(--sans); color: var(--edition-ink);
+}
+.ag-mark { width: 18px; height: 22px; flex: 0 0 auto; margin-top: .12em; }
+.ag--you     .ag-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
+.ag--fund    .ag-mark circle  { fill: var(--fund); }
+.ag--carrier .ag-mark circle  { fill: var(--carrier); }
+.ag-auth {
+  margin: clamp(12px, 1.6vh, 20px) 0 0; padding-top: clamp(10px, 1.3vh, 16px);
+  border-top: 1.5px solid var(--edition-ink);
+  font: 700 clamp(18px, .5vw + 1.1vh, 22px)/1.3 var(--sans); color: var(--edition-ink);
+  text-wrap: balance;
+}
+
+/* the tether is artwork in the pins layer: fixed, full-window, no events */
+.tether { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
+
+/* ── screen 4 · the toggle and its note ─────────────────────────────────
+   One control. Pressed, it fills — like the thumb on screen 3 — and the
+   note under it says what the illustration is. */
+.plate--verify { max-width: 460px; justify-self: end; align-items: flex-start; }
+.vbtn {
+  display: inline-flex; align-items: center; gap: 12px;
+  min-height: 52px; padding: 0 20px 0 14px;
+  background: var(--paper); color: var(--edition-ink);
+  border: 2px solid var(--edition-ink); border-radius: var(--r-m);
+  box-shadow: 0 10px 24px -16px rgba(22,21,15,.55);
+  font: 700 clamp(18px, .45vw + 1vh, 21px)/1.2 var(--sans);
+  text-align: left; cursor: pointer; white-space: normal;
+}
+.vbtn:hover { background: var(--edition-wash); }
+.vbtn-mark { width: 24px; height: 24px; flex: 0 0 auto; }
+.vbtn-mark circle { fill: var(--paper); stroke: var(--edition-ink); stroke-width: 1.8; stroke-dasharray: 3 2.4; }
+.vbtn-mark path { fill: none; stroke: none; }
+.vbtn[aria-pressed="true"] { background: var(--survey); border-color: var(--survey); color: var(--paper); }
+.vbtn[aria-pressed="true"]:hover { background: #6A4D12; }
+.vbtn[aria-pressed="true"] .vbtn-mark circle { fill: var(--paper); stroke: var(--paper); stroke-dasharray: none; }
+.vbtn[aria-pressed="true"] .vbtn-mark path { stroke: var(--survey); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.vnote {
+  margin: 12px 0 0; max-width: 34ch;
+  font: 400 16px/1.4 var(--sans); color: var(--edition-ink);
+}
+
+/* ── screen 4 · three separated steps on the street scene ───────────────
+   Three paper chips in a row, a gap between each: separate conditions, not
+   one spine. Each: a mark (hollow and dashed while pending, solid green
+   when met — the houses' own vocabulary), a name, one line. The state word
+   sits under Verification, the step the toggle illustrates. */
+.steps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 24px);
+  pointer-events: none;
+}
+.step {
+  position: relative; min-width: 0;
+  padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .85) calc(var(--x-gap) * .65) calc(var(--x-gap) * .85 + 34px);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 14%, transparent);
+}
+.step-mark { position: absolute; left: calc(var(--x-gap) * .85 - 4px); top: calc(var(--x-gap) * .6 - 1px); width: 24px; height: 24px; }
+.step-mark circle { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.8; stroke-dasharray: 3 2.4; }
+.step-mark path { fill: none; stroke: none; }
+.step[data-state="met"] .step-mark circle { fill: var(--green); stroke: var(--green-2); stroke-dasharray: none; }
+.step[data-state="met"] .step-mark path { stroke: var(--paper); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.step-name {
+  margin: 0 0 3px;
+  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.step[data-state="met"] .step-name { color: var(--green); }
+.step-val { margin: 0; font: 400 clamp(18px, .45vw + 1vh, 21px)/1.3 var(--sans); color: var(--edition-ink); text-wrap: pretty; }
+.step-n { font-weight: 700; font-variant-numeric: tabular-nums; }
+.step-state {
+  display: inline-block; margin: 8px 0 0; padding: .2em .6em;
+  border-radius: 3px; border: 1.5px dashed var(--ink-soft);
+  font: 700 16px/1.3 var(--sans); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.step[data-state="met"] .step-state { border: 1.5px solid var(--survey); color: var(--survey); background: color-mix(in srgb, var(--survey) 10%, var(--paper)); }
+
+/* ── screen 5 · the derived state ───────────────────────────────────────
+   The headline and its line are written by app.js. The pending line is a
+   list of what is missing, one item per line, and takes the warn colour of
+   screen 3's closed state; the met line is the green of the open state. */
+.xcons--arr { max-width: 30ch; display: inline-grid; gap: .15em; text-wrap: initial; }
+.xcons--arr span { display: block; }
+.screen--arr[data-state="pending"] .xcons--arr { color: var(--warn); font-weight: 700; }
+.screen--arr[data-state="begin"]   .xcons--arr { color: var(--green); font-weight: 700; }
+
+/* the key, as a chip at the foot — the same two entries as screen 3 */
+.leg--chip {
+  align-self: end; justify-self: start;
+  margin: 0; padding: .45em .8em; border-radius: 3px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--edition-ink) 10%, transparent);
+  gap: 6px 20px; align-items: center; pointer-events: auto;
+}
+.leg--chip .leg-i { gap: 8px; font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.leg--chip .leg-i--out { color: var(--ink-soft); }
+.leg--chip .leg-i svg { width: 15px; height: 20px; flex: 0 0 auto; }
+.leg--chip .leg-i--in  svg polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
+.leg--chip .leg-i--out svg polygon { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 2.5 2; stroke-linejoin: round; }
+
+/* the label on a house outside the arrangement: the hollow house's own
+   dashed edge, on a paper plate */
+.pin--out { color: var(--edition-ink); box-shadow: 0 0 0 1.5px var(--paper), 0 6px 16px -10px rgba(22,21,15,.6); outline: 2px dashed var(--ink-soft); outline-offset: -2px; }
+
+/* ── short desktop windows ───────────────────────────────────────────────── */
+@media (min-width: 900px) and (max-height: 760px) {
+  .ag { font-size: 18px; }
+  .ag-auth { font-size: 18px; }
+  .agree { gap: 8px; }
+  .plate--agree { padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9) calc(var(--x-gap) * .7); }
+  .step { padding-top: calc(var(--x-gap) * .45); padding-bottom: calc(var(--x-gap) * .5); }
+  .step-mark { top: calc(var(--x-gap) * .45 - 1px); }
+  .step-val { font-size: 18px; }
+  .step-state { margin-top: 6px; }
+  .vbtn { min-height: 48px; }
+}
+
+/* ── narrow: stacked ─────────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+  .plate--agree { max-width: none; justify-self: stretch; padding: 14px 16px 16px; }
+  .ag { font-size: 18px; }
+  .ag-auth { font-size: 18px; }
+  .plate--verify { max-width: none; padding: 0; }
+  .vbtn { font-size: 18px; }
+  /* anchorPlates() writes align-self:end inline for the desktop grid; in
+     the stacked column that would shrink-wrap the list to the right edge */
+  .screen > .steps { align-self: stretch !important; }
+  .steps { grid-template-columns: 1fr; gap: 8px; }
+  .step { padding: 10px 14px 11px 46px; }
+  .step-mark { left: 12px; top: 10px; }
+  .step-val { font-size: 17px; }
+  /* phone order: headline, the three steps, then the toggle, then the street */
+  .screen--cond .steps { order: 1; }
+  .screen--cond .plate--verify { order: 2; }
+  .screen--cond .gw { order: 3; }
+  .leg--chip { align-self: flex-start; }
+  .leg--chip .leg-i { font-size: 15px; }
+  .xcons--arr { max-width: none; }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  .step-val, .ag, .ag-auth, .vbtn { font-size: 18px; }
+  .leg--chip .leg-i, .step-name, .step-state { font-size: 16px; }
 }

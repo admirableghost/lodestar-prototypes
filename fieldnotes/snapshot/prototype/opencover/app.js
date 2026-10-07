@@ -193,12 +193,6 @@
   ];
 
   /* ══════════════════════════════════════════════════════════════════════
-     STATE — two switches, both of them visible on the glass, and both of
-     them load-bearing on a later screen. The permission granted on screen 1
-     decides whether screen 2 can buy and whether screen 3 can switch.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  /* ══════════════════════════════════════════════════════════════════════
      ONE SOURCE OF TRUTH
 
      Every screen reads this table. Eligibility is a HARD filter drawn from
@@ -220,7 +214,7 @@
       /* the one term each preference turns on, three words or fewer. This is
          what the glass shows; the long forms above stay for the notes. */
       term: { price: "1,340 USD", excl: "No age condition", settle: "5 working days" },
-      eligible: true, bar: null, verdict: "Chosen",
+      eligible: true, bar: null, verdict: "Fits",
       why: { price:  "the lowest price she can actually buy",
              excl:   "no exclusion that reaches her household",
              settle: "the only published settlement time with a remedy behind it" } },
@@ -253,25 +247,80 @@
   };
   var PREF_SAID = { price: "price", excl: "fewest exclusions", settle: "fastest settlement" };
 
-  /* The preference chosen on screen 2 is the one screen 3 reads, and it
-     survives a reload. A browser that refuses storage simply starts on price. */
-  var pref = "price";
-  try { if (RANK[sessionStorage.getItem("oc-pref")]) { pref = sessionStorage.getItem("oc-pref"); } } catch (e) { /* private mode */ }
+  /* ══════════════════════════════════════════════════════════════════════
+     STATE — two switches, both set on the glass, both read later.
+       pref   · chosen on screen 3, read by screens 3 and 5.
+       bought · set by the one action on screen 4, read by screens 4 and 5.
+     Both survive a reload (sessionStorage). A browser that refuses storage
+     starts on price, unbought. Restarting from screen 5 clears both.
+     ══════════════════════════════════════════════════════════════════════ */
+  var S = { pref: "price", bought: false };
+  try {
+    if (RANK[sessionStorage.getItem("oc-pref")]) { S.pref = sessionStorage.getItem("oc-pref"); }
+    S.bought = sessionStorage.getItem("oc-bought") === "1";
+  } catch (e) { /* private mode */ }
 
-  function bought() {
-    /* the cheapest ELIGIBLE offer; eligibility is never traded away */
+  function persist() {
+    try {
+      sessionStorage.setItem("oc-pref", S.pref);
+      sessionStorage.setItem("oc-bought", S.bought ? "1" : "0");
+    } catch (e) { /* private mode */ }
+  }
+
+  /* the cheapest ELIGIBLE offer; eligibility is never traded away. This is
+     the offer screen 2 publishes, screen 3 recommends, screen 4 buys and
+     screen 5 checks — one row, read four times. */
+  function recommended() {
     return OC.filter(function (o) { return o.eligible; })
              .reduce(function (a, b) { return a.num <= b.num ? a : b; });
   }
+  /* the PURCHASED offer. The purchase on screen 4 can only be made on the
+     recommended offer, so the two are the same row; S.bought says whether
+     the purchase has actually been made. */
+  function bought() { return recommended(); }
 
-  /* ── screen 1: the offer object, from the same row screens 2 and 3 use ──
-     Five terms and nothing else: the insurer, the price, the excess, who is
-     covered, the settlement promise. The full published document (perils,
-     exclusions, the other commitments, the remedy figure) stays in OFFERS. */
+  /* the cheapest offer of the three, eligible or not: the floor her
+     permission is measured from */
+  function cheapest() {
+    return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; });
+  }
+
+  /* ── screen 1: the permission span, drawn from the model ───────────────
+     A line from the cheapest offer to DELTA above it, closed by her warm
+     boundary mark; the recommended offer sits inside it as a plum dot. No
+     text: the sentence under it says what it is. */
+  function permSpan(x0, x1, y, dotR, stroke) {
+    var floor = cheapest().num, o = recommended();
+    var u = Math.max(0, Math.min(1, (o.num - floor) / DELTA));
+    var xr = x0 + (x1 - x0) * u;
+    return '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y +
+             '" stroke="#16150F" stroke-width="' + stroke + '" stroke-linecap="round"/>' +
+           '<line x1="' + x0 + '" y1="' + (y - 10) + '" x2="' + x0 + '" y2="' + (y + 10) +
+             '" stroke="#16150F" stroke-width="' + stroke + '" stroke-linecap="round"/>' +
+           '<rect x="' + (x1 - 7) + '" y="' + (y - 7) + '" width="14" height="14" fill="#D9561F" transform="rotate(45 ' + x1 + " " + y + ')"/>' +
+           '<line x1="' + (x1 + 14) + '" y1="' + (y - 24) + '" x2="' + (x1 + 14) + '" y2="' + (y + 24) +
+             '" stroke="#D9561F" stroke-width="4" stroke-linecap="round"/>' +
+           '<circle class="perm-dot" cx="' + xr.toFixed(1) + '" cy="' + y + '" r="' + dotR + '" fill="#8A3450"/>';
+  }
+
+  function paintPermission() {
+    var host = document.getElementById("perm-art");
+    if (!host) { return; }
+    host.innerHTML = permSpan(10, 92, 36, 7, 3);
+  }
+
+  /* ── screen 2: the offer object, from the same row screens 3–5 use ─────
+     Five terms and the remedy, nothing else: the insurer, the price, the
+     excess, who is covered, the settlement promise with its clock, and the
+     remedy that applies when the promise is missed. The full published
+     document (perils, exclusions, the other commitments) stays in OFFERS. */
   function paintOffer() {
     var host = document.getElementById("offer");
     if (!host) { return; }
-    var o = bought();
+    var o = recommended();
+    var full = OFFERS.filter(function (x) { return x.id === o.id; })[0] || null;
+    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
+    var perDay = miss ? miss.perDay : null;
     host.innerHTML =
       '<svg class="offer-sheet" viewBox="0 0 320 22" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
         '<rect x="0" y="4" width="92" height="4" rx="2" fill="#16150F" opacity=".55"/>' +
@@ -284,15 +333,21 @@
       '<ul class="offer-terms">' +
         "<li>Excess " + o.excessNum + " USD</li>" +
         "<li>Named drivers covered</li>" +
-        '<li class="is-promise">Settlement ' + o.settleDays + " working days</li>" +
+        '<li class="is-promise">Settlement ' + o.settleDays + " working days from agreed liability</li>" +
+        (perDay != null && full
+          ? '<li class="is-remedy"><svg class="remedy-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+              '<path d="M6 3 V14 H18 M13 9 L19 14 L13 19" fill="none" stroke="#8A3450" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+            "</svg>Remedy " + perDay + " USD a day late, no claim needed</li>"
+          : "") +
       "</ul>";
   }
 
-  /* ── screen 2: three offers, ONE term each, and a verdict word ───────── */
+  /* ── screen 3: three offers, ONE term each, and a verdict word ────────
+     The eligible offer is RECOMMENDED. This screen never buys. */
   function paintCompare() {
     var host = document.getElementById("cmp");
     if (!host) { return; }
-    var win = bought();
+    var win = recommended(), pref = S.pref;
     host.innerHTML = OC.slice().sort(RANK[pref]).map(function (o) {
       var unp = (pref === "settle" && !o.settlePublished);
       return '<div class="of" data-win="' + (o === win ? "1" : "0") +
@@ -300,7 +355,7 @@
              '<p class="of-co">' + esc(o.name) + "</p>" +
              '<p class="of-v' + (unp ? " of-v--none" : "") + '">' + esc(o.term[pref]) + "</p>" +
              '<p class="of-t' + (o.eligible ? "" : " of-t--no") + '">' +
-               '<span class="sr-only">' + (o === win ? "Bought: " : (o.eligible ? "Eligible" : "Cannot be bought: ")) + "</span>" +
+               '<span class="sr-only">' + (o === win ? "Recommended: " : (o.eligible ? "Eligible" : "Cannot be bought: ")) + "</span>" +
                esc(o === win ? o.verdict : (o.eligible ? "" : o.verdict)) +
                (o.eligible ? "" : '<span class="sr-only"> — ' + esc(o.bar) + "</span>") +
              "</p>" +
@@ -311,7 +366,75 @@
       b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
     });
     paintPerformance();
-    say("Ranked on " + PREF_SAID[pref] + ". The agent buys " + win.name + ".");
+    say("Ranked on " + PREF_SAID[pref] + ". The agent recommends " + win.name + ". Not bought yet.");
+  }
+
+  /* ── screen 4: the purchase, in three steps, SIMULATED ────────────────
+     The steps are marked from S.bought. Step one's drawing is the same
+     permission span as screen 1, with the recommended offer inside it:
+     the one number the agent tests. The prior cover is never cancelled
+     before the insurer confirms (step three's drawing: the old bar runs on
+     past the mark the new one starts at). */
+  var stepTimers = [];
+  function paintSteps(animate) {
+    var art = document.getElementById("step-perm");
+    if (art) { art.innerHTML = permSpan(22, 170, 60, 9, 3.5); }
+    var steps = Array.prototype.slice.call(document.querySelectorAll("#steps .step"));
+    var buyBtn = document.getElementById("buy");
+    var state = document.getElementById("bought-state");
+    var label = document.getElementById("bought-label");
+    stepTimers.forEach(clearTimeout); stepTimers = [];
+
+    var o = bought();
+    if (label) { label.textContent = "Bought · " + o.name; }
+
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!S.bought) {
+      steps.forEach(function (s) { s.dataset.done = "0"; });
+      if (buyBtn) { buyBtn.hidden = false; buyBtn.disabled = false; }
+      if (state) { state.hidden = true; }
+      return;
+    }
+    /* the state replaces the action at once; the three marks then land one
+       after another (or at once, under reduced motion or on a reload) */
+    if (buyBtn) { buyBtn.hidden = true; }
+    if (state) { state.hidden = false; }
+    if (animate && !reduce) {
+      steps.forEach(function (s, i) {
+        stepTimers.push(setTimeout(function () { s.dataset.done = "1"; }, 100 + i * 300));
+      });
+    } else {
+      steps.forEach(function (s) { s.dataset.done = "1"; });
+    }
+  }
+
+  /* the one test the agent runs before it buys: the recommended offer is
+     eligible by construction, and its price must sit inside her permission
+     (DELTA above the cheapest). Always true with the current three offers;
+     kept as a real check so "Permission checked" is computed, not asserted. */
+  function permitted() {
+    var o = recommended();
+    return !!o && o.eligible && (o.num - cheapest().num) <= DELTA;
+  }
+
+  function buy() {
+    if (S.bought || !permitted()) { return; }
+    S.bought = true;
+    persist();
+    paintSteps(true);
+    paintPerformance();
+    refit();
+    say("Bought: " + bought().name + ". Permission checked, within " + DELTA +
+        " USD. Insurer confirmed. Cover in place; the old policy ends after. Simulated purchase, no real transaction.");
+  }
+
+  /* starting over: back to price, unbought — the state the first screen
+     describes. Called when the deck wraps from screen 5 to screen 1. */
+  function restart() {
+    S.pref = "price"; S.bought = false;
+    persist();
+    paintCompare();
+    paintSteps(false);
   }
 
   /* ── screen 3 reads the SAME table, for whichever offer was bought ───
@@ -337,9 +460,14 @@
     }
     var live = !!(row && o.settlePublished);
 
+    /* the held offer and its purchase state, read from screen 4: the same
+       scene either way, but the line never claims a purchase that was not
+       made */
     var id = document.getElementById("oc3-id");
     if (id) {
-      id.innerHTML = '<span class="sr-only">Holding </span><b>' + esc(o.name) + "</b>";
+      id.dataset.bought = S.bought ? "1" : "0";
+      id.innerHTML = '<span class="oc3-state">' + (S.bought ? "Bought" : "Not bought") + "</span>" +
+                     '<span class="oc3-sep" aria-hidden="true"> · </span><b>' + esc(o.name) + "</b>";
     }
 
     var promised = miss ? miss.promised : null,
@@ -427,14 +555,19 @@
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
     b.addEventListener("click", function () {
-      pref = b.dataset.pref;
-      try { sessionStorage.setItem("oc-pref", pref); } catch (e) { /* private mode */ }
+      S.pref = b.dataset.pref;
+      persist();
       paintCompare();
       refit();
     });
   });
+  var buyBtn = document.getElementById("buy");
+  if (buyBtn) { buyBtn.addEventListener("click", buy); }
+
+  paintPermission();
   paintOffer();
   paintCompare();
+  paintSteps(false);
 
   /* Restored: the world palette and its frame sat inside the state block the
      recomposition replaced, and renderWorld below is still its consumer. */
@@ -881,7 +1014,10 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["Let the agent choose", "See it hold the promise", "Back to what the person sets"];
+  /* Next labels, per SCREEN-COPY.md § OPENCOVER. Screen 3's "Buy inside her
+     rules" leads to the screen where that action lives; the purchase itself
+     is the #buy button on screen 4. */
+  var CTA = ["The offer", "Choose", "Buy inside her rules", "Eleven months on", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -894,6 +1030,9 @@
 
   function show(n, push) {
     n = ((n - 1 + total) % total) + 1;
+    /* leaving the last screen for the first is a restart: preference back
+       to price, nothing bought. A deep link or reload never resets. */
+    if (current === total && n === 1 && push !== false) { restart(); }
     current = n;
     var sc = screens[n - 1];
     screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
@@ -922,8 +1061,13 @@
           ? Array.prototype.map.call(spans, function (x) { return x.textContent.trim(); }).join(" ")
           : h.textContent)
       : sc.dataset.label;
+    /* the state a screen depends on is announced with it */
+    var extra = "";
+    if (n === 3) { extra = " Ranked on " + PREF_SAID[S.pref] + ". Recommended: " + recommended().name + ". Not bought yet."; }
+    if (n === 4) { extra = S.bought ? " Bought: " + bought().name + ". Simulated purchase." : " Not yet bought. One action: buy inside her rules. Simulated purchase."; }
+    if (n === 5) { extra = (S.bought ? " Bought: " : " Not bought: ") + bought().name + "."; }
     announce.textContent = "Screen " + n + " of " + total + ". " +
-      said.replace(/\s+/g, " ").trim();
+      said.replace(/\s+/g, " ").trim() + extra;
 
     if (push !== false) {
       try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }

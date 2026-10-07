@@ -6,7 +6,7 @@
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OpenCover — the buyer is not a person</title>
-<meta name="description" content="A hypothetical motor policy bought by a household's assistant: priorities and permissions set once by a person, an offer published as machine-readable data with explicit exclusions and verifiable service commitments, and a relationship that is re-chosen continuously rather than renewed by default.">
+<meta name="description" content="A hypothetical motor policy bought by a household's assistant: priorities and permissions set once by a person, an offer published as machine-readable data with explicit exclusions and verifiable service commitments, a purchase made inside her rules, and a relationship that is re-chosen continuously rather than renewed by default.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -21,11 +21,11 @@
 
 <!-- ═══════════════ THE GROUND ═══════════════
      The register sheet is still drawn (app.js, renderWorld) and the camera
-     still pans it, but every screen now paints its own warm paper over it,
-     so the ground is a quiet ruled field under the chrome and nothing more. -->
+     still pans it, but every screen paints its own warm paper over it, so
+     the ground is a quiet ruled field under the chrome and nothing more. -->
 <div class="world" id="world">
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
-       aria-label="A ruled register sheet, the ground the three screens sit on."></svg>
+       aria-label="A ruled register sheet, the ground the five screens sit on."></svg>
 </div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <div class="pins" id="pins" aria-hidden="true"></div>
@@ -48,44 +48,86 @@
 </svg>
 
 <!-- ONE THOUGHT PER SCREEN, SIXTY WORDS OR FEWER.
-     1 — an offer a machine can read, and her instructions sitting apart.
-     2 — the agent buys the cheapest offer that is eligible, never the cheapest.
-     3 — the promise was checkable; the remedy applied itself.
+     design-study/story-expansion/SCREEN-COPY.md § OPENCOVER is the copy
+     contract, verbatim, nothing added.
+     1 — her priorities and her permission: three groups, one object.
+     2 — the offer, with its remedy, published for an agent to read.
+     3 — the best fit inside her rules; recommended, not bought.
+     4 — her instructions become a permitted purchase (simulated).
+     5 — eleven months on, the promise is checked against performance.
      Everything else is said aloud by the facilitator
-     (design-study/density-pass/opencover/FACILITATOR-NOTES.md). -->
+     (design-study/story-expansion/opencover/FACILITATOR-NOTES.md).
+
+     DEEP LINKS. The hashes are #s/1 … #s/5 for the five screens above.
+     Links minted for the three-screen build map by BEAT, not by number:
+     old #s/1 (what she sets) → #s/1 · old #s/2 (the choice) → #s/3 ·
+     old #s/3 (the promise) → #s/5. #s/2 now means the offer, so an old
+     #s/2 link lands one beat early; it cannot be told apart from a new one
+     and is not rewritten. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · THE OFFER IS READABLE TO AN AGENT ══════
-     Two objects that are never merged: the offer is a document the insurer
-     publishes, painted from the same OC model screens 2 and 3 read; her
-     instructions are a note she owns, on the warm boundary rule. -->
-<section class="screen oc oc1" data-screen="1" data-label="What the person sets" data-cam="set" data-veil="soft">
+<!-- ══════ 1 · HER PRIORITIES, HER PERMISSION ══════
+     The standing instructions are the one object: a note she owns, on the
+     warm boundary rule, in three groups. Hard requirements first (an offer
+     that breaks one is never bought); then the ranking preference, which is
+     only a tie-break among eligible offers; then the permission, which is
+     the one number the agent tests before it buys or switches. "Never
+     lapse" is HER requirement of the agent, not a guarantee by anyone. -->
+<section class="screen oc oc1" data-screen="1" data-label="What she sets" data-cam="set" data-veil="soft">
 
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">01 / What the person sets</p>
-      <h1 class="display oc-headline" tabindex="-1">Insurance written to be read by her machine.</h1>
+      <p class="oc-eyebrow">01 / What she sets</p>
+      <h1 class="display oc-headline" tabindex="-1">Her priorities. Her permission.</h1>
     </div>
   </header>
 
   <div class="oc-scene oc1-scene">
-    <article class="offer" id="offer" aria-label="The offer, published as terms a machine can read">
-      <!-- painted by paintOffer() from the offer bought() returns -->
+    <article class="rules" aria-label="Her standing instructions to the agent, set by her and not by any insurer">
+
+      <section class="rule-g rule-g--req" aria-label="Requirements">
+        <svg class="rule-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">
+          <!-- three hard lines: a bar each, stopped by a warm diamond -->
+          <g stroke="#16150F" stroke-width="3" stroke-linecap="round">
+            <line x1="10" y1="16" x2="78" y2="16"/>
+            <line x1="10" y1="36" x2="62" y2="36"/>
+            <line x1="10" y1="56" x2="70" y2="56"/>
+          </g>
+          <g fill="#D9561F">
+            <rect x="86" y="9" width="14" height="14" transform="rotate(45 93 16)"/>
+            <rect x="86" y="29" width="14" height="14" transform="rotate(45 93 36)"/>
+            <rect x="86" y="49" width="14" height="14" transform="rotate(45 93 56)"/>
+          </g>
+          <line x1="110" y1="4" x2="110" y2="68" stroke="#D9561F" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <ul class="rule-l">
+          <li>Never lapse</li>
+          <li>Excess under 500</li>
+          <li>Keep Rosa, nineteen</li>
+        </ul>
+      </section>
+
+      <section class="rule-g rule-g--pref" aria-label="Preference">
+        <svg class="rule-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">
+          <!-- a ranking: three bars in order, and the arrow that orders them -->
+          <g fill="#16150F">
+            <rect x="30" y="10" width="80" height="12" rx="2"/>
+            <rect x="30" y="30" width="56" height="12" rx="2" opacity=".62"/>
+            <rect x="30" y="50" width="34" height="12" rx="2" opacity=".36"/>
+          </g>
+          <path d="M14 10 V58 M6 50 L14 60 L22 50" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="rule-p">Rank on price, exclusions or settlement</p>
+      </section>
+
+      <section class="rule-g rule-g--perm" aria-label="Permission">
+        <!-- painted by paintPermission() from DELTA and the OC prices: the
+             span above the cheapest offer the agent may buy inside -->
+        <svg class="rule-art rule-art--perm" id="perm-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false"></svg>
+        <p class="rule-p rule-p--perm">Buy or switch up to 200 USD above the cheapest</p>
+      </section>
+
     </article>
-
-    <svg class="oc-link" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-      <path d="M4 24 H36" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
-      <path d="M30 14 L42 24 L30 34" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-
-    <aside class="instr" aria-label="Her standing instructions to the agent, set by the customer and not by the insurer">
-      <ul class="instr-l">
-        <li>Never lapse</li>
-        <li>Excess under 500</li>
-        <li>Keep Rosa, nineteen</li>
-        <li>Up to 200 USD above the cheapest</li>
-      </ul>
-    </aside>
   </div>
 
   <footer class="oc-foot">
@@ -94,15 +136,59 @@
 
 </section>
 
-<!-- ══════ 2 · THE AGENT CHOOSES WITHIN THE RULES ══════
-     Eligibility is the hard filter; the preference only decides which term
-     each offer shows and the order the three are ranked in. -->
-<section class="screen oc oc2" data-screen="2" data-label="The agent chooses" data-cam="offers" data-veil="">
+<!-- ══════ 2 · AN OFFER HER AGENT CAN UNDERSTAND ══════
+     The offer is a document the insurer publishes, painted from the OC row
+     recommended() returns: five terms, and the remedy that sits under the
+     settlement promise. Published here; checked on screen 5. -->
+<section class="screen oc oc2" data-screen="2" data-label="The offer" data-cam="offers" data-veil="">
 
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">02 / The agent chooses</p>
-      <h2 class="display oc-headline" tabindex="-1">The cheapest it can actually buy.</h2>
+      <p class="oc-eyebrow">02 / The offer</p>
+      <h2 class="display oc-headline" tabindex="-1">An offer her agent can understand.</h2>
+    </div>
+  </header>
+
+  <div class="oc-scene oc2-scene">
+    <article class="offer" id="offer" aria-label="The offer, published as terms a machine can read">
+      <!-- painted by paintOffer() -->
+    </article>
+
+    <aside class="pub" aria-label="Who publishes the offer and who reads it">
+      <svg class="pub-art" viewBox="0 0 120 220" aria-hidden="true" focusable="false">
+        <!-- the insurer's seal, the published sheet travelling down the
+             register, the agent's reading lens -->
+        <circle cx="60" cy="30" r="22" fill="none" stroke="#16150F" stroke-width="3"/>
+        <circle cx="60" cy="30" r="11" fill="#16150F"/>
+        <path d="M60 58 V118" stroke="#16150F" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+        <rect x="42" y="92" width="36" height="46" rx="3" fill="#FBF6EA" stroke="#16150F" stroke-width="2.5"/>
+        <g stroke="#16150F" stroke-width="2.5" stroke-linecap="round" opacity=".55">
+          <line x1="49" y1="104" x2="66" y2="104"/>
+          <line x1="49" y1="113" x2="71" y2="113"/>
+          <line x1="49" y1="122" x2="60" y2="122"/>
+        </g>
+        <path d="M60 140 V160" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M50 152 L60 163 L70 152" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="56" cy="188" r="18" fill="none" stroke="#8A3450" stroke-width="3.5"/>
+        <line x1="69" y1="201" x2="84" y2="216" stroke="#8A3450" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <p class="pub-l pub-l--ins">Published by the insurer.</p>
+      <p class="pub-l pub-l--agt">Read by her agent.</p>
+    </aside>
+  </div>
+
+</section>
+
+<!-- ══════ 3 · THE BEST FIT INSIDE HER RULES ══════
+     Eligibility is the hard filter; the preference only decides which term
+     each offer shows and the order the three are ranked in. The eligible
+     offer is RECOMMENDED here. Nothing is bought on this screen. -->
+<section class="screen oc oc3" data-screen="3" data-label="The choice" data-cam="offers" data-veil="">
+
+  <header class="oc-head">
+    <div class="oc-title">
+      <p class="oc-eyebrow">03 / The choice</p>
+      <h2 class="display oc-headline" tabindex="-1">The best fit inside her rules.</h2>
     </div>
     <div class="rank" role="group" aria-labelledby="rank-l">
       <p class="rank-l" id="rank-l">Rank on</p>
@@ -114,29 +200,114 @@
     </div>
   </header>
 
-  <div class="oc-scene oc2-scene" id="cmp" aria-live="polite">
+  <div class="oc-scene oc3-scene" id="cmp" aria-live="polite">
     <!-- painted by paintCompare() -->
   </div>
 
+  <footer class="oc-line oc3-foot-line">
+    <p class="oc-state"><span class="oc-dot" aria-hidden="true"></span>Recommended. Not bought yet.</p>
+  </footer>
+
 </section>
 
-<!-- ══════ 3 · PROMISE → MISS → REMEDY ══════
-     One calculation, painted by paintPerformance() from the offer bought()
-     returns, that offer's own published settlement row in OFFERS and the one
-     missed entry in LEDGER. The clock starts at agreed liability; the remedy
-     is a published term that applied on the miss, with no separate claim. -->
-<section class="screen oc oc3" data-screen="3" data-label="Promise against performance" data-cam="after" data-veil="soft">
+<!-- ══════ 4 · HER INSTRUCTIONS BECOME A PERMITTED PURCHASE ══════
+     A SIMULATED transition, proposed as a prototype extension (STORY-MAP.md
+     § OpenCover, screen 4). Three steps, one action. The prior cover is
+     never cancelled before the insurer confirms: the new cover is in place
+     first and the old policy ends after. Her standing permission and the
+     offer's published terms are what let the agent complete this without
+     her — the arrangement satisfies the identity and signature requirements,
+     it does not remove them. Nothing real is transacted. -->
+<section class="screen oc oc4" data-screen="4" data-label="The purchase" data-cam="offers" data-veil="soft">
 
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">03 / Eleven months in</p>
+      <p class="oc-eyebrow">04 / The purchase</p>
+      <h2 class="display oc-headline" tabindex="-1">Her instructions become a permitted purchase.</h2>
+    </div>
+  </header>
+
+  <div class="oc-scene oc4-scene">
+    <ol class="steps" id="steps" aria-label="The purchase, in three steps">
+
+      <li class="step" data-step="permit" data-done="0">
+        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
+          <!-- the permission span, painted by paintSteps() from the model -->
+          <g class="step-art-perm" id="step-perm"></g>
+        </svg>
+        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Permission checked</p>
+        <p class="step-s">within 200 USD</p>
+      </li>
+
+      <li class="step" data-step="confirm" data-done="0">
+        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
+          <!-- the insurer's sheet, and its seal that fills on confirmation -->
+          <rect x="62" y="8" width="96" height="94" rx="3" fill="#FBF6EA" stroke="#16150F" stroke-width="2.5"/>
+          <g stroke="#16150F" stroke-width="3" stroke-linecap="round" opacity=".5">
+            <line x1="76" y1="26" x2="128" y2="26"/>
+            <line x1="76" y1="40" x2="140" y2="40"/>
+            <line x1="76" y1="54" x2="118" y2="54"/>
+            <line x1="76" y1="68" x2="134" y2="68"/>
+          </g>
+          <circle class="step-seal" cx="138" cy="80" r="16" fill="#FBF6EA" stroke="#16150F" stroke-width="3"/>
+          <path class="step-tick" d="M130 80 L136 86 L147 73" fill="none" stroke="#F3EBD7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Insurer confirms</p>
+      </li>
+
+      <li class="step" data-step="cover" data-done="0">
+        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
+          <!-- two covers on one line of time: the old one runs on past the
+               confirmation mark, the new one starts at it. They overlap;
+               there is no gap. -->
+          <line x1="10" y1="92" x2="210" y2="92" stroke="#16150F" stroke-width="2" opacity=".35"/>
+          <line class="step-now" x1="104" y1="12" x2="104" y2="100" stroke="#16150F" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/>
+          <rect class="step-old" x="10" y="54" width="128" height="20" rx="3" fill="#16150F" opacity=".32"/>
+          <rect class="step-new" x="104" y="24" width="106" height="20" rx="3" fill="none" stroke="#8A3450" stroke-width="2.5"/>
+        </svg>
+        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Cover in place</p>
+        <p class="step-s">old policy ends after</p>
+      </li>
+
+    </ol>
+
+    <div class="buy-row">
+      <button class="buy" type="button" id="buy">Buy inside her rules</button>
+      <p class="bought" id="bought-state" role="status" hidden>
+        <svg class="bought-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="11" fill="#8A3450"/>
+          <path d="M6.5 12.5 L10.5 16.5 L17.5 8.5" fill="none" stroke="#F3EBD7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span id="bought-label"></span>
+      </p>
+    </div>
+  </div>
+
+  <footer class="oc-foot">
+    <p class="oc-micro">Simulated purchase. No real transaction.</p>
+  </footer>
+
+</section>
+
+<!-- ══════ 5 · THE PROMISE STAYS CHECKABLE ══════
+     One calculation, painted by paintPerformance() from the offer bought()
+     returns, that offer's own published settlement row in OFFERS and the one
+     missed entry in LEDGER. The clock starts at agreed liability; the remedy
+     is a published term that applied on the miss, with no separate claim.
+     The insurer line reads screen 4's state: bought, or not. -->
+<section class="screen oc oc5" data-screen="5" data-label="Eleven months on" data-cam="after" data-veil="soft">
+
+  <header class="oc-head">
+    <div class="oc-title">
+      <p class="oc-eyebrow">05 / Eleven months on</p>
       <h2 class="display oc-headline" tabindex="-1">The promise is checkable.</h2>
     </div>
-    <!-- the selected offer's identity: always the offer bought() returns -->
+    <!-- the held offer's identity and its purchase state: always the offer
+         bought() returns, and whether screen 4's purchase was made -->
     <p class="oc3-id" id="oc3-id"></p>
   </header>
 
-  <div class="oc-scene oc3-scene">
+  <div class="oc-scene oc5-scene">
     <figure class="calc" id="oc3-calc" aria-label="The settlement promise checked against performance">
       <!-- painted by paintPerformance() -->
     </figure>
@@ -161,7 +332,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">Let the agent choose</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">The offer</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

@@ -2,12 +2,15 @@
    Backed to Act · an agent operations console
    No framework, no build step, no external request. Three files.
 
-   DENSITY PASS. Every screen is one composition in one object language:
-   cut-paper documents on a dark desk, a cool permitted tray on the left, a
-   warm approval territory on the right, and ONE LINE between them. The line
-   moves; the paper never does. Copy is the locked contract and nothing more
-   (≤ 60 visible words per screen per state). Facilitator detail lives in
-   FACILITATOR-NOTES.md, not on the glass.
+   FIVE SCREENS, ONE OBJECT LANGUAGE: cut-paper documents on a dark desk, a
+   cool permitted tray on the left, a warm approval territory on the right,
+   and ONE LINE between them. The line moves; the paper never does. Each
+   screen changes the focal object — the waiting order, the three parties
+   around it, the moving line, the day's orders, the choice itself — and
+   each has one headline on its own backing and at most three reading
+   regions. Copy is the locked contract and nothing more (≤ 60 visible words
+   per screen per state). Facilitator detail lives in FACILITATOR-NOTES.md,
+   not on the glass.
 
    Type: Bricolage Grotesque from fonts/ (OFL). On an iPad nothing
    explanatory renders under 18px and no label under 16px.
@@ -122,12 +125,10 @@ body {
 /* one measure for the whole composition, centred on a wide window */
 .top, .desk, .micro { width: 100%; max-width: 1360px; margin-left: auto; margin-right: auto; }
 
-/* ── the top row: headline left, the screen's one control right ─────── */
-.top { display: flex; justify-content: space-between; align-items: flex-start;
+/* ── the top row: headline left, the screen's one control or line right ─ */
+.top { display: flex; justify-content: space-between; align-items: flex-end;
   gap: 18px 32px; flex: 0 0 auto; }
 .xhead { flex: 0 1 auto; display: flex; flex-direction: column; align-items: flex-start; }
-.eyebrow { margin: 0 0 10px; font: 400 16px/1.2 var(--sans);
-  letter-spacing: .12em; text-transform: uppercase; color: var(--cream); }
 /* The backing is the heading's own box, so it contains its text at every
    viewport. Torn edge and grain live on a pseudo-element behind the glyphs. */
 .xd {
@@ -142,7 +143,7 @@ body {
   background: var(--block) var(--grain); filter: url(#rough); }
 
 .aside { flex: 0 0 auto; max-width: 460px; display: flex; flex-direction: column;
-  align-items: flex-start; gap: 0; }
+  align-items: flex-start; gap: 0; padding-bottom: 6px; }
 .xchoice { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
 /* the choice control: 46px, 2px border, the pressed one filled and ● */
 .xchoice button {
@@ -154,33 +155,33 @@ body {
 .xchoice button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
 .xchoice button[aria-pressed="true"]::before { content: "● "; }
 .xchoice button:focus-visible { border-radius: 0; }
-.statement { margin: 14px 0 0; max-width: 34ch;
+/* the screen's one line, where there is one: the contract's "Line:" */
+.statement { margin: 0; max-width: 34ch;
   font: 400 clamp(18px, .5vw + 1.1vh, 20px)/1.4 var(--sans); color: var(--cream); }
-
-/* screen 3's question is the climax, sized like one */
-.dec-q { margin: 0 0 14px; max-width: 22ch;
-  font: 700 clamp(20px, .7vw + 1.3vh, 26px)/1.2 var(--sans); color: var(--cream); }
-/* the one line Expand adds: dashed, like the proposal it names */
-.dec-said { margin: 14px 0 0; max-width: 34ch; padding: 10px 14px;
-  border: 1.5px dashed color-mix(in srgb, var(--cool) 75%, transparent);
-  font: 400 18px/1.4 var(--sans); color: var(--cream); }
 
 /* the disclosure, once */
 .micro { margin: 14px 0 0; flex: 0 0 auto; font: 400 16px/1.4 var(--sans); color: var(--mute); }
 
 /* ══ THE DESK ═══════════════════════════════════════════════════════════
    Five columns: three object columns and two gutters. --x is where the line
-   stands, derived per screen from LAYOUT in app.js via data-place. */
+   stands, derived per screen from LAYOUT in app.js via data-level; --xp is
+   the end of a proposed widening; --xg is where a trace of the line sits. */
 .desk {
   --sh: clamp(180px, calc(100vh - 560px), 240px);   /* the order's sheet height */
   --x: 30%;                                          /* the line, draft only */
-  --xp: 30%;                                         /* a proposed line     */
+  --xp: var(--x);                                    /* a proposed line     */
+  --xg: 30%;                                         /* the line before     */
   position: relative; flex: 1 0 auto; min-height: 0;
   margin-top: 16px; padding: 70px 0 24px;
   display: grid; grid-template-columns: 28% 4% 36% 4% 28%;
   grid-template-rows: auto; align-content: center;
 }
-.desk[data-place="may"] { --x: 70%; }
+.desk[data-level="compare"] { --x: 16%; }
+.desk[data-level="bounded"] { --x: 70%; }
+.desk[data-prop="bounded"]  { --xp: 70%; }
+.desk[data-prop="sliver"]   { --xp: 80%; }
+.desk[data-ghost="none"]    { --xg: 30%; }
+.desk[data-ghost="bounded"] { --xg: 70%; }
 
 /* the permitted tray: a lighter plate that stops at the line */
 .tray { position: absolute; z-index: 0; left: 0; top: 22px; bottom: 20px;
@@ -208,20 +209,20 @@ body {
 .line-lab { position: absolute; right: 12px; top: -3px; white-space: nowrap;
   font: 400 16px/1.3 var(--sans); color: var(--mute); }
 /* where the line stood before — a trace, unmistakably not the current line */
-.line--ghost { left: 30%; width: 0; margin-left: 0; background: none;
+.line--ghost { left: var(--xg); width: 0; margin-left: 0; background: none;
   border-left: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent);
   opacity: 0; transition: opacity .4s linear; }
 .line--ghost::before, .line--ghost::after { display: none; }
-.desk[data-place="may"] .line--ghost { opacity: 1; }
+.desk[data-ghost] .line--ghost { opacity: 1; }
 
 /* slots: a fixed art row the sheets sit at the foot of, then a caption row,
    so the captions start on one line */
 .slot { position: relative; z-index: 3; grid-row: 1;
   display: grid; grid-template-rows: calc(var(--sh) + 16px) auto; row-gap: 12px;
   align-items: end; justify-items: start; max-width: 100%; }
-.slot--prep, .slot--stack { grid-column: 1; justify-self: center; }
-.slot--po, .slot--slip     { grid-column: 3; justify-self: center; }
-.slot--exc                 { grid-column: 5; justify-self: end; padding-right: 4%; }
+.slot--prep { grid-column: 1; justify-self: center; }
+.slot--po   { grid-column: 3; justify-self: center; }
+.slot--exc  { grid-column: 5; justify-self: end; padding-right: 4%; }
 .art { display: flex; align-items: flex-end; }
 
 /* a caption is a wrapping label area, never a fixed box */
@@ -255,18 +256,17 @@ body {
 
 /* The purchase order: the one dominant object */
 .po { position: relative; padding: 0 0 14px 0; transition: transform .55s var(--ease); }
-.screen--s2 .po { padding-right: 60px; }
 .sheet--po { width: calc(var(--sh) * .86); height: var(--sh);
   box-shadow: 4px 4px 0 0 rgba(22,21,15,.38); }
 .po-rules { height: 16px; }
 .po-fields { height: 44px; margin-top: 2px; }
-.desk[data-place="may"] .po { transform: rotate(-3deg); }
 /* the coverage slip: the specified mistakes, nothing broader */
 .slip { position: absolute; right: 0; bottom: -14px; width: 170px; transform: rotate(3deg);
   padding: 9px 12px 10px; background: var(--cream); color: var(--ink);
   border: 1.4px dashed var(--ink); box-shadow: 0 2px 0 0 rgba(22,21,15,.18); }
 .slip-h { margin: 0 0 4px; font: 700 16px/1.25 var(--sans); letter-spacing: .03em; text-transform: uppercase; }
 .slip-l { list-style: none; margin: 0; padding: 0; font: 400 16px/1.3 var(--sans); }
+.slip-t { margin: 0; font: 400 16px/1.3 var(--sans); }
 
 /* The exception: hatched band, a signature line, never moves */
 .sheet--exc { width: calc(var(--sh) * .8); height: calc(var(--sh) * .9); padding-top: 24px; }
@@ -275,40 +275,112 @@ body {
 .sign { margin-top: auto; display: block; width: 100%; }
 .sign svg { display: block; width: 100%; height: 10px; }
 
-/* ── screen 3's documents ────────────────────────────────────────────── */
-.stack { position: relative; width: calc(var(--sh) * .95); height: calc(var(--sh) * .86); }
-.stack .sheet { position: absolute; width: 56%; height: 68%; padding: 10px; }
-.stack .sheet > svg:not(.tick) { height: 60%; }
-.sheet--s3a { left: 0;   top: 24%; transform: rotate(-5deg); background: #E3D7BA; }
-.sheet--s3b { left: 20%; top: 12%; transform: rotate(2deg);  background: #EBE2CB; }
-.sheet--s3c { left: 42%; top: 0;   transform: rotate(-2deg); box-shadow: 4px 4px 0 0 rgba(22,21,15,.3); }
-.tick { position: absolute !important; right: 8px; bottom: 8px; width: 24px !important; height: 24px; }
-.tick--big { width: 30px !important; height: 30px; right: 10px; bottom: 10px; }
-.paid { position: relative; padding-bottom: 6px; }
-.slip--paid { position: relative; right: auto; bottom: auto; width: calc(var(--sh) * .7);
-  height: calc(var(--sh) * .5); transform: rotate(-2deg); display: flex; flex-direction: column; }
-.slip--paid > svg:first-child { display: block; width: 100%; height: 60%; }
-.sheet--exc3 { width: calc(var(--sh) * .72); height: calc(var(--sh) * .78); }
-.sheet--exc3 > svg:not(.hatchband) { height: 40%; margin-top: 4px; }
+/* a tick: placed, or paid */
+.tick { position: absolute !important; right: 8px; top: 8px; width: 24px !important; height: 24px; }
 
+/* ══ SCREEN 2 · THE ARRANGEMENT ═════════════════════════════════════════
+   No tray and no line: the order at the centre, three parties joined to it
+   by dashed threads. A party is a compact paper tag — a name, one line. */
+.desk--s2 { display: flex; align-items: center; justify-content: center;
+  padding: 40px 0 24px; }
+.arrangement { display: grid; align-items: center; justify-items: center;
+  grid-template-columns: auto 56px auto 56px auto;
+  grid-template-rows: auto 36px auto; }
+.party--ai  { grid-column: 1; grid-row: 1; justify-self: end; }
+.conn--l    { grid-column: 2; grid-row: 1; }
+.po--s2     { grid-column: 3; grid-row: 1; padding: 0 0 14px 56px; }
+/* the slip hangs bottom-left on this screen, so the thread to You is clear */
+.po--s2 .slip { right: auto; left: 0; width: 164px; transform: rotate(-3deg); }
+.conn--r    { grid-column: 4; grid-row: 1; }
+.party--ins { grid-column: 5; grid-row: 1; justify-self: start; }
+.conn--v    { grid-column: 3; grid-row: 2; }
+.party--you { grid-column: 3; grid-row: 3; }
+.party { display: flex; flex-direction: column; gap: 2px; max-width: 220px;
+  padding: 10px 14px 11px; background: var(--cream); color: var(--ink);
+  box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
+.party b { font: 700 16px/1.25 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+.party span { font: 400 18px/1.3 var(--sans); }
+.party--ai  { background: #E3D7BA; transform: rotate(-2deg); }
+.party--ins { background: #EBE2CB; transform: rotate(2deg); }
+.party--you { border-top: 3px solid var(--hold); transform: rotate(-1deg); }
+.conn { display: block; }
+.conn--h { width: 100%; height: 0; border-top: 2px dashed var(--mute); }
+.conn--v { width: 0; height: 100%; border-left: 2px dashed var(--mute); }
+
+/* ══ SCREEN 3 · THE LINE MOVES ══════════════════════════════════════════ */
+.screen--s3 .po { padding-right: 60px; }
+.desk[data-level="bounded"] .po { transform: rotate(-3deg); }
+/* the slip read on screen 2, still on the order, wordless now */
+.slip--mute { width: 130px; padding: 10px 12px; }
+.slip--mute > svg { display: block; width: 100%; height: 40px; }
+
+/* ══ SCREEN 4 · THE DAY ═════════════════════════════════════════════════
+   Three orders side by side. Authorised: in the tray, ticked, one carrying
+   the cover's slip. Draft only: on the approval side, unticked, the tray
+   empty. The same sheets; the line and the ticks are what differ. */
+.slot--orders { grid-column: 1 / 4; justify-self: center; }
+.desk[data-level="none"] .slot--orders { grid-column: 3; }
+.orders { position: relative; display: flex; align-items: flex-end; gap: 14px;
+  padding-right: 40px; }
+.sheet--ord { width: calc(var(--sh) * .52); height: calc(var(--sh) * .74); padding: 12px; }
+.sheet--ord > svg:not(.tick) { height: 54%; margin-top: 18px; }
+.sheet--ord-a { background: #E3D7BA; transform: rotate(-2deg); }
+.sheet--ord-b { background: var(--cream); transform: rotate(1deg); box-shadow: 4px 4px 0 0 rgba(22,21,15,.3); z-index: 1; }
+.sheet--ord-c { background: #EBE2CB; transform: rotate(2deg); }
+.sheet--ord .tick { right: 8px; top: 8px; }
+/* the cover's slip, hung on the order it remedied */
+.slip--paid { right: auto; left: 48%; bottom: -16px; width: 160px; z-index: 2;
+  transform: rotate(3deg); padding-right: 40px; }
+.tick--slip { right: 8px; top: auto; bottom: 8px; }
+.desk[data-level="none"] .tick, .desk[data-level="none"] .slip--paid { display: none; }
+.sheet--exc4 { width: calc(var(--sh) * .72); height: calc(var(--sh) * .78); }
+.sheet--exc4 > svg:not(.hatchband) { height: 40%; margin-top: 4px; }
+/* the simulated day: the same composition, but the tray is projected, not
+   granted — striped, dotted, never the solid plate of real authority */
+.desk[data-sim="1"] .tray {
+  background: repeating-linear-gradient(135deg, rgba(116,199,154,.10) 0 4px, transparent 4px 14px), var(--tray) var(--grain);
+  border-top-style: dotted; }
+.desk[data-sim="1"] .line--now { background: repeating-linear-gradient(to bottom, var(--hold) 0 7px, transparent 7px 12px); }
+.desk[data-sim="1"] .line--now::before, .desk[data-sim="1"] .line--now::after { background: var(--hold); }
+
+/* ══ SCREEN 5 · THE NEXT BOUNDARY ═══════════════════════════════════════
+   Its own composition: the choice is the object, large, on its own row.
+   Under it a zone band shows FUTURE authority: the tray, the line, a trace
+   of today's line after Narrow, a hatched sliver after Expand, and the
+   wordless exception the sliver never reaches. */
+.desk--s5 { display: flex; flex-direction: column; justify-content: center; gap: 36px;
+  padding: 24px 0 24px; }
+.decide { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.xchoice--big { justify-content: center; gap: 16px; }
+.xchoice--big button { height: 64px; min-height: 64px; min-width: 164px; padding: 0 32px;
+  font-size: 22px; background: var(--panel); }
+.xchoice--big button[aria-pressed="true"] { background: var(--cream); }
+/* the one line Expand adds: dashed, like the proposal it names */
+.dec-said { margin: 0; max-width: 40ch; padding: 10px 14px; text-align: center;
+  border: 1.5px dashed color-mix(in srgb, var(--cool) 75%, transparent);
+  font: 400 18px/1.4 var(--sans); color: var(--cream); }
+.zone { position: relative; height: clamp(150px, 24vh, 220px); }
+.zone .tray, .zone .prop { top: 0; bottom: 0; }
+.zone .line { top: -4px; bottom: 0; }
+.zone .zlab--may { top: 18px; }
+.zlab--ask5 { position: absolute; z-index: 2; left: calc(var(--x) + 16px); top: 18px;
+  transition: left .55s var(--ease); }
+.zone .line--ghost { top: 0; }
 /* the proposed widening: dashed territory past the line, never a filled tray */
-.prop { position: absolute; z-index: 1; top: 22px; bottom: 20px; left: var(--x); width: 0;
-  pointer-events: none; opacity: 0;
+.prop { position: absolute; z-index: 1; left: var(--x); width: 0; pointer-events: none; opacity: 0;
   border-right: 2px dashed color-mix(in srgb, var(--cool) 75%, transparent);
-  background: repeating-linear-gradient(135deg, rgba(111,195,232,.07) 0 3px, transparent 3px 12px);
+  background: repeating-linear-gradient(135deg, rgba(111,195,232,.09) 0 3px, transparent 3px 12px);
   transition: width .55s var(--ease), opacity .3s linear; }
-.desk[data-proposed="1"] .prop { opacity: 1; width: calc(var(--xp) - var(--x)); }
+.desk[data-prop] .prop { opacity: 1; width: calc(var(--xp) - var(--x)); }
 /* the zone word stays legible over the hatching */
-.desk[data-proposed="1"] .zlab--ask { background: rgba(12,18,24,.9); padding: 4px 8px; margin: -4px -8px; }
-.screen--s3 .desk { --xp: 80%; }
-/* screen 3's ghost marks where the line stood before the room narrowed it —
-   only after Narrow, and never the screen-2 position */
-.screen--s3 .desk[data-place="may"] .line--ghost { opacity: 0; }
-.screen--s3 .desk[data-place="ask"] .line--ghost { left: 70%; opacity: 1; }
+.desk[data-prop] .zlab--ask5 { background: rgba(12,18,24,.9); padding: 4px 8px; margin: -4px -8px; }
 /* Keep: the line is confirmed — heavier, lit */
 .desk[data-decided="keep"] .line--now { background: var(--ok); box-shadow: 0 0 18px 2px rgba(116,199,154,.45); }
 .desk[data-decided="keep"] .line--now::before, .desk[data-decided="keep"] .line--now::after { background: var(--ok); }
 .desk[data-decided="keep"] .tray { border-top-color: var(--ok); }
+.slot--exc5 { position: absolute; right: 4%; bottom: 14px; display: block; padding: 0; z-index: 3; }
+.sheet--exc5 { width: calc(var(--sh) * .5); height: calc(var(--sh) * .52); padding-top: 20px; }
+.sheet--exc5 > svg:not(.hatchband) { height: 36%; }
 
 /* ══ CHROME ═════════════════════════════════════════════════════════════ */
 
@@ -355,7 +427,9 @@ body {
   :root { --gutter: 13px; --chrome-h: 66px; }
   .chrome { padding: 0 var(--gutter) calc(10px + var(--gesture-safe)); }
   .desk { --sh: clamp(176px, calc(100vh - 540px), 240px); padding-top: 54px; margin-top: 10px; }
-  .eyebrow { margin-bottom: 6px; }
+  .desk--s2 { padding-top: 28px; }
+  .desk--s5 { gap: 26px; padding-top: 14px; }
+  .zone { height: clamp(140px, 22vh, 200px); }
 }
 
 /* ══ NARROW / PORTRAIT: stack and scroll, never shrink ══════════════════ */
@@ -366,9 +440,8 @@ body {
 
   .top { flex-direction: column; align-items: stretch; gap: 16px; }
   .xd { font-size: clamp(30px, 8vw, 46px); }
-  .aside { max-width: none; }
+  .aside { max-width: none; padding-bottom: 0; }
   .statement { max-width: 44ch; font-size: 18px; }
-  .dec-q { max-width: none; }
 
   .desk { --sh: clamp(168px, 24vw, 210px); flex: 0 0 auto;
     display: flex; flex-direction: column; margin-top: 18px; padding: 0; }
@@ -379,36 +452,72 @@ body {
   /* a slot becomes a row: the sheet, then its caption beside it */
   .slot { order: 2; justify-self: auto; display: flex; flex-direction: row; align-items: flex-end;
     gap: 18px; padding: 12px 16px 16px; max-width: none; }
-  .slot--prep, .slot--stack { background: var(--tray) var(--grain); }
-  .slot--po, .slot--slip { order: 4; }
-  .desk[data-place="may"] .slot--po, .desk[data-place="may"] .slot--slip { background: var(--tray) var(--grain); }
+  .slot--prep { background: var(--tray) var(--grain); }
+  .slot--po { order: 4; }
+  .desk[data-level="bounded"] .slot--po { background: var(--tray) var(--grain); }
   .slot--exc { order: 7; padding-right: 16px; }
   .art { flex: 0 0 auto; }
   .cap { flex: 1 1 auto; max-width: none; min-width: 0; align-self: center; }
-  .po { display: flex; flex-direction: column; align-items: flex-start; padding: 0 !important; }
+  .po:not(.po--s2) { display: flex; flex-direction: column; align-items: flex-start; padding: 0 !important; }
   .slip { position: static; width: 170px; margin: -10px 0 0 24%; transform: rotate(2deg); }
-  .desk[data-place="may"] .po { transform: none; }
+  .desk[data-level="bounded"] .po { transform: none; }
 
   /* the line turns horizontal between the stacked rows */
   .line { position: relative; top: auto; bottom: auto; left: auto; width: auto;
     margin: 0; background: none; border-top: 3px solid var(--hold);
     padding: 8px 16px 12px; transition: none; }
   .line--now { order: 3; }
-  .desk[data-place="may"] .line--now { order: 5; }
+  .desk[data-level="bounded"] .line--now { order: 5; }
   .line::before, .line::after { top: -9px; width: 3px; height: 15px; left: 0; }
   .line::after { left: auto; right: 0; }
   .line-lab, .line--now .zlab--ask { position: static; display: block; margin: 0; }
   .line--ghost { display: none; order: 3; border-left: 0; padding: 4px 16px 6px; opacity: 1;
     border-top: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent); }
-  .desk[data-place="may"] .line--ghost { display: block; }
+  .desk[data-ghost] .line--ghost { display: block; }
   .line--ghost .line-lab { text-align: right; }
-  .screen--s3 .desk[data-place="ask"] .line--ghost { display: block; order: 5; left: auto; }
-  .desk[data-decided="keep"] .line--now { background: none; box-shadow: none; border-top-color: var(--ok); }
 
-  /* the proposal is a dashed empty band between the line and the exception */
-  .prop { position: static; display: none; order: 6; width: auto; min-height: 44px;
-    margin: 0 16px; border-right: 0; border: 2px dashed color-mix(in srgb, var(--cool) 75%, transparent); }
-  .desk[data-proposed="1"] .prop { display: block; opacity: 1; width: auto; }
+  /* screen 2: the same cluster, shorter threads (it still fits a portrait iPad) */
+  .desk--s2 { display: flex; justify-content: center; padding: 10px 0 20px; }
+  .arrangement { grid-template-columns: auto 36px auto 36px auto; }
+  .party { max-width: 190px; }
+  .po--s2 { padding: 0 0 14px 40px; }
+  .po--s2 .slip { position: absolute; margin: 0; }
+
+  /* screen 3: the mute slip under the order */
+  .slip--mute { width: 130px; margin-left: 30%; }
+
+  /* screen 4: the orders row is a tray row when authorised */
+  .slot--orders { order: 2; }
+  .desk[data-level="bounded"] .slot--orders { background: var(--tray) var(--grain); }
+  .desk[data-level="none"] .slot--orders { order: 4; }
+  .desk[data-level="none"] .zlab--may { padding-bottom: 14px; }
+  .orders { padding-right: 0; gap: 10px; }
+  .slip--paid { position: absolute; left: 40%; bottom: -14px; width: 150px; margin: 0; }
+  .slot--orders .art { margin-bottom: 10px; }
+  .desk[data-sim="1"] .zlab--may, .desk[data-sim="1"] .slot--orders {
+    background: repeating-linear-gradient(135deg, rgba(116,199,154,.10) 0 4px, transparent 4px 14px), var(--tray) var(--grain); }
+  .desk[data-sim="1"] .zlab--may { border-top-style: dotted; }
+  .desk[data-sim="1"] .line--now { background: none; border-top-style: dotted; }
+
+  /* screen 5: the choices, then the zone band as a horizontal ruler with a
+     legend above it (the words cannot sit inside a 30% tray at this width) */
+  .desk--s5 { display: flex; gap: 22px; padding: 0; }
+  .xchoice--big { gap: 10px; }
+  .xchoice--big button { min-width: 0; flex: 1 1 auto; padding: 0 14px; font-size: 20px; }
+  .zone { height: 150px; margin-top: 30px; }
+  .zone .tray { display: block; top: 0; bottom: 0; }
+  .zone .zlab--may { position: absolute; top: -30px; left: 0; padding: 0; background: none; border: 0; }
+  .zlab--ask5 { left: auto; right: 0; top: -30px; }
+  .zone .line { position: absolute; top: -4px; bottom: 0; left: var(--x); width: 3px; margin-left: -1.5px;
+    background: var(--hold); border: 0; padding: 0; }
+  .zone .line::before, .zone .line::after { left: -5.5px; width: 14px; height: 3px; }
+  .zone .line::before { top: 0; } .zone .line::after { top: auto; bottom: 0; }
+  .zone .line--ghost { display: block; left: var(--xg); width: 0; margin-left: 0; background: none; padding: 0;
+    border-left: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent); border-top: 0; opacity: 0; }
+  .desk[data-ghost] .zone .line--ghost { opacity: 1; }
+  .desk[data-decided="keep"] .zone .line--now { background: var(--ok); }
+  .slot--exc5 { position: absolute; order: 0; padding: 0; right: 10px; bottom: 10px; }
+  .sheet--exc5 { width: 70px; height: 76px; }
 
   .micro { margin-top: 16px; }
 
@@ -427,6 +536,21 @@ body {
   .cta { padding: 0 14px; min-width: 46px; justify-content: center; }
   .slot { flex-direction: column; align-items: flex-start; gap: 12px; }
   .xchoice button { padding: 0 16px; }
+  .xchoice--big { flex-wrap: nowrap; }
+  .xchoice--big button { padding: 0 8px; font-size: 18px; }
+
+  /* screen 2 on a phone: the order first, then the three parties as rows */
+  .desk--s2 { display: block; }
+  .arrangement { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+  .conn { display: none; }
+  .po--s2 { align-self: center; margin-bottom: 14px; padding: 0 !important; }
+  .po--s2 .slip { position: static; width: 170px; margin: -10px 0 0 24%; transform: rotate(2deg); }
+  .party { max-width: none; transform: none; }
+  .party--ai, .party--ins, .party--you { transform: none; }
+
+  /* screen 5 on a phone: the two zone words cannot share one row */
+  .zone { margin-bottom: 34px; }
+  .zlab--ask5 { top: auto; bottom: -32px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

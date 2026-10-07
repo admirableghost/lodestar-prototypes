@@ -14,18 +14,33 @@
    behind. Drawn once, full-bleed, and each screen is a camera move over it.
 
    The smallest object this ground resolves is ONE HOUSEHOLD, and the viewer
-   can count them. The contract on screen 2 turns on how many of these sixty
+   can count them. The contract on screen 3 turns on how many of these sixty
    houses are filled, so a house has to be a thing you can point at.
 
    STATE IS NEVER CARRIED BY FADING, and colour means participation state
    only. A committed house is solid green with a solid edge and a filled
    frontage strip; a house not joined is paper-hollow with a dashed edge and
    no strip. Both survive greyscale. The one amber in the frame is the
-   collective boundary, and it exists only at or above the threshold.
+   collective boundary, and it exists only at or above the threshold. The
+   one ochre is the surveyor's mark, and it exists only while verification
+   is illustrated.
+
+   THE STATE OBJECT — one source of truth, S = { screen, committed, verified }
+   · committed starts at 41 and is moved ONLY by the slider on screen 3. It
+     is never reset by navigation in either direction.
+   · verified starts false and is flipped ONLY by the toggle on screen 4.
+   · "Back to the start" from screen 5 is the one action that resets both.
+   · screen 5 is derived: begin = committed ≥ 48 && verified. Pressing Next
+     never produces "begin"; only the two facts do.
+
+   DEEP LINKS — five screens, #s/1 … #s/5. The three-screen build's links
+   map as: old #s/1 → 1 (unchanged), old #s/2 (the threshold) → #s/3, old
+   #s/3 (the agreement) → #s/5. A bare number cannot tell an old link from a
+   new one, so this is documented, not remapped.
 
    WHAT IS INVENTED
    All of it. Thorn Lane, its sixty households, no. 31, the threshold of 48,
-   the eleven months, the placement fee and every party to the agreement are
+   the fund, the surveyor, the broker and every party to the agreement are
    invented, and screen 1 says so. No real insurer, place, product or price
    appears anywhere.
    ══════════════════════════════════════════════════════════════════════════ */
@@ -39,11 +54,15 @@
   var START = 41;          /* where the street stands on entry */
   var ROSA = 15;           /* no. 31 — upper row, mid-street   */
 
+  /* ── THE STATE ───────────────────────────────────────────────────────── */
+  var S = { screen: 1, committed: START, verified: false };
+  function begin() { return S.committed >= NEED && S.verified; }
+
   /* ── palette (the study's) ───────────────────────────────────────────── */
   var P = "#F3EBD7", INK = "#16150F", MU = "#5A554A",
       G = "#2F5A44", G2 = "#24473A", F = "#8C9A84", F2 = "#6F7F68",
-      A = "#C98D1C", GROUND = "#E8DDC2", TAR = "#DACCA8", KERB = "#CFC2A0";
-  var PARTY = { carrier: "#2F5E7C", fund: "#8A3450", survey: "#7A5A17", broker: "#5B4E7A" };
+      A = "#C98D1C", GROUND = "#E8DDC2", TAR = "#DACCA8", KERB = "#CFC2A0",
+      SURVEY = "#7A5A17";
 
   /* ══════════════════════════════════════════════════════════════════════
      WORLD GEOMETRY — one shallow oblique
@@ -73,6 +92,9 @@
   /* where a household's pin aims: the ridge of its house */
   function hcx(i) { var up = i < PER_ROW; return X(hx(i) + PITCH / 2, (up ? HD0.up : HD0.lo) + HD / 2); }
   function hcy(i) { var up = i < PER_ROW; return Y((up ? HD0.up : HD0.lo) + HD / 2, HH + HR); }
+  /* the ring drawn round no. 31: centre and radius, in world units */
+  var RING_R = 26;
+  function ringc(i) { var d0 = i < PER_ROW ? HD0.up : HD0.lo; return { x: X(hx(i) + PITCH / 2, d0), y: Y(d0, 10) }; }
 
   /* ── cameras ──────────────────────────────────────────────────────────
      A camera is the world region that must be VISIBLE, not a raw viewBox.
@@ -80,6 +102,10 @@
      ground window, so the framing stays honest at any window size. */
   var CAM = {
     street: { x: 0, y: 282, w: 1180, h: 334 },
+    /* screen 2: close on no. 31 and the run of houses either side of it,
+       both rows and the road still in frame, so the agreement is seen
+       attached to one home among others */
+    deal:   { x: 420, y: 404, w: 420, h: 180 },
     commit: { x: 0, y: 282, w: 1180, h: 334 },
     signed: { x: -70, y: 282, w: 1320, h: 360 }
   };
@@ -89,6 +115,7 @@
      wide enough to hold the whole street and keeps the full camera. */
   var CAM_N = {
     street: { x: 330, y: 282, w: 560, h: 334 },
+    deal:   { x: 500, y: 404, w: 260, h: 180 },
     commit: { x: 330, y: 282, w: 560, h: 334 },
     signed: { x: 330, y: 282, w: 560, h: 360 }
   };
@@ -132,8 +159,6 @@
   })();
   var RANK = (function () { var r = []; ORDER.forEach(function (i, n) { r[i] = n; }); return r; })();
 
-  var committed = START;
-
   /* ── deterministic planting, so the street looks like a street ─────── */
   var TREES = [[48, 302, 13, 0], [150, 308, 11, 1], [262, 298, 13, 0], [392, 306, 10, 1], [462, 310, 12, 0], [600, 300, 13, 1],
                [708, 308, 11, 0], [748, 296, 9, 1], [830, 304, 13, 0], [952, 310, 11, 1], [1060, 300, 13, 0],
@@ -142,12 +167,13 @@
 
   /* ══════════════════════════════════════════════════════════════════════
      DRAWING THE STREET
-       opts.mode  — "alone"  (screen 1: nobody has committed; no. 31 did
-                               the work on its own and is ringed)
-                    "commit" (screen 2: every house shows its state)
-                    "signed" (screen 3: the agreement in force, with the
-                               parties that hold it)
-       opts.alt   — the accessible description
+       opts.mode     — "alone"  (screens 1 and 2: nobody has committed;
+                                  no. 31 did the work on its own and is ringed)
+                       "commit" (screens 3, 4, 5: every house shows its
+                                  state; the boundary draws at ≥ 48)
+       opts.verified — commit mode only: the surveyor's ochre mark on every
+                       committed lot, while verification is illustrated
+       opts.alt      — the accessible description
      ══════════════════════════════════════════════════════════════════════ */
 
   function poly(pts, fill, o) {
@@ -179,10 +205,21 @@
     }
     s.push('</g>');
     if (ringed) {
-      s.push('<circle cx="' + X(hx(i) + PITCH / 2, d0).toFixed(1) + '" cy="' + Y(d0, 10).toFixed(1) +
-             '" r="26" fill="none" stroke="' + INK + '" stroke-width="1.6"/>');
+      var c = ringc(i);
+      s.push('<circle cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) +
+             '" r="' + RING_R + '" fill="none" stroke="' + INK + '" stroke-width="1.6"/>');
     }
     return s.join("");
+  }
+
+  /* the surveyor's mark: one ochre check at the ridge of a committed house,
+     drawn only while verification is ILLUSTRATED. It is the one ochre on
+     the ground and it means "a surveyor is shown to have passed this lot" —
+     never "this lot is covered". */
+  function tick(i) {
+    var cx = hcx(i), cy = hcy(i) - 7;
+    return '<g data-tick="1"><circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5.2" fill="' + SURVEY + '" stroke="' + P + '" stroke-width="1.3"/>' +
+      '<path d="M' + (cx - 2.6).toFixed(1) + ' ' + (cy + 0.2).toFixed(1) + ' l1.9 1.9 l3.4 -3.8" fill="none" stroke="' + P + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g>';
   }
 
   /* the frontage strip: the cleared metres at the road edge of a committed
@@ -226,8 +263,10 @@
   function renderStreet(opts) {
     opts = opts || {};
     var mode = opts.mode || "commit";
-    var C = mode === "alone" ? 0 : mode === "signed" ? Math.max(committed, NEED) : committed;
-    var crossed = mode !== "alone" && C >= NEED;
+    var alone = mode === "alone";
+    var C = alone ? 0 : S.committed;
+    var crossed = !alone && C >= NEED;
+    var verified = !alone && !!opts.verified;
     function isIn(i) { return RANK[i] < C; }
     var s = [], i;
 
@@ -276,21 +315,14 @@
     TREES.forEach(function (t) { s.push(tree(t[0], t[1], t[2], t[3])); });
     s.push(strips(true, isIn, crossed));
     for (i = 0; i < PER_ROW; i++) {
-      s.push(house(i, mode === "alone" ? i === ROSA : isIn(i), mode === "alone" && i === ROSA));
+      s.push(house(i, alone ? i === ROSA : isIn(i), alone && i === ROSA));
+      if (verified && isIn(i)) { s.push(tick(i)); }
     }
     s.push(strips(false, isIn, crossed));
     SHRUBS.forEach(function (t) { s.push(shrub(t[0], t[1], t[2])); });
-    for (i = PER_ROW; i < HOMES; i++) { s.push(house(i, isIn(i), false)); }
-
-    /* ── screen 3: the parties that hold the boundary ──────────────── */
-    if (mode === "signed") {
-      var corner = function (k) { return { x: X(BND[k][0], BND[k][1]), y: Y(BND[k][1]) }; };
-      [[PARTY.carrier, 3, -44, -36], [PARTY.fund, 2, 40, -36], [PARTY.survey, 0, -40, 34], [PARTY.broker, 1, 44, 34]]
-        .forEach(function (q) {
-          var c = corner(q[1]), qx = c.x + q[2], qy = c.y + q[3];
-          s.push(line(c.x, c.y, qx, qy, q[0], 2.5, { op: .7 }));
-          s.push('<circle cx="' + qx.toFixed(1) + '" cy="' + qy.toFixed(1) + '" r="11" fill="' + q[0] + '" stroke="' + P + '" stroke-width="2"/>');
-        });
+    for (i = PER_ROW; i < HOMES; i++) {
+      s.push(house(i, isIn(i), false));
+      if (verified && isIn(i)) { s.push(tick(i)); }
     }
 
     s.push('</g>');
@@ -326,7 +358,7 @@
   }
 
   function groundFit() {
-    var sc = screens && screens[current - 1];
+    var sc = screens && screens[S.screen - 1];
     if (!sc) { return null; }
     var gw = sc.querySelector(".gw");
     if (gw) {
@@ -373,20 +405,25 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   var pinHost = document.getElementById("pins");
+  var tetherEl = document.getElementById("tether");
 
   function pinAt(cls, label, i, dy) {
     return { cls: cls, label: label, wx: hcx(i), wy: hcy(i), dy: dy };
   }
   function pinSet(n) {
-    /* Screen 1 carries the one artwork label the copy contract allows.
-       Screens 2 and 3 carry none: the count is already the largest thing
-       on screen 2, and screen 3's parties are named in the diagram band. */
+    /* Screen 1 carries one artwork label: no. 31. Screen 5, once the
+       arrangement can begin, labels one house that has not joined — the
+       next in the commitment order, which is where a run of committed
+       frontage breaks. At sixty there is no such house and no label. */
     if (n === 1) { return [pinAt("ink", "No. 31 · prepared", ROSA, -44)]; }
+    if (n === 5 && begin() && S.committed < HOMES) {
+      return [pinAt("out", "outside the arrangement", ORDER[S.committed], -44)];
+    }
     return [];
   }
 
   function buildPins(n) {
-    pinHost.innerHTML = "";
+    Array.prototype.slice.call(pinHost.querySelectorAll(".pin")).forEach(function (el) { pinHost.removeChild(el); });
     pinSet(n).forEach(function (p) {
       var el = document.createElement("span");
       el.className = "pin pin--" + p.cls;
@@ -395,6 +432,34 @@
       pinHost.appendChild(el);
     });
     placePins();
+  }
+
+  /* screen-space projection of a world point through the drawing's CTM */
+  function project(m, x, y) { return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f }; }
+
+  /* The tether: the line that ties the agreement object on screen 2 to the
+     ring round no. 31. From the ring's edge to the nearest point on the
+     card's edge; hidden when the house is off-screen or under the card. */
+  function placeTether(m) {
+    if (!tetherEl) { return; }
+    var card = S.screen === 2 ? document.getElementById("deal-card") : null;
+    if (!card || card.offsetParent === null) { tetherEl.innerHTML = ""; return; }
+    var r = card.getBoundingClientRect();
+    var c = ringc(ROSA), p0 = project(m, c.x, c.y);
+    var scale = Math.sqrt(m.a * m.a + m.b * m.b);
+    var rad = RING_R * scale;
+    /* nearest point on the card's rectangle to the ring centre */
+    var qx = Math.max(r.left, Math.min(r.right, p0.x)), qy = Math.max(r.top, Math.min(r.bottom, p0.y));
+    var dx = qx - p0.x, dy = qy - p0.y, len = Math.sqrt(dx * dx + dy * dy);
+    var onScreen = p0.x > 4 && p0.x < window.innerWidth - 4 && p0.y > 4 && p0.y < window.innerHeight - 4;
+    if (!onScreen || len < rad + 12) { tetherEl.innerHTML = ""; return; }
+    var ux = dx / len, uy = dy / len;
+    var ax = p0.x + ux * rad, ay = p0.y + uy * rad;
+    tetherEl.setAttribute("viewBox", "0 0 " + window.innerWidth + " " + window.innerHeight);
+    tetherEl.innerHTML =
+      '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) + '" x2="' + qx.toFixed(1) + '" y2="' + qy.toFixed(1) + '" stroke="' + P + '" stroke-width="5" stroke-linecap="round"/>' +
+      '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) + '" x2="' + qx.toFixed(1) + '" y2="' + qy.toFixed(1) + '" stroke="' + INK + '" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<circle cx="' + ax.toFixed(1) + '" cy="' + ay.toFixed(1) + '" r="4" fill="' + INK + '" stroke="' + P + '" stroke-width="1.5"/>';
   }
 
   /* A pin is hidden when it would land under a plate, under the chrome, off
@@ -407,18 +472,19 @@
     try { m = g.getScreenCTM(); } catch (e) { return; }
     if (!m) { return; }
 
-    var sc = screens && screens[current - 1];
-    var blockers = sc ? Array.prototype.map.call(
-      sc.querySelectorAll(".plate, .xhead, .xmicro"), function (p) { return p.getBoundingClientRect(); }) : [];
+    placeTether(m);
+
+    var sc = screens && screens[S.screen - 1];
+    var blockers = sc ? Array.prototype.filter.call(sc.children, function (p) { return !p.classList.contains("gw"); })
+      .map(function (p) { return p.getBoundingClientRect(); }) : [];
     blockers = blockers.concat(Array.prototype.map.call(
       document.querySelectorAll(".chrome button, .chrome select"),
       function (p) { return p.getBoundingClientRect(); }));
 
     var placed = [];
-    Array.prototype.forEach.call(pinHost.children, function (el) {
-      var x = +el.dataset.wx, y = +el.dataset.wy;
-      var cx = m.a * x + m.c * y + m.e, cy = m.b * x + m.d * y + m.f;
-      cy += +el.dataset.dy;
+    Array.prototype.forEach.call(pinHost.querySelectorAll(".pin"), function (el) {
+      var p = project(m, +el.dataset.wx, +el.dataset.wy);
+      var cx = p.x, cy = p.y + (+el.dataset.dy);
       el.style.left = cx + "px";
       el.style.top = cy + "px";
       el.style.display = "block";
@@ -436,7 +502,7 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — the threshold, and the offer that turns on it
+     PAINT — every state-dependent word and mark, from S, in one place
      ══════════════════════════════════════════════════════════════════════ */
 
   /* One polite live region for state changes that are not screen changes.
@@ -450,67 +516,110 @@
   var countEl = document.getElementById("thr-count");
   var offerEl = document.getElementById("offer");
   var offerText = document.getElementById("offer-text");
-  var signN = document.getElementById("sign-n");
+  var condN = document.getElementById("cond-n");
+  var stepPart = document.getElementById("step-part");
+  var stepImpr = document.getElementById("step-impr");
+  var stepVer = document.getElementById("step-ver");
+  var verState = document.getElementById("ver-state");
+  var verBtn = document.getElementById("verify-toggle");
+  var arrHead = document.getElementById("arr-head");
+  var arrLine = document.getElementById("arr-line");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
                "eight", "nine", "ten", "eleven", "twelve"];
   function few(n) { return n <= 12 ? WORDS[n] : String(n); }
   function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
 
-  var lastOpen = null;
-
-  /* The ONE state line, verbatim from the copy contract. Below the
-     threshold: "Not available. {k} more households needed." with
-     k = 48 − committed, as a word up to twelve and a number above (the
-     contract allows either); k = 1 takes the singular. At or above: the
-     fourteen-word line. */
+  /* Screen 3's ONE state line, verbatim from the copy contract. Below the
+     threshold: "Not yet. {k} more households needed." with k = 48 − count,
+     as a word up to twelve and a number above; k = 1 takes the singular. */
   function conditionLine(open) {
-    if (open) {
-      return "Participation reached. Hardening, verification and 48 staying in are still required. Not coverage yet.";
-    }
-    var short = NEED - committed;
-    return "Not available. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed.";
+    if (open) { return "Participation reached. Improvements and verification still required."; }
+    var short = NEED - S.committed;
+    return "Not yet. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed.";
   }
 
-  function paintOffer(announceChange) {
-    var open = committed >= NEED;
+  /* Screen 5's words, derived. The pending line names what is missing. */
+  function missing() {
+    var out = [];
+    if (S.committed < NEED) { out.push("Participation below 48"); }
+    if (!S.verified) { out.push("Verification not illustrated"); }
+    return out;
+  }
 
-    if (countEl) { countEl.textContent = String(committed); }
-    if (range && +range.value !== committed) { range.value = String(committed); }
+  /* one block span per line, with a space between so textContent — what a
+     screen reader and the gate both read — keeps the words apart */
+  function spans(lines) {
+    return lines.map(function (t) { return "<span>" + t + "</span>"; }).join(" ");
+  }
+
+  function paint() {
+    var open = S.committed >= NEED;
+
+    /* screen 3 */
+    if (countEl) { countEl.textContent = String(S.committed); }
+    if (range && +range.value !== S.committed) { range.value = String(S.committed); }
     /* the track fills behind the thumb, so the distance still to travel is
        visible without reading the number */
-    if (range) { range.style.setProperty("--p", (committed / HOMES * 100).toFixed(2) + "%"); }
-
+    if (range) { range.style.setProperty("--p", (S.committed / HOMES * 100).toFixed(2) + "%"); }
     if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; }
     if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
     if (offerText) { offerText.textContent = conditionLine(open); }
-    /* screen 3 is the same deal, so it reads the same count — and never
-       shows a number below the one that binds it */
-    if (signN) { signN.textContent = String(Math.max(committed, NEED)); }
 
-    if (current === 2) {
-      renderStreet({ mode: "commit", alt: altFor(2) });
-    }
-    refit();
+    /* screen 4 — the count is the slider's, never clamped to 48 */
+    if (condN) { condN.textContent = String(S.committed); }
+    if (stepPart) { stepPart.dataset.state = open ? "met" : "pending"; }
+    if (stepImpr) { stepImpr.dataset.state = S.verified ? "met" : "pending"; }
+    if (stepVer) { stepVer.dataset.state = S.verified ? "met" : "pending"; }
+    if (verState) { verState.textContent = S.verified ? "Illustrated as verified" : "Pending"; }
+    if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
 
-    if (announceChange) {
-      if (open !== lastOpen) {
-        say(open
-          ? "Threshold met at " + committed + " of 60. The offer is available, conditional. Not cover yet."
-          : "Below the threshold at " + committed + " of 60. The offer is not available.");
+    /* screen 5 — derived */
+    if (arrHead && arrLine) {
+      if (begin()) {
+        arrHead.innerHTML = spans(["The arrangement", "can begin."]);
+        arrLine.innerHTML = spans(["Conditional terms in force while 48 stay in and checks continue."]);
       } else {
-        say(open
-          ? committed + " of 60 committed. The threshold of 48 is met and the conditional offer stands."
-          : committed + " of 60 committed, " + (NEED - committed) + " short of 48.");
+        arrHead.innerHTML = spans(["Still pending."]);
+        arrLine.innerHTML = spans(missing());
       }
+      screens[4].dataset.state = begin() ? "begin" : "pending";
     }
-    lastOpen = open;
   }
 
+  /* repaint the words, then whatever the open screen draws from them */
+  function repaint() {
+    paint();
+    if (S.screen >= 3) { drawFor(S.screen); buildPins(S.screen); }
+    refit();
+  }
+
+  var lastOpen = null;
   if (range) {
     range.addEventListener("input", function () {
-      committed = parseInt(range.value, 10) || 0;
-      paintOffer(true);
+      S.committed = parseInt(range.value, 10) || 0;
+      var open = S.committed >= NEED;
+      repaint();
+      if (open !== lastOpen) {
+        say(open
+          ? "Threshold met at " + S.committed + " of 60. Participation reached; improvements and verification still required."
+          : "Below the threshold at " + S.committed + " of 60. " + (NEED - S.committed) + " more needed.");
+      } else {
+        say(open
+          ? S.committed + " of 60 committed. The threshold of 48 is met."
+          : S.committed + " of 60 committed, " + (NEED - S.committed) + " short of 48.");
+      }
+      lastOpen = open;
+    });
+  }
+
+  if (verBtn) {
+    verBtn.addEventListener("click", function () {
+      S.verified = !S.verified;
+      repaint();
+      say(S.verified
+        ? "Verified completion illustrated. Simulated for discussion; not evidence of work done."
+        : "Illustration removed. Verification pending.");
     });
   }
 
@@ -519,6 +628,13 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   function altFor(n) {
+    var c = S.committed, hollow = HOMES - c;
+    var streetState = "The street with " + c + " of the sixty houses committed: each solid green with a " +
+      "cleared frontage strip at the road. The remaining " + hollow + " are hollow with dashed edges and no strip. " +
+      (c >= NEED
+        ? "An amber boundary encloses the whole street, hollow houses included. "
+        : "There is no boundary around the street. ") +
+      (S.verified ? "Every committed house carries a small ochre check: the surveyor's mark, illustrated, not evidence. " : "");
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
         "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
@@ -527,26 +643,19 @@
         "because the street around it sets the price.";
     }
     if (n === 2) {
-      var open = committed >= NEED;
-      return "The same street with " + committed + " of the sixty houses committed: each solid " +
-        "green with a cleared frontage strip at the road. The remaining " + (HOMES - committed) +
-        " are hollow with dashed edges and no strip. " +
-        (open
-          ? "An amber boundary encloses the whole street, hollow houses included: the street is " +
-            "offered as one risk, but the houses not joined stay hollow inside it."
-          : "There is no boundary around the street yet.");
+      return "Close on number 31 and the houses either side of it: still the only solid house, " +
+        "ringed, every neighbour hollow. A line ties the ring to the agreement sheet above it.";
     }
-    return "Thorn Lane with the agreement in force: " + Math.max(committed, NEED) + " houses solid, their " +
-      "frontage strips joined into continuous runs along the road, the amber boundary around the " +
-      "street, and four marks at its corners in the colours of the carrier (blue), the fund " +
-      "(plum), the surveyor (ochre) and the broker (violet), matching the five-party diagram " +
-      "below. The houses still out are hollow gaps in the run.";
+    if (n === 3) { return streetState; }
+    if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
+    return streetState + (begin()
+      ? "The arrangement can begin; one house that has not joined is labelled “outside the arrangement”."
+      : "The arrangement is still pending.");
   }
 
   function drawFor(n) {
-    if (n === 1)      { renderStreet({ mode: "alone", alt: altFor(1) }); }
-    else if (n === 2) { renderStreet({ mode: "commit", alt: altFor(2) }); }
-    else              { renderStreet({ mode: "signed", alt: altFor(3) }); }
+    if (n <= 2) { renderStreet({ mode: "alone", alt: altFor(n) }); }
+    else        { renderStreet({ mode: "commit", verified: S.verified, alt: altFor(n) }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -562,7 +671,7 @@
       // Only CARDS get pinned to the top or bottom of their band. The
       // executive compositions place their own hero objects, and an inline
       // align-self written here would silently beat their stylesheet.
-      document.querySelectorAll(".screen > .plate[style*='grid-area']"), function (el) {
+      document.querySelectorAll(".screen > .plate[style*='grid-area'], .screen > .steps[style*='grid-area']"), function (el) {
         if (el.classList.contains("gw")) { return; }
         var m = /grid-area:\s*(\d+)\s*\/\s*\d+\s*\/\s*(\d+)/.exec(el.getAttribute("style") || "");
         if (!m) { return; }
@@ -648,7 +757,7 @@
   function refit() {
     cancelAnimationFrame(fitPending);
     fitPending = requestAnimationFrame(function () {
-      fitScreen(screens && screens[current - 1]);
+      fitScreen(screens && screens[S.screen - 1]);
       placePins();
     });
   }
@@ -664,9 +773,8 @@
   var prevBtn = document.getElementById("prev");
   var nextBtn = document.getElementById("next");
   var nextLabel = document.getElementById("next-label");
-  var current = 1;
 
-  var CTA = ["See the offer", "Read the agreement", "Back to the beginning"];
+  var CTA = ["Know the deal", "Assemble the street", "Verify the conditions", "Can it begin?", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -678,16 +786,21 @@
   anchorPlates();
 
   function show(n, push) {
-    n = ((n - 1 + total) % total) + 1;
-    current = n;
+    n = Math.max(1, Math.min(total, n));
+    S.screen = n;
     var sc = screens[n - 1];
     screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
+    /* a control on the screen that just closed must not keep the focus —
+       a hidden button would otherwise swallow the arrow keys */
+    var ae = document.activeElement, host = ae && ae.closest ? ae.closest(".screen") : null;
+    if (host && host.hidden && ae.blur) { ae.blur(); }
     picker.value = String(n);
     prevBtn.disabled = n === 1;
     nextLabel.textContent = CTA[n - 1];
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
 
+    paint();
     drawFor(n);
     /* fit before the camera moves: the camera aims at the ground window,
        so it needs the settled layout */
@@ -698,12 +811,17 @@
     /* Headlines are authored as one span per line, so textContent would run
        the lines together. Join the spans with a space instead. */
     var h = sc.querySelector(".display");
-    var spans = h ? h.querySelectorAll("span") : [];
+    var sp = h ? h.querySelectorAll("span") : [];
     var said = h
-      ? (spans.length
-          ? Array.prototype.map.call(spans, function (x) { return x.textContent.trim(); }).join(" ")
+      ? (sp.length
+          ? Array.prototype.map.call(sp, function (x) { return x.textContent.trim(); }).join(" ")
           : h.textContent)
       : sc.dataset.label;
+    if (n === 5) {
+      said += " " + (begin()
+        ? "Conditional terms in force while 48 stay in and checks continue."
+        : missing().join(". ") + ".");
+    }
     announce.textContent = "Screen " + n + " of " + total + ". " +
       said.replace(/\s+/g, " ").trim();
 
@@ -712,8 +830,25 @@
     }
   }
 
-  prevBtn.addEventListener("click", function () { show(current - 1); });
-  nextBtn.addEventListener("click", function () { show(current + 1); });
+  /* "Back to the start" — the ONE reset in the deck. The slider's count and
+     the verification illustration both return to their entry values. Going
+     back with the arrow, the picker or a hash never resets anything. */
+  function restart() {
+    S.committed = START;
+    S.verified = false;
+    lastOpen = null;
+    show(1);
+    say("Back to the start. 41 of 60 committed; verification not illustrated.");
+  }
+  function next() {
+    if (S.screen === total) { restart(); } else { show(S.screen + 1); }
+  }
+  function prev() {
+    if (S.screen > 1) { show(S.screen - 1); }
+  }
+
+  prevBtn.addEventListener("click", prev);
+  nextBtn.addEventListener("click", next);
   picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
 
   document.addEventListener("click", function (e) {
@@ -721,14 +856,16 @@
     if (t) { show(parseInt(t.dataset.goto, 10)); }
   });
 
-  /* Arrow keys move the deck — except inside the threshold slider, where the
-     arrow keys belong to the control and move the count by one household. */
+  /* Arrow keys move the deck — except inside the threshold slider and the
+     picker, where the arrow keys belong to the control. A focused button
+     (Next, after a tap) has no use for left and right, so they still move
+     the deck. */
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
-    if (tag === "select" || tag === "input" || tag === "button") { return; }
-    if (e.key === "ArrowRight") { show(current + 1); }
-    if (e.key === "ArrowLeft") { show(current - 1); }
+    if (tag === "select" || tag === "input") { return; }
+    if (e.key === "ArrowRight") { next(); }
+    if (e.key === "ArrowLeft") { prev(); }
   });
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -749,17 +886,19 @@
         fitScreen(s);
         if (h) { s.hidden = true; }
       });
-      moveCamera(screens[current - 1].dataset.cam, true);
+      moveCamera(screens[S.screen - 1].dataset.cam, true);
       placePins();
     }, 140);
   });
+  /* a narrow screen scrolls; the tether's card end moves with it */
+  screens.forEach(function (s) { s.addEventListener("scroll", function () { placePins(); }, { passive: true }); });
 
   /* Skip link: move focus to the open screen's heading, without touching the
      hash. Every .display carries tabindex="-1" so it can receive focus. */
   var skip = document.getElementById("skip");
   if (skip) {
     skip.addEventListener("click", function () {
-      var sc = screens[current - 1];
+      var sc = screens[S.screen - 1];
       var h = sc && (sc.querySelector(".display") || sc.querySelector(".eyebrow"));
       if (h) { h.focus(); h.scrollIntoView({ block: "start" }); }
     });
@@ -773,19 +912,19 @@
     /* An unrecognised hash means something else on the page used one — it is
        not a request to go to screen 1. */
     var n = fromHash();
-    if (n !== null && n !== current) { show(n, false); }
+    if (n !== null && n !== S.screen) { show(n, false); }
   });
 
   narrow = isNarrow();
-  paintOffer(false);
+  paint();
   show(fromHash() || 1, false);
-  moveCamera(screens[current - 1].dataset.cam, true);
+  moveCamera(screens[S.screen - 1].dataset.cam, true);
   /* the font arrives after first layout; the headline backing is the text's
      own box so it follows, but the fit and the camera need the settled lines */
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () {
-      fitScreen(screens[current - 1]);
-      moveCamera(screens[current - 1].dataset.cam, true);
+      fitScreen(screens[S.screen - 1]);
+      moveCamera(screens[S.screen - 1].dataset.cam, true);
     });
   }
 })();

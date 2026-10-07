@@ -20,12 +20,26 @@
    Every word on the terrain is SVG text at a fixed CSS px size with a paper
    halo, placed by one labeller that keeps it clear of the headline block,
    the controls, the chrome, the viewport edge and every other label. The
-   copy is the locked contract (design-study/density-pass/SCREEN-COPY.md,
-   WILDFIRE): the code adds no word that is not in it.
+   copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md
+   § WILDFIRE, with screens 1, 3 and 5 carried from the density-pass
+   contract): the code adds no word that is not in it.
+
+   THE SEQUENCE (story-expansion)
+     1 Market retreat            the boundary, pulled down-valley
+     2 A paid prevention business  services on the terrain, four buyers
+     3 Coordinated action        the moment: eight events, one human call
+     4 Evidence, not assumed success  three columns over the quiet county
+     5 Possible availability     the two boundaries
+   The hashes keep their numbers. An old link to #s/2 (the standing
+   network) now opens the business; an old link to #s/4 (who pays) now
+   opens the evidence. The screen-2 layer toggles are retired: the node
+   data keeps its layer field, and every layer is on.
 
    WHAT IS INVENTED AND WHAT IS NOT
    Alder County, the Mill Creek lateral, the 14:31 fault and every time on
-   screen 3 are invented, and the screens say so.
+   screen 3 are invented, and the screens say so. Nothing on screen 4 is a
+   result: the record is derived from S3_EVENTS, and risk reduction stays
+   "not yet established".
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -71,7 +85,10 @@
     { id: "rim",   cx: 1344, cy: 700, rx: 132, ry: 58, n: 40 }
   ];
 
-  /* network nodes. layer: which button on screen 2 lights them. */
+  /* the service's nodes. layer: the function each belongs to ("see" is
+     detection, "act" is response). The layer toggles that once switched
+     these off are retired; the field stays as data, and ALL_ON lights
+     every layer on screen 2. */
   var NODES = [
     { k: "cam",  layer: "see",  x: 306,  y: 252 },
     { k: "cam",  layer: "see",  x: 700,  y: 226 },
@@ -95,33 +112,56 @@
     { k: "pad",  layer: "act",  x: 1006, y: 772 },
     { k: "pad",  layer: "act",  x: 426,  y: 884 }
   ];
+  var ALL_ON = { see: true, know: true, act: true, fund: true };
   var HUB = { x: 800, y: 520 };
 
   /* the ignition, on the lateral at the canyon head */
   var IGNITION = { x: 992, y: 400 };
+
+  /* screen 2: the managed vegetation corridor — a band on the slope below
+     the ridge, from above Alder to above the Rim, cut through the canyon
+     head. World x range and the two offsets from the crest. */
+  var CORRIDOR = { x0: 560, x1: 1480, top: 46, bottom: 118 };
+  function corridorPts() {
+    var top = [], bot = [], x;
+    for (x = CORRIDOR.x0; x <= CORRIDOR.x1; x += 40) {
+      top.push([x, crestY(x) + CORRIDOR.top]);
+      bot.push([x, crestY(x) + CORRIDOR.bottom]);
+    }
+    return top.concat(bot.reverse());
+  }
+  function inCorridor(x, y) {
+    if (x < CORRIDOR.x0 || x > CORRIDOR.x1) { return false; }
+    var c = crestY(x);
+    return y > c + CORRIDOR.top && y < c + CORRIDOR.bottom;
+  }
 
   /* ══════════════════════════════════════════════════════════════════════
      CAMERAS
      ══════════════════════════════════════════════════════════════════════ */
 
   var CAM = {
-    county:  { x: 40,  y: 110, w: 1520, h: 820 },
-    network: { x: 90,  y: 100, w: 1420, h: 790 },
+    county:   { x: 40,  y: 110, w: 1520, h: 820 },
+    /* screen 2: the whole slope, ridge to valley road, so the corridor, the
+       cameras, the stations and the four buyers all land on the stage */
+    business: { x: 100, y: 120, w: 1400, h: 800 },
     /* screen 3 is framed for the right two thirds: the canyon, Mill Creek,
        the road out, the pad and the decision point. 1124 x 781 is the
        1180 x 820 aspect at ~1.05 px per world unit. */
-    ignite:  { x: 418, y: 135, w: 1124, h: 781 },
-    flows:   { x: 120, y: 180, w: 1380, h: 740 },
-    payoff:  { x: 40,  y: 110, w: 1520, h: 820 }
+    ignite:   { x: 418, y: 135, w: 1124, h: 781 },
+    /* screen 4: the same canyon, shifted so the faint record sits to the
+       right of the three columns */
+    evidence: { x: 150, y: 135, w: 1124, h: 781 },
+    payoff:   { x: 40,  y: 110, w: 1520, h: 820 }
   };
   /* narrow: the blocks stack from the top and the county shows through
      whatever is left, so every view is pulled wider */
   var CAM_N = {
-    county:  { x: 120, y: 240, w: 1360, h: 700 },
-    network: { x: 140, y: 150, w: 1320, h: 760 },
-    ignite:  { x: 760, y: 170, w: 640,  h: 680 },
-    flows:   { x: 160, y: 300, w: 1300, h: 660 },
-    payoff:  { x: 120, y: 240, w: 1360, h: 700 }
+    county:   { x: 120, y: 240, w: 1360, h: 700 },
+    business: { x: 140, y: 150, w: 1320, h: 780 },
+    ignite:   { x: 760, y: 170, w: 640,  h: 680 },
+    evidence: { x: 700, y: 170, w: 760,  h: 700 },
+    payoff:   { x: 120, y: 240, w: 1360, h: 700 }
   };
 
   var narrow = false;
@@ -307,7 +347,7 @@
     var boxes = [];
     if (sc) {
       Array.prototype.forEach.call(
-        sc.querySelectorAll(".xhead > *, .wf-chips, .wf-micro, .xask, .s3-ctl"), function (p) {
+        sc.querySelectorAll(".xhead > *, .wf-micro, .xask, .s3-ctl, .ev, .ev-line"), function (p) {
           var r = p.getBoundingClientRect();
           if (r.width > 2 && r.height > 2) { boxes.push(r); }
         });
@@ -383,11 +423,12 @@
 
   /* ══════════════════════════════════════════════════════════════════════
      DRAWING THE COUNTY
-       opts.layers    — { see, know, act, fund }
+       opts.layers    — { see, know, act, fund }: which nodes are lit
        opts.retreat   — screen 1: the market boundary, pulled down-valley
-       opts.network   — screen 2: the standing network joined into a system
+       opts.business  — screen 2: three services on the terrain, four
+                        buyers converging on the one operating business
        opts.s3        — screen 3: the event (see drawS3)
-       opts.flows     — screen 4: four payers converging on one business
+       opts.evidence  — screen 4: the moment's record, faint, with no words
        opts.market    — screen 5: both boundaries at once
        opts.f         — the label frame for this screen
      ══════════════════════════════════════════════════════════════════════ */
@@ -436,6 +477,9 @@
         '<feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
       '<pattern id="s3-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
         '<line x1="0" y1="0" x2="0" y2="5" stroke="' + S3_HOLD + '" stroke-width="1.4"/></pattern>' +
+      /* the managed corridor's swathe marks, screen 2 */
+      '<pattern id="veg-hatch" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(-32)">' +
+        '<line x1="0" y1="0" x2="0" y2="11" stroke="' + PUBLIC + '" stroke-width="1.2" opacity=".45"/></pattern>' +
       '</defs>');
 
     /* ── grounds: back country, slope, valley ── */
@@ -452,8 +496,10 @@
            '" fill="#F3F1E6"/>');
 
     TREES.forEach(function (t) {
-      s.push('<circle cx="' + t[0].toFixed(1) + '" cy="' + t[1].toFixed(1) + '" r="' + t[2].toFixed(1) +
-             '" fill="' + PUBLIC + '" opacity=".16"/>');
+      /* screen 2: the corridor is managed, so the fuel inside it is thinned */
+      var thinned = opts.business && inCorridor(t[0], t[1]);
+      s.push('<circle cx="' + t[0].toFixed(1) + '" cy="' + t[1].toFixed(1) + '" r="' + (thinned ? t[2] * 0.55 : t[2]).toFixed(1) +
+             '" fill="' + PUBLIC + '" opacity="' + (thinned ? ".07" : ".16") + '"/>');
     });
 
     /* ── the canyon: a shaded drainage ── */
@@ -545,55 +591,53 @@
       }
     }
 
-    /* ══ screen 2: the standing network, joined into a system ══ */
-    if (opts.network) {
-      if (L.fund) {
-        NODES.forEach(function (n) {
-          if (!L[n.layer]) { return; }
-          s.push('<line x1="' + n.x + '" y1="' + n.y + '" x2="' + HUB.x + '" y2="' + HUB.y +
-                 '" stroke="' + CARRIER + '" stroke-width="1.3" opacity=".30"/>');
-        });
-      }
-      if (L.know) {
-        s.push('<circle cx="' + HUB.x + '" cy="' + HUB.y + '" r="26" fill="' + PAPER + '" stroke="' + CARRIER + '" stroke-width="3"/>');
-        s.push('<circle cx="' + HUB.x + '" cy="' + HUB.y + '" r="9" fill="' + CARRIER + '"/>');
-      }
-      if (label) {
-        if (L.see) {
-          label(1186, 240, [["Camera", "b", VENDOR]], 16, -18, "start");
-          label(360, 418, [["Line sensor", "b", UTILITY]], 0, -32, "start");
-        }
-        if (L.act) {
-          label(1032, 806, [["Station", "b", FIRE]], 18, -10, "start");
-          label(1006, 772, [["Suppression pad", "b", FIRE]], 20, -8, "start");
-        }
-        if (L.know) {
-          label(HUB.x, HUB.y, [["Operations", "b", CARRIER]], 0, 32, "middle");
-        }
-      }
-    }
-
-    /* ══ screen 3: the event ══ */
-    if (opts.s3) { drawS3(s, opts.s3, label); }
-
-    /* ══ screen 4: four payers converging on one operating business ══ */
-    if (opts.flows) {
-      /* four payers around one business. A phone has no width for two
-         labels side by side, so there the payers stand in a column and
-         the business sits to their right. */
+    /* ══ screen 2: a paid prevention business ══
+       Three services on the terrain — the managed corridor (vegetation
+       management), the cameras and sensors (detection), the stations and
+       pads (response crews) — run from one operating business, and four
+       buyers converging on it, each with what it buys. No amounts, no
+       shares: four arrows of the same weight. The business node carries no
+       word of its own; the contract has none for it. */
+    if (opts.business) {
       var phone = isPhone();
-      var core = phone ? { x: 1150, y: 1080 } : { x: 810, y: 600 };
-      var PAYERS = [
-        { x: 360,  y: 400, c: UTILITY, t: "Utility",         why: "avoided outage" },
-        { x: 1260, y: 400, c: PUBLIC,  t: "Public agencies", why: "regional resilience" },
-        { x: 360,  y: 800, c: FIRE,    t: "Property owners", why: "a maintained perimeter" },
-        { x: 1260, y: 800, c: CARRIER, t: "Insurer",         why: "verified change in risk" }
+      var core = phone ? { x: 1120, y: 560 } : { x: 820, y: 590 };
+      /* the three services, as places the business runs: where the
+         dotted line from the business lands, and where the word sits */
+      var SERVICES = [
+        { at: [1000, crestY(1000) + CORRIDOR.bottom], lab: [1000, crestY(1000) + 82], t: "Vegetation management", dx: 0, dy: -12, anc: "middle" },
+        { at: [1186, 240], lab: [1186, 240], t: "Detection", dx: 18, dy: -20, anc: "start" },
+        { at: [1032, 806], lab: [1032, 806], t: "Response crews", dx: 20, dy: -10, anc: "start" }
+      ];
+      var BUYERS = [
+        { x: 400,  y: 440, c: UTILITY, t: "Utility",         buys: "outage avoidance" },
+        { x: 1300, y: 440, c: CARRIER, t: "Insurers",        buys: "verified risk change" },
+        { x: 400,  y: 740, c: PUBLIC,  t: "Communities",     buys: "readiness" },
+        { x: 1300, y: 740, c: VENDOR,  t: "Property owners", buys: "a kept perimeter" }
       ];
       if (phone) {
-        PAYERS.forEach(function (q, i) { q.x = 300; q.y = 240 + i * 210; });
+        /* a phone has no width for two labels side by side: the buyers
+           stand in a column on the left, the business to their right */
+        BUYERS.forEach(function (q, i) { q.x = 250; q.y = 250 + i * 215; });
+        SERVICES[0].lab = [1120, crestY(1120) + 82];
+        /* the crews' word goes to the far station, clear of the fourth buyer */
+        SERVICES[2] = { at: [1386, 838], lab: [1386, 838], t: "Response crews", dx: -22, dy: -12, anc: "end" };
       }
-      PAYERS.forEach(function (q) {
-        var bend = phone ? 0 : (q.y < core.y ? 70 : -70);
+
+      /* the corridor: a thinned band on the slope below the ridge */
+      s.push('<path d="' + path(corridorPts(), true) + '" fill="' + PUBLIC + '" opacity=".13"/>');
+      s.push('<path d="' + path(corridorPts(), true) + '" fill="url(#veg-hatch)"/>');
+      s.push('<path d="' + path(corridorPts(), true) + '" fill="none" stroke="' + PUBLIC + '" stroke-width="1.8" opacity=".85"/>');
+
+      /* the business runs the three services: dotted lines out */
+      SERVICES.forEach(function (sv) {
+        s.push('<line x1="' + core.x + '" y1="' + core.y + '" x2="' + n1(sv.at[0]) + '" y2="' + n1(sv.at[1]) +
+               '" stroke="' + INK + '" stroke-width="1.6" stroke-dasharray="3 6" opacity=".55"/>');
+        s.push('<circle cx="' + n1(sv.at[0]) + '" cy="' + n1(sv.at[1]) + '" r="5" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>');
+      });
+
+      /* the buyers pay in: four arrows of one weight */
+      BUYERS.forEach(function (q) {
+        var bend = phone ? 0 : (q.y < core.y ? 60 : -60);
         s.push('<path d="M' + q.x + ' ' + q.y + ' Q' + ((q.x + core.x) / 2) + ' ' +
                ((q.y + core.y) / 2 + bend) + ' ' + core.x + ' ' + core.y +
                '" fill="none" stroke="' + q.c + '" stroke-width="4" opacity=".62" marker-end="url(#arrIn)"/>');
@@ -602,65 +646,40 @@
       });
       s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="44" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="3.5"/>');
       s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="15" fill="' + INK + '"/>');
+
       if (label) {
-        PAYERS.forEach(function (q) {
-          var left = q.x < core.x;
-          label(q.x, q.y, [[q.t, "b", q.c], [q.why, "r"]], left ? 28 : -28, -22, left ? "start" : "end");
+        SERVICES.forEach(function (sv) {
+          label(sv.lab[0], sv.lab[1], [[sv.t, "b"]], sv.dx, sv.dy, sv.anc);
         });
-        label(core.x, core.y, [["Operating business", "b"]], 0, 50, "middle");
+        BUYERS.forEach(function (q) {
+          var left = q.x < core.x;
+          label(q.x, q.y, [[q.t, "b", q.c], [q.buys, "r"]], left ? 28 : -28, -22, left ? "start" : "end");
+        });
       }
+    }
+
+    /* ══ screen 3: the event ══ */
+    if (opts.s3) { drawS3(s, opts.s3, label); }
+
+    /* ══ screen 4: the record, faint and wordless, under the columns ══ */
+    if (opts.evidence) {
+      s.push('<g opacity=".42">');
+      drawS3(s, { step: S3_EVENTS.length, mode: "focus", live: false, upp: opts.f ? opts.f.upp : 1 }, null);
+      s.push('</g>');
     }
 
     svg.innerHTML = s.join("");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — the network layers
+     SCREEN 2 — the business has no state. The layer toggles that used to
+     live here (See / Understand / Act / Fund / Show all four) are retired;
+     the node data keeps its layer field and every layer is on (ALL_ON).
      ══════════════════════════════════════════════════════════════════════ */
 
   /* one polite live region for state changes that are not screen changes */
   var statusEl = document.getElementById("state-status");
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
-
-  var layerOrder = ["see", "know", "act", "fund"];
-  /* all four start ON: the argument of this screen is that all four layers
-     already exist. The buttons turn them OFF, which shows what the network
-     is missing without one of them. */
-  var layerOn = { see: true, know: true, act: true, fund: true };
-  var revealAll = document.getElementById("reveal-all");
-
-  function paintLayers() {
-    layerOrder.forEach(function (k) {
-      var b = document.querySelector('[data-layer="' + k + '"]');
-      if (b) { b.setAttribute("aria-pressed", layerOn[k] ? "true" : "false"); }
-    });
-    var allOn = layerOrder.every(function (k) { return layerOn[k]; });
-    if (revealAll) { revealAll.disabled = allOn; }
-    if (current === 2) { drawFor(2); }
-  }
-
-  Array.prototype.forEach.call(document.querySelectorAll("[data-layer]"), function (b) {
-    b.addEventListener("click", function () {
-      var k = b.dataset.layer;
-      layerOn[k] = !layerOn[k];
-      paintLayers();
-      var off = layerOrder.filter(function (x) { return !layerOn[x]; });
-      var names = { see: "sensing", know: "the operations hub", act: "the response", fund: "the funding that joins the pieces" };
-      say(b.textContent.trim() + " layer " + (layerOn[k] ? "shown" : "switched off") + ". " +
-          (off.length ? "Without " + off.map(function (x) { return names[x]; }).join(" and ") + ", the rest is an expensive way to watch."
-                      : "All four layers shown."));
-    });
-  });
-
-  /* "Show all four" RESTORES; it only ever turns layers on, and disables
-     itself once there is nothing left to restore. */
-  if (revealAll) {
-    revealAll.addEventListener("click", function () {
-      layerOrder.forEach(function (k) { layerOn[k] = true; });
-      paintLayers();
-      say("All four layers shown.");
-    });
-  }
 
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 3 — the moment: eight events, three stages, one human decision
@@ -969,11 +988,22 @@
 
   function drawFor(n) {
     if (n === 1)      { renderCounty({ layers: {}, retreat: true, f: frame("county") }); }
-    else if (n === 2) { renderCounty({ layers: layerOn, network: true, f: frame("network") }); }
+    else if (n === 2) { renderCounty({ layers: ALL_ON, business: true, f: frame("business") }); }
     else if (n === 3) { paintTl(); }
-    else if (n === 4) { renderCounty({ layers: {}, flows: true, f: frame("flows") }); }
+    else if (n === 4) { renderCounty({ layers: {}, evidence: true, f: frame("evidence") }); }
     else if (n === 5) { renderCounty({ layers: { see: true, act: true }, market: true, f: frame("payoff") }); }
   }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 4 — the record. "Recorded" is read from S3_EVENTS, so the
+     column can never disagree with the moment. The other two columns are
+     the contract's words; nothing here is a result.
+     ══════════════════════════════════════════════════════════════════════ */
+  (function () {
+    var el = document.getElementById("ev-recorded");
+    if (!el || !S3_EVENTS.length) { return; }
+    el.textContent = S3_EVENTS.length + " actions, " + S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
+  })();
 
   /* ══════════════════════════════════════════════════════════════════════
      FIT — inherited from micromutual/app.js. A block is never given a
@@ -1067,7 +1097,7 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  var CTA = ["See the network", "The moment", "Follow the money", "Market creation", "Back to the start"];
+  var CTA = ["See the business", "The moment", "The evidence", "Market creation", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -1173,7 +1203,6 @@
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { refit(); }); }
 
   narrow = isNarrow();
-  paintLayers();
   show(fromHash() || 1, false);
   moveCamera(screens[current - 1].dataset.cam, true);
 })();
