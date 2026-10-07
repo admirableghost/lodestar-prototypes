@@ -48,15 +48,17 @@
 </svg>
 
 <!-- ONE THOUGHT PER SCREEN, SIXTY WORDS OR FEWER.
-     design-study/story-expansion/SCREEN-COPY.md § OPENCOVER is the copy
-     contract, verbatim, nothing added.
+     design-study/brief-align/CONTRACT.md § OPENCOVER (with AMENDMENT A) is
+     the copy and state contract, verbatim, nothing added.
      1 — her priorities and her permission: three groups, one object.
      2 — the offer, with its remedy, published for an agent to read.
      3 — the best fit inside her rules; recommended, not bought.
-     4 — her instructions become a permitted purchase (simulated).
-     5 — eleven months on, the promise is checked against performance.
+     4 — her instructions become a permitted purchase: the ONE place a
+         purchase is made, as a snapshot of the offer's terms.
+     5 — eleven months on: nothing to check until something was bought;
+         once bought, the promise is checked against performance.
      Everything else is said aloud by the facilitator
-     (design-study/story-expansion/opencover/FACILITATOR-NOTES.md).
+     (design-study/brief-align/opencover/FACILITATOR-NOTES.md).
 
      DEEP LINKS. The hashes are #s/1 … #s/5 for the five screens above.
      Links minted for the three-screen build map by BEAT, not by number:
@@ -130,10 +132,6 @@
     </article>
   </div>
 
-  <footer class="oc-foot">
-    <p class="oc-micro">Invented insurers and household.</p>
-  </footer>
-
 </section>
 
 <!-- ══════ 2 · AN OFFER HER AGENT CAN UNDERSTAND ══════
@@ -204,20 +202,26 @@
     <!-- painted by paintCompare() -->
   </div>
 
+  <!-- the foot line reads the purchase (paintCompare): recommended until
+       #buy on screen 4; after it, ranking is presentation only -->
   <footer class="oc-line oc3-foot-line">
-    <p class="oc-state"><span class="oc-dot" aria-hidden="true"></span>Recommended. Not bought yet.</p>
+    <p class="oc-state"><span class="oc-dot" aria-hidden="true"></span><span id="s3-state">Recommended. Not bought yet.</span></p>
   </footer>
 
 </section>
 
 <!-- ══════ 4 · HER INSTRUCTIONS BECOME A PERMITTED PURCHASE ══════
-     A SIMULATED transition, proposed as a prototype extension (STORY-MAP.md
-     § OpenCover, screen 4). Three steps, one action. The prior cover is
-     never cancelled before the insurer confirms: the new cover is in place
-     first and the old policy ends after. Her standing permission and the
-     offer's published terms are what let the agent complete this without
-     her — the arrangement satisfies the identity and signature requirements,
-     it does not remove them. Nothing real is transacted. -->
+     Three steps, one action. #buy is the ONE place a purchase is made: it
+     copies the recommended offer's name and terms into S.purchase (a
+     snapshot) if permitted(). The marks fill in order — permission, then
+     confirmation, then cover — and the prior cover is never cancelled
+     before the insurer confirms: step three's old-cover bar runs on with
+     no end until the confirmation step is done (a stylesheet sibling rule
+     on data-done, so timing cannot draw the end first). Her standing
+     permission and the offer's published terms are what let the agent
+     complete this without her — identity and payment are on file, the
+     requirements are met, not waived. No external transaction is made
+     (provenance and build status: FACILITATOR-NOTES.md). -->
 <section class="screen oc oc4" data-screen="4" data-label="The purchase" data-cam="offers" data-veil="soft">
 
   <header class="oc-head">
@@ -253,20 +257,22 @@
           <path class="step-tick" d="M130 80 L136 86 L147 73" fill="none" stroke="#F3EBD7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Insurer confirms</p>
+        <p class="step-s">identity and payment on file</p>
       </li>
 
       <li class="step" data-step="cover" data-done="0">
         <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
-          <!-- two covers on one line of time: the old one runs on past the
-               confirmation mark, the new one starts at it. They overlap;
-               there is no gap. -->
+          <!-- two covers on one line of time: the old one runs on with no
+               end (width 200, to the edge) until the confirmation step is
+               done; then the stylesheet ends it at 138, past the mark the
+               new one starts at (104). They overlap; there is no gap. -->
           <line x1="10" y1="92" x2="210" y2="92" stroke="#16150F" stroke-width="2" opacity=".35"/>
           <line class="step-now" x1="104" y1="12" x2="104" y2="100" stroke="#16150F" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/>
-          <rect class="step-old" x="10" y="54" width="128" height="20" rx="3" fill="#16150F" opacity=".32"/>
+          <rect class="step-old" x="10" y="54" width="200" height="20" rx="3" fill="#16150F" opacity=".32"/>
           <rect class="step-new" x="104" y="24" width="106" height="20" rx="3" fill="none" stroke="#8A3450" stroke-width="2.5"/>
         </svg>
         <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Cover in place</p>
-        <p class="step-s">old policy ends after</p>
+        <p class="step-s">old policy ends after confirmation</p>
       </li>
 
     </ol>
@@ -283,37 +289,40 @@
     </div>
   </div>
 
-  <footer class="oc-foot">
-    <p class="oc-micro">Simulated purchase. No real transaction.</p>
-  </footer>
-
 </section>
 
-<!-- ══════ 5 · THE PROMISE STAYS CHECKABLE ══════
-     One calculation, painted by paintPerformance() from the offer bought()
-     returns, that offer's own published settlement row in OFFERS and the one
-     missed entry in LEDGER. The clock starts at agreed liability; the remedy
-     is a published term that applied on the miss, with no separate claim.
-     The insurer line reads screen 4's state: bought, or not. -->
+<!-- ══════ 5 · ELEVEN MONTHS ON ══════
+     Two states, painted by paintPerformance() from the SNAPSHOT and nothing
+     else. PENDING (no snapshot — fresh load, deep link, picker, back, reload
+     before any purchase): "Nothing bought yet.", one line, one button back
+     to the purchase; no calculation, no insurer line, no "retained".
+     BOUGHT: one calculation from the snapshot's settlement days and remedy
+     and the one missed entry in LEDGER. The clock starts at agreed
+     liability; the remedy is a published term that applied on the miss,
+     with no separate claim. Then the continuing selection: alternatives
+     rechecked, none eligible, cover retained, the miss recorded. -->
 <section class="screen oc oc5" data-screen="5" data-label="Eleven months on" data-cam="after" data-veil="soft">
 
   <header class="oc-head">
     <div class="oc-title">
       <p class="oc-eyebrow">05 / Eleven months on</p>
-      <h2 class="display oc-headline" tabindex="-1">The promise is checkable.</h2>
+      <h2 class="display oc-headline" id="oc5-headline" tabindex="-1">Nothing bought yet.</h2>
     </div>
-    <!-- the held offer's identity and its purchase state: always the offer
-         bought() returns, and whether screen 4's purchase was made -->
-    <p class="oc3-id" id="oc3-id"></p>
+    <!-- bought only: the snapshot's name, and that it was bought -->
+    <p class="oc3-id" id="oc3-id" hidden></p>
   </header>
 
   <div class="oc-scene oc5-scene">
-    <figure class="calc" id="oc3-calc" aria-label="The settlement promise checked against performance">
-      <!-- painted by paintPerformance() -->
-    </figure>
+    <!-- pending: no policy, so nothing is checked and nothing is drawn -->
+    <div class="oc5-pending" id="oc5-pending">
+      <p class="oc5-line">No policy to check. The recommendation was not bought.</p>
+      <button class="buy" type="button" id="to-purchase" data-goto="4">Back to the purchase</button>
+    </div>
+    <!-- bought: painted by paintPerformance() -->
+    <figure class="calc" id="oc3-calc" aria-label="The settlement promise checked against performance" hidden></figure>
   </div>
 
-  <footer class="oc3-foot" id="oc3-foot"></footer>
+  <footer class="oc3-foot" id="oc3-foot" hidden></footer>
 
 </section>
 

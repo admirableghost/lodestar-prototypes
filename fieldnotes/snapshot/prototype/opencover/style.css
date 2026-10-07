@@ -1242,6 +1242,13 @@ body { background: var(--paper); color: var(--edition-ink); }
 .step[data-done="1"] .step-new { fill: #8A3450; }
 .step[data-done="1"] .step-now { stroke: #8A3450; stroke-dasharray: none; }
 .step .step-seal, .step .step-new, .step .step-now { transition: fill .25s linear, stroke .25s linear; }
+/* the old cover runs on with no end (to the drawing's edge) until the
+   CONFIRMATION step is done; only then does it end — at 138, after the
+   mark at 104 the new cover starts at. The end is a sibling rule on the
+   confirmation step's data-done, so it cannot be drawn before that mark
+   fills, whatever order timers fire in. */
+.step-old { width: 200px; transition: width .25s linear; }
+.step[data-step="confirm"][data-done="1"] ~ .step[data-step="cover"] .step-old { width: 128px; }
 
 .buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
 .buy {
@@ -1263,11 +1270,22 @@ body { background: var(--paper); color: var(--edition-ink); }
 }
 .bought-mark { flex: 0 0 auto; width: 1.1em; height: 1.1em; }
 
-/* ══ SCREEN 5 · one calculation: promised → observed → applied ═════════ */
-/* the held offer and its state, top right: the state word in plum once
-   bought, in soft ink until then */
-.oc3-id .oc3-state { font-weight: 700; color: var(--ink-soft); }
-.oc3-id[data-bought="1"] .oc3-state { color: var(--plum); }
+/* ══ SCREEN 5 · pending: one line and a way back; bought: one calculation,
+   promised → observed → applied, then the continuing selection ══════════ */
+/* pending: the line and the button sit together, centred on the stage,
+   left-aligned as a short column */
+.oc5-pending {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: calc(22px * var(--k)); max-width: 34ch;
+}
+.oc5-pending[hidden] { display: none; }
+.oc5-line {
+  margin: 0;
+  font: 700 clamp(20px, calc((.7vw + 1.2vh) * var(--k)), 27px)/1.3 var(--sans);
+  letter-spacing: -.008em; text-wrap: balance;
+}
+/* the held offer and its state, top right: bought, named from the snapshot */
+.oc3-id .oc3-state { font-weight: 700; color: var(--plum); }
 .oc3-id .oc3-sep { color: var(--ink-soft); }
 
 .calc {
@@ -1302,6 +1320,9 @@ body { background: var(--paper); color: var(--edition-ink); }
   border-top: 3px solid var(--warm);
 }
 .oc3-end { margin: 0; font: 700 clamp(18px, calc((.6vw + 1vh) * var(--k)), 24px)/1.3 var(--sans); max-width: 40ch; }
+/* the second line of the continuing selection: the outcome, in soft ink */
+.oc3-end--k { font-weight: 400; color: var(--ink-soft); }
+.oc3-foot[hidden] { display: none; }
 
 /* ── narrow: one column, the scene stacks, the screen scrolls ─────────── */
 @media (max-width: 899px) {
@@ -1341,6 +1362,8 @@ body { background: var(--paper); color: var(--edition-ink); }
   .calc-strip { height: clamp(44px, 12vw, 64px); }
   .oc3-foot { padding-right: 0; margin-top: auto; }
   .oc-foot { padding-right: 0; }
+  .oc5-pending { max-width: none; gap: 16px; }
+  .oc5-pending .buy { width: 100%; }
 }
 @media (min-width: 600px) and (max-width: 899px) {
   /* an iPad held upright: the three groups and the three cards stack, but

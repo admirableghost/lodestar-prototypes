@@ -883,8 +883,10 @@ body { background: var(--paper); }
 /* the thumb fills the moment the threshold is met: state, said twice */
 #ctl[data-state="open"] input[type="range"]::-webkit-slider-thumb { background: var(--green); }
 #ctl[data-state="open"] input[type="range"]::-moz-range-thumb { background: var(--green); }
+/* --tick is written by app.js: (48 − min) / (max − min), because the rail's
+   floor follows whether no. 31 has joined (41 or 42) and its ceiling too */
 .plate--ctl .thr-tick {
-  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * 0.8); top: 46px;
+  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--tick, 0.8)); top: 46px;
   transform: translateX(-50%);
   font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--edition-ink);
 }
@@ -1013,33 +1015,60 @@ body { background: var(--paper); }
    iPad floors hold: explanatory text ≥ 18px, labels ≥ 16px.
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── screen 2 · the agreement object ─────────────────────────────────────
+/* ── screen 2 · the terms sheet ──────────────────────────────────────────
    A sheet of paper tied to the house by the tether (drawn in the pins
-   layer). Four clauses, each with the mark of the party that carries it,
-   in the five-party colours; then the authorisation sentence as the
-   sheet's foot. It is not a form: nothing here can be pressed. */
+   layer). Five terms, each a term and its value, with the mark of the
+   party that carries it in the five-party colours; then the ONE action at
+   the sheet's foot — the household authorises its agent to join — which
+   is replaced by its result once pressed. */
 .plate--agree {
-  max-width: 460px; justify-self: end;
+  max-width: 480px; justify-self: end;
   padding: calc(var(--x-gap) * .85) calc(var(--x-gap) * 1.05) calc(var(--x-gap) * .9);
   background: var(--paper);
   box-shadow: 0 0 0 1.5px var(--edition-ink), 0 16px 34px -20px rgba(22,21,15,.55);
   border-radius: 3px;
 }
-.agree { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 1.3vh, 16px); }
-.ag {
-  display: flex; align-items: flex-start; gap: 12px;
-  font: 400 clamp(18px, .5vw + 1.15vh, 23px)/1.3 var(--sans); color: var(--edition-ink);
+.sheet { margin: 0; padding: 0; display: grid; gap: clamp(9px, 1.2vh, 15px); }
+.tm {
+  display: grid; grid-template-columns: 18px 1fr; column-gap: 12px; align-items: start;
+  font: 400 clamp(18px, .5vw + 1.1vh, 22px)/1.3 var(--sans); color: var(--edition-ink);
 }
+.tm .ag-mark { grid-row: 1 / span 2; }
+.tm dt {
+  margin: 0; grid-column: 2;
+  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.tm dd { margin: 0; grid-column: 2; text-wrap: pretty; }
 .ag-mark { width: 18px; height: 22px; flex: 0 0 auto; margin-top: .12em; }
-.ag--you     .ag-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
-.ag--fund    .ag-mark circle  { fill: var(--fund); }
-.ag--carrier .ag-mark circle  { fill: var(--carrier); }
-.ag-auth {
+.tm--you     .ag-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
+.tm--fund    .ag-mark circle  { fill: var(--fund); }
+.tm--carrier .ag-mark circle  { fill: var(--carrier); }
+.tm--survey  .ag-mark circle  { fill: var(--survey); }
+.sheet-act {
   margin: clamp(12px, 1.6vh, 20px) 0 0; padding-top: clamp(10px, 1.3vh, 16px);
   border-top: 1.5px solid var(--edition-ink);
-  font: 700 clamp(18px, .5vw + 1.1vh, 22px)/1.3 var(--sans); color: var(--edition-ink);
-  text-wrap: balance;
 }
+/* the action: ink on paper, the deck's primary-button vocabulary, full width
+   of the sheet so it reads as the sheet's signature line */
+.jbtn {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  min-height: 52px; padding: 0 20px;
+  background: var(--edition-ink); color: var(--paper);
+  border: 2px solid var(--edition-ink); border-radius: var(--r-m);
+  box-shadow: 0 10px 24px -16px rgba(22,21,15,.55);
+  font: 700 clamp(18px, .45vw + 1vh, 21px)/1.2 var(--sans);
+  text-align: center; cursor: pointer; white-space: normal;
+}
+.jbtn:hover { background: #31473B; border-color: #31473B; }
+/* the result replaces the button: the same house mark the key uses, filled,
+   and the count — the joined household in the street's own vocabulary */
+.joined {
+  display: flex; align-items: center; gap: 12px; margin: 0; min-height: 52px;
+  font: 700 clamp(18px, .45vw + 1vh, 21px)/1.2 var(--sans); color: var(--green);
+}
+.joined .ag-mark { margin-top: 0; }
+.joined .ag-mark polygon { fill: var(--green); stroke: var(--green-2); stroke-width: 1.4; stroke-linejoin: round; }
 
 /* the tether is artwork in the pins layer: fixed, full-window, no events */
 .tether { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
@@ -1065,10 +1094,6 @@ body { background: var(--paper); }
 .vbtn[aria-pressed="true"]:hover { background: #6A4D12; }
 .vbtn[aria-pressed="true"] .vbtn-mark circle { fill: var(--paper); stroke: var(--paper); stroke-dasharray: none; }
 .vbtn[aria-pressed="true"] .vbtn-mark path { stroke: var(--survey); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.vnote {
-  margin: 12px 0 0; max-width: 34ch;
-  font: 400 16px/1.4 var(--sans); color: var(--edition-ink);
-}
 
 /* ── screen 4 · three separated steps on the street scene ───────────────
    Three paper chips in a row, a gap between each: separate conditions, not
@@ -1117,6 +1142,14 @@ body { background: var(--paper); }
 .xcons--arr span { display: block; }
 .screen--arr[data-state="pending"] .xcons--arr { color: var(--warn); font-weight: 700; }
 .screen--arr[data-state="begin"]   .xcons--arr { color: var(--green); font-weight: 700; }
+/* the begin state's one further line: who arranged it and how it is paid,
+   marked proposed. Regular weight and the plain ink, under the green line,
+   so it reads as a note on the arrangement and not as a second verdict. */
+.xcons--prov {
+  max-width: 34ch;
+  font-size: clamp(16px, .45vw + .95vh, 20px); font-weight: 400;
+  color: var(--edition-ink); text-wrap: pretty;
+}
 
 /* the key, as a chip at the foot — the same two entries as screen 3 */
 .leg--chip {
@@ -1138,10 +1171,12 @@ body { background: var(--paper); }
 
 /* ── short desktop windows ───────────────────────────────────────────────── */
 @media (min-width: 900px) and (max-height: 760px) {
-  .ag { font-size: 18px; }
-  .ag-auth { font-size: 18px; }
-  .agree { gap: 8px; }
+  .tm { font-size: 18px; }
+  .sheet { gap: 7px; }
+  .sheet-act { margin-top: 10px; padding-top: 9px; }
+  .jbtn, .joined { font-size: 18px; min-height: 46px; }
   .plate--agree { padding: calc(var(--x-gap) * .6) calc(var(--x-gap) * .9) calc(var(--x-gap) * .7); }
+  .xcons--prov { font-size: 16px; }
   .step { padding-top: calc(var(--x-gap) * .45); padding-bottom: calc(var(--x-gap) * .5); }
   .step-mark { top: calc(var(--x-gap) * .45 - 1px); }
   .step-val { font-size: 18px; }
@@ -1152,8 +1187,11 @@ body { background: var(--paper); }
 /* ── narrow: stacked ─────────────────────────────────────────────────────── */
 @media (max-width: 899px) {
   .plate--agree { max-width: none; justify-self: stretch; padding: 14px 16px 16px; }
-  .ag { font-size: 18px; }
-  .ag-auth { font-size: 18px; }
+  .tm { font-size: 18px; }
+  .tm dt { font-size: 15px; }
+  .sheet { gap: 8px; }
+  .jbtn, .joined { font-size: 18px; }
+  .xcons--prov { max-width: none; font-size: 16px; }
   .plate--verify { max-width: none; padding: 0; }
   .vbtn { font-size: 18px; }
   /* anchorPlates() writes align-self:end inline for the desktop grid; in
@@ -1172,6 +1210,6 @@ body { background: var(--paper); }
   .xcons--arr { max-width: none; }
 }
 @media (min-width: 600px) and (max-width: 899px) {
-  .step-val, .ag, .ag-auth, .vbtn { font-size: 18px; }
-  .leg--chip .leg-i, .step-name, .step-state { font-size: 16px; }
+  .step-val, .tm, .vbtn, .jbtn, .joined { font-size: 18px; }
+  .leg--chip .leg-i, .step-name, .step-state, .tm dt { font-size: 16px; }
 }

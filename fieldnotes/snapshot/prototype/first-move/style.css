@@ -1376,7 +1376,7 @@ body.fm .fm-sc .fm-reason {
 }
 body.fm .fm-sc .fm-reason.is-off { visibility: hidden; }
 
-/* ── screen 1's foot: the disclosure; screen 3's: the one control. Bottom right ── */
+/* ── screen 3's foot: the one control. Bottom right ─────────────────────── */
 body.fm .fm-sc .fm-foot {
   z-index: 2; right: 56px;
   bottom: calc(var(--chrome-h) + var(--gesture-safe) + 10px);
@@ -1393,8 +1393,21 @@ body.fm .fm-sc .fm-run {
 }
 body.fm .fm-sc .fm-run:hover { background: var(--fm-cream); color: var(--fm-ground); }
 body.fm .fm-sc .fm-run:focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 3px; }
-body.fm .fm-sc .fm-micro {
-  margin: 2px 0 0; font: 400 16px/1.4 var(--fm-font); color: var(--fm-muted);
+
+/* ── screen 1's evidence slot: a reviewed recording, if one exists ───────
+   Hidden until the browser has read recording/first-move.webm (app.js
+   unhides it on `loadedmetadata`, nothing else does). Shown, it takes the
+   drawn fan's footprint — app.js sets left/top/width in landscape; in
+   portrait it sits in the fan's place in the flow — and the fan is gone. */
+body.fm .fm-s1 .fm-evidence { z-index: 2; margin: 0; }
+body.fm .fm-s1 .fm-evidence[hidden] { display: none; }
+body.fm .fm-s1.has-evidence .fm-scene { display: none; }
+body.fm .fm-s1 .fm-evidence video {
+  display: block; width: 100%; height: auto; max-height: 60vh;
+  background: #000; border-radius: 3px;
+}
+body.fm .fm-s1 .fm-evidence figcaption {
+  margin: 10px 0 0; font: 400 16px/1.4 var(--fm-font); color: var(--fm-muted);
 }
 
 /* ── screen 4's closing question, bottom left, quiet ───────────────────
@@ -1466,6 +1479,8 @@ body.fm :focus-visible { outline: 3px solid var(--fm-trace); outline-offset: 2px
   body.fm .fm-sc .fm-reason.is-off { display: none; }
   body.fm .fm-sc .fm-lede { font-size: clamp(18px, 4.4vw, 21px); margin: 14px 0 0; }
   body.fm .fm-sc .fm-scene { position: static; width: 100%; height: auto; margin: 18px 0 0; }
+  body.fm .fm-s1 .fm-evidence { width: 100%; margin: 18px 0 0; }
+  body.fm .fm-s1 .fm-evidence[hidden] { display: none; }
   body.fm .fm-sc .fm-foot {
     width: auto; max-width: 46ch; align-items: flex-start; text-align: left;
     margin: 12px 0 0;

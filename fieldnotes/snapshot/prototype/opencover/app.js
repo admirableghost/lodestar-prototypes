@@ -209,6 +209,9 @@
     { id: "meridian", name: "Meridian Mutual", price: "1,340.00", num: 1340,
       excess: "450.00 USD", excessNum: 450, driver: "Every named driver, no age condition",
       settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true, settleDays: 5,
+      /* the published remedy, USD per working day late; null where no
+         settlement time is published, so there is nothing to remedy */
+      remedyPerDay: 50,
       /* exclusions that reach HER household: the count "fewest exclusions" ranks on */
       hits: 0,
       /* the one term each preference turns on, three words or fewer. This is
@@ -221,6 +224,7 @@
     { id: "candlewick", name: "Candlewick Direct", price: "1,185.00", num: 1185,
       excess: "500.00 USD", excessNum: 500, driver: "Drivers under 25 excluded",
       settle: "No settlement time published", settlePublished: false, settleDays: null,
+      remedyPerDay: null,
       hits: 1,
       term: { price: "1,185 USD", excl: "Under 25 excluded", settle: "None published" },
       eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep.",
@@ -228,6 +232,7 @@
     { id: "pell", name: "Pell & Roe", longName: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
       excess: "900.00 USD", excessNum: 900, driver: "Every named driver",
       settle: "10 working days", settlePublished: true, settleDays: 10,
+      remedyPerDay: 20,
       hits: 0,
       term: { price: "1,420 USD", excl: "No age condition", settle: "10 working days" },
       eligible: false, bar: "The excess is 900 USD, twice the 500 she capped.",
@@ -248,36 +253,55 @@
   var PREF_SAID = { price: "price", excl: "fewest exclusions", settle: "fastest settlement" };
 
   /* ══════════════════════════════════════════════════════════════════════
-     STATE — two switches, both set on the glass, both read later.
-       pref   · chosen on screen 3, read by screens 3 and 5.
-       bought · set by the one action on screen 4, read by screens 4 and 5.
-     Both survive a reload (sessionStorage). A browser that refuses storage
-     starts on price, unbought. Restarting from screen 5 clears both.
+     STATE — a preference and a purchase, both set on the glass, both read
+     later (design-study/brief-align/CONTRACT.md § OPENCOVER).
+       pref     · chosen on screen 3, read by screen 3 only.
+       purchase · null until #buy on screen 4; then a SNAPSHOT of the offer
+                  bought — name and terms COPIED at that moment, not a
+                  reference to the live table — read by screens 4 and 5.
+     Both survive a reload (sessionStorage: oc-pref, oc-purchase as JSON).
+     A browser that refuses storage starts on price with nothing bought.
+     Restarting from screen 5 clears both. Nothing is ever bought by
+     navigation: the only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { pref: "price", bought: false };
+  var S = { pref: "price", purchase: null };
+
+  /* a stored snapshot is trusted only if it is whole: every term the bought
+     state paints must be present and of the right kind, or it is no purchase */
+  function snapshotOf(raw) {
+    if (!raw || typeof raw !== "object") { return null; }
+    var ok = typeof raw.id === "string" && typeof raw.name === "string" && raw.name &&
+             typeof raw.premium === "number" && typeof raw.excess === "number" &&
+             typeof raw.settleDays === "number" && typeof raw.remedyPerDay === "number" &&
+             typeof raw.within === "number";
+    return ok ? { id: raw.id, name: raw.name, premium: raw.premium, excess: raw.excess,
+                  settleDays: raw.settleDays, remedyPerDay: raw.remedyPerDay, within: raw.within }
+              : null;
+  }
   try {
     if (RANK[sessionStorage.getItem("oc-pref")]) { S.pref = sessionStorage.getItem("oc-pref"); }
-    S.bought = sessionStorage.getItem("oc-bought") === "1";
-  } catch (e) { /* private mode */ }
+    S.purchase = snapshotOf(JSON.parse(sessionStorage.getItem("oc-purchase") || "null"));
+    sessionStorage.removeItem("oc-bought");   /* the earlier build's flag; never read */
+  } catch (e) { /* private mode, or a stored value that is not JSON */ }
 
   function persist() {
     try {
       sessionStorage.setItem("oc-pref", S.pref);
-      sessionStorage.setItem("oc-bought", S.bought ? "1" : "0");
+      if (S.purchase) { sessionStorage.setItem("oc-purchase", JSON.stringify(S.purchase)); }
+      else { sessionStorage.removeItem("oc-purchase"); }
     } catch (e) { /* private mode */ }
   }
 
   /* the cheapest ELIGIBLE offer; eligibility is never traded away. This is
-     the offer screen 2 publishes, screen 3 recommends, screen 4 buys and
-     screen 5 checks — one row, read four times. */
+     the offer screen 2 publishes, screen 3 recommends and screen 4 may buy. */
   function recommended() {
     return OC.filter(function (o) { return o.eligible; })
              .reduce(function (a, b) { return a.num <= b.num ? a : b; });
   }
-  /* the PURCHASED offer. The purchase on screen 4 can only be made on the
-     recommended offer, so the two are the same row; S.bought says whether
-     the purchase has actually been made. */
-  function bought() { return recommended(); }
+  /* the PURCHASED offer: the snapshot, or null. Never recommended(): a
+     recommendation is not a purchase, and screen 5 has nothing to check
+     until the purchase on screen 4 has been made. */
+  function bought() { return S.purchase; }
 
   /* the cheapest offer of the three, eligible or not: the floor her
      permission is measured from */
@@ -289,9 +313,10 @@
      A line from the cheapest offer to DELTA above it, closed by her warm
      boundary mark; the recommended offer sits inside it as a plum dot. No
      text: the sentence under it says what it is. */
-  function permSpan(x0, x1, y, dotR, stroke) {
-    var floor = cheapest().num, o = recommended();
-    var u = Math.max(0, Math.min(1, (o.num - floor) / DELTA));
+  function permSpan(x0, x1, y, dotR, stroke, price) {
+    var floor = cheapest().num;
+    var num = (price == null) ? recommended().num : price;
+    var u = Math.max(0, Math.min(1, (num - floor) / DELTA));
     var xr = x0 + (x1 - x0) * u;
     return '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y +
              '" stroke="#16150F" stroke-width="' + stroke + '" stroke-linecap="round"/>' +
@@ -365,38 +390,53 @@
     Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
     });
-    paintPerformance();
-    say("Ranked on " + PREF_SAID[pref] + ". The agent recommends " + win.name + ". Not bought yet.");
+    /* the foot line reads the purchase: before it, this screen recommends;
+       after it, re-ranking is presentation only and the policy stands */
+    var p = bought();
+    var line = document.getElementById("s3-state");
+    if (line) {
+      line.textContent = p ? "Already bought. Ranking does not change the policy."
+                           : "Recommended. Not bought yet.";
+    }
+    say("Ranked on " + PREF_SAID[pref] + ". " +
+        (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
+           : "The agent recommends " + win.name + ". Not bought yet."));
   }
 
-  /* ── screen 4: the purchase, in three steps, SIMULATED ────────────────
-     The steps are marked from S.bought. Step one's drawing is the same
-     permission span as screen 1, with the recommended offer inside it:
-     the one number the agent tests. The prior cover is never cancelled
-     before the insurer confirms (step three's drawing: the old bar runs on
-     past the mark the new one starts at). */
+  /* ── screen 4: the purchase, in three steps ───────────────────────────
+     The steps are marked from the snapshot. Step one's drawing is the same
+     permission span as screen 1, with the offer's price inside it: the one
+     number the agent tests (the snapshot's premium once bought, the
+     recommended offer's until then). The marks fill IN ORDER — permission,
+     then confirmation, then cover — and the prior cover is never cancelled
+     before the insurer confirms: step three's old-cover bar runs on with no
+     end until the confirmation step is done, and only then ends, after the
+     mark the new cover starts at. That order is enforced in the stylesheet
+     (the old bar's end is a sibling rule on the confirmation step's
+     data-done), so no timing can draw the end first. */
   var stepTimers = [];
   function paintSteps(animate) {
+    var p = bought();
     var art = document.getElementById("step-perm");
-    if (art) { art.innerHTML = permSpan(22, 170, 60, 9, 3.5); }
+    if (art) { art.innerHTML = permSpan(22, 170, 60, 9, 3.5, p ? p.premium : null); }
     var steps = Array.prototype.slice.call(document.querySelectorAll("#steps .step"));
     var buyBtn = document.getElementById("buy");
     var state = document.getElementById("bought-state");
     var label = document.getElementById("bought-label");
     stepTimers.forEach(clearTimeout); stepTimers = [];
 
-    var o = bought();
-    if (label) { label.textContent = "Bought · " + o.name; }
-
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!S.bought) {
+    if (!p) {
       steps.forEach(function (s) { s.dataset.done = "0"; });
+      if (label) { label.textContent = ""; }
       if (buyBtn) { buyBtn.hidden = false; buyBtn.disabled = false; }
       if (state) { state.hidden = true; }
       return;
     }
-    /* the state replaces the action at once; the three marks then land one
-       after another (or at once, under reduced motion or on a reload) */
+    /* the state replaces the action at once, named from the snapshot; the
+       three marks then land one after another (or at once, under reduced
+       motion or on a reload) */
+    if (label) { label.textContent = "Bought · " + p.name; }
     if (buyBtn) { buyBtn.hidden = true; }
     if (state) { state.hidden = false; }
     if (animate && !reduce) {
@@ -417,67 +457,87 @@
     return !!o && o.eligible && (o.num - cheapest().num) <= DELTA;
   }
 
+  /* the ONE writer of S.purchase: the snapshot of the recommended offer's
+     terms at this moment — copied, not referenced, so a later change of
+     preference or of the table cannot rewrite what was bought */
   function buy() {
-    if (S.bought || !permitted()) { return; }
-    S.bought = true;
+    if (S.purchase || !permitted()) { return; }
+    var o = recommended();
+    S.purchase = {
+      id: o.id, name: o.name, premium: o.num, excess: o.excessNum,
+      settleDays: o.settleDays, remedyPerDay: o.remedyPerDay, within: DELTA
+    };
     persist();
     paintSteps(true);
+    paintCompare();
     paintPerformance();
     refit();
-    say("Bought: " + bought().name + ". Permission checked, within " + DELTA +
-        " USD. Insurer confirmed. Cover in place; the old policy ends after. Simulated purchase, no real transaction.");
+    say("Bought: " + S.purchase.name + ". Permission checked, within " + DELTA +
+        " USD. Insurer confirms, identity and payment on file. Cover in place; the old policy ends after confirmation.");
   }
 
-  /* starting over: back to price, unbought — the state the first screen
-     describes. Called when the deck wraps from screen 5 to screen 1. */
+  /* starting over: back to price, nothing bought — the state the first
+     screen describes. Called when the deck wraps from screen 5 to screen 1. */
   function restart() {
-    S.pref = "price"; S.bought = false;
+    S.pref = "price"; S.purchase = null;
     persist();
     paintCompare();
     paintSteps(false);
+    paintPerformance();
   }
 
-  /* ── screen 3 reads the SAME table, for whichever offer was bought ───
-     ONE calculation: promised (counted from agreed liability) → observed →
-     the remedy, which is a published term and applied on the miss with no
-     separate claim. Painted from three places in the model and nowhere
-     else: the offer bought() returns, that offer's own published settlement
-     row in OFFERS, and the one missed entry in LEDGER. The arithmetic is
-     done here, in code, from those numbers. */
+  /* ── screen 5 reads the SNAPSHOT, and only the snapshot ──────────────
+     Two states. PENDING (no snapshot): nothing to check — the headline says
+     so, one line says why, one button goes back to the purchase; no
+     calculation, no insurer line, no "retained". BOUGHT: ONE calculation —
+     promised (the snapshot's settlement days, counted from agreed
+     liability) → observed (the one missed entry in LEDGER) → the remedy
+     (late days × the snapshot's published remedy), applied on the miss with
+     no separate claim; then the continuing selection, computed from the
+     table: alternatives rechecked, none eligible, cover retained, the miss
+     recorded. The arithmetic is done here, in code, from those numbers. */
   function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
   function paintPerformance() {
-    var o = bought();
-    var full = OFFERS.filter(function (x) { return x.id === o.id; })[0] || null;
-    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
+    var p = bought();
+    var head    = document.getElementById("oc5-headline");
+    var id      = document.getElementById("oc3-id");
+    var calc    = document.getElementById("oc3-calc");
+    var pending = document.getElementById("oc5-pending");
+    var foot    = document.getElementById("oc3-foot");
 
-    /* the published row the commitment is lifted from */
-    var row = null;
-    if (full && miss) {
-      full.doc.forEach(function (sec) {
-        sec.rows.forEach(function (r) { if (r.k === miss.key) { row = r; } });
-      });
+    if (!p) {
+      /* PENDING. The recommendation was not bought; there is no policy
+         whose promise could be checked, so none is drawn. */
+      if (head) { head.textContent = "Nothing bought yet."; }
+      if (id) { id.hidden = true; id.innerHTML = ""; }
+      if (calc) { calc.hidden = true; calc.innerHTML = ""; }
+      if (foot) { foot.hidden = true; foot.innerHTML = ""; }
+      if (pending) { pending.hidden = false; }
+      reserveNav();
+      return;
     }
-    var live = !!(row && o.settlePublished);
 
-    /* the held offer and its purchase state, read from screen 4: the same
-       scene either way, but the line never claims a purchase that was not
-       made */
-    var id = document.getElementById("oc3-id");
+    /* BOUGHT. Every term below is the snapshot's — the name on the line,
+       the promised days, the remedy per day — not the live table's. */
+    if (head) { head.textContent = "The promise is checkable."; }
+    if (pending) { pending.hidden = true; }
     if (id) {
-      id.dataset.bought = S.bought ? "1" : "0";
-      id.innerHTML = '<span class="oc3-state">' + (S.bought ? "Bought" : "Not bought") + "</span>" +
-                     '<span class="oc3-sep" aria-hidden="true"> · </span><b>' + esc(o.name) + "</b>";
+      id.hidden = false;
+      id.dataset.bought = "1";
+      id.innerHTML = '<span class="oc3-state">Bought</span>' +
+                     '<span class="oc3-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>";
     }
 
-    var promised = miss ? miss.promised : null,
+    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
+    var promised = p.settleDays,
         observed = miss ? miss.observed : null,
-        perDay   = miss ? miss.perDay   : null,
+        perDay   = p.remedyPerDay,
         late     = (promised != null && observed != null) ? Math.max(0, observed - promised) : null,
         remedy   = (late != null && perDay != null) ? late * perDay : null;
 
-    var calc = document.getElementById("oc3-calc");
-    if (calc && live && miss && remedy != null) {
+    if (calc) { calc.hidden = false; }
+    if (calc && miss && remedy != null) {
       /* the clock, as cells: the promised days in ledger blue, the late days
          hatched in plum. No numbers in the cells; the figures sit under them. */
       var cells = [], i, n = observed;
@@ -516,27 +576,28 @@
         arrow +
         '<div class="calc-step calc-step--r">' +
           '<p class="calc-n"><span class="calc-big">' + grp(remedy) + '</span><span class="calc-u">USD</span></p>' +
-          '<p class="calc-w">applied automatically, no claim</p>' +
+          '<p class="calc-w">published remedy, no claim</p>' +
         "</div>";
     } else if (calc) {
       /* no published settlement time means nothing to check and nothing
-         owed. Unreachable with the current model, where bought() is the one
-         offer with a published commitment; kept so the screen never lies. */
+         owed. Unreachable with the current model, where the only offer that
+         can be bought publishes a commitment; kept so the screen never lies. */
       calc.innerHTML = '<div class="calc-step calc-step--o"><p class="calc-w">No settlement time published.</p></div>';
     }
 
-    /* honest ending: a breach re-opens the agent's permission to shop, not
-       the customer's instructions. Whether any other offer clears them is
-       computed from the same table screen 2 reads. */
-    var foot = document.getElementById("oc3-foot");
+    /* continuing selection: a missed commitment re-opens the agent's
+       permission to re-shop, not her instructions. Whether any other offer
+       clears them is computed from the same table screen 3 reads; today none
+       does, so cover is retained and the miss is recorded. Nothing switches
+       by itself, and nothing here says the service was good. */
     if (foot) {
-      var others = OC.filter(function (x) { return x !== o; });
+      var others = OC.filter(function (x) { return x.id !== p.id; });
       var clears = others.filter(function (x) { return x.eligible; });
-      foot.innerHTML = '<p class="oc3-end">' +
-        (clears.length
-          ? "Eligible replacement: " + esc(clears[0].name) + "."
-          : "No eligible replacement. Existing cover retained.") +
-        "</p>";
+      foot.hidden = false;
+      foot.innerHTML =
+        '<p class="oc3-end">Alternatives rechecked · ' +
+          (clears.length ? esc(clears[0].name) + " eligible" : "none eligible") + "</p>" +
+        '<p class="oc3-end oc3-end--k">Cover retained. Missed commitment recorded.</p>';
     }
     reserveNav();
   }
@@ -568,6 +629,7 @@
   paintOffer();
   paintCompare();
   paintSteps(false);
+  paintPerformance();
 
   /* Restored: the world palette and its frame sat inside the state block the
      recomposition replaced, and renderWorld below is still its consumer. */
@@ -1028,11 +1090,17 @@
 
   anchorPlates();
 
+  /* going FORWARD off the last screen (Next, or the right arrow) is the
+     restart: preference back to price, nothing bought. The picker, a deep
+     link, the back arrow and a reload never reset — they restore whatever
+     the session holds, or show the pending state. */
+  function forward() {
+    if (current === total) { restart(); }
+    show(current + 1);
+  }
+
   function show(n, push) {
     n = ((n - 1 + total) % total) + 1;
-    /* leaving the last screen for the first is a restart: preference back
-       to price, nothing bought. A deep link or reload never resets. */
-    if (current === total && n === 1 && push !== false) { restart(); }
     current = n;
     var sc = screens[n - 1];
     screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
@@ -1062,10 +1130,14 @@
           : h.textContent)
       : sc.dataset.label;
     /* the state a screen depends on is announced with it */
-    var extra = "";
-    if (n === 3) { extra = " Ranked on " + PREF_SAID[S.pref] + ". Recommended: " + recommended().name + ". Not bought yet."; }
-    if (n === 4) { extra = S.bought ? " Bought: " + bought().name + ". Simulated purchase." : " Not yet bought. One action: buy inside her rules. Simulated purchase."; }
-    if (n === 5) { extra = (S.bought ? " Bought: " : " Not bought: ") + bought().name + "."; }
+    var extra = "", p = bought();
+    if (n === 3) {
+      extra = " Ranked on " + PREF_SAID[S.pref] + ". " +
+              (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
+                 : "Recommended: " + recommended().name + ". Not bought yet.");
+    }
+    if (n === 4) { extra = p ? " Bought: " + p.name + "." : " Not yet bought. One action: buy inside her rules."; }
+    if (n === 5) { extra = p ? " Bought: " + p.name + "." : " No policy to check. The recommendation was not bought. One action: back to the purchase."; }
     announce.textContent = "Screen " + n + " of " + total + ". " +
       said.replace(/\s+/g, " ").trim() + extra;
 
@@ -1075,7 +1147,7 @@
   }
 
   prevBtn.addEventListener("click", function () { show(current - 1); });
-  nextBtn.addEventListener("click", function () { show(current + 1); });
+  nextBtn.addEventListener("click", forward);
   picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
 
   document.addEventListener("click", function (e) {
@@ -1087,7 +1159,7 @@
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
     if (tag === "select" || tag === "input" || tag === "button") { return; }
-    if (e.key === "ArrowRight") { show(current + 1); }
+    if (e.key === "ArrowRight") { forward(); }
     if (e.key === "ArrowLeft") { show(current - 1); }
   });
 

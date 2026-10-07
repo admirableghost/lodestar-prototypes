@@ -25,11 +25,19 @@
    one ochre is the surveyor's mark, and it exists only while verification
    is illustrated.
 
-   THE STATE OBJECT — one source of truth, S = { screen, committed, verified }
-   · committed starts at 41 and is moved ONLY by the slider on screen 3. It
-     is never reset by navigation in either direction.
-   · verified starts false and is flipped ONLY by the toggle on screen 4.
-   · "Back to the start" from screen 5 is the one action that resets both.
+   THE STATE OBJECT — one source of truth,
+   S = { screen, joined, committed, verified }
+   · joined starts false and is set ONLY by #join on screen 2: the household
+     authorises its agent to join on the pre-negotiated terms. Joining moves
+     committed from 41 (the others) to 42 (the others plus no. 31).
+   · committed starts at 41 and is otherwise moved ONLY by the slider on
+     screen 3 — floor 42 when joined, 41 when not (no. 31 stays hollow and
+     the ceiling is 59, because no. 31 is not among the others). It is
+     never reset by navigation in either direction.
+   · verified starts false and is flipped ONLY by the surveyor control on
+     screen 4.
+   · "Back to the start" from screen 5 is the one action that resets all
+     three.
    · screen 5 is derived: begin = committed ≥ 48 && verified. Pressing Next
      never produces "begin"; only the two facts do.
 
@@ -55,8 +63,20 @@
   var ROSA = 15;           /* no. 31 — upper row, mid-street   */
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
-  var S = { screen: 1, committed: START, verified: false };
+  var S = { screen: 1, joined: false, committed: START, verified: false };
   function begin() { return S.committed >= NEED && S.verified; }
+  /* the slider's bounds follow `joined`: no. 31 is counted only once she
+     has authorised, so the others alone can never number sixty */
+  function floor() { return S.joined ? START + 1 : START; }
+  function ceil()  { return S.joined ? HOMES : HOMES - 1; }
+  function clampCommitted(n) { return Math.max(floor(), Math.min(ceil(), n)); }
+  /* is household i in the committed set? The order grows out from no. 31
+     (rank 0), so when she has not joined the committed set is the next
+     `committed` households in the order, skipping her. */
+  function inSet(i, C) {
+    if (S.joined) { return RANK[i] < C; }
+    return i !== ROSA && RANK[i] <= C;
+  }
 
   /* ── palette (the study's) ───────────────────────────────────────────── */
   var P = "#F3EBD7", INK = "#16150F", MU = "#5A554A",
@@ -167,12 +187,15 @@
 
   /* ══════════════════════════════════════════════════════════════════════
      DRAWING THE STREET
-       opts.mode     — "alone"  (screens 1 and 2: nobody has committed;
-                                  no. 31 did the work on its own and is ringed)
-                       "commit" (screens 3, 4, 5: every house shows its
-                                  state; the boundary draws at ≥ 48)
+       opts.mode     — "alone"  (screen 1: nobody has committed; no. 31 did
+                                  the work on its own and is ringed)
+                       "commit" (screens 2–5: every house shows its state
+                                  from S — the others, and no. 31 only once
+                                  joined; the boundary draws at ≥ 48)
+       opts.ring     — commit mode: ring no. 31 (screen 2, where the terms
+                       sheet is tied to her roof)
        opts.verified — commit mode only: the surveyor's ochre mark on every
-                       committed lot, while verification is illustrated
+                       committed lot, once the surveyor control is pressed
        opts.alt      — the accessible description
      ══════════════════════════════════════════════════════════════════════ */
 
@@ -194,7 +217,7 @@
     var up = i < PER_ROW, x = hx(i) + (PITCH - HW) / 2, d0 = up ? HD0.up : HD0.lo, d1 = d0 + HD;
     var fillF = on ? G : P, fillS = on ? G2 : P, fillRL = on ? F : P, fillRR = on ? F2 : P;
     var st = on ? G2 : MU, dash = on ? null : "3 2.5", sw = on ? 1 : 1.5, s = [];
-    s.push('<g data-house="' + (on ? "in" : "out") + '">');
+    s.push('<g data-house="' + (on ? "in" : "out") + '"' + (i === ROSA ? ' data-lot="31"' : '') + '>');
     /* left roof slope, right roof slope, right wall, near face (gable) */
     s.push(poly([[x, d0, HH], [x, d1, HH], [x + HW / 2, d1, HH + HR], [x + HW / 2, d0, HH + HR]], fillRL, { st: st, dash: dash, sw: sw }));
     s.push(poly([[x + HW / 2, d0, HH + HR], [x + HW / 2, d1, HH + HR], [x + HW, d1, HH], [x + HW, d0, HH]], fillRR, { st: st, dash: dash, sw: sw }));
@@ -267,7 +290,8 @@
     var C = alone ? 0 : S.committed;
     var crossed = !alone && C >= NEED;
     var verified = !alone && !!opts.verified;
-    function isIn(i) { return RANK[i] < C; }
+    var ringed = alone || !!opts.ring;
+    function isIn(i) { return !alone && inSet(i, C); }
     var s = [], i;
 
     s.push('<defs>' +
@@ -315,7 +339,7 @@
     TREES.forEach(function (t) { s.push(tree(t[0], t[1], t[2], t[3])); });
     s.push(strips(true, isIn, crossed));
     for (i = 0; i < PER_ROW; i++) {
-      s.push(house(i, alone ? i === ROSA : isIn(i), alone && i === ROSA));
+      s.push(house(i, alone ? i === ROSA : isIn(i), ringed && i === ROSA));
       if (verified && isIn(i)) { s.push(tick(i)); }
     }
     s.push(strips(false, isIn, crossed));
@@ -417,7 +441,10 @@
        frontage breaks. At sixty there is no such house and no label. */
     if (n === 1) { return [pinAt("ink", "No. 31 · prepared", ROSA, -44)]; }
     if (n === 5 && begin() && S.committed < HOMES) {
-      return [pinAt("out", "outside the arrangement", ORDER[S.committed], -44)];
+      /* the first house outside the set, in the commitment order. When she
+         never authorised, that house is no. 31 herself. */
+      var out = S.joined ? ORDER[S.committed] : ROSA;
+      return [pinAt("out", "outside the arrangement", out, -44)];
     }
     return [];
   }
@@ -511,7 +538,10 @@
   var statusEl = document.getElementById("state-status");
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
+  var joinBtn = document.getElementById("join");
+  var joinedEl = document.getElementById("joined");
   var range = document.getElementById("thr-range");
+  var railEl = range ? range.parentNode : null;
   var ctlEl = document.getElementById("ctl");
   var countEl = document.getElementById("thr-count");
   var offerEl = document.getElementById("offer");
@@ -524,6 +554,7 @@
   var verBtn = document.getElementById("verify-toggle");
   var arrHead = document.getElementById("arr-head");
   var arrLine = document.getElementById("arr-line");
+  var arrProv = document.getElementById("arr-prov");
 
   var WORDS = ["none", "one", "two", "three", "four", "five", "six", "seven",
                "eight", "nine", "ten", "eleven", "twelve"];
@@ -543,7 +574,7 @@
   function missing() {
     var out = [];
     if (S.committed < NEED) { out.push("Participation below 48"); }
-    if (!S.verified) { out.push("Verification not illustrated"); }
+    if (!S.verified) { out.push("Verification pending"); }
     return out;
   }
 
@@ -555,13 +586,24 @@
 
   function paint() {
     var open = S.committed >= NEED;
+    var lo = floor(), hi = ceil();
 
-    /* screen 3 */
+    /* screen 2 — the one action, or its result */
+    if (joinBtn) { joinBtn.hidden = S.joined; }
+    if (joinedEl) { joinedEl.hidden = !S.joined; }
+
+    /* screen 3 — the slider's bounds follow `joined` */
+    if (range) {
+      if (+range.min !== lo) { range.min = String(lo); }
+      if (+range.max !== hi) { range.max = String(hi); }
+      if (+range.value !== S.committed) { range.value = String(S.committed); }
+      /* the track fills behind the thumb, so the distance still to travel is
+         visible without reading the number; the "48 needed" tick is placed
+         on the track by the same arithmetic */
+      range.style.setProperty("--p", ((S.committed - lo) / (hi - lo) * 100).toFixed(2) + "%");
+      if (railEl) { railEl.style.setProperty("--tick", ((NEED - lo) / (hi - lo)).toFixed(4)); }
+    }
     if (countEl) { countEl.textContent = String(S.committed); }
-    if (range && +range.value !== S.committed) { range.value = String(S.committed); }
-    /* the track fills behind the thumb, so the distance still to travel is
-       visible without reading the number */
-    if (range) { range.style.setProperty("--p", (S.committed / HOMES * 100).toFixed(2) + "%"); }
     if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; }
     if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
     if (offerText) { offerText.textContent = conditionLine(open); }
@@ -571,7 +613,7 @@
     if (stepPart) { stepPart.dataset.state = open ? "met" : "pending"; }
     if (stepImpr) { stepImpr.dataset.state = S.verified ? "met" : "pending"; }
     if (stepVer) { stepVer.dataset.state = S.verified ? "met" : "pending"; }
-    if (verState) { verState.textContent = S.verified ? "Illustrated as verified" : "Pending"; }
+    if (verState) { verState.textContent = S.verified ? "Verified" : "Pending"; }
     if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
 
     /* screen 5 — derived */
@@ -583,6 +625,7 @@
         arrHead.innerHTML = spans(["Still pending."]);
         arrLine.innerHTML = spans(missing());
       }
+      if (arrProv) { arrProv.hidden = !begin(); }
       screens[4].dataset.state = begin() ? "begin" : "pending";
     }
   }
@@ -590,14 +633,26 @@
   /* repaint the words, then whatever the open screen draws from them */
   function repaint() {
     paint();
-    if (S.screen >= 3) { drawFor(S.screen); buildPins(S.screen); }
+    if (S.screen >= 2) { drawFor(S.screen); buildPins(S.screen); }
     refit();
+  }
+
+  /* #join — the household authorises its agent to join on the terms on the
+     sheet. The only thing that sets `joined`; it counts no. 31 in. */
+  if (joinBtn) {
+    joinBtn.addEventListener("click", function () {
+      if (S.joined) { return; }
+      S.joined = true;
+      S.committed = clampCommitted(S.committed + 1);
+      repaint();
+      say("Joined. " + S.committed + " of 60 committed. No. 31 is now counted in.");
+    });
   }
 
   var lastOpen = null;
   if (range) {
     range.addEventListener("input", function () {
-      S.committed = parseInt(range.value, 10) || 0;
+      S.committed = clampCommitted(parseInt(range.value, 10) || 0);
       var open = S.committed >= NEED;
       repaint();
       if (open !== lastOpen) {
@@ -618,8 +673,8 @@
       S.verified = !S.verified;
       repaint();
       say(S.verified
-        ? "Verified completion illustrated. Simulated for discussion; not evidence of work done."
-        : "Illustration removed. Verification pending.");
+        ? "Surveyor verification recorded: verified. Improvements and verification met."
+        : "Surveyor verification withdrawn. Verification pending.");
     });
   }
 
@@ -634,7 +689,7 @@
       (c >= NEED
         ? "An amber boundary encloses the whole street, hollow houses included. "
         : "There is no boundary around the street. ") +
-      (S.verified ? "Every committed house carries a small ochre check: the surveyor's mark, illustrated, not evidence. " : "");
+      (S.verified ? "Every committed house carries a small ochre check: the surveyor's mark. " : "");
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
         "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
@@ -643,8 +698,11 @@
         "because the street around it sets the price.";
     }
     if (n === 2) {
-      return "Close on number 31 and the houses either side of it: still the only solid house, " +
-        "ringed, every neighbour hollow. A line ties the ring to the agreement sheet above it.";
+      return "Close on number 31, ringed, and the houses either side of it. " +
+        (S.joined
+          ? "Number 31 is solid: she has joined, and the count is " + c + " of sixty. "
+          : "Number 31 is hollow with a dashed edge: she has not joined; " + c + " others are solid. ") +
+        "A line ties the ring to the terms sheet above it.";
     }
     if (n === 3) { return streetState; }
     if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
@@ -654,8 +712,9 @@
   }
 
   function drawFor(n) {
-    if (n <= 2) { renderStreet({ mode: "alone", alt: altFor(n) }); }
-    else        { renderStreet({ mode: "commit", verified: S.verified, alt: altFor(n) }); }
+    if (n === 1)      { renderStreet({ mode: "alone", alt: altFor(n) }); }
+    else if (n === 2) { renderStreet({ mode: "commit", ring: true, alt: altFor(n) }); }
+    else              { renderStreet({ mode: "commit", verified: S.verified, alt: altFor(n) }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -819,7 +878,7 @@
       : sc.dataset.label;
     if (n === 5) {
       said += " " + (begin()
-        ? "Conditional terms in force while 48 stay in and checks continue."
+        ? "Conditional terms in force while 48 stay in and checks continue. Arranged by the service, paid from the cover it assembles, proposed."
         : missing().join(". ") + ".");
     }
     announce.textContent = "Screen " + n + " of " + total + ". " +
@@ -830,15 +889,16 @@
     }
   }
 
-  /* "Back to the start" — the ONE reset in the deck. The slider's count and
-     the verification illustration both return to their entry values. Going
-     back with the arrow, the picker or a hash never resets anything. */
+  /* "Back to the start" — the ONE reset in the deck. The authorisation, the
+     slider's count and the verification all return to their entry values.
+     Going back with the arrow, the picker or a hash never resets anything. */
   function restart() {
+    S.joined = false;
     S.committed = START;
     S.verified = false;
     lastOpen = null;
     show(1);
-    say("Back to the start. 41 of 60 committed; verification not illustrated.");
+    say("Back to the start. Not joined; 41 of 60 committed; verification pending.");
   }
   function next() {
     if (S.screen === total) { restart(); } else { show(S.screen + 1); }

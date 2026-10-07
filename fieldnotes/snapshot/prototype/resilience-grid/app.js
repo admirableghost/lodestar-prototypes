@@ -24,9 +24,10 @@
    § WILDFIRE, with screens 1, 3 and 5 carried from the density-pass
    contract): the code adds no word that is not in it.
 
-   THE SEQUENCE (story-expansion)
+   THE SEQUENCE (story-expansion, brief-align wording)
      1 Market retreat            the boundary, pulled down-valley
-     2 A paid prevention business  services on the terrain, four buyers
+     2 An operating business     four parts on the terrain, one hub, three
+                                 relationship types drawn three ways
      3 Coordinated action        the moment: eight events, one human call
      4 Evidence, not assumed success  three columns over the quiet county
      5 Possible availability     the two boundaries
@@ -37,9 +38,10 @@
 
    WHAT IS INVENTED AND WHAT IS NOT
    Alder County, the Mill Creek lateral, the 14:31 fault and every time on
-   screen 3 are invented, and the screens say so. Nothing on screen 4 is a
-   result: the record is derived from S3_EVENTS, and risk reduction stays
-   "not yet established".
+   screen 3 are invented; that provenance lives in the facilitator notes,
+   not on the screens (brief-align amendment A). Nothing on screen 4 is a
+   result: the record is derived from S3_EVENTS (a count of events, never
+   of actions), and risk reduction "needs independent evaluation".
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -425,8 +427,8 @@
      DRAWING THE COUNTY
        opts.layers    — { see, know, act, fund }: which nodes are lit
        opts.retreat   — screen 1: the market boundary, pulled down-valley
-       opts.business  — screen 2: three services on the terrain, four
-                        buyers converging on the one operating business
+       opts.business  — screen 2: four parts on the terrain, one hub, three
+                        relationship types drawn as three kinds of line
        opts.s3        — screen 3: the event (see drawS3)
        opts.evidence  — screen 4: the moment's record, faint, with no words
        opts.market    — screen 5: both boundaries at once
@@ -461,8 +463,14 @@
     var label = opts.f ? labeller(s, opts.f) : null;
 
     s.push('<defs>' +
-      '<marker id="arrIn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">' +
-        '<path d="M0 0L10 5L0 10Z" fill="currentColor" opacity=".9"/></marker>' +
+      /* screen 2's three arrowheads: filled (services bought), hollow
+         (a proposed stake), small filled (evidence going out) */
+      '<marker id="arrSolid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse">' +
+        '<path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker>' +
+      '<marker id="arrHollow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">' +
+        '<path d="M1 1L11 6L1 11Z" fill="' + PAPER + '" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></marker>' +
+      '<marker id="arrDot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">' +
+        '<path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker>' +
       '<marker id="arrUp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
         '<path d="M0 0L10 5L0 10Z" fill="#2F5A44"/></marker>' +
       '<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">' +
@@ -591,36 +599,63 @@
       }
     }
 
-    /* ══ screen 2: a paid prevention business ══
-       Three services on the terrain — the managed corridor (vegetation
-       management), the cameras and sensors (detection), the stations and
-       pads (response crews) — run from one operating business, and four
-       buyers converging on it, each with what it buys. No amounts, no
-       shares: four arrows of the same weight. The business node carries no
-       word of its own; the contract has none for it. */
+    /* ══ screen 2: an operating business ══
+       Four parts of the operation on the terrain — the managed corridor
+       (vegetation management), the cameras and sensors (detection), the
+       suppression pad (equipment), the station the contracted crews work
+       from — joined by hairlines to one hub, "The operation". THREE
+       relationship types meet the hub, and each is drawn as a different
+       kind of line so they tell apart without colour:
+         build or fund   a DASHED stake coming IN, hollow arrowhead, from a
+                         dashed-outlined node — the whole link is proposed,
+                         and the label says so
+         buy services    PAIRED SOLID rails coming IN, filled arrowhead
+         use evidence    a DOTTED arrow going OUT of the hub to the insurer,
+                         for underwriting — a use of evidence, not a purchase
+       Every link ends at the hub's rim, not its centre, so the arrowhead is
+       seen. No shares, amounts or returns: nothing here has a size. */
     if (opts.business) {
       var phone = isPhone();
       var core = phone ? { x: 1120, y: 560 } : { x: 820, y: 590 };
-      /* the three services, as places the business runs: where the
-         dotted line from the business lands, and where the word sits */
-      var SERVICES = [
-        { at: [1000, crestY(1000) + CORRIDOR.bottom], lab: [1000, crestY(1000) + 82], t: "Vegetation management", dx: 0, dy: -12, anc: "middle" },
-        { at: [1186, 240], lab: [1186, 240], t: "Detection", dx: 18, dy: -20, anc: "start" },
-        { at: [1032, 806], lab: [1032, 806], t: "Response crews", dx: 20, dy: -10, anc: "start" }
+      var CORE_R = 44, LINK_R = 17;
+      /* the four parts, as places the operation runs: where the hairline
+         from the hub lands, and where the words sit */
+      var PARTS = [
+        { at: [1000, crestY(1000) + CORRIDOR.bottom], lab: [1000, crestY(1000) + 82], lines: [["Vegetation management", "b"]], dx: 0, dy: -12, anc: "middle" },
+        { at: [1186, 240], lab: [1186, 240], lines: [["Detection", "b"]], dx: 18, dy: -20, anc: "start" },
+        { at: [426, 884],  lab: [426, 884],  lines: [["Equipment", "b"]], dx: 20, dy: -10, anc: "start" },
+        { at: [1032, 806], lab: [1032, 806], lines: [["Response crews", "b"], ["contracted", "r"]], dx: 20, dy: -22, anc: "start" }
       ];
-      var BUYERS = [
-        { x: 400,  y: 440, c: UTILITY, t: "Utility",         buys: "outage avoidance" },
-        { x: 1300, y: 440, c: CARRIER, t: "Insurers",        buys: "verified risk change" },
-        { x: 400,  y: 740, c: PUBLIC,  t: "Communities",     buys: "readiness" },
-        { x: 1300, y: 740, c: VENDOR,  t: "Property owners", buys: "a kept perimeter" }
+      /* the three relationships. dir "in" lands on the hub; "out" leaves
+         it. `bend` curves the link; the two inbound links bend apart so
+         their heads land on different points of the rim. Label offsets
+         are px, placed so no line leaves its node through its words. */
+      var LINKS = [
+        { k: "fund", dir: "in",  x: 400,  y: 440, c: VENDOR, bend: 40,  ldy: -68,
+          lines: [["Build or fund", "b", VENDOR], ["insurer, utility, community", "r"], ["proposed", "b", VENDOR]] },
+        { k: "buy",  dir: "in",  x: 400,  y: 740, c: PUBLIC, bend: -40, ldy: 4,
+          lines: [["Buy defined services", "b", PUBLIC], ["utility, communities, owners", "r"]] },
+        { k: "use",  dir: "out", x: 1300, y: 590, c: CARRIER, bend: 0,  ldy: -22,
+          lines: [["Use evidence", "b", CARRIER], ["insurer, for underwriting", "r"]] }
       ];
       if (phone) {
-        /* a phone has no width for two labels side by side: the buyers
-           stand in a column on the left, the business to their right */
-        BUYERS.forEach(function (q, i) { q.x = 250; q.y = 250 + i * 215; });
-        SERVICES[0].lab = [1120, crestY(1120) + 82];
-        /* the crews' word goes to the far station, clear of the fourth buyer */
-        SERVICES[2] = { at: [1386, 838], lab: [1386, 838], t: "Response crews", dx: -22, dy: -12, anc: "end" };
+        /* a phone shows the terrain as a band about 230px tall with blank
+           wash above the ridge and below the valley. The hub stands at
+           the right with its word to its left; the proposed stake comes
+           down from the wash above, the services bought come up from the
+           wash below, the evidence goes out up-right to the insurer, and
+           the four parts keep the band, each word placed so no link
+           crosses another's words: Detection on the middle ridge camera,
+           the corridor's word under the corridor, Equipment on the Mill
+           Creek pad, the crews on the far station. */
+        core = { x: 1180, y: 560 };
+        LINKS[0].x = 250;  LINKS[0].y = -20;  LINKS[0].bend = 0; LINKS[0].ldy = -58;
+        LINKS[1].x = 250;  LINKS[1].y = 960;  LINKS[1].bend = 0; LINKS[1].ldy = 4;
+        LINKS[2].x = 1300; LINKS[2].y = 60;   LINKS[2].bend = 0; LINKS[2].ldy = -22;
+        PARTS[0].lab = [600, crestY(600) + 132]; PARTS[0].dy = 8;
+        PARTS[1] = { at: [700, 226],   lab: [700, 226],   lines: [["Detection", "b"]], dx: 18, dy: -20, anc: "start" };
+        PARTS[2] = { at: [1006, 772],  lab: [1006, 772],  lines: [["Equipment", "b"]], dx: 14, dy: -10, anc: "start" };
+        PARTS[3] = { at: [1386, 838],  lab: [1386, 838],  lines: [["Response crews", "b"], ["contracted", "r"]], dx: -16, dy: -4, anc: "end" };
       }
 
       /* the corridor: a thinned band on the slope below the ridge */
@@ -628,32 +663,62 @@
       s.push('<path d="' + path(corridorPts(), true) + '" fill="url(#veg-hatch)"/>');
       s.push('<path d="' + path(corridorPts(), true) + '" fill="none" stroke="' + PUBLIC + '" stroke-width="1.8" opacity=".85"/>');
 
-      /* the business runs the three services: dotted lines out */
-      SERVICES.forEach(function (sv) {
-        s.push('<line x1="' + core.x + '" y1="' + core.y + '" x2="' + n1(sv.at[0]) + '" y2="' + n1(sv.at[1]) +
-               '" stroke="' + INK + '" stroke-width="1.6" stroke-dasharray="3 6" opacity=".55"/>');
-        s.push('<circle cx="' + n1(sv.at[0]) + '" cy="' + n1(sv.at[1]) + '" r="5" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>');
+      /* the operation runs the four parts: fine hairlines out */
+      PARTS.forEach(function (pt) {
+        s.push('<line x1="' + core.x + '" y1="' + core.y + '" x2="' + n1(pt.at[0]) + '" y2="' + n1(pt.at[1]) +
+               '" stroke="' + INK + '" stroke-width="1.3" stroke-dasharray="2 5" opacity=".5"/>');
+        s.push('<circle cx="' + n1(pt.at[0]) + '" cy="' + n1(pt.at[1]) + '" r="5" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>');
       });
 
-      /* the buyers pay in: four arrows of one weight */
-      BUYERS.forEach(function (q) {
-        var bend = phone ? 0 : (q.y < core.y ? 60 : -60);
-        s.push('<path d="M' + q.x + ' ' + q.y + ' Q' + ((q.x + core.x) / 2) + ' ' +
-               ((q.y + core.y) / 2 + bend) + ' ' + core.x + ' ' + core.y +
-               '" fill="none" stroke="' + q.c + '" stroke-width="4" opacity=".62" marker-end="url(#arrIn)"/>');
-        s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="17" fill="' + PAPER +
-               '" stroke="' + q.c + '" stroke-width="3.4"/>');
+      /* a quadratic from a to b, bent by `bend`, trimmed so it starts and
+         ends on the rims of the two circles rather than at their centres */
+      function linkPath(a, ra, b, rb, bend) {
+        var cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2 + bend;
+        var trim = function (p, r, toward) {
+          var dx = toward[0] - p.x, dy = toward[1] - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+          return [p.x + dx / d * r, p.y + dy / d * r];
+        };
+        var p0 = trim(a, ra, [cx, cy]), p1 = trim(b, rb, [cx, cy]);
+        return "M" + n1(p0[0]) + " " + n1(p0[1]) + " Q" + n1(cx) + " " + n1(cy) + " " + n1(p1[0]) + " " + n1(p1[1]);
+      }
+      LINKS.forEach(function (q) {
+        var d = q.dir === "out"
+          ? linkPath(core, CORE_R + 3, q, LINK_R + 4, q.bend)
+          : linkPath(q, LINK_R + 2, core, CORE_R + 4, q.bend);
+        if (q.k === "fund") {
+          /* proposed: a dashed stake, hollow head, dashed node */
+          s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="3.6" stroke-dasharray="12 8" opacity=".8" color="' + q.c + '" marker-end="url(#arrHollow)"/>');
+          s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="' + LINK_R + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="3" stroke-dasharray="6 4.5"/>');
+        } else if (q.k === "buy") {
+          /* paid services: paired solid rails, filled head, solid node */
+          s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="7" opacity=".85" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
+          s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="2.2"/>');
+          s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="' + LINK_R + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="3.4"/>');
+        } else {
+          /* evidence used: a dotted arrow OUT of the hub, ringed node */
+          s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="0.1 8" opacity=".9" color="' + q.c + '" marker-end="url(#arrDot)"/>');
+          s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="' + LINK_R + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="2"/>');
+          s.push('<circle cx="' + q.x + '" cy="' + q.y + '" r="' + (LINK_R - 7) + '" fill="none" stroke="' + q.c + '" stroke-width="2"/>');
+        }
       });
-      s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="44" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="3.5"/>');
+      s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="' + CORE_R + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="3.5"/>');
       s.push('<circle cx="' + core.x + '" cy="' + core.y + '" r="15" fill="' + INK + '"/>');
 
       if (label) {
-        SERVICES.forEach(function (sv) {
-          label(sv.lab[0], sv.lab[1], [[sv.t, "b"]], sv.dx, sv.dy, sv.anc);
-        });
-        BUYERS.forEach(function (q) {
+        /* the hub's word sits under its rim (the radius in px, plus a gap);
+           on a phone, where links leave the hub downward, it sits to the
+           hub's left instead */
+        if (phone) {
+          label(core.x, core.y, [["The operation", "b"]], -(CORE_R / opts.f.upp + 8), -opts.f.size * 0.65, "end");
+        } else {
+          label(core.x, core.y, [["The operation", "b"]], 0, CORE_R / opts.f.upp + 6, "middle");
+        }
+        LINKS.forEach(function (q) {
           var left = q.x < core.x;
-          label(q.x, q.y, [[q.t, "b", q.c], [q.buys, "r"]], left ? 28 : -28, -22, left ? "start" : "end");
+          label(q.x, q.y, q.lines, left ? 28 : -28, q.ldy, left ? "start" : "end");
+        });
+        PARTS.forEach(function (pt) {
+          label(pt.lab[0], pt.lab[1], pt.lines, pt.dx, pt.dy, pt.anc);
         });
       }
     }
@@ -1002,7 +1067,7 @@
   (function () {
     var el = document.getElementById("ev-recorded");
     if (!el || !S3_EVENTS.length) { return; }
-    el.textContent = S3_EVENTS.length + " actions, " + S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
+    el.textContent = S3_EVENTS.length + " events, " + S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
   })();
 
   /* ══════════════════════════════════════════════════════════════════════

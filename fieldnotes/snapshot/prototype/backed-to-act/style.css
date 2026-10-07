@@ -1,28 +1,30 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   Backed to Act · an agent operations console
+   Backed to Act · acting inside an assistant's workspace
    No framework, no build step, no external request. Three files.
 
-   FIVE SCREENS, ONE OBJECT LANGUAGE: cut-paper documents on a dark desk, a
-   cool permitted tray on the left, a warm approval territory on the right,
-   and ONE LINE between them. The line moves; the paper never does. Each
-   screen changes the focal object — the waiting order, the three parties
-   around it, the moving line, the day's orders, the choice itself — and
-   each has one headline on its own backing and at most three reading
-   regions. Copy is the locked contract and nothing more (≤ 60 visible words
-   per screen per state). Facilitator detail lives in FACILITATOR-NOTES.md,
-   not on the glass.
+   FIVE SCREENS, ONE SURFACE: a quiet paper panel — Halden's workspace — on
+   the same dark field every time. The customer speaks in it (a tinted
+   bubble, right), the assistant replies in it (a cool mark, left) with
+   cards and compact rows. Beside the panel, where it helps, a small cut-
+   paper support: the three parties (2), the permitted zone and its line
+   (3, 5). The line is support; the card is the object. Each screen has one
+   headline on its own grain backing above the panel. Copy is the locked
+   contract and nothing more (≤ 60 visible words per screen per state).
 
    Type: Bricolage Grotesque from fonts/ (OFL). On an iPad nothing
-   explanatory renders under 18px and no label under 16px.
+   explanatory renders under 18px and no label under 16px. Nothing is
+   shrunk to fit: the screen scrolls.
 
    Contrast, measured:
-     #F3EBD7 cream on #0C1218 field        16.9 : 1   headline, labels
+     #F3EBD7 cream on #0C1218 field        16.9 : 1   headline, zone labels
      #F3EBD7 cream on #6B675E block         4.6 : 1   headline on its backing
-     #B9B2A0 mute  on #0C1218 field         9.6 : 1   secondary labels
-     #16150F ink   on #F3EBD7 cream        16.4 : 1   words on a sheet
+     #16150F ink   on #F3EBD7 cream        16.4 : 1   words in the workspace
+     #5A554A dim   on #F3EBD7 cream         6.1 : 1   secondary words on paper
+     #236548 ok    on #FBF9F1 paper         6.0 : 1   "Placed"
+     #7A4610 hold  on #FBF9F1 paper         6.2 : 1   "Returned", waiting
+     #8E3418 exc   on #FBF9F1 paper         6.3 : 1   "Always you"
      #74C79A ok    on #0C1218 field         9.1 : 1   "agent may act"
      #E2A75C hold  on #0C1218 field         8.6 : 1   "needs your approval"
-     #F3977A exc   on #0C1218 field         8.0 : 1   "always needs a person"
    ══════════════════════════════════════════════════════════════════════════ */
 
 @font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
@@ -32,25 +34,29 @@
 
 :root {
   --stage-deep: #10161C;
-  --stage-navy: #16202B;
   --cool:       #6FC3E8;
-  --warm:       #F0945F;
+  --cool-ink:   #1F6F93;     /* the assistant's mark, on paper */
   --panel:      #262E36;
   --line:       #3C4650;      /* hairlines, control borders — never type */
   --line-2:     #5A6773;
   --paper:      #FBF9F1;
   --console:    #1E242B;
 
-  --cream:  #F3EBD7;  --ink: #16150F;  --mute: #B9B2A0;  --sheetm: #5A554A;
+  --cream:  #F3EBD7;  --ink: #16150F;  --mute: #B9B2A0;  --dim: #5A554A;
+  --cream-2: #E9DFC6; --cream-3: #E3D7BA;
   --block:  #6B675E;  --tray: #262E36;
   --ok:     #74C79A;  --hold: #E2A75C;  --exc: #F3977A;
+  --ok-ink: #236548;  --hold-ink: #7A4610;  --exc-ink: #8E3418;
+  --rule:   rgba(22,21,15,.22);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   --ease: cubic-bezier(.4,0,.2,1);
 
   --r-s: 3px; --r-m: 6px;
   --sans: "Bricolage", "Helvetica Neue", Arial, sans-serif;
   --plate-shadow: 0 0 0 1px rgba(167,179,189,.15), 0 16px 38px -22px rgba(0,0,0,.85);
 
+  --body: clamp(18px, .4vw + 1vh, 20px);   /* running text in the workspace */
   --gutter: 18px;
   --chrome-h: 76px;
   --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px));
@@ -87,6 +93,8 @@ body {
 }
 .xd:focus { outline: none; }
 .xd:focus-visible { outline: 3px solid var(--hold); outline-offset: 6px; }
+/* on paper the ring is ink, so it is never lost against the cream */
+.ws :where(button):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
 /* ══ THE GROUND ═════════════════════════════════════════════════════════ */
 
@@ -121,11 +129,11 @@ body {
   overflow-y: auto;
 }
 .screen > * { min-width: 0; }
-.top, .desk, .micro, .cta, .iconbtn, .picker, select { pointer-events: auto; }
+.top, .stage, .cta, .iconbtn, .picker, select { pointer-events: auto; }
 /* one measure for the whole composition, centred on a wide window */
-.top, .desk, .micro { width: 100%; max-width: 1360px; margin-left: auto; margin-right: auto; }
+.top, .stage { width: 100%; max-width: 1360px; margin-left: auto; margin-right: auto; }
 
-/* ── the top row: headline left, the screen's one control or line right ─ */
+/* ── the headline: on its own grain backing, above the workspace ───────── */
 .top { display: flex; justify-content: space-between; align-items: flex-end;
   gap: 18px 32px; flex: 0 0 auto; }
 .xhead { flex: 0 1 auto; display: flex; flex-direction: column; align-items: flex-start; }
@@ -142,245 +150,214 @@ body {
 .xd::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
   background: var(--block) var(--grain); filter: url(#rough); }
 
-.aside { flex: 0 0 auto; max-width: 460px; display: flex; flex-direction: column;
-  align-items: flex-start; gap: 0; padding-bottom: 6px; }
-.xchoice { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
-/* the choice control: 46px, 2px border, the pressed one filled and ● */
-.xchoice button {
-  min-height: 46px; height: 46px; padding: 0 22px; border-radius: 0;
-  border: 2px solid var(--cream); background: transparent; color: var(--cream);
-  font: 700 16px/1 var(--sans); letter-spacing: .01em; cursor: pointer;
+/* ══ THE STAGE: workspace left, support right ═══════════════════════════ */
+.stage {
+  flex: 1 0 auto; margin-top: 20px; padding-bottom: 8px;
+  display: grid; grid-template-columns: minmax(0, 700px) minmax(400px, 1fr);
+  gap: 24px 40px; align-items: center; align-content: center;
+}
+.ws { grid-column: 1; }
+/* no support beside the panel (1, 4): one wider panel, centred on the field.
+   The three-party drawing (2) stays beside its card; the pair is centred. */
+.screen--s1 .stage, .screen--s4 .stage { grid-template-columns: minmax(0, 840px); justify-content: center; }
+.screen--s2 .stage { grid-template-columns: minmax(0, 700px) 300px; justify-content: center; }
+.screen--s2 .support { max-width: 300px; }
+.support { grid-column: 2; justify-self: start; width: 100%; max-width: 440px;
+  margin: 0; display: flex; align-items: center; justify-content: flex-start; }
+.support--triad { align-self: center; justify-content: center; }
+
+/* ══ THE WORKSPACE · one paper panel ════════════════════════════════════ */
+.ws {
+  position: relative; color: var(--ink);
+  background: var(--cream) var(--grain-soft);
+  box-shadow: 5px 5px 0 0 rgba(22,21,15,.5), 0 0 0 1px rgba(0,0,0,.25);
+  padding: 0 0 22px;
+}
+/* the eyebrow strip: the interface's own label, a darker paper band */
+.strip {
+  margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  padding: 10px 22px 9px; background: var(--cream-2);
+  border-bottom: 1px solid var(--rule);
+  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--dim);
+}
+.strip b { color: var(--ink); }
+.strip b::before { content: ""; display: inline-block; width: 10px; height: 10px;
+  margin: 0 8px 1px 0; background: var(--cool-ink); vertical-align: baseline; }
+.strip span { font-weight: 400; letter-spacing: .06em; }
+.strip span::before { content: "·  "; white-space: pre; color: var(--dim); }
+
+.thread { display: flex; flex-direction: column; gap: 18px; padding: 20px 22px 0; }
+
+/* the customer: a tinted bubble, right; the assistant: a cool mark, left */
+.msg { max-width: 100%; }
+.msg p { margin: 0; font: 400 var(--body)/1.42 var(--sans); }
+.msg--you { align-self: flex-end; max-width: min(100%, 34ch);
+  padding: 12px 16px 13px; background: var(--cream-3);
+  border-radius: 10px 10px 2px 10px; box-shadow: 2px 2px 0 0 rgba(22,21,15,.18); }
+.msg--ai { align-self: stretch; position: relative; padding-left: 24px; }
+.msg--ai::before { content: ""; position: absolute; left: 0; top: .5em; width: 11px; height: 11px;
+  background: var(--cool-ink); }
+
+/* compact rows: a hairline between, one line each, 18px */
+.rows { list-style: none; margin: 12px 0 0; padding: 0; }
+.rows li { padding: 8px 0 9px; border-top: 1px solid var(--rule); font: 400 18px/1.35 var(--sans); }
+.rows--parts { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+.rows--lines li { font-size: var(--body); line-height: 1.4; }
+
+/* a card: the assistant's object inside the thread */
+.card { background: var(--paper); border: 1.5px solid var(--ink); padding: 14px 18px 18px;
+  box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
+.card--offer { border-style: dashed; }      /* proposed, not in force */
+.card-h { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
+  font: 700 clamp(20px, .5vw + 1.2vh, 22px)/1.3 var(--sans); }
+.tag { display: inline-block; padding: 3px 8px 4px; border: 1.5px dashed var(--dim);
+  font: 700 16px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+.card .rows { margin-top: 10px; }
+.card .rows li:first-child { border-top: 0; padding-top: 2px; }
+.note { margin: 14px 0 0; font: 400 18px/1.4 var(--sans); color: var(--dim); }
+
+/* the authorisation card: five terms, two buttons */
+.terms { margin: 0; }
+.terms > div { display: grid; grid-template-columns: 126px minmax(0, 1fr); gap: 0 20px;
+  border-top: 1px solid var(--rule); }
+.terms > div:first-child { border-top: 0; }
+.terms dt, .terms dd { margin: 0; padding: 9px 0; }
+.terms > div:first-child dt, .terms > div:first-child dd { padding-top: 2px; }
+.terms dt { font: 700 16px/1.6 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); white-space: nowrap; }
+.terms dd { font: 400 var(--body)/1.4 var(--sans); }
+.terms .hard dt { color: var(--exc-ink); }
+.terms .hard dt::before { content: "▧ "; }
+
+/* buttons on paper: 46px, 2px ink border; the pressed one filled and ● */
+.acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.acts button {
+  min-height: 46px; padding: 10px 20px; border-radius: 0;
+  border: 2px solid var(--ink); background: transparent; color: var(--ink);
+  font: 700 16px/1.2 var(--sans); letter-spacing: .01em; cursor: pointer; text-align: left;
   transition: background .15s linear, color .15s linear;
 }
-.xchoice button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
-.xchoice button[aria-pressed="true"]::before { content: "● "; }
-.xchoice button:focus-visible { border-radius: 0; }
-/* the screen's one line, where there is one: the contract's "Line:" */
-.statement { margin: 0; max-width: 34ch;
-  font: 400 clamp(18px, .5vw + 1.1vh, 20px)/1.4 var(--sans); color: var(--cream); }
+.acts button:hover { background: rgba(22,21,15,.07); }
+.acts button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.acts button[aria-pressed="true"]::before { content: "● "; }
+.acts button:focus-visible { border-radius: 0; }
 
-/* the disclosure, once */
-.micro { margin: 14px 0 0; flex: 0 0 auto; font: 400 16px/1.4 var(--sans); color: var(--mute); }
+/* ══ SCREEN 4 · completion rows ═════════════════════════════════════════ */
+.done { list-style: none; margin: 0; padding: 0; }
+.done-row { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content;
+  gap: 2px 16px; align-items: baseline; padding: 10px 0 11px; border-top: 1px solid var(--rule);
+  font-size: var(--body); }
+.done > .done-row:first-child { border-top: 0; padding-top: 0; }
+.done-row .st { font: 700 16px/1.6 var(--sans); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.done-row--ok .st { color: var(--ok-ink); }
+.done-row--ok .st::before { content: "● "; }
+.done-row--ask .st { color: var(--hold-ink); }
+.done-row--ask .st::before { content: "○ "; }
+.done-row--mute .st { color: var(--dim); }
+.done-row .what { font: 400 var(--body)/1.4 var(--sans); }
+.done-row .amt { font: 700 var(--body)/1.4 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.done-row .why { grid-column: 2 / 4; font: 400 18px/1.4 var(--sans); color: var(--dim); }
+/* the returned order sits on the approval side: set apart, warm rule */
+.done--ask { margin: 16px 0 0 14%; }
+.done--ask .done-row { border-top: 3px solid var(--hold); padding: 10px 14px 12px;
+  background: rgba(226,167,92,.14); }
+/* the cover's slip, attached to the row it remedied — never a row of its own */
+.done-row--slip { padding-bottom: 14px; }
+.slip { grid-column: 2 / 4; justify-self: start; position: relative; margin-top: 8px;
+  max-width: 100%; padding: 8px 44px 9px 12px; transform: rotate(-1.2deg);
+  background: var(--cream); color: var(--ink); border: 1.4px dashed var(--ink);
+  box-shadow: 0 2px 0 0 rgba(22,21,15,.18);
+  font: 400 18px/1.35 var(--sans); }
+.slip b { font-weight: 700; }
+.tick { position: absolute; width: 24px; height: 24px; }
+.tick--slip { right: 10px; top: 50%; margin-top: -12px; }
+/* the draft-only waiting row */
+.done-row--wait { grid-template-columns: max-content max-content; }
+.done-row--wait .why { grid-column: 1 / 3; }
+.done-row--wait .st { text-transform: none; letter-spacing: 0; font-size: var(--body); line-height: 1.4; }
 
-/* ══ THE DESK ═══════════════════════════════════════════════════════════
-   Five columns: three object columns and two gutters. --x is where the line
-   stands, derived per screen from LAYOUT in app.js via data-level; --xp is
-   the end of a proposed widening; --xg is where a trace of the line sits. */
-.desk {
-  --sh: clamp(180px, calc(100vh - 560px), 240px);   /* the order's sheet height */
-  --x: 30%;                                          /* the line, draft only */
-  --xp: var(--x);                                    /* a proposed line     */
-  --xg: 30%;                                         /* the line before     */
-  position: relative; flex: 1 0 auto; min-height: 0;
-  margin-top: 16px; padding: 70px 0 24px;
-  display: grid; grid-template-columns: 28% 4% 36% 4% 28%;
-  grid-template-rows: auto; align-content: center;
+/* ══ SCREEN 5 · the choice ══════════════════════════════════════════════ */
+.acts--dec { margin-top: 16px; gap: 12px; }
+.acts--dec button { min-width: 130px; justify-content: center; text-align: center; font-size: 18px; padding: 10px 24px; }
+/* the one line Expand adds: dashed, like the proposal it names */
+.dec-said { margin: 14px 0 0; max-width: 44ch; padding: 10px 14px;
+  border: 1.5px dashed var(--cool-ink); font: 400 18px/1.4 var(--sans); color: var(--ink); }
+
+/* ══ SUPPORT · the three parties (screen 2) ═════════════════════════════ */
+.triad { position: relative; width: 300px; height: 230px; }
+.triad-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ptag { position: absolute; padding: 9px 14px 10px; background: var(--cream); color: var(--ink);
+  box-shadow: 3px 3px 0 0 rgba(22,21,15,.35); font: 700 16px/1.2 var(--sans);
+  letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+.ptag--ai  { left: 0;   top: 18px;  background: var(--cream-3); transform: rotate(-2deg); }
+.ptag--ins { right: 0;  top: 18px;  background: #EBE2CB; transform: rotate(2deg); }
+.ptag--you { left: 50%; bottom: 0;  transform: translateX(-50%) rotate(-1deg); border-top: 3px solid var(--hold); }
+.sheet--mini-c { left: 50%; top: 92px; margin-left: -32px; }
+
+/* ══ SUPPORT · the zone band (screens 3, 5) ═════════════════════════════
+   --x is where the line stands, from data-level; --xp the end of a
+   proposed widening; --xg where a trace of the line sits. The exception
+   sheet sits past every value --xp can take: it is never reached. */
+.band {
+  --x: 30%; --xp: var(--x); --xg: 30%;
+  position: relative; width: 100%; max-width: 440px; height: 184px;
 }
-.desk[data-level="compare"] { --x: 16%; }
-.desk[data-level="bounded"] { --x: 70%; }
-.desk[data-prop="bounded"]  { --xp: 70%; }
-.desk[data-prop="sliver"]   { --xp: 80%; }
-.desk[data-ghost="none"]    { --xg: 30%; }
-.desk[data-ghost="bounded"] { --xg: 70%; }
+.band[data-level="bounded"] { --x: 70%; }
+.band[data-prop="bounded"]  { --xp: 70%; }
+.band[data-prop="sliver"]   { --xp: 79%; }
+.band[data-ghost="none"]    { --xg: 30%; }
+.band[data-ghost="bounded"] { --xg: 70%; }
 
-/* the permitted tray: a lighter plate that stops at the line */
-.tray { position: absolute; z-index: 0; left: 0; top: 22px; bottom: 20px;
-  width: var(--x); pointer-events: none;
+.band .tray { position: absolute; z-index: 0; left: 0; top: 0; bottom: 0; width: var(--x);
   background: var(--tray) var(--grain);
   border-top: 2px solid color-mix(in srgb, var(--ok) 55%, transparent);
   transition: width .55s var(--ease); }
-
-/* zone words: a mark and a word, never a tint alone */
-.zlab { margin: 0; font: 700 16px/1.2 var(--sans); letter-spacing: .09em;
-  text-transform: uppercase; white-space: nowrap; }
-.zlab--may { position: absolute; z-index: 2; left: 16px; top: 44px; color: var(--ok); }
-.zlab--may::before { content: "● "; }
-.zlab--ask { color: var(--hold); }
-.zlab--ask::before { content: "○ "; }
-
-/* the approval line: 3px, ticked, with its zone word */
-.line { position: absolute; z-index: 2; top: 0; bottom: 20px; left: var(--x);
-  width: 3px; margin-left: -1.5px; background: var(--hold); pointer-events: none;
-  transition: left .55s var(--ease); }
-.line::before, .line::after { content: ""; position: absolute; left: -5.5px;
+.band .line { position: absolute; z-index: 2; top: -4px; bottom: 0; left: var(--x);
+  width: 3px; margin-left: -1.5px; background: var(--hold); transition: left .55s var(--ease); }
+.band .line::before, .band .line::after { content: ""; position: absolute; left: -5.5px;
   width: 14px; height: 3px; background: var(--hold); }
-.line::before { top: 0; } .line::after { bottom: 0; }
-.line--now .zlab--ask { position: absolute; left: 16px; top: 44px; }
-.line-lab { position: absolute; right: 12px; top: -3px; white-space: nowrap;
-  font: 400 16px/1.3 var(--sans); color: var(--mute); }
+.band .line::before { top: 0; } .band .line::after { bottom: 0; }
 /* where the line stood before — a trace, unmistakably not the current line */
-.line--ghost { left: var(--xg); width: 0; margin-left: 0; background: none;
-  border-left: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent);
+.band .line--ghost { left: var(--xg); width: 0; margin-left: 0; background: none;
+  border-left: 1.5px dashed color-mix(in srgb, var(--hold) 60%, transparent);
   opacity: 0; transition: opacity .4s linear; }
-.line--ghost::before, .line--ghost::after { display: none; }
-.desk[data-ghost] .line--ghost { opacity: 1; }
-
-/* slots: a fixed art row the sheets sit at the foot of, then a caption row,
-   so the captions start on one line */
-.slot { position: relative; z-index: 3; grid-row: 1;
-  display: grid; grid-template-rows: calc(var(--sh) + 16px) auto; row-gap: 12px;
-  align-items: end; justify-items: start; max-width: 100%; }
-.slot--prep { grid-column: 1; justify-self: center; }
-.slot--po   { grid-column: 3; justify-self: center; }
-.slot--exc  { grid-column: 5; justify-self: end; padding-right: 4%; }
-.art { display: flex; align-items: flex-end; }
-
-/* a caption is a wrapping label area, never a fixed box */
-.cap { margin: 0; align-self: start; display: grid; gap: 3px;
-  max-width: max(240px, calc(var(--sh) * 1.2));
-  font: 400 17px/1.3 var(--sans); color: var(--cream); }
-.cap b { font-weight: 700; }
-.cap span { color: var(--mute); font-size: 16px; }
-.mark { font-style: normal; font: 700 16px/1.3 var(--sans); letter-spacing: .09em;
-  text-transform: uppercase; white-space: nowrap; }
-.mark[data-kind="ask"]  { color: var(--hold); }
-.mark[data-kind="ask"]::before  { content: "○ "; }
-.mark[data-kind="hard"] { color: var(--exc); }
-.mark[data-kind="hard"]::before { content: "▧ "; }
-
-/* ── cut-paper sheets ────────────────────────────────────────────────── */
-.sheet { position: relative; display: flex; flex-direction: column; gap: 6px;
-  padding: 12px 14px; background: var(--cream); color: var(--ink); }
-.sheet > svg { display: block; width: 100%; flex: 0 0 auto; }
-.sh { font: 700 16px/1.2 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
-.sm { font: 400 16px/1.2 var(--sans); color: var(--sheetm); margin-top: -2px; }
-
-/* Prepared: three small wordless sheets, one cluster */
-.prep { position: relative; width: calc(var(--sh) * .9); height: calc(var(--sh) * .84); }
-.prep .sheet { position: absolute; padding: 10px; }
-.sheet--quotes { left: 0; top: 0; width: 58%; height: 60%; background: #E3D7BA; }
-.sheet--order  { left: 24%; top: 13%; width: 58%; height: 80%; }
-.sheet--qty    { left: 60%; top: 55%; width: 40%; height: 42%; background: #EBE2CB; transform: rotate(-3deg); }
-.sheet--quotes > svg { height: 60%; } .sheet--order > svg { height: 62%; }
-.sheet--qty > svg { height: 60%; width: 92%; }
-
-/* The purchase order: the one dominant object */
-.po { position: relative; padding: 0 0 14px 0; transition: transform .55s var(--ease); }
-.sheet--po { width: calc(var(--sh) * .86); height: var(--sh);
-  box-shadow: 4px 4px 0 0 rgba(22,21,15,.38); }
-.po-rules { height: 16px; }
-.po-fields { height: 44px; margin-top: 2px; }
-/* the coverage slip: the specified mistakes, nothing broader */
-.slip { position: absolute; right: 0; bottom: -14px; width: 170px; transform: rotate(3deg);
-  padding: 9px 12px 10px; background: var(--cream); color: var(--ink);
-  border: 1.4px dashed var(--ink); box-shadow: 0 2px 0 0 rgba(22,21,15,.18); }
-.slip-h { margin: 0 0 4px; font: 700 16px/1.25 var(--sans); letter-spacing: .03em; text-transform: uppercase; }
-.slip-l { list-style: none; margin: 0; padding: 0; font: 400 16px/1.3 var(--sans); }
-.slip-t { margin: 0; font: 400 16px/1.3 var(--sans); }
-
-/* The exception: hatched band, a signature line, never moves */
-.sheet--exc { width: calc(var(--sh) * .8); height: calc(var(--sh) * .9); padding-top: 24px; }
-.hatchband { position: absolute; left: 0; top: 0; width: 100%; height: 12px; }
-.sheet--exc > svg:not(.hatchband):not(.sign svg) { height: 24%; }
-.sign { margin-top: auto; display: block; width: 100%; }
-.sign svg { display: block; width: 100%; height: 10px; }
-
-/* a tick: placed, or paid */
-.tick { position: absolute !important; right: 8px; top: 8px; width: 24px !important; height: 24px; }
-
-/* ══ SCREEN 2 · THE ARRANGEMENT ═════════════════════════════════════════
-   No tray and no line: the order at the centre, three parties joined to it
-   by dashed threads. A party is a compact paper tag — a name, one line. */
-.desk--s2 { display: flex; align-items: center; justify-content: center;
-  padding: 40px 0 24px; }
-.arrangement { display: grid; align-items: center; justify-items: center;
-  grid-template-columns: auto 56px auto 56px auto;
-  grid-template-rows: auto 36px auto; }
-.party--ai  { grid-column: 1; grid-row: 1; justify-self: end; }
-.conn--l    { grid-column: 2; grid-row: 1; }
-.po--s2     { grid-column: 3; grid-row: 1; padding: 0 0 14px 56px; }
-/* the slip hangs bottom-left on this screen, so the thread to You is clear */
-.po--s2 .slip { right: auto; left: 0; width: 164px; transform: rotate(-3deg); }
-.conn--r    { grid-column: 4; grid-row: 1; }
-.party--ins { grid-column: 5; grid-row: 1; justify-self: start; }
-.conn--v    { grid-column: 3; grid-row: 2; }
-.party--you { grid-column: 3; grid-row: 3; }
-.party { display: flex; flex-direction: column; gap: 2px; max-width: 220px;
-  padding: 10px 14px 11px; background: var(--cream); color: var(--ink);
-  box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
-.party b { font: 700 16px/1.25 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
-.party span { font: 400 18px/1.3 var(--sans); }
-.party--ai  { background: #E3D7BA; transform: rotate(-2deg); }
-.party--ins { background: #EBE2CB; transform: rotate(2deg); }
-.party--you { border-top: 3px solid var(--hold); transform: rotate(-1deg); }
-.conn { display: block; }
-.conn--h { width: 100%; height: 0; border-top: 2px dashed var(--mute); }
-.conn--v { width: 0; height: 100%; border-left: 2px dashed var(--mute); }
-
-/* ══ SCREEN 3 · THE LINE MOVES ══════════════════════════════════════════ */
-.screen--s3 .po { padding-right: 60px; }
-.desk[data-level="bounded"] .po { transform: rotate(-3deg); }
-/* the slip read on screen 2, still on the order, wordless now */
-.slip--mute { width: 130px; padding: 10px 12px; }
-.slip--mute > svg { display: block; width: 100%; height: 40px; }
-
-/* ══ SCREEN 4 · THE DAY ═════════════════════════════════════════════════
-   Three orders side by side. Authorised: in the tray, ticked, one carrying
-   the cover's slip. Draft only: on the approval side, unticked, the tray
-   empty. The same sheets; the line and the ticks are what differ. */
-.slot--orders { grid-column: 1 / 4; justify-self: center; }
-.desk[data-level="none"] .slot--orders { grid-column: 3; }
-.orders { position: relative; display: flex; align-items: flex-end; gap: 14px;
-  padding-right: 40px; }
-.sheet--ord { width: calc(var(--sh) * .52); height: calc(var(--sh) * .74); padding: 12px; }
-.sheet--ord > svg:not(.tick) { height: 54%; margin-top: 18px; }
-.sheet--ord-a { background: #E3D7BA; transform: rotate(-2deg); }
-.sheet--ord-b { background: var(--cream); transform: rotate(1deg); box-shadow: 4px 4px 0 0 rgba(22,21,15,.3); z-index: 1; }
-.sheet--ord-c { background: #EBE2CB; transform: rotate(2deg); }
-.sheet--ord .tick { right: 8px; top: 8px; }
-/* the cover's slip, hung on the order it remedied */
-.slip--paid { right: auto; left: 48%; bottom: -16px; width: 160px; z-index: 2;
-  transform: rotate(3deg); padding-right: 40px; }
-.tick--slip { right: 8px; top: auto; bottom: 8px; }
-.desk[data-level="none"] .tick, .desk[data-level="none"] .slip--paid { display: none; }
-.sheet--exc4 { width: calc(var(--sh) * .72); height: calc(var(--sh) * .78); }
-.sheet--exc4 > svg:not(.hatchband) { height: 40%; margin-top: 4px; }
-/* the simulated day: the same composition, but the tray is projected, not
-   granted — striped, dotted, never the solid plate of real authority */
-.desk[data-sim="1"] .tray {
-  background: repeating-linear-gradient(135deg, rgba(116,199,154,.10) 0 4px, transparent 4px 14px), var(--tray) var(--grain);
-  border-top-style: dotted; }
-.desk[data-sim="1"] .line--now { background: repeating-linear-gradient(to bottom, var(--hold) 0 7px, transparent 7px 12px); }
-.desk[data-sim="1"] .line--now::before, .desk[data-sim="1"] .line--now::after { background: var(--hold); }
-
-/* ══ SCREEN 5 · THE NEXT BOUNDARY ═══════════════════════════════════════
-   Its own composition: the choice is the object, large, on its own row.
-   Under it a zone band shows FUTURE authority: the tray, the line, a trace
-   of today's line after Narrow, a hatched sliver after Expand, and the
-   wordless exception the sliver never reaches. */
-.desk--s5 { display: flex; flex-direction: column; justify-content: center; gap: 36px;
-  padding: 24px 0 24px; }
-.decide { display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.xchoice--big { justify-content: center; gap: 16px; }
-.xchoice--big button { height: 64px; min-height: 64px; min-width: 164px; padding: 0 32px;
-  font-size: 22px; background: var(--panel); }
-.xchoice--big button[aria-pressed="true"] { background: var(--cream); }
-/* the one line Expand adds: dashed, like the proposal it names */
-.dec-said { margin: 0; max-width: 40ch; padding: 10px 14px; text-align: center;
-  border: 1.5px dashed color-mix(in srgb, var(--cool) 75%, transparent);
-  font: 400 18px/1.4 var(--sans); color: var(--cream); }
-.zone { position: relative; height: clamp(150px, 24vh, 220px); }
-.zone .tray, .zone .prop { top: 0; bottom: 0; }
-.zone .line { top: -4px; bottom: 0; }
-.zone .zlab--may { top: 18px; }
-.zlab--ask5 { position: absolute; z-index: 2; left: calc(var(--x) + 16px); top: 18px;
-  transition: left .55s var(--ease); }
-.zone .line--ghost { top: 0; }
+.band .line--ghost::before, .band .line--ghost::after { display: none; }
+.band[data-ghost] .line--ghost { opacity: 1; }
 /* the proposed widening: dashed territory past the line, never a filled tray */
-.prop { position: absolute; z-index: 1; left: var(--x); width: 0; pointer-events: none; opacity: 0;
+.band .prop { position: absolute; z-index: 1; top: 0; bottom: 0; left: var(--x); width: 0; opacity: 0;
   border-right: 2px dashed color-mix(in srgb, var(--cool) 75%, transparent);
-  background: repeating-linear-gradient(135deg, rgba(111,195,232,.09) 0 3px, transparent 3px 12px);
+  background: repeating-linear-gradient(135deg, rgba(111,195,232,.10) 0 3px, transparent 3px 12px);
   transition: width .55s var(--ease), opacity .3s linear; }
-.desk[data-prop] .prop { opacity: 1; width: calc(var(--xp) - var(--x)); }
-/* the zone word stays legible over the hatching */
-.desk[data-prop] .zlab--ask5 { background: rgba(12,18,24,.9); padding: 4px 8px; margin: -4px -8px; }
-/* Keep: the line is confirmed — heavier, lit */
-.desk[data-decided="keep"] .line--now { background: var(--ok); box-shadow: 0 0 18px 2px rgba(116,199,154,.45); }
-.desk[data-decided="keep"] .line--now::before, .desk[data-decided="keep"] .line--now::after { background: var(--ok); }
-.desk[data-decided="keep"] .tray { border-top-color: var(--ok); }
-.slot--exc5 { position: absolute; right: 4%; bottom: 14px; display: block; padding: 0; z-index: 3; }
-.sheet--exc5 { width: calc(var(--sh) * .5); height: calc(var(--sh) * .52); padding-top: 20px; }
-.sheet--exc5 > svg:not(.hatchband) { height: 36%; }
+.band[data-prop] .prop { opacity: 1; width: calc(var(--xp) - var(--x)); }
+/* Keep: the line is confirmed — lit */
+.band[data-decided="keep"] .line--now { background: var(--ok); box-shadow: 0 0 18px 2px rgba(116,199,154,.45); }
+.band[data-decided="keep"] .line--now::before, .band[data-decided="keep"] .line--now::after { background: var(--ok); }
+
+/* zone words (screen 5 only): a mark and a word, never a tint alone */
+.zlab { position: absolute; z-index: 3; top: 12px; margin: 0;
+  font: 700 16px/1.2 var(--sans); letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+.zlab--may { left: 12px; color: var(--ok); }
+.zlab--may::before { content: "● "; }
+.zlab--ask { right: 12px; top: 38px; color: var(--hold); text-align: right; }
+.zlab--ask::before { content: "○ "; }
+.band[data-prop] .zlab--ask { background: rgba(12,18,24,.9); padding: 4px 8px; margin: -4px -8px; }
+
+/* the small sheets: an order the line can pass; an exception it never does */
+.sheet { position: relative; display: flex; flex-direction: column; gap: 4px;
+  background: var(--cream); color: var(--ink); }
+.sheet > svg { display: block; width: 100%; flex: 0 0 auto; }
+.sheet--mini { position: absolute; z-index: 3; width: 64px; height: 82px; padding: 10px 9px;
+  box-shadow: 3px 3px 0 0 rgba(22,21,15,.35); }
+.sheet--mini > svg:not(.tick):not(.hatchband) { height: 38%; }
+.sheet--mini-o { left: 47%; bottom: 16px; margin-left: -32px; transform: rotate(-2deg);
+  transition: transform .55s var(--ease); }
+.band[data-level="bounded"] .sheet--mini-o { transform: rotate(2deg); }
+.sheet--mini-o .tick { right: 5px; bottom: 5px; width: 22px; height: 22px; opacity: 0; transition: opacity .3s linear; }
+.band[data-level="bounded"] .sheet--mini-o .tick { opacity: 1; }
+.sheet--mini-x { left: 86%; bottom: 16px; width: 56px; height: 76px; padding-top: 18px; }
+.hatchband { position: absolute !important; left: 0; top: 0; width: 100%; height: 10px !important; }
+.sign { margin-top: auto; display: block; width: 100%; }
+.sign svg { display: block; width: 100%; height: 8px; }
 
 /* ══ CHROME ═════════════════════════════════════════════════════════════ */
 
@@ -426,10 +403,13 @@ body {
 @media (min-width: 900px) and (max-height: 820px) {
   :root { --gutter: 13px; --chrome-h: 66px; }
   .chrome { padding: 0 var(--gutter) calc(10px + var(--gesture-safe)); }
-  .desk { --sh: clamp(176px, calc(100vh - 540px), 240px); padding-top: 54px; margin-top: 10px; }
-  .desk--s2 { padding-top: 28px; }
-  .desk--s5 { gap: 26px; padding-top: 14px; }
-  .zone { height: clamp(140px, 22vh, 200px); }
+  .stage { margin-top: 12px; }
+  .thread { padding-top: 16px; gap: 14px; }
+  .ws { padding-bottom: 18px; }
+  .band { height: 176px; }
+  .triad { height: 210px; }
+  .ptag--ai, .ptag--ins { top: 12px; }
+  .sheet--mini-c { top: 80px; }
 }
 
 /* ══ NARROW / PORTRAIT: stack and scroll, never shrink ══════════════════ */
@@ -440,86 +420,12 @@ body {
 
   .top { flex-direction: column; align-items: stretch; gap: 16px; }
   .xd { font-size: clamp(30px, 8vw, 46px); }
-  .aside { max-width: none; padding-bottom: 0; }
-  .statement { max-width: 44ch; font-size: 18px; }
 
-  .desk { --sh: clamp(168px, 24vw, 210px); flex: 0 0 auto;
-    display: flex; flex-direction: column; margin-top: 18px; padding: 0; }
-  .tray { display: none; }
-  .zlab--may { position: static; order: 1; padding: 10px 16px 0; margin: 0;
-    background: var(--tray) var(--grain);
-    border-top: 2px solid color-mix(in srgb, var(--ok) 55%, transparent); }
-  /* a slot becomes a row: the sheet, then its caption beside it */
-  .slot { order: 2; justify-self: auto; display: flex; flex-direction: row; align-items: flex-end;
-    gap: 18px; padding: 12px 16px 16px; max-width: none; }
-  .slot--prep { background: var(--tray) var(--grain); }
-  .slot--po { order: 4; }
-  .desk[data-level="bounded"] .slot--po { background: var(--tray) var(--grain); }
-  .slot--exc { order: 7; padding-right: 16px; }
-  .art { flex: 0 0 auto; }
-  .cap { flex: 1 1 auto; max-width: none; min-width: 0; align-self: center; }
-  .po:not(.po--s2) { display: flex; flex-direction: column; align-items: flex-start; padding: 0 !important; }
-  .slip { position: static; width: 170px; margin: -10px 0 0 24%; transform: rotate(2deg); }
-  .desk[data-level="bounded"] .po { transform: none; }
-
-  /* the line turns horizontal between the stacked rows */
-  .line { position: relative; top: auto; bottom: auto; left: auto; width: auto;
-    margin: 0; background: none; border-top: 3px solid var(--hold);
-    padding: 8px 16px 12px; transition: none; }
-  .line--now { order: 3; }
-  .desk[data-level="bounded"] .line--now { order: 5; }
-  .line::before, .line::after { top: -9px; width: 3px; height: 15px; left: 0; }
-  .line::after { left: auto; right: 0; }
-  .line-lab, .line--now .zlab--ask { position: static; display: block; margin: 0; }
-  .line--ghost { display: none; order: 3; border-left: 0; padding: 4px 16px 6px; opacity: 1;
-    border-top: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent); }
-  .desk[data-ghost] .line--ghost { display: block; }
-  .line--ghost .line-lab { text-align: right; }
-
-  /* screen 2: the same cluster, shorter threads (it still fits a portrait iPad) */
-  .desk--s2 { display: flex; justify-content: center; padding: 10px 0 20px; }
-  .arrangement { grid-template-columns: auto 36px auto 36px auto; }
-  .party { max-width: 190px; }
-  .po--s2 { padding: 0 0 14px 40px; }
-  .po--s2 .slip { position: absolute; margin: 0; }
-
-  /* screen 3: the mute slip under the order */
-  .slip--mute { width: 130px; margin-left: 30%; }
-
-  /* screen 4: the orders row is a tray row when authorised */
-  .slot--orders { order: 2; }
-  .desk[data-level="bounded"] .slot--orders { background: var(--tray) var(--grain); }
-  .desk[data-level="none"] .slot--orders { order: 4; }
-  .desk[data-level="none"] .zlab--may { padding-bottom: 14px; }
-  .orders { padding-right: 0; gap: 10px; }
-  .slip--paid { position: absolute; left: 40%; bottom: -14px; width: 150px; margin: 0; }
-  .slot--orders .art { margin-bottom: 10px; }
-  .desk[data-sim="1"] .zlab--may, .desk[data-sim="1"] .slot--orders {
-    background: repeating-linear-gradient(135deg, rgba(116,199,154,.10) 0 4px, transparent 4px 14px), var(--tray) var(--grain); }
-  .desk[data-sim="1"] .zlab--may { border-top-style: dotted; }
-  .desk[data-sim="1"] .line--now { background: none; border-top-style: dotted; }
-
-  /* screen 5: the choices, then the zone band as a horizontal ruler with a
-     legend above it (the words cannot sit inside a 30% tray at this width) */
-  .desk--s5 { display: flex; gap: 22px; padding: 0; }
-  .xchoice--big { gap: 10px; }
-  .xchoice--big button { min-width: 0; flex: 1 1 auto; padding: 0 14px; font-size: 20px; }
-  .zone { height: 150px; margin-top: 30px; }
-  .zone .tray { display: block; top: 0; bottom: 0; }
-  .zone .zlab--may { position: absolute; top: -30px; left: 0; padding: 0; background: none; border: 0; }
-  .zlab--ask5 { left: auto; right: 0; top: -30px; }
-  .zone .line { position: absolute; top: -4px; bottom: 0; left: var(--x); width: 3px; margin-left: -1.5px;
-    background: var(--hold); border: 0; padding: 0; }
-  .zone .line::before, .zone .line::after { left: -5.5px; width: 14px; height: 3px; }
-  .zone .line::before { top: 0; } .zone .line::after { top: auto; bottom: 0; }
-  .zone .line--ghost { display: block; left: var(--xg); width: 0; margin-left: 0; background: none; padding: 0;
-    border-left: 1.5px dashed color-mix(in srgb, var(--hold) 55%, transparent); border-top: 0; opacity: 0; }
-  .desk[data-ghost] .zone .line--ghost { opacity: 1; }
-  .desk[data-decided="keep"] .zone .line--now { background: var(--ok); }
-  .slot--exc5 { position: absolute; order: 0; padding: 0; right: 10px; bottom: 10px; }
-  .sheet--exc5 { width: 70px; height: 76px; }
-
-  .micro { margin-top: 16px; }
+  .stage { display: flex; flex-direction: column; align-items: stretch; justify-content: center;
+    gap: 22px; margin-top: 16px; }
+  .ws, .support { width: 100%; max-width: none; }
+  .support { justify-content: center; }
+  .band { max-width: none; height: 160px; }
 
   .chrome { padding: 0 var(--gutter) calc(11px + var(--gesture-safe)); align-items: center; }
   .chrome-r { width: 100%; }
@@ -534,23 +440,29 @@ body {
     overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
   }
   .cta { padding: 0 14px; min-width: 46px; justify-content: center; }
-  .slot { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .xchoice button { padding: 0 16px; }
-  .xchoice--big { flex-wrap: nowrap; }
-  .xchoice--big button { padding: 0 8px; font-size: 18px; }
 
-  /* screen 2 on a phone: the order first, then the three parties as rows */
-  .desk--s2 { display: block; }
-  .arrangement { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
-  .conn { display: none; }
-  .po--s2 { align-self: center; margin-bottom: 14px; padding: 0 !important; }
-  .po--s2 .slip { position: static; width: 170px; margin: -10px 0 0 24%; transform: rotate(2deg); }
-  .party { max-width: none; transform: none; }
-  .party--ai, .party--ins, .party--you { transform: none; }
+  .strip { padding: 9px 16px 8px; flex-direction: column; align-items: flex-start; gap: 0; }
+  .strip span::before { content: none; }
+  .stage, .screen--s1 .stage, .screen--s2 .stage, .screen--s4 .stage { justify-content: flex-start; }
+  .thread { padding: 16px 16px 0; }
+  .ws { padding-bottom: 18px; }
+  .msg--you { max-width: 100%; }
+  .rows--parts { grid-template-columns: 1fr; }
+  .card { padding: 12px 14px 16px; }
+  .terms > div { grid-template-columns: 1fr; gap: 0; }
+  .terms dt { padding-bottom: 0; }
+  .terms dd { padding-top: 2px; }
+  .acts button { width: 100%; text-align: center; }
+  .acts--dec button { width: auto; flex: 1 1 auto; min-width: 0; padding: 10px 10px; }
+  .done-row { grid-template-columns: max-content minmax(0, 1fr); }
+  .done-row .amt { grid-column: 2; justify-self: start; }
+  .done-row .why, .slip { grid-column: 1 / 3; }
+  .done--ask { margin-left: 8%; }
+  .slip { padding-right: 40px; }
+  .done-row--wait { grid-template-columns: 1fr; }
+  .done-row--wait .why { grid-column: 1; }
 
-  /* screen 5 on a phone: the two zone words cannot share one row */
-  .zone { margin-bottom: 34px; }
-  .zlab--ask5 { top: auto; bottom: -32px; }
+  .band { height: 176px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

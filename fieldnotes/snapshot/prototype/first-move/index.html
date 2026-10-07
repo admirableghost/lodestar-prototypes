@@ -36,7 +36,9 @@
 <!-- ══════ 1 · THE CUSTOMER DELEGATES ═══════════════════════════════════
      Her request, as the message she sent, beside the four quotes that go
      into the comparison. The path starts; nothing has come out yet.
-     Copy: design-study/story-expansion/SCREEN-COPY.md · FIRST MOVE · S1 -->
+     Copy: design-study/story-expansion/SCREEN-COPY.md · FIRST MOVE · S1
+     Provenance and build status are not written on the glass (CONTRACT.md
+     § AMENDMENT A); they live in the facilitator notes. -->
 <section class="screen fm-sc fm-s1" data-screen="1" data-label="The request">
 
   <header class="fm-head" id="s1-head">
@@ -50,9 +52,23 @@
   <svg class="fm-scene" id="scene1" role="img"
        aria-label="Four renewal quotes, Quote A to Quote D, fanned on a dark field. One reasoning path enters from the left edge and runs into the fan. Nothing has been pulled out of the quotes yet. Beside the fan sits her message, quoted."></svg>
 
-  <div class="fm-foot" id="s1-foot">
-    <p class="fm-micro">Invented person and quotes. A reconstruction, not a recording.</p>
-  </div>
+  <!-- EVIDENCE INTEGRATION POINT (design-study/brief-align/CONTRACT.md § FIRST MOVE)
+       A reviewed recording of a real session, if one is ever approved, is
+       dropped in at  prototype/first-move/recording/first-move.webm  (WebM,
+       VP9 or VP8 video; the folder does not exist yet). Nothing else is
+       edited: app.js unhides this figure only once the video has metadata
+       (its `loadedmetadata` event, or readyState ≥ HAVE_METADATA if that
+       event beat the script), hides the drawn fan (#scene1) and lays the
+       figure out in the fan's place with her message beside it. While the
+       file is absent the figure stays hidden — the 404 on the <source> is
+       expected and harmless. No stand-in frames, no poster: an absent
+       recording shows nothing. -->
+  <figure class="fm-evidence" id="fm-evidence" hidden>
+    <!-- no <source> here: app.js reads recording/manifest.json and attaches the
+         file it names, so an absent recording never requests a missing URL -->
+    <video controls playsinline preload="metadata" id="fm-evidence-video"></video>
+    <figcaption>Recorded session</figcaption>
+  </figure>
 
 </section>
 
@@ -84,7 +100,7 @@
   <svg class="fm-scene" id="scene3" role="img"
        aria-label="The four quotes again. The reasoning path runs through them, out to the two clauses it pulled, and up to Quote D, lifted out of the fan and marked Recommended, not the cheapest. The cheapest quote, Quote C, stays in the fan marked ranked third. The path runs on past the recommendation toward the right edge."></svg>
 
-  <p class="fm-reason" id="s3-reason">Covers the garage. Rates her claim fairly.</p>
+  <p class="fm-reason" id="s3-reason">Covers the garage. Prior claim rated.</p>
 
   <div class="fm-foot" id="s3-foot">
     <button class="fm-run" type="button" id="read-play">Run it again</button>

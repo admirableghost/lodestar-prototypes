@@ -27,9 +27,11 @@
    detailed.
 
    WHAT THIS IS, AND IS NOT
-   A clearly-labelled RECONSTRUCTION of the kind of exchange a person can
-   already have with a general assistant about insurance. It is not a
-   recording and no real assistant, insurer, price or document is named.
+   A RECONSTRUCTION of the kind of exchange a person can already have with
+   a general assistant about insurance. It is not a recording and no real
+   assistant, insurer, price or document is named. Provenance is kept in
+   the facilitator notes, not written on the glass; the one place a real
+   recording could appear is the hidden evidence slot on screen 1.
 
    ORIENTATION
    A horizontal axis cannot survive a 390x844 phone, so each composition has
@@ -225,6 +227,7 @@
       /* the exposed strip of each sheet holds "Quote X" at 16px: never narrower than 84px */
       var step = Math.max(0.5 * SW, 84);
       for (k = 0; k < 4; k++) { g.fan.push({ x: left + k * step, y: fanTop + 8, a: -7.5 + k * 5 }); }
+      g.fanBox = { x: left, y: fanTop + 8, w: 3 * step + SW, h: SH };   /* the fan's footprint: the evidence slot on screen 1 */
       g.fanExit = { x: left + 3 * step + SW + 4, y: fanTop + 8 + SH * 0.5 };
       g.fanMid = fanTop + 8 + SH * 0.5;
       g.fanCentre = left + 1.5 * step + SW / 2;
@@ -420,6 +423,16 @@
         msgEl.style.top = f1(Math.max(g.msg.cy - msgEl.offsetHeight / 2, 24)) + "px";
       }
     }
+    /* the recording, if one has loaded, takes the fan's footprint; her
+       message is already placed beside that footprint (g.msg) */
+    if (mode === 1 && evidenceEl && !evidenceEl.hidden) {
+      if (portrait) { evidenceEl.style.left = evidenceEl.style.top = evidenceEl.style.width = ""; }
+      else {
+        evidenceEl.style.left = f1(g.fanBox.x) + "px";
+        evidenceEl.style.top = f1(g.fanBox.y) + "px";
+        evidenceEl.style.width = f1(g.fanBox.w) + "px";
+      }
+    }
     if (mode === 3 && reasonEl) {
       reasonEl.classList.toggle("is-off", step < 5);
       if (portrait) { reasonEl.style.left = reasonEl.style.top = reasonEl.style.width = ""; }
@@ -436,6 +449,38 @@
   var scene3El = document.getElementById("scene3"), head3El = document.getElementById("s3-head");
   var msgEl = document.getElementById("s1-msg");
   var reasonEl = document.getElementById("s3-reason");
+
+  /* ── EVIDENCE INTEGRATION POINT (see the comment on #fm-evidence in
+     index.html). The figure is born hidden and stays hidden unless the
+     browser can actually read recording/first-move.webm: only the video's
+     own `loadedmetadata` unhides it. A missing file never throws here —
+     the browser reports the 404 on the <source> and fires `error` on it,
+     which is left alone. When it does load, the drawn fan gives way
+     (CSS: .fm-s1.has-evidence .fm-scene) and paintFan lays the figure out
+     in the fan's footprint with her message beside it. ─────────────── */
+  var evidenceEl = document.getElementById("fm-evidence");
+  var evidenceVideo = document.getElementById("fm-evidence-video");
+  var screen1El = document.querySelector(".fm-s1");
+  function showEvidence() {
+    if (!evidenceEl || !evidenceEl.hidden) { return; }
+    evidenceEl.hidden = false;
+    if (screen1El) { screen1El.classList.add("has-evidence"); }
+    paintWorld();
+  }
+  if (evidenceEl && evidenceVideo && window.fetch) {
+    evidenceVideo.addEventListener("loadedmetadata", showEvidence);
+    /* recording/manifest.json ships with the page and names the reviewed
+       file when one exists ({"file": "first-move.webm"}); while it is empty
+       nothing is requested, so an absent recording logs no 404. */
+    fetch("recording/manifest.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (m) {
+        if (!m || typeof m.file !== "string" || !/^[\w.-]+\.(webm|mp4)$/.test(m.file)) { return; }
+        evidenceVideo.src = "recording/" + m.file;
+        if (evidenceVideo.readyState >= 1) { showEvidence(); }
+      })
+      .catch(function () { /* no manifest, no recording */ });
+  }
 
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 4 — the same path, carried on, and stopped
@@ -601,7 +646,7 @@
     "Garage exclusion: found in two of the four, Quote B and Quote C.",
     "Prior claim: rated differently by each of the four.",
     "Ranked against her needs, not just the price. The cheapest, Quote C, came third.",
-    "Recommended: Quote D, not the cheapest. Covers the garage. Rates her claim fairly."
+    "Recommended: Quote D, not the cheapest. Covers the garage. Prior claim rated."
   ];
 
   function paintRead() {
