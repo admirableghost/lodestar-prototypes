@@ -327,7 +327,8 @@
     return h + "</li>";
   }
 
-  /* the slip: kind, what, done — and the check mark */
+  /* the slip, part by part: the mistake named, then the covered consequence */
+  function slipMistake(o) { return '<b>' + esc(o.remedy.kind) + ':</b> ' + esc(o.remedy.what); }
   function slipHTML(o) {
     return '<b>' + esc(o.remedy.kind) + ':</b> ' + esc(o.remedy.what) + ', ' + esc(o.remedy.done) +
       '<svg class="tick tick--slip" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -336,11 +337,30 @@
   /* the reveal: 400ms slide/scale when screen 4 opens on the authorised
      day; restarted on every open; instant under reduced motion (the CSS
      cancels the animation). Nothing but the class is touched. */
+  var s4Timers = [];
+  function reduced4() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  /* the day as a sequence, on entry to screen 4 when orders were placed:
+     the placed rows land, then the wrong part is found, then the cover
+     takes the restocking, then the exception comes back to her. Under
+     reduced motion the finished day is simply there. */
   function revealSlip() {
+    s4Timers.forEach(clearTimeout); s4Timers = [];
     if (!daySlip || daySlip.hidden) { return; }
     daySlip.classList.remove("slip--in");
     void daySlip.offsetWidth;
     daySlip.classList.add("slip--in");
+    var d = day(S.mode), r = d.remedied[0];
+    if (!r || reduced4()) { return; }
+    var rows = dayRows ? Array.prototype.slice.call(dayRows.children) : [];
+    rows.forEach(function (li) { li.dataset.on = "0"; });
+    daySlip.dataset.stage = "0";
+    daySlip.innerHTML = slipMistake(r);
+    if (dayAsk) { dayAsk.dataset.on = "0"; }
+    if (daySum) { daySum.dataset.on = "0"; }
+    rows.forEach(function (li, i) { s4Timers.push(setTimeout(function () { li.dataset.on = "1"; }, 120 + i * 260)); });
+    s4Timers.push(setTimeout(function () { daySlip.dataset.stage = "1"; }, 1100));
+    s4Timers.push(setTimeout(function () { daySlip.dataset.stage = "2"; daySlip.innerHTML = slipHTML(r); }, 1900));
+    s4Timers.push(setTimeout(function () { if (dayAsk) { dayAsk.dataset.on = "1"; } if (daySum) { daySum.dataset.on = "1"; } }, 2600));
   }
 
   function renderS4() {

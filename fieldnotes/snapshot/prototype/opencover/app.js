@@ -50,6 +50,10 @@
      EXPERIENCE-OUTCOMES-REVIEW.md). Without the flag the approved "stay"
      year runs unchanged and S.switch is never written. */
   var DEV = (function () { try { return new URLSearchParams(location.search).get("dev") === "switch"; } catch (e) { return false; } })();
+  /* DEVELOPMENT-ONLY · ?dev=feedback. The one thing an insurer cannot see
+     today: why an agent rejected its offer. Customer-permitted, one reason,
+     no integration, no carrier response and no new offer. Unapproved. */
+  var DEVFB = (function () { try { return new URLSearchParams(location.search).get("dev") === "feedback"; } catch (e) { return false; } })();
   var LATER = { id: "lantern", name: "Lantern Mutual", num: 950, excessNum: 450, settleDays: 5, remedyPerDay: 50,
                 eligible: true, from: 7, prepaidMonths: 6 };   /* proposed · unapproved */
   function switchSaving(p) { return Math.round((p.premium - LATER.num) * (12 - LATER.from) / 12 * 100) / 100; }   /* (1340 − 950) × 5/12 = 162.50 */
@@ -182,6 +186,22 @@
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 1 · her rules — the allowance control, the signature
      ══════════════════════════════════════════════════════════════════════ */
+  /* the rejection reason, offered to her once the shortlist has been judged */
+  var told = false;
+  function paintWhy() {
+    var btn = document.getElementById("tell-why"), out = document.getElementById("told-why");
+    var judged = !!document.querySelector('#shortlist .of[data-judged="1"]');
+    if (btn) { btn.hidden = !DEVFB || told || !judged; }
+    if (out) { out.hidden = !DEVFB || !told; }
+  }
+  var whyBtn = document.getElementById("tell-why");
+  if (whyBtn) {
+    whyBtn.addEventListener("click", function () {
+      told = true; paintWhy();
+      say("Reason shared with Candlewick Direct: Rosa excluded. One reason, with your permission. No other detail leaves your account.");
+    });
+  }
+
   function paintRules() {
     Array.prototype.forEach.call(document.querySelectorAll("[data-delta]"), function (b) {
       b.setAttribute("aria-pressed", String(parseInt(b.dataset.delta, 10) === S.delta));
@@ -307,6 +327,7 @@
     var lens = document.getElementById("review-lens"); if (lens) { lens.dataset.on = "0"; }
     marksAll("1");
     Array.prototype.forEach.call(document.querySelectorAll("#shortlist .of"), function (li) { li.dataset.in = "1"; li.dataset.judged = "1"; });
+    paintWhy();
   }
   function cardsReset() {
     Array.prototype.forEach.call(document.querySelectorAll("#shortlist .of"), function (li) { li.dataset.in = "0"; li.dataset.judged = "0"; });
@@ -343,13 +364,14 @@
     var items = [], runL = document.getElementById("act-run");
     if (run) {
       cardsReset();
+      told = false; paintWhy();
       if (runL) { runL.hidden = false; }
       items = reviewPlan(100, 1200);
       items.push([1350, function () { if (runL) { runL.hidden = true; } }]);
       cards.forEach(function (li, i) { items.push([1350 + i * 180, function () { li.dataset.in = "1"; }]); });
       items.push([2000, function () { cards[0].dataset.judged = "1"; }]);
       items.push([2250, function () { cards[2].dataset.judged = "1"; }]);
-      items.push([2500, function () { cards[1].dataset.judged = "1"; }]);
+      items.push([2500, function () { cards[1].dataset.judged = "1"; paintWhy(); }]);
     } else {
       if (runL) { runL.hidden = true; }
       items.push([0, cardsFinal]);

@@ -881,6 +881,10 @@ body { background: var(--paper); }
 .agent-log li::before { content: "→"; position: absolute; left: 0; color: var(--plum, #8A3450); }
 .agent-log li[data-on="1"] { opacity: 1; transform: none; }
 .agent-log li:last-child[data-on="1"] { color: var(--edition-ink); font-weight: 700; }
+/* the objection her agent meets, and the answer it gives from the deal */
+.agent-log li[data-k="obj"] { color: var(--warn); }
+.agent-log li[data-k="obj"]::before { content: "!"; font-weight: 700; }
+.agent-log li[data-k="ans"] { color: var(--green); }
 @media (prefers-reduced-motion: reduce) { .agent-log li { transition: none; } }
 
 /* the carrier's terms (development scenario): a ledger-blue record, sealed, and her one action */

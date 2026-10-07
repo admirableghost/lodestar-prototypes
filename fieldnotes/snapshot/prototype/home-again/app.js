@@ -62,18 +62,18 @@
 
   /* ── state, persisted ────────────────────────────────────────────────── */
   var KEY = "ha-state";
-  var S = { screen: 1, home: "a", agreed: false, event: false };
+  var S = { screen: 1, home: "a", agreed: false, event: false, asked: false };
   function load() {
     try {
       var o = JSON.parse(sessionStorage.getItem(KEY) || "null");
       if (o && typeof o === "object") {
         if (HOMES.indexOf(o.home) >= 0) { S.home = o.home; }
-        S.agreed = o.agreed === true; S.event = o.event === true;
+        S.agreed = o.agreed === true; S.event = o.event === true; S.asked = o.asked === true;
       }
     } catch (e) { /* storage unavailable: the state lives for the page */ }
   }
   function save() {
-    try { sessionStorage.setItem(KEY, JSON.stringify({ home: S.home, agreed: S.agreed, event: S.event })); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem(KEY, JSON.stringify({ home: S.home, agreed: S.agreed, event: S.event, asked: S.asked })); } catch (e) { /* ignore */ }
   }
   function clear() { try { sessionStorage.removeItem(KEY); } catch (e) { /* ignore */ } }
 
@@ -543,6 +543,25 @@
     picker.appendChild(o);
   });
 
+  /* the family's question on screen 4: asking it puts Marta's search on the
+     temporary-living label. It records a coordination task, never a place. */
+  var askBtn = document.getElementById("ask-marta");
+  if (askBtn) {
+    askBtn.addEventListener("click", function () {
+      S.asked = !S.asked;
+      save();
+      paintAsk();
+      say(S.asked ? "Marta is searching near the school first. Nothing is promised until a place is found."
+                  : "The question is set aside.");
+    });
+  }
+  function paintAsk() {
+    var a = document.getElementById("s4-ask-a"), d = document.getElementById("s4-temp-detail");
+    if (askBtn) { askBtn.setAttribute("aria-pressed", S.asked ? "true" : "false"); }
+    if (a) { a.hidden = !S.asked; }
+    if (d) { d.textContent = S.asked ? "From the first night · near the school" : "From the first night."; }
+  }
+
   function paintControls() {
     body.setAttribute("data-home", S.home);
     homeBtns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.home === S.home ? "true" : "false"); });
@@ -551,6 +570,7 @@
     if (sig) { if (S.agreed) { sig.removeAttribute("hidden"); } else { sig.setAttribute("hidden", ""); } }   /* an <svg> has no .hidden property */
     if (evBtn) { evBtn.setAttribute("aria-pressed", S.event ? "true" : "false"); }
     branch.forEach(function (e) { e.hidden = (e.dataset.branch === "event") !== S.event; });
+    paintAsk();
   }
   homeBtns.forEach(function (b) {
     b.addEventListener("click", function () {
@@ -572,7 +592,7 @@
                   : "Normal conditions restored. Capacity available; the reserved start released.");
     });
   }
-  function reset() { S.home = "a"; S.agreed = false; S.event = false; clear(); paintControls(); show(1); say("Journey reset. Nothing chosen or agreed; normal conditions."); }
+  function reset() { S.home = "a"; S.agreed = false; S.event = false; S.asked = false; clear(); paintControls(); show(1); say("Journey reset. Nothing chosen or agreed; normal conditions."); }
   var restart = document.getElementById("restart");
   if (restart) { restart.addEventListener("click", reset); }
 

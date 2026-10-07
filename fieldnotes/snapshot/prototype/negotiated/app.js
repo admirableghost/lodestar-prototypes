@@ -866,8 +866,17 @@
   var logEl = document.getElementById("agent-log");
   function logLines() {
     if (!S.joined || S.committed <= START + 1) { return []; }
-    return ["Proposal sent to the next households", "Their agents respond",
-            S.committed >= NEED ? "Three confirmed · threshold reached" : "Three confirmed · " + S.committed + " of 60"];
+    /* the first round meets an objection her agent can actually answer: the
+       repayment mechanism is already in the deal (screen 2, Financing). No
+       new institution, subsidy or concession is invented. */
+    if (S.committed < NEED) {
+      return [{ t: "Proposal sent to the next households" },
+              { t: "No. 52 can't pay for the work", k: "obj" },
+              { t: "Fund pays the contractor · repaid on the bill", k: "ans" },
+              { t: "Three confirmed · " + S.committed + " of 60" }];
+    }
+    return [{ t: "Proposal sent to the next households" }, { t: "Their agents respond" },
+            { t: "Three confirmed · threshold reached" }];
   }
 
   function inviteState() {
@@ -890,7 +899,7 @@
     if (ctlEl) { ctlEl.dataset.agent = S.joined ? "on" : "off"; }
     if (offerEl && !busy) { offerEl.dataset.state = open ? "open" : "closed"; }
     if (offerText && !busy) { offerText.textContent = conditionLine(open); }
-    if (logEl) { logEl.innerHTML = logLines().map(function (t) { return '<li data-on="1">' + t + "</li>"; }).join(""); }
+    if (logEl) { logEl.innerHTML = logLines().map(function (l) { return '<li data-on="1"' + (l.k ? ' data-k="' + l.k + '"' : "") + ">" + l.t + "</li>"; }).join(""); }
     if (inviteBtn) {
       var st = inviteState();
       if (!busy) { inviteBtn.textContent = st === "done" ? "Street assembled" : "Invite the street"; }
@@ -992,18 +1001,26 @@
         items.forEach(function (li) { li.dataset.on = "0"; });
         if (countEl) { countEl.textContent = String(from); }
         var r, at;
+        var stretch = (to - from === 3 && lastRound.total > 0) ? Math.max(1, 2500 / (lastRound.total * 1000)) : 1;
         for (r = from; r < to; r++) {
-          at = lastRound.arrive[r] || 0;
+          at = (lastRound.arrive[r] || 0) * stretch;
           (function (n, at) { roundTimers.push(setTimeout(function () { if (countEl) { countEl.textContent = String(n); } }, Math.round(at * 1000))); })(r + 1, at);
         }
-        var mid = (lastRound.arrive[from] || lastRound.total / 2) * 1000;
-        [[60, 0], [Math.max(300, mid - 200), 1], [lastRound.total * 1000 + 120, 2]].forEach(function (it) {
+        /* the beats are paced to be read, not just to match the thread: the
+           objection and the agent's answer each get their own moment, and the
+           confirmation lands only once the count has finished arriving */
+        var end = lastRound.total * 1000;
+        var beats = items.length === 4
+          ? [[60, 0], [850, 1], [1750, 2], [Math.max(end, 2500) + 250, 3]]
+          : [[60, 0], [Math.max(300, end / 2), 1], [end + 250, 2]];
+        var lastAt = beats[beats.length - 1][0];
+        beats.forEach(function (it) {
           roundTimers.push(setTimeout(function () { if (items[it[1]]) { items[it[1]].dataset.on = "1"; } }, Math.round(it[0])));
         });
         /* while the round runs the state line and the button wait for it:
            the words change only when the count has arrived */
         if (ctlEl) { ctlEl.dataset.busy = "1"; }
-        roundTimers.push(setTimeout(function () { if (ctlEl) { delete ctlEl.dataset.busy; } paint(); }, Math.round(lastRound.total * 1000 + 140)));
+        roundTimers.push(setTimeout(function () { if (ctlEl) { delete ctlEl.dataset.busy; } paint(); }, Math.round(lastAt + 150)));
       }
       var open = S.committed >= NEED;
       say(open

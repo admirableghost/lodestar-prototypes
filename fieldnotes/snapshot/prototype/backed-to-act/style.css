@@ -624,3 +624,14 @@ body {
   /* the signature is simply there once she authorises */
   .deck[data-auth="bounded"] .sig path { stroke-dashoffset: 0; }
 }
+
+/* ── screen 4 · the day as a sequence: rows, the mistake, the cover, the exception ── */
+.done-row[data-on="0"] { opacity: 0; transform: translateY(6px); }
+.done-row { transition: opacity .3s ease, transform .3s ease; }
+#day-ask[data-on="0"], #day-sum[data-on="0"] { opacity: 0; }
+#day-ask, #day-sum { transition: opacity .3s ease; }
+#day-slip[data-stage="0"], #day-slip[data-stage="1"] { border-color: var(--warn, #B8541F); }
+#day-slip[data-stage="1"] { box-shadow: 0 0 0 3px rgba(184,84,31,.22); }
+@media (prefers-reduced-motion: reduce) {
+  .done-row, #day-ask, #day-sum { transition: none; opacity: 1 !important; transform: none !important; }
+}

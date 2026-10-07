@@ -209,3 +209,9 @@ body.portrait .picker select { padding: 0 8px; }
 body.portrait .nav-next { flex: 1 1 auto; min-width: 0; white-space: normal; text-align: center; line-height: 1.15; padding: 6px 14px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } .sig path { stroke-dashoffset: 0; } }
+
+/* ── screen 4 · the question a household asks, and what Marta does ──────── */
+.s4-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 10px; }
+.s4-ask-q { margin: 0; font: 700 clamp(17px, 1.6vw, 21px)/1.3 var(--sans, inherit); }
+.s4-ask-a { margin: 0; flex: 1 1 100%; font: 400 clamp(15px, 1.4vw, 18px)/1.35 var(--sans, inherit); color: #5A554A; }
+.s4-ask-a[hidden] { display: none; }

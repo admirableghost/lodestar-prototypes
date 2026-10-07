@@ -817,6 +817,9 @@
     /* the threatened community, from the first step: a soft halo under
        Mill Creek's homes, alarm-coloured, no words */
     if (step >= 1) {
+      /* the one road out of Mill Creek, present from the first step as what
+         is at stake; it is only HELD from step three (roadHold, below) */
+      s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(2.2)) + '" opacity="' + (step >= 6 ? ".0" : ".32") + '" stroke-dasharray="' + n1(px(5)) + ' ' + n1(px(5)) + '"/>');
       var mc = SC.P(962, 712); mc[1] += px(4);
       s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="' + ALARM + '" opacity="' + (cur === 0 ? '.10' : '.06') + '"/>' +
              '<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + ALARM + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity="' + (cur === 0 ? '.8' : '.35') + '"/>');

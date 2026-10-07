@@ -1304,6 +1304,15 @@ body { background: var(--paper); color: var(--edition-ink); }
   opacity: 0; transform: scale(.6); transition: opacity .3s ease, transform .3s cubic-bezier(.2, .8, .2, 1.2);
 }
 .of-seal[data-on="1"] { opacity: 1; transform: none; }
+/* the rejection reason an insurer cannot see today (development scenario) */
+.tellwhy {
+  align-self: flex-start; margin-top: calc(6px * var(--k)); min-height: 44px; padding: 0 14px;
+  background: var(--cream); color: var(--edition-ink); border: 1.5px solid var(--edition-ink); border-radius: 3px;
+  font: 700 max(16px, calc(17px * var(--k)))/1 var(--sans); cursor: pointer;
+}
+.tellwhy:hover { background: var(--edition-wash); }
+.tellwhy[hidden], .toldwhy[hidden] { display: none; }
+.toldwhy { margin: calc(6px * var(--k)) 0 0; font: 700 max(16px, calc(17px * var(--k)))/1.25 var(--sans); color: var(--blue); }
 .muse--s3 { margin-top: calc(22px * var(--k)); }
 .bubble--run { font-weight: 700; }
 .dots::after { content: "…"; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4, end) infinite; }
