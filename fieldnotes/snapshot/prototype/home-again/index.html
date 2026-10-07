@@ -5,90 +5,92 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Home Again — a way home, arranged before the loss</title>
-<meta name="description" content="A hypothetical household chooses its replacement home and agrees the recovery commitments before any loss. Five screens; invented household, town, builder and recovery lead; no real insurer or product is described.">
+<title>Home Again — choose your way home before you need it</title>
+<meta name="description" content="A household chooses its way home and agrees three commitments before any loss: temporary living from the first night, the chosen plan with a named builder, a named coordinator. Five screens; invented household, town, builder and recovery lead; no real insurer or product is described.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
-<body data-screen="1">
+<body data-screen="1" data-home="a">
 
 <button class="skip" type="button" id="skip">Skip to this screen's heading</button>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     The scene is one SVG, drawn by app.js from a single state. Every word a
-     person reads is real text: headlines, copy, controls and navigation are
-     HTML; the labels that belong to the drawing are SVG <text>. Nothing is a
-     flattened image. ═══════════════════════════════════════════════════════ -->
+     The scene is one SVG, drawn by app.js from a single state
+     { screen, home, agreed, event }. Every word a person reads is real text:
+     headlines, copy, controls and navigation are HTML; the labels that belong
+     to the drawing are SVG <text>. Nothing is a flattened image.
+     Copy: design-study/brief-align/CONTRACT-IMPL.md § F. ═══════════════════ -->
 <main class="stage" id="stage">
 
-  <!-- ══════ 1 · A WAY HOME, ARRANGED ══════ -->
-  <section class="screen" data-screen="1" data-label="A way home, arranged">
+  <!-- ══════ 1 · CHOOSE YOUR WAY HOME ══════ -->
+  <section class="screen" data-screen="1" data-label="Choose">
     <header class="head">
       <p class="eyebrow">HOME AGAIN · BEFORE A LOSS</p>
-      <h1 class="headline" tabindex="-1"><span>A way home.</span><span>Arranged</span><span>before the loss.</span></h1>
+      <h1 class="headline" id="h1" tabindex="-1"><span>Choose your way</span><span>home before</span><span>you need it.</span></h1>
     </header>
-    <section class="copy">
-      <p class="support">Choose your replacement home and agree on the recovery commitments before anything happens.</p>
-      <p class="caveat">Permits and site clearance still apply.</p>
-    </section>
-  </section>
-
-  <!-- ══════ 2 · CHOOSE THE REPLACEMENT ══════ -->
-  <section class="screen" data-screen="2" data-label="Choose the replacement" hidden>
-    <header class="head head--2">
-      <p class="eyebrow">HOME AGAIN · BEFORE A LOSS</p>
-      <h2 class="headline headline--s" tabindex="-1"><span>Decide what</span><span>rebuilding means.</span><span>Before you need to.</span></h2>
-    </header>
-    <section class="copy copy--controls">
-      <p class="label" id="std-label">Rebuild standard</p>
-      <div class="choices" role="group" aria-labelledby="std-label">
-        <button type="button" data-std="0" aria-pressed="false">As it stood</button>
-        <button type="button" data-std="1" aria-pressed="false">To current code</button>
-        <button type="button" data-std="2" aria-pressed="true">Code plus hardening</button>
+    <section class="copy copy--controls copy--options">
+      <div class="options" role="group" aria-labelledby="h1">
+        <button type="button" data-home="a" aria-pressed="true"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Like-for-like</span></button>
+        <button type="button" data-home="b" aria-pressed="false"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Faster and smaller</span></button>
+        <button type="button" data-home="c" aria-pressed="false"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Hardened to a higher standard</span></button>
       </div>
     </section>
     <section class="copy copy--legend"><ul class="legend" hidden></ul></section>
   </section>
 
-  <!-- ══════ 3 · RESERVE THE RECOVERY ══════ -->
-  <section class="screen" data-screen="3" data-label="Reserve the recovery" hidden>
+  <!-- ══════ 2 · THREE COMMITMENTS, MADE NOW ══════ -->
+  <section class="screen" data-screen="2" data-label="Commitments" hidden>
     <header class="head head--2">
       <p class="eyebrow">HOME AGAIN · BEFORE A LOSS</p>
-      <h2 class="headline headline--s headline--3" tabindex="-1"><span>Not just a plan.</span><span>People and capacity</span><span>behind it.</span></h2>
+      <h2 class="headline headline--s headline--3" tabindex="-1"><span>Three commitments,</span><span>made now.</span></h2>
     </header>
     <section class="copy copy--3">
-      <p class="support">A service keeps the plan, site requirements and temporary-living preferences current; you decide what changes.</p>
-      <p class="caveat">If the event qualifies under the policy and the plan is current. Permits and site clearance still apply. Regional capacity can constrain the reserved start.</p>
+      <div class="agree-row">
+        <button class="toggle agree" type="button" id="agree" aria-pressed="false">Agree to the three commitments</button>
+        <svg class="sig" id="sig" viewBox="0 0 120 28" aria-hidden="true" hidden><path d="M4 19 C 18 2, 30 28, 48 13 S 78 4, 92 15 S 108 18, 116 10" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </div>
       <ul class="legend" hidden></ul>
     </section>
   </section>
 
-  <!-- ══════ 4 · ACTIVATE THE ARRANGEMENTS ══════ -->
+  <!-- ══════ 3 · THE LOSS ══════ -->
+  <section class="screen" data-screen="3" data-label="The loss" hidden>
+    <header class="head">
+      <p class="eyebrow">HOME AGAIN · AFTER THE LOSS</p>
+      <h2 class="headline headline--one" tabindex="-1"><span>The loss.</span></h2>
+    </header>
+    <section class="copy copy--3">
+      <p class="support">The house is gone. The three commitments hold.</p>
+      <ul class="legend" hidden></ul>
+    </section>
+  </section>
+
+  <!-- ══════ 4 · THE ARRANGEMENT ACTIVATES ══════ -->
   <!-- Screen 4 is laid out in flow — head, one bounded scene, foot — because
        a headline backing drawn in the scene at a fixed width cannot promise
        to contain text sized for reading. Here the backing IS the headline's
        own box, and each illustrated subject has its own wrapping label area. -->
-  <section class="screen screen--4" data-screen="4" data-label="Activate the arrangements" hidden>
+  <section class="screen screen--4" data-screen="4" data-label="Activates" hidden>
     <header class="head head--flow">
-      <p class="eyebrow">HOME AGAIN · AFTER A COVERED EVENT</p>
-      <h2 class="headline headline--fit" tabindex="-1">The plan becomes action.</h2>
+      <p class="eyebrow">HOME AGAIN · AFTER THE LOSS</p>
+      <h2 class="headline headline--fit" tabindex="-1">The arrangement activates.</h2>
     </header>
     <div class="scene4-wrap">
       <div class="scene4" id="scene4-box">
         <svg id="scene4" viewBox="0 0 1180 430" preserveAspectRatio="xMidYMid meet" role="img"
-             aria-label="The recovery lead stands between two paths: one to a temporary home, one to the rebuild site where the agreed plan stands on the cleared slab. In a regional event the path to the site is barred and the builder's materials wait before it."></svg>
-        <p class="s4-label s4-label--marta" id="s4-marta"><b>Marta coordinates</b><span>the recovery lead named in advance</span></p>
-        <p class="s4-label s4-label--temp" id="s4-temp"><b>Temporary living arranged</b><span>From the first night.</span><em class="s4-state" data-kind="agreed">Agreed</em></p>
-        <p class="s4-label s4-label--site" id="s4-site"><b>Rebuild follows the agreed plan</b><span id="s4-site-detail">Code plus hardening · Ardren &amp; Sons</span><em class="s4-state" id="s4-site-state" data-kind="released">Released under the agreed conditions</em></p>
+             aria-label="The recovery lead stands between two paths: one to a temporary home, one to the rebuild site where the chosen plan stands on the cleared slab. In a regional event the path to the site is barred and the builder's materials wait before it."></svg>
+        <p class="s4-label s4-label--marta" id="s4-marta"><b>Marta coordinates</b></p>
+        <p class="s4-label s4-label--temp" id="s4-temp"><b>Temporary living</b><span>From the first night.</span><em class="s4-state" data-kind="begun">Begun</em></p>
+        <p class="s4-label s4-label--site" id="s4-site"><b>The chosen plan</b><span id="s4-site-detail">Like-for-like · Ardren &amp; Sons</span><em class="s4-state" id="s4-site-state" data-kind="released">Reserved start released</em></p>
       </div>
     </div>
     <section class="copy copy--flow s4-foot">
-      <p class="caveat s4-cond">Coverage is assessed at the time. Approvals, permits and site clearance still apply.</p>
       <div class="s4-cap">
         <p class="s4-capstate">Regional capacity <em class="s4-state" id="s4-cap" data-kind="available">Available</em></p>
-        <button class="toggle" type="button" id="event-toggle" aria-pressed="false">Show a regional event</button>
+        <button class="toggle" type="button" id="event-toggle" aria-pressed="false">Regional event</button>
       </div>
-      <p class="caveat s4-cons" data-branch="event" hidden>The reserved start joins the regional queue. Extra payment does not buy priority. Temporary living and Marta’s coordination continue.</p>
+      <p class="caveat s4-cons" data-branch="event" hidden>Extra payment does not buy priority.</p>
+      <p class="support s4-continue" data-branch="event" hidden>Temporary living, Marta and your plan continue. The reserved start waits with the region.</p>
       <ul class="legend" hidden></ul>
     </section>
   </section>
@@ -96,25 +98,28 @@
   <!-- ══════ 5 · HOME AGAIN ══════ -->
   <section class="screen" data-screen="5" data-label="Home again" hidden>
     <header class="head">
-      <p class="eyebrow">HOME AGAIN</p>
-      <h2 class="headline headline--4" tabindex="-1"><span>The claim isn’t complete</span><span>when the money is paid.</span><span>It’s complete when</span><span>you’re home again.</span></h2>
+      <p class="eyebrow">HOME AGAIN · AS PROMISED</p>
+      <h2 class="headline headline--one" tabindex="-1"><span>Home again.</span></h2>
     </header>
-    <section class="copy">
-      <p class="support" data-branch="normal">The intended outcome: back in a home rebuilt to the plan you agreed, at the standard you chose — <span data-std-word>Code plus hardening</span>.</p>
-      <p class="caveat" data-branch="normal">Permits and site clearance applied along the way. No completion date is promised.</p>
-      <p class="support" data-branch="event" hidden>Home is still the destination. Capacity is <span data-ev-word>Constrained</span>, so the reserved start is still in the queue; the other arrangements hold.</p>
+    <section class="copy copy--5">
+      <ul class="honoured" aria-label="Three commitments honoured">
+        <li><span class="hon-mark" aria-hidden="true">●</span>Temporary living · from the first night</li>
+        <li><span class="hon-mark" aria-hidden="true">●</span><span data-home-name>Like-for-like</span> · Ardren &amp; Sons</li>
+        <li><span class="hon-mark" aria-hidden="true">●</span>Marta coordinated throughout</li>
+      </ul>
+      <p class="caveat s5-queue" data-branch="event" hidden>Started after the regional queue.</p>
       <button class="link" type="button" id="restart">Start the journey again</button>
       <ul class="legend" hidden></ul>
     </section>
   </section>
 
   <svg class="scene" id="scene" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMid meet" role="img"
-       aria-label="One household's property, drawn as cut paper and construction linework: the home today, its replacement plan, the people and capacity reserved behind it, the plan activated after a covered event, and the household home again."></svg>
+       aria-label="One household's property, drawn as cut paper and construction linework: the home today with the chosen plan behind it, the three commitments, the loss, the arrangement activated, and the household home again."></svg>
 
   <nav class="nav" aria-label="Screens">
     <button class="nav-prev" type="button" id="prev" aria-label="Previous screen"><span aria-hidden="true">←</span></button>
-    <p class="nav-where" id="where">1 of 5</p>
-    <button class="nav-next" type="button" id="next"><span id="next-label">Choose your rebuild</span> <span aria-hidden="true">→</span></button>
+    <label class="picker"><span class="sr-only">Choose a screen</span><select id="picker"></select></label>
+    <button class="nav-next" type="button" id="next"><span id="next-label">Three commitments</span>&nbsp;<span aria-hidden="true">→</span></button>
   </nav>
 
 </main>

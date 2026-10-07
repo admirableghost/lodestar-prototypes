@@ -2,14 +2,24 @@
    Backed to Act · acting inside an assistant's workspace
    No framework, no build step, no external request. Three files.
 
-   FIVE SCREENS, ONE SURFACE: a quiet paper panel — Halden's workspace — on
-   the same dark field every time. The customer speaks in it (a tinted
-   bubble, right), the assistant replies in it (a cool mark, left) with
-   cards and compact rows. Beside the panel, where it helps, a small cut-
-   paper support: the three parties (2), the permitted zone and its line
-   (3, 5). The line is support; the card is the object. Each screen has one
-   headline on its own grain backing above the panel. Copy is the locked
-   contract and nothing more (≤ 60 visible words per screen per state).
+   FIVE SCREENS, ONE SURFACE, IN THE SHARED AGENT GRAMMAR.
+   HUMAN   her request on warm paper (#F3EBD7): ink, first person, a hand-
+           set quote; on screens 2–5 a wordless paper stub stands for the
+           note. Authority is a SIGNATURE DASH drawn on the paper when she
+           authorises (the deck's data-auth="bounded").
+   AGENT   Halden's dark plate (#262E36) under a plum rule (#8A3450); the
+           LENS mark (circle + handle) at the head of a continuous plum
+           THREAD (2px, 42%) that begins under her paper and runs down
+           through everything the agent touches; activity is a pulse along
+           it. Halden speaks in short messages (.say) on the plate; the
+           cards it holds up are paper (#FBF9F1) with ink.
+   AUTHORITY AS GEOMETRY   the boundary (.inside) drawn around the thread
+           — dashed until she decides, solid amber once authorised; on
+           screen 4 the returned slip crosses back over it on warm paper.
+   Beside the plate, where it helps, the small cut-paper support band: the
+   permitted zone and its line (3, 5). Each screen has one headline on its
+   own grain backing above the plate. Copy is the locked contract and
+   nothing more (≤ 60 visible words per screen per state).
 
    Type: Bricolage Grotesque from fonts/ (OFL). On an iPad nothing
    explanatory renders under 18px and no label under 16px. Nothing is
@@ -18,15 +28,17 @@
    Contrast, measured:
      #F3EBD7 cream on #0C1218 field        16.9 : 1   headline, zone labels
      #F3EBD7 cream on #6B675E block         4.6 : 1   headline on its backing
-     #16150F ink   on #F3EBD7 cream        16.4 : 1   words in the workspace
-     #5A554A dim   on #F3EBD7 cream         6.1 : 1   secondary words on paper
-     #236548 ok    on #FBF9F1 paper         6.0 : 1   "Placed"
-     #7A4610 hold  on #FBF9F1 paper         6.2 : 1   "Returned", waiting
-     #8E3418 exc   on #FBF9F1 paper         6.3 : 1   "Always you"
-     #8A3450 plum  on #FBF9F1 paper         7.4 : 1   "covered mistake" (the hero)
-     #5A554A dim   on #FBF9F1 paper         6.2 : 1   the quiet rows
-     #74C79A ok    on #0C1218 field         9.1 : 1   "agent may act"
-     #E2A75C hold  on #0C1218 field         8.6 : 1   "needs your approval"
+     #F3EBD7 cream on #262E36 plate        11.8 : 1   Halden's words
+     #B9B2A0 mute  on #262E36 plate         6.4 : 1   quiet rows, totals, note
+     #74C79A ok    on #262E36 plate         6.9 : 1   "Placed"
+     #E2A75C hold  on #262E36 plate         6.6 : 1   "Returned", waiting
+     #16150F ink   on #F3EBD7 paper        16.4 : 1   her words, the returned slip
+     #16150F ink   on #FBF9F1 card         17.5 : 1   the cards
+     #5A554A dim   on #F3EBD7 paper         6.1 : 1   secondary words on paper
+     #7A4610 hold  on #F3EBD7 paper         6.0 : 1   "Returned" on the slip
+     #8E3418 exc   on #FBF9F1 card          6.3 : 1   "Always you"
+     #8A3450 plum  on #FBF9F1 card          7.4 : 1   "covered mistake", the mistakes
+     #2F5E7C ledger on #FBF9F1 card         6.6 : 1   the insurer's seal (a mark)
    ══════════════════════════════════════════════════════════════════════════ */
 
 @font-face { font-family: "Bricolage"; font-weight: 700; font-display: swap;
@@ -37,22 +49,32 @@
 :root {
   --stage-deep: #10161C;
   --cool:       #6FC3E8;
-  --cool-ink:   #1F6F93;     /* the assistant's mark, on paper */
+  --cool-ink:   #1F6F93;
   --panel:      #262E36;
   --line:       #3C4650;      /* hairlines, control borders — never type */
   --line-2:     #5A6773;
-  --paper:      #FBF9F1;
+  --paper:      #FBF9F1;      /* a card the agent holds up */
   --console:    #1E242B;
+
+  /* the grammar */
+  --plate:   #262E36;         /* AGENT · the dark working surface */
+  --plate-2: #2C353E;
+  --plum:    #8A3450;         /* AGENT · the rule, the thread, the cover's own colour */
+  --thread:  rgba(138,52,80,.42);
+  --hpaper:  #F3EBD7;         /* HUMAN · warm paper */
+  --ledger:  #2F5E7C;         /* PROVIDER / MARKET · the seal */
+  --prule:   rgba(243,235,215,.18);   /* hairlines on the plate */
 
   --cream:  #F3EBD7;  --ink: #16150F;  --mute: #B9B2A0;  --dim: #5A554A;
   --cream-2: #E9DFC6; --cream-3: #E3D7BA;
   --block:  #6B675E;  --tray: #262E36;
   --ok:     #74C79A;  --hold: #E2A75C;  --exc: #F3977A;
   --ok-ink: #236548;  --hold-ink: #7A4610;  --exc-ink: #8E3418;
-  --plum:   #8A3450;   /* the covered mistake — the cover's own colour */
   --rule:   rgba(22,21,15,.22);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   --grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* the lens: a circle and a handle, cream on the plate, a plum eye */
+  --lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='14' cy='10' r='7' fill='%23262E36' stroke='%23F3EBD7' stroke-width='2'/%3E%3Ccircle cx='14' cy='10' r='2.4' fill='%238A3450'/%3E%3Cpath d='M9 15 3 21' stroke='%23F3EBD7' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
   --ease: cubic-bezier(.4,0,.2,1);
 
   --r-s: 3px; --r-m: 6px;
@@ -63,6 +85,8 @@
   --gutter: 18px;
   --chrome-h: 76px;
   --gesture-safe: max(12px, env(safe-area-inset-bottom, 0px));
+  --tp: 22px;        /* the thread column's side padding; the thread sits at --tp + 10px */
+  --ml: 36px;        /* an agent message's left padding: room for the lens */
 }
 
 * { box-sizing: border-box; }
@@ -96,8 +120,9 @@ body {
 }
 .xd:focus { outline: none; }
 .xd:focus-visible { outline: 3px solid var(--hold); outline-offset: 6px; }
-/* on paper the ring is ink, so it is never lost against the cream */
-.ws :where(button):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+/* on a paper card the ring is ink, so it is never lost against the cream;
+   on the plate it is the amber ring */
+.card :where(button):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
 /* ══ THE GROUND ═════════════════════════════════════════════════════════ */
 
@@ -160,74 +185,115 @@ body {
   gap: 24px 40px; align-items: center; align-content: center;
 }
 .ws { grid-column: 1; }
-/* no support beside the panel (1, 4): one wider panel, centred on the field.
-   The three-party drawing (2) stays beside its card; the pair is centred. */
-.screen--s1 .stage, .screen--s4 .stage { grid-template-columns: minmax(0, 840px); justify-content: center; }
-.screen--s2 .stage { grid-template-columns: minmax(0, 700px) 220px; justify-content: center; }
-.screen--s2 .support { max-width: 220px; }
+/* no support beside the plate (1, 2, 4): one wider plate, centred on the
+   field; the day's plate a little wider so the hero slip holds one line */
+.screen--s1 .stage, .screen--s2 .stage { grid-template-columns: minmax(0, 840px); justify-content: center; }
+.screen--s4 .stage { grid-template-columns: minmax(0, 900px); justify-content: center; }
 .support { grid-column: 2; justify-self: start; width: 100%; max-width: 440px;
   margin: 0; display: flex; align-items: center; justify-content: flex-start; }
-.support--triad { align-self: center; justify-content: center; }
 
-/* ══ THE WORKSPACE · one paper panel ════════════════════════════════════ */
+/* ══ THE WORKSPACE · Halden's plate ═════════════════════════════════════ */
 .ws {
-  position: relative; color: var(--ink);
-  background: var(--cream) var(--grain-soft);
-  box-shadow: 5px 5px 0 0 rgba(22,21,15,.5), 0 0 0 1px rgba(0,0,0,.25);
+  position: relative; color: var(--cream);
+  background: var(--plate) var(--grain-soft);
+  border-top: 3px solid var(--plum);
+  box-shadow: 0 0 0 1px rgba(167,179,189,.16), 0 24px 48px -26px rgba(0,0,0,.95);
   padding: 0 0 22px;
 }
-/* the eyebrow strip: the interface's own label, a darker paper band */
+/* the eyebrow strip: the interface's own label, a darker band, the lens */
 .strip {
   margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
-  padding: 10px 22px 9px; background: var(--cream-2);
-  border-bottom: 1px solid var(--rule);
+  padding: 10px var(--tp) 9px; background: var(--plate-2);
+  border-bottom: 1px solid var(--prule);
   font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase;
-  color: var(--dim);
+  color: var(--mute);
 }
-.strip b { color: var(--ink); }
-.strip b::before { content: ""; display: inline-block; width: 10px; height: 10px;
-  margin: 0 8px 1px 0; background: var(--cool-ink); vertical-align: baseline; }
+.strip b { color: var(--cream); }
+.strip b::before { content: ""; display: inline-block; width: 16px; height: 16px;
+  margin: 0 7px -2px 0; background: var(--lens) center/contain no-repeat; }
 .strip span { font-weight: 400; letter-spacing: .06em; }
-.strip span::before { content: "·  "; white-space: pre; color: var(--dim); }
+.strip span::before { content: "·  "; white-space: pre; color: var(--mute); }
 
-.thread { display: flex; flex-direction: column; gap: 18px; padding: 20px 22px 0; }
+/* ── the thread column ────────────────────────────────────────────────── */
+.thread { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 20px var(--tp) 0; }
+/* THE THREAD: 2px plum at 42%, from under her paper to the foot of the
+   plate. The pulse is the agent's activity moving along it. */
+.tline { position: absolute; z-index: 0; left: calc(var(--tp) + 10px); top: 0; bottom: 0; width: 2px;
+  background: var(--thread); pointer-events: none; overflow: hidden; }
+.tline::after { content: ""; position: absolute; left: 0; top: -56px; width: 2px; height: 56px;
+  background: linear-gradient(to bottom, transparent, #C9637F 55%, transparent);
+  animation: tpulse 2.8s linear infinite; }
+@keyframes tpulse { from { top: -56px; } to { top: 100%; } }
 
-/* the customer: a tinted bubble, right; the assistant: a cool mark, left */
+/* HER PAPER: warm, ink, her words in a hand-set quote; left, where reading
+   starts. The thread passes under it and emerges from its foot. */
+.paper { position: relative; z-index: 1; align-self: flex-start; max-width: min(100%, 36ch);
+  padding: 14px 20px 15px 22px; background: var(--hpaper) var(--grain-soft); color: var(--ink);
+  box-shadow: 3px 3px 0 0 rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.2); transform: rotate(-.6deg); }
+.paper p { margin: 0; font: 400 var(--body)/1.42 var(--sans); letter-spacing: .005em; }
+/* the stub: the same note, folded small, no words — a ruled paper and the
+   opening quote; the signature dash is drawn across it on screens 3–5 */
+.paper--stub { width: 150px; height: 52px; padding: 0; transform: rotate(-1deg); }
+.paper--stub .ruled { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.paper--stub .q { position: absolute; left: 10px; top: 2px; font: 700 40px/1 var(--sans); color: var(--plum); opacity: .7; }
+/* THE SIGNATURE DASH: a short ink stroke, drawn when she authorises */
+.sig { position: absolute; right: 8px; bottom: 5px; width: 84px; height: 20px; opacity: 0;
+  transition: opacity .2s linear; }
+.sig path { stroke-dasharray: 110; stroke-dashoffset: 110; transition: stroke-dashoffset .55s var(--ease) .1s; }
+.deck[data-auth="bounded"] .sig { opacity: 1; }
+.deck[data-auth="bounded"] .sig path { stroke-dashoffset: 0; }
+
+/* HALDEN'S MESSAGES: on the plate, beside the thread; a node where each
+   touches the thread, the lens at the head of the agent's work */
 .msg { max-width: 100%; }
 .msg p { margin: 0; font: 400 var(--body)/1.42 var(--sans); }
-.msg--you { align-self: flex-end; max-width: min(100%, 34ch);
-  padding: 12px 16px 13px; background: var(--cream-3);
-  border-radius: 10px 10px 2px 10px; box-shadow: 2px 2px 0 0 rgba(22,21,15,.18); }
-.msg--ai { align-self: stretch; position: relative; padding-left: 24px; }
-.msg--ai::before { content: ""; position: absolute; left: 0; top: .5em; width: 11px; height: 11px;
-  background: var(--cool-ink); }
+.msg--ai { align-self: stretch; position: relative; z-index: 1; padding-left: var(--ml); }
+.msg--ai::before { content: ""; position: absolute; z-index: 2; left: 7px; top: .6em; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--plum); box-shadow: 0 0 0 2px var(--plate); }
+.msg--lead::before { left: 0; top: 0; width: 22px; height: 22px; border-radius: 0; box-shadow: none;
+  background: var(--plate) var(--lens) center/contain no-repeat; }
+/* what Halden says: a short message on the plate, a plum rule at its edge */
+.say { display: inline-block; max-width: 100%; padding: 9px 14px 10px;
+  background: rgba(243,235,215,.06); border-left: 2px solid var(--plum); }
+.say + .say { margin-top: 8px; }
+.say + .rows, .say + .card, .say + .acts { margin-top: 14px; }
 
 /* compact rows: a hairline between, one line each, 18px */
 .rows { list-style: none; margin: 12px 0 0; padding: 0; }
-.rows li { padding: 8px 0 9px; border-top: 1px solid var(--rule); font: 400 18px/1.35 var(--sans); }
+.rows li { padding: 8px 0 9px; border-top: 1px solid var(--prule); font: 400 18px/1.35 var(--sans); }
 /* the drafted orders: one row each, item left, amount right, tabular */
 .rows--parts { max-width: 520px; }
 .rows--parts li { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 0 20px; align-items: baseline; }
 .rows--parts .amt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.rows--lines li { font-size: var(--body); line-height: 1.4; }
 
-/* a card: the assistant's object inside the thread */
-.card { background: var(--paper); border: 1.5px solid var(--ink); padding: 14px 18px 18px;
-  box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
+/* a card: the paper object the agent holds up, inside the thread */
+.card { background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); padding: 14px 18px 18px;
+  box-shadow: 4px 4px 0 0 rgba(0,0,0,.5); }
 .card--offer { border-style: dashed; }      /* proposed, not in force */
+.card .rows li { border-top-color: var(--rule); }
 .card-h { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
   font: 700 clamp(20px, .5vw + 1.2vh, 22px)/1.3 var(--sans); }
-.tag { display: inline-block; padding: 3px 8px 4px; border: 1.5px dashed var(--dim);
-  font: 700 16px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
 .card .rows { margin-top: 10px; }
 .card .rows li:first-child { border-top: 0; padding-top: 2px; }
-/* the assistant's message, then its card (2) */
-.msg p + .card { margin-top: 14px; }
 /* the card heading above the terms (3): "For this restock" */
 .card-h + .terms { margin-top: 8px; }
 .card-h + .terms > div:first-child { border-top: 1px solid var(--rule); }
 .card-h + .terms > div:first-child dt, .card-h + .terms > div:first-child dd { padding-top: 9px; }
-.note { margin: 14px 0 0; font: 400 18px/1.4 var(--sans); color: var(--dim); }
+.note { margin: 14px 0 0; font: 400 18px/1.4 var(--sans); color: var(--mute); }
+
+/* ── the three roles (2): each line with its mark — the plate, the seal,
+   her paper — and the covered mistakes under the insurer's seal ───────── */
+.rows--roles li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 0 12px; align-items: start;
+  font-size: var(--body); line-height: 1.4; }
+.rows--roles li::before { content: ""; width: 20px; height: 20px; margin-top: .3em; }
+.rows--roles li[data-role="agent"]::before { background: var(--plate); border-top: 3px solid var(--plum); }
+.rows--roles li[data-role="insurer"]::before { border-radius: 50%; border: 3px solid var(--ledger); background: #fff; }
+.rows--roles li[data-role="you"]::before { background: var(--hpaper); box-shadow: 1.5px 1.5px 0 0 rgba(22,21,15,.45); transform: rotate(-5deg); }
+.covers { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.covers .seal { width: 24px; height: 24px; flex: 0 0 auto; }
+.covers span { display: inline-block; padding: 4px 9px 5px; border: 1.5px solid var(--plum); color: var(--plum);
+  font: 700 16px/1.2 var(--sans); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
 
 /* the authorisation card: five terms, two buttons */
 .terms { margin: 0; }
@@ -241,75 +307,95 @@ body {
 .terms .hard dt { color: var(--exc-ink); }
 .terms .hard dt::before { content: "▧ "; }
 
-/* buttons on paper: 46px, 2px ink border; the pressed one filled and ● */
+/* buttons: 46px, 2px border; on the plate cream, on a card ink; the pressed
+   one filled and ● */
 .acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
 .acts button {
   min-height: 46px; padding: 10px 20px; border-radius: 0;
-  border: 2px solid var(--ink); background: transparent; color: var(--ink);
+  border: 2px solid var(--cream); background: transparent; color: var(--cream);
   font: 700 16px/1.2 var(--sans); letter-spacing: .01em; cursor: pointer; text-align: left;
   transition: background .15s linear, color .15s linear;
 }
-.acts button:hover { background: rgba(22,21,15,.07); }
-.acts button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.acts button:hover { background: rgba(243,235,215,.1); }
+.acts button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
 .acts button[aria-pressed="true"]::before { content: "● "; }
 .acts button:focus-visible { border-radius: 0; }
+.card .acts button { border-color: var(--ink); color: var(--ink); }
+.card .acts button:hover { background: rgba(22,21,15,.07); }
+.card .acts button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
 
 /* the authorisation pair (3): Authorise is the primary control — filled,
    full width, 54px, 18px — and stays so until Keep draft-only is the pressed
    one (data-decided="none" on the card), when it falls back to the outline.
    The pressed button, whichever it is, is filled and carries ●. */
 .acts--auth { flex-wrap: wrap; align-items: stretch; gap: 10px 12px; margin-top: 18px; }
-.acts--auth .primary { flex: 1 1 320px; min-height: 54px; padding: 12px 22px; font-size: 18px; text-align: center;
+.acts--auth .primary, .card .acts--auth .primary { flex: 1 1 320px; min-height: 54px; padding: 12px 22px; font-size: 18px; text-align: center;
   background: var(--ink); color: var(--cream); box-shadow: 3px 3px 0 0 rgba(22,21,15,.3); }
 .acts--auth #draft-only { flex: 0 0 auto; }
-.acts--auth .primary:hover { background: #2C2A22; }
+.card .acts--auth .primary:hover { background: #2C2A22; }
 .acts--auth .primary[aria-pressed="true"] { box-shadow: none; }
 #auth-card[data-decided="none"] .primary { background: transparent; color: var(--ink); box-shadow: none; }
 #auth-card[data-decided="none"] .primary:hover { background: rgba(22,21,15,.07); }
 
+/* ── THE BOUNDARY (3, 4): drawn around the thread. Dashed until she
+   decides; solid amber once she authorises (the line's colour); dimmer
+   dashed if she keeps it draft-only. It starts at the plate's left edge so
+   the thread and the lens are inside it. ──────────────────────────────── */
+.msg--ai > .inside { position: relative;
+  margin-left: calc(10px - var(--ml) - var(--tp)); padding: 14px 12px 16px calc(var(--ml) + var(--tp) - 10px);
+  border: 1.5px dashed rgba(243,235,215,.5); border-radius: 3px;
+  transition: border-color .4s linear, box-shadow .4s linear; }
+.msg--lead > .inside { margin-top: 11px; }   /* the thread enters the boundary through the lens, on its edge */
+.deck[data-auth="bounded"] .inside { border-style: solid; border-color: var(--hold);
+  box-shadow: 0 0 0 1px rgba(226,167,92,.16), 0 0 26px -8px rgba(226,167,92,.45); }
+.deck[data-auth="none"] .inside { border-color: rgba(243,235,215,.28); }
+
 /* ══ SCREEN 4 · the day ═══════════════════════════════════════════════════
    Authorised, the covered mistake is the hero: the cover's slip steps out
    of the ledger on its own paper, ≈1.6× the row type, plum and green.
-   The placed rows and the returned row are quiet evidence beside it —
-   smaller (17px, never under 16) and dimmer (6.2:1) — and the totals line
-   under them keeps the unit. Reading order: headline → three placed →
-   the slip → one returned → totals. */
+   The placed rows are quiet evidence inside the boundary — smaller (17px,
+   never under 16) and muted (6.4:1) — the returned order is a warm-paper
+   slip crossing back over the boundary, and the totals line under them
+   keeps the unit. Reading order: headline → three placed → the slip →
+   one returned → totals. */
 .done { list-style: none; margin: 0; padding: 0; }
 .done-row { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content;
-  gap: 2px 16px; align-items: baseline; padding: 10px 0 11px; border-top: 1px solid var(--rule);
+  gap: 2px 16px; align-items: baseline; padding: 10px 0 11px; border-top: 1px solid var(--prule);
   font-size: var(--body); }
 .done > .done-row:first-child { border-top: 0; padding-top: 0; }
 .done-row .st { font: 700 16px/1.6 var(--sans); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-.done-row--ok .st { color: var(--ok-ink); }
+.done-row--ok .st { color: var(--ok); }
 .done-row--ok .st::before { content: "● "; }
-.done-row--ask .st { color: var(--hold-ink); }
+.done-row--ask .st { color: var(--hold); }
 .done-row--ask .st::before { content: "○ "; }
-.done-row--mute .st { color: var(--dim); }
+.done-row--mute .st { color: var(--mute); }
 .done-row .what { font: 400 var(--body)/1.4 var(--sans); }
 .done-row .amt { font: 700 var(--body)/1.4 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.done-row .why { grid-column: 2 / 4; font: 400 18px/1.4 var(--sans); color: var(--dim); }
-/* the returned order sits on the approval side: set apart, warm rule */
-.done--ask { margin: 16px 0 0 14%; }
-.done--ask .done-row { border-top: 3px solid var(--hold); padding: 10px 14px 12px;
-  background: rgba(226,167,92,.14); }
+.done-row .why { grid-column: 2 / 4; font: 400 18px/1.4 var(--sans); color: var(--mute); }
 /* the authorised day only (the draft-only rows keep the base): the placed
-   rows and the returned row are quiet evidence — 17px, dim, a lighter rule */
-#day-auth .done-row { padding: 8px 0 9px; color: var(--dim); }
+   rows are quiet evidence — 17px, muted, a lighter rule */
+#day-auth .done-row { padding: 8px 0 9px; color: var(--mute); }
 #day-auth .done > .done-row:first-child { padding-top: 0; }
 #day-auth .done-row .what, #day-auth .done-row .amt { font-size: 17px; }
 #day-auth .done-row .why { font-size: 16px; }
-#day-auth .done--ask { margin-top: 18px; }
-#day-auth .done--ask .done-row { border-top-width: 2px; padding: 9px 14px 10px; background: rgba(226,167,92,.10); }
+/* THE RETURNED SLIP: warm paper, ink, set to the right and pushed past the
+   boundary's edge — it crosses back over the line to her */
+.done--ask { margin: 18px -32px 0 auto; width: min(80%, 540px); position: relative; z-index: 2; }
+.done--ask .done-row { border-top: 0; padding: 10px 16px 12px 14px;
+  background: var(--hpaper) var(--grain-soft); box-shadow: 3px 3px 0 0 rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.2); }
+#day-auth .done--ask .done-row { color: var(--ink); padding: 9px 16px 11px 14px; }
+.done--ask .done-row .st { color: var(--hold-ink); }
+.done--ask .done-row .why { color: var(--dim); }
 /* THE HERO · the cover's slip, its own paper between the placed rows and
    the returned one. 28.8px = 1.6 × the 18px slip it grew from; plum for
    the kind, ink for what was done, the green check. It steps a little
-   past the ledger's left edge, into the message gutter. (.msg .slip: it is
+   past the ledger's left edge, toward the thread. (.msg .slip: it is
    a p in a message, and must outrank .msg p.) */
 .msg .slip { display: block; position: relative; z-index: 1; width: fit-content; max-width: calc(100% + 16px);
   margin: 18px 0 4px -16px; padding: 13px 66px 15px 20px; transform: rotate(-1.2deg);
   background: var(--paper); color: var(--ink);
   border: 2px solid var(--plum);
-  box-shadow: 5px 5px 0 0 rgba(138,52,80,.28), 0 0 0 1px rgba(22,21,15,.08);
+  box-shadow: 5px 5px 0 0 rgba(138,52,80,.4), 0 0 0 1px rgba(0,0,0,.2);
   font: 400 28.8px/1.22 var(--sans); letter-spacing: -.012em; text-wrap: balance; }
 .slip b { font-weight: 700; color: var(--plum); }
 .tick { position: absolute; width: 24px; height: 24px; }
@@ -321,10 +407,10 @@ body {
   to   { opacity: 1; transform: translateY(0)    scale(1)  rotate(-1.2deg); }
 }
 .slip--in { animation: slip-in .4s var(--ease) both; }
-/* the day summed, under the rows: one line, amounts bold and tabular */
-.sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--rule);
-  font: 400 var(--body)/1.4 var(--sans); color: var(--dim); }
-.sum b { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* the day summed, under the boundary: one line, amounts bold and tabular */
+.sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--prule);
+  font: 400 var(--body)/1.4 var(--sans); color: var(--mute); }
+.sum b { font-weight: 700; color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* the draft-only waiting row */
 .done-row--wait { grid-template-columns: max-content max-content; }
 .done-row--wait .why { grid-column: 1 / 3; }
@@ -335,20 +421,7 @@ body {
 .acts--dec button { min-width: 130px; justify-content: center; text-align: center; font-size: 18px; padding: 10px 24px; }
 /* the one line Expand adds: dashed, like the proposal it names */
 .dec-said { margin: 14px 0 0; max-width: 44ch; padding: 10px 14px;
-  border: 1.5px dashed var(--cool-ink); font: 400 18px/1.4 var(--sans); color: var(--ink); }
-
-/* ══ SUPPORT · the three parties (screen 2) ═════════════════════════════
-   Small and secondary: 220×176, tag labels still 16px, drawn a little
-   quieter than the card it sits beside. */
-.triad { position: relative; width: 220px; height: 176px; opacity: .88; }
-.triad-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ptag { position: absolute; padding: 7px 11px 8px; background: var(--cream); color: var(--ink);
-  box-shadow: 2px 2px 0 0 rgba(22,21,15,.35); font: 700 16px/1.2 var(--sans);
-  letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
-.ptag--ai  { left: 0;   top: 10px;  background: var(--cream-3); transform: rotate(-2deg); }
-.ptag--ins { right: 0;  top: 10px;  background: #EBE2CB; transform: rotate(2deg); }
-.ptag--you { left: 50%; bottom: 0;  transform: translateX(-50%) rotate(-1deg); border-top: 3px solid var(--hold); }
-.triad .sheet--mini-c { left: 50%; top: 62px; margin-left: -24px; width: 48px; height: 62px; padding: 8px 7px; }
+  border: 1.5px dashed var(--cool); font: 400 18px/1.4 var(--sans); color: var(--cream); }
 
 /* ══ SUPPORT · the zone band (screens 3, 5) ═════════════════════════════
    --x is where the line stands, from data-level; --xp the end of a
@@ -459,17 +532,23 @@ body {
 @media (min-width: 900px) and (max-height: 820px) {
   :root { --gutter: 13px; --chrome-h: 66px; }
   .chrome { padding: 0 var(--gutter) calc(10px + var(--gesture-safe)); }
-  .stage { margin-top: 12px; }
-  .thread { padding-top: 16px; gap: 14px; }
-  .ws { padding-bottom: 18px; }
+  .stage { margin-top: 8px; }
+  .thread { padding-top: 12px; gap: 10px; }
+  .ws { padding-bottom: 12px; }
+  .msg--lead > .inside { margin-top: 10px; }
   .band { height: 176px; }
-  .triad { height: 164px; }
-  .ptag--ai, .ptag--ins { top: 8px; }
-  .triad .sheet--mini-c { top: 56px; }
+  .paper--stub { height: 40px; }
+  .paper--stub .q { font-size: 32px; top: 0; }
+  .msg--ai > .inside { padding-top: 10px; padding-bottom: 12px; }
   /* the authorisation card keeps clear of the chrome at 740 high */
-  .terms dt, .terms dd { padding-top: 7px; padding-bottom: 7px; }
-  .card-h + .terms > div:first-child dt, .card-h + .terms > div:first-child dd { padding-top: 7px; }
-  .acts--auth { margin-top: 14px; }
+  .terms dt, .terms dd { padding-top: 6px; padding-bottom: 6px; }
+  .card-h + .terms > div:first-child dt, .card-h + .terms > div:first-child dd { padding-top: 6px; }
+  .acts--auth { margin-top: 12px; }
+  .card { padding-bottom: 14px; }
+  /* the day: the slip and the totals sit a little closer */
+  .msg .slip { margin-top: 14px; margin-bottom: 2px; }
+  #day-auth .done--ask { margin-top: 14px; }
+  .sum { margin-top: 12px; padding-top: 10px; }
 }
 
 /* ══ NARROW / PORTRAIT: stack and scroll, never shrink ══════════════════ */
@@ -494,6 +573,7 @@ body {
   .cta { padding: 0 16px; }
 }
 @media (max-width: 599px) {
+  :root { --tp: 16px; }
   /* the next label is hidden from SIGHT, not from the accessibility tree */
   .cta span:first-child {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -501,14 +581,15 @@ body {
   }
   .cta { padding: 0 14px; min-width: 46px; justify-content: center; }
 
-  .strip { padding: 9px 16px 8px; flex-direction: column; align-items: flex-start; gap: 0; }
+  .strip { padding: 9px var(--tp) 8px; flex-direction: column; align-items: flex-start; gap: 0; }
   .strip span::before { content: none; }
   .stage, .screen--s1 .stage, .screen--s2 .stage, .screen--s4 .stage { justify-content: flex-start; }
-  .thread { padding: 16px 16px 0; }
+  .thread { padding-top: 16px; }
   .ws { padding-bottom: 18px; }
-  .msg--you { max-width: 100%; }
+  .paper { max-width: 100%; }
   .rows--parts { max-width: none; }
   .card { padding: 12px 14px 16px; }
+  .msg--ai > .inside { padding-right: 12px; }
   .terms > div { grid-template-columns: 1fr; gap: 0; }
   .terms dt { padding-bottom: 0; }
   .terms dd { padding-top: 2px; }
@@ -517,8 +598,9 @@ body {
   .done-row { grid-template-columns: max-content minmax(0, 1fr); }
   .done-row .amt { grid-column: 2; justify-self: start; }
   .done-row .why { grid-column: 1 / 3; }
-  .done--ask { margin-left: 8%; }
-  /* the hero on a phone: still the largest thing on the paper (26px, 1.44×),
+  /* the returned slip on a phone: wider, still crossing the boundary */
+  .done--ask { width: min(88%, 540px); margin-right: -26px; }
+  /* the hero on a phone: still the largest thing on the plate (26px, 1.44×),
      stepping out by the gutter only */
   .msg .slip { margin: 14px 0 2px -10px; max-width: calc(100% + 10px); padding: 12px 56px 13px 16px; font-size: 26px; }
   .tick--slip { right: 12px; width: 32px; height: 32px; margin-top: -16px; }
@@ -530,5 +612,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  /* the signature is simply there once she authorises */
+  .deck[data-auth="bounded"] .sig path { stroke-dashoffset: 0; }
 }

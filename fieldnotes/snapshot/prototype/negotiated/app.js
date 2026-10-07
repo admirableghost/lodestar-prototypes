@@ -26,34 +26,54 @@
    is illustrated.
 
    THE STATE OBJECT — one source of truth,
-   S = { screen, joined, committed, verified }
+   S = { screen, joined, committed, verified }, kept in sessionStorage so a
+   reload keeps the street where it was (CONTRACT-IMPL.md).
    · joined starts false and is set ONLY by #join on screen 2: Maggie
      (no. 31) authorises her agent to ASSEMBLE the proposal. It is never
      acceptance of terms — no contribution, price or acceptance mechanism
      exists in any source, so there is no acceptance flag because there is
      nothing to accept yet. Joining moves committed from 41 (the others) to
-     42 (the others plus no. 31).
-   · committed starts at 41 and is otherwise moved ONLY by the slider on
-     screen 3 — floor 42 when joined, 41 when not (no. 31 stays hollow and
-     the ceiling is 59, because no. 31 is not among the others). It is
-     never reset by navigation in either direction.
+     42 (the others plus no. 31) and draws her signature dash on the sheet.
+   · committed starts at 41 and is otherwise moved ONLY by #invite on
+     screen 3: one round of acceptances per press, 42 → 45 → 48. At 48 the
+     button reads "Street assembled" and a further press does nothing.
+     Unjoined there is no agent to send, so the button is inert and the
+     count stays at 41. It is never moved by navigation in either
+     direction, and a user who stops short leaves the street below the
+     threshold on every later screen.
    · verified starts false and is flipped ONLY by the surveyor control on
      screen 4.
    · "Back to the start" from screen 5 is the one action that resets all
-     three.
+     three (and clears the stored state).
    · screen 5 is derived: ready = committed ≥ 48 && verified. "Ready" is
      the payoff that returns to Maggie — together, the offer she could not
-     get alone (alone · no offer → together · coverage offer, final terms
-     pending) — with her share and premium still to be set and accepted.
-     Nothing on the screen says in force, active, signed or begun. Pressing
-     Next never produces "ready"; only the two facts do.
-   · the amber boundary draws itself in the first time the slider reaches
-     48 on screen 3 (a short stroke-draw; instant under reduced motion) and
-     is static on every later render.
+     get alone (alone · no offer → together · conditional offer secured) —
+     with the terms and her acceptance still pending. Nothing on the screen
+     says covered, active, in force, signed or begun. Pressing Next never
+     produces "ready"; only the two facts do.
+   · the amber boundary draws itself in on the press that reaches 48 on
+     screen 3, after the last home of that round fills (a short
+     stroke-draw; instant under reduced motion) and is static on every
+     later render.
    · DISCOVERABILITY: the customer action is the primary control on its
      screen. The chrome's Next is a quiet paper button on screen 2 until
-     #join is pressed and on screen 4 until #verify-toggle is pressed
-     (paint() toggles .cta--quiet); it never performs either action.
+     #join is pressed, on screen 3 until the count reaches 48, and on
+     screen 4 until #verify-toggle is pressed (paint() toggles
+     .cta--quiet); it never performs any of them.
+
+   THE SHARED AGENT GRAMMAR (CONTRACT-IMPL.md § A), drawn here:
+   · HUMAN — her paper is the terms sheet on screen 2; her signature dash
+     is drawn on it when she authorises (style.css, .sig).
+   · AGENT — the thread is a plum line (2px, 42%) that begins at her
+     paper: on screen 2 the tether from the signed sheet to her home turns
+     plum and ends in the lens mark; from screen 3 the thread runs in the
+     street's own SVG from no. 31 to the kerb and then, round by round,
+     along the road and up to every lot her agent reaches, the lens mark
+     at its head. On a press the new segments draw in sequence and each
+     home fills the moment the thread reaches its gate (thread(), below;
+     instant under reduced motion). Later renders draw it static.
+   · PROVIDER — the carrier's conditions on screen 4, a ledger-blue record
+     with a seal (style.css, .step--carrier).
 
    DEEP LINKS — five screens, #s/1 … #s/5. The three-screen build's links
    map as: old #s/1 → 1 (unchanged), old #s/2 (the threshold) → #s/3, old
@@ -75,18 +95,39 @@
   var NEED = 48;           /* the threshold — the product      */
   var START = 41;          /* where the street stands on entry */
   var ROSA = 15;           /* no. 31 — upper row, mid-street   */
+  var ROUND = 3;           /* households accepting per press   */
+  /* the counts the deck can stand at: 41 unjoined; 42, 45, 48 joined */
+  var STOPS = [START + 1, START + 1 + ROUND, NEED];
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
   var S = { screen: 1, joined: false, committed: START, verified: false };
   /* the street is READY — participation reached and verified — and holds
-     an offer Maggie could not get alone, her share and premium still to be
-     set and accepted. Not "in force": there are no terms to be in force yet. */
+     a conditional offer Maggie could not get alone, the terms and her
+     acceptance still pending. Not "covered": there are no terms yet. */
   function ready() { return S.committed >= NEED && S.verified; }
-  /* the slider's bounds follow `joined`: no. 31 is counted only once she
-     has authorised, so the others alone can never number sixty */
-  function floor() { return S.joined ? START + 1 : START; }
-  function ceil()  { return S.joined ? HOMES : HOMES - 1; }
-  function clampCommitted(n) { return Math.max(floor(), Math.min(ceil(), n)); }
+
+  /* kept across reloads in sessionStorage; only values the deck can reach
+     are read back, anything else is the entry state */
+  var KEY = "nn-state";
+  function load() {
+    var raw = null, o;
+    try { raw = sessionStorage.getItem(KEY); } catch (e) { /* storage off */ }
+    if (!raw) { return; }
+    try { o = JSON.parse(raw); } catch (e) { return; }
+    if (!o || typeof o !== "object") { return; }
+    S.joined = o.joined === true;
+    S.committed = S.joined && STOPS.indexOf(o.committed) !== -1 ? o.committed : START;
+    S.verified = o.verified === true;
+    /* a street that was assembled before the reload has already had its
+       boundary drawn; it must not draw itself again on screen 3 */
+    bndShown = S.committed >= NEED;
+  }
+  function save() {
+    try {
+      if (!S.joined && !S.verified) { sessionStorage.removeItem(KEY); }
+      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified })); }
+    } catch (e) { /* storage off: the state still lives for this page */ }
+  }
   /* is household i in the committed set? The order grows out from no. 31
      (rank 0), so when she has not joined the committed set is the next
      `committed` households in the order, skipping her. */
@@ -99,7 +140,9 @@
   var P = "#F3EBD7", INK = "#16150F", MU = "#5A554A",
       G = "#2F5A44", G2 = "#24473A", F = "#8C9A84", F2 = "#6F7F68",
       A = "#C98D1C", GROUND = "#E8DDC2", TAR = "#DACCA8", KERB = "#CFC2A0",
-      SURVEY = "#7A5A17";
+      SURVEY = "#7A5A17",
+      PLUM = "#8A3450",    /* the agent's thread and lens (§ A)          */
+      RISK = "#A8502A";    /* screen 1's risk shading — a wash, never type */
 
   /* ══════════════════════════════════════════════════════════════════════
      WORLD GEOMETRY — one shallow oblique
@@ -125,8 +168,8 @@
 
   /* the collective boundary, in street coordinates */
   var BND = [[X0 - 20, -16], [bx(2) + BW + 14, -16], [bx(2) + BW + 14, 376], [X0 - 20, 376]];
-  /* its perimeter on the drawing, for the stroke-draw the first time the
-     slider reaches 48 (a few units over, so the round joins close) */
+  /* its perimeter on the drawing, for the stroke-draw on the press that
+     reaches 48 (a few units over, so the round joins close) */
   var BND_LEN = (function () {
     var L = 0, i, a, b, dx, dy;
     for (i = 0; i < 4; i++) {
@@ -137,10 +180,45 @@
     return Math.ceil(L) + 8;
   })();
   /* was the boundary on the drawing at the last render? The draw-in runs
-     only on the render that first shows it — screen 3, the slider reaching
+     only on the render that first shows it — screen 3, the press reaching
      48 — never again on a repaint or a screen change while it stays. */
   var bndShown = false;
   function reducedMotion() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+
+  /* ── the agent's thread, in street coordinates ────────────────────────
+     It begins at no. 31 (where her signed paper is tied) and runs to the
+     kerb; then, for every household her agent has reached (commitment
+     ranks 42 and up), along the road's centre line to that lot and up to
+     its gate. Segments are drawn once each — the run continues from the
+     spur's foot, never back over it — so the line is one continuous
+     thread at one weight. */
+  var ROAD_C = (ROAD[0] + ROAD[1]) / 2;
+  function gateD(i) { return i < PER_ROW ? ROAD[1] - 2 : ROAD[0] + 2; }  /* the lot's gate: on the kerb, clear of the frontage strip */
+  function midx(i) { return hx(i) + PITCH / 2; }
+  /* the segments the thread has at count C, each tagged with the rank of
+     the household it reaches (−1 for the kerb segment) */
+  function threadSegs(C) {
+    var segs = [], x0 = midx(ROSA), rank, i, xi;
+    segs.push({ rank: -1, a: [x0, HD0.up - 2], b: [x0, ROAD_C] });
+    for (rank = START + 1; rank < C; rank++) {
+      i = ORDER[rank]; xi = midx(i);
+      segs.push({ rank: rank, a: [x0, ROAD_C], b: [xi, ROAD_C] });
+      segs.push({ rank: rank, a: [xi, ROAD_C], b: [xi, gateD(i)], gate: i });
+      x0 = xi;
+    }
+    return segs;
+  }
+  function segLen(s) {
+    var dx = X(s.b[0], s.b[1]) - X(s.a[0], s.a[1]), dy = Y(s.b[1]) - Y(s.a[1]);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  var SPEED = 640;        /* drawing units per second along the thread */
+  var SEG_MIN = 0.12;     /* seconds: the shortest a segment takes      */
+
+  /* the round a press has just started: homes with rank in [from, to)
+     arrive one by one as the thread reaches them. Consumed by the next
+     renderStreet() and never kept, so every later render is static. */
+  var round = null;
 
   /* where a household's pin aims: the ridge of its house */
   function hcx(i) { var up = i < PER_ROW; return X(hx(i) + PITCH / 2, (up ? HD0.up : HD0.lo) + HD / 2); }
@@ -243,7 +321,8 @@
     o = o || {};
     return '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) +
       '" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round"' +
-      (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") + (o.op != null ? ' opacity="' + o.op + '"' : "") + "/>";
+      (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") + (o.op != null ? ' opacity="' + o.op + '"' : "") +
+      (o.attr ? " " + o.attr : "") + "/>";
   }
 
   function house(i, on, ringed) {
@@ -278,17 +357,65 @@
       '<path d="M' + (cx - 2.6).toFixed(1) + ' ' + (cy + 0.2).toFixed(1) + ' l1.9 1.9 l3.4 -3.8" fill="none" stroke="' + P + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g>';
   }
 
+  /* the lens mark: circle and handle, in the agent's plum, the circle
+     filled with the paper so the thread ends at the mark rather than
+     running through it. At the head of the thread. */
+  function lens(x, y, o) {
+    o = o || {};
+    return '<g data-lens="1"' + (o.pulse ? ' data-pulse="1"' : "") + (o.cls ? ' class="' + o.cls + '"' : "") + (o.style ? ' style="' + o.style + '"' : "") +
+      ' transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' +
+      '<circle cx="0" cy="0" r="7.5" fill="' + P + '" stroke="' + PLUM + '" stroke-width="2.4"/>' +
+      '<line x1="5.4" y1="5.4" x2="11.5" y2="11.5" stroke="' + PLUM + '" stroke-width="3" stroke-linecap="round"/></g>';
+  }
+
+  /* the thread on the ground. Static for every segment the agent had
+     already drawn; the segments of the round just pressed draw in, in
+     order, each at the thread's one speed, and the home at each spur's
+     end fills when the thread gets there (arrivals, by rank). The lens
+     sits at the head and, in a round, appears when the thread stops.
+     Returns { svg, arrive: {rank: seconds}, total: seconds }. */
+  function thread(C, rnd) {
+    var segs = threadSegs(C), s = [], arrive = {}, t = 0, anim = rnd && !reducedMotion(), head = null, i, g, L, dur;
+    for (i = 0; i < segs.length; i++) {
+      g = segs[i]; L = segLen(g); head = g.b;
+      var moving = anim && g.rank >= rnd.from;
+      if (moving) {
+        dur = Math.max(SEG_MIN, L / SPEED);
+        s.push(line(X(g.a[0], g.a[1]), Y(g.a[1]), X(g.b[0], g.b[1]), Y(g.b[1]), PLUM, 2,
+          { op: .42, attr: 'data-thread="1" stroke-dasharray="' + L.toFixed(1) + '" stroke-dashoffset="' + L.toFixed(1) +
+            '" style="animation-duration:' + dur.toFixed(2) + 's;animation-delay:' + t.toFixed(2) + 's"' }));
+        t += dur;
+        if (g.gate != null) { arrive[g.rank] = t; }
+      } else {
+        s.push(line(X(g.a[0], g.a[1]), Y(g.a[1]), X(g.b[0], g.b[1]), Y(g.b[1]), PLUM, 2, { op: .42 }));
+      }
+      /* where the thread touched a lot: a small plum point at the gate */
+      if (g.gate != null && i < segs.length - 1) {
+        s.push('<circle cx="' + X(g.b[0], g.b[1]).toFixed(1) + '" cy="' + Y(g.b[1]).toFixed(1) + '" r="2.6" fill="' + PLUM + '" opacity=".55"' +
+          (moving ? ' class="arrive" style="animation-delay:' + t.toFixed(2) + 's"' : "") + '/>');
+      }
+    }
+    /* the lens reads (pulses) while the agent is still working the street */
+    var lo = { pulse: S.screen === 3 && C < NEED };
+    if (anim) { lo.cls = "arrive"; lo.style = "animation-delay:" + t.toFixed(2) + "s"; }
+    var lensSvg = head ? lens(X(head[0], head[1]), Y(head[1]), lo) : "";
+    return { svg: s.join(""), lens: lensSvg, arrive: arrive, total: t };
+  }
+
   /* the frontage strip: the cleared metres at the road edge of a committed
      lot. Below the threshold every strip stops short of its neighbour. At
      the threshold the committed strips meet, and bridge the block gaps,
      into continuous runs — broken only where a lot is still out. */
-  function strips(up, isIn, crossed) {
+  function strips(up, isIn, crossed, delayOf) {
     var s = [], D0 = up ? LOT.up[0] : LOT.lo[1] - 12, D1 = D0 + 12, base = up ? 0 : PER_ROW;
     for (var i = base; i < base + PER_ROW; i++) {
       if (!isIn(i)) { continue; }
       var col = colOf(i), x0 = hx(i), x1 = x0 + PITCH, inset = crossed ? 0 : 5;
       if (crossed && col % 10 === 9 && col < PER_ROW - 1 && isIn(i + 1)) { x1 += GAP; }
-      s.push(poly([[x0 + inset, D0], [x1 - inset, D0], [x1 - inset, D1], [x0 + inset, D1]], G));
+      var at = delayOf ? delayOf(i) : null;
+      var p = poly([[x0 + inset, D0], [x1 - inset, D0], [x1 - inset, D1], [x0 + inset, D1]], G);
+      /* a strip arriving in this round fills with its house */
+      s.push(at == null ? p : '<g class="arrive" style="animation-delay:' + at.toFixed(2) + 's">' + p + '</g>');
     }
     return s.join("");
   }
@@ -326,10 +453,21 @@
     var ringed = alone || !!opts.ring;
     function isIn(i) { return !alone && inSet(i, C); }
     var s = [], i;
+    /* the round just pressed, if any — consumed here, once */
+    var rnd = (opts.thread && round) ? round : null; round = null;
+    /* the thread: on screens 3–5, once her agent exists (joined) */
+    var thr = (opts.thread && S.joined) ? thread(C, rnd) : null;
+    var arriveAt = thr ? thr.arrive : {};
+    var roundEnd = thr ? thr.total : 0;
+    function arriving(i) { return rnd && S.joined && RANK[i] >= rnd.from && RANK[i] < rnd.to && !reducedMotion(); }
 
     s.push('<defs>' +
       '<filter id="grain" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="g"/><feBlend in="SourceGraphic" in2="g" mode="multiply"/></filter>' +
       '<filter id="rough" x="-4%" y="-6%" width="108%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
+      /* screen 1's risk: a warm wash from the slope down across the whole
+         street, and a diagonal hatch so it survives greyscale */
+      '<linearGradient id="riskg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + RISK + '" stop-opacity=".30"/><stop offset=".55" stop-color="' + RISK + '" stop-opacity=".16"/><stop offset="1" stop-color="' + RISK + '" stop-opacity=".07"/></linearGradient>' +
+      '<pattern id="riskh" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-32)"><line x1="0" y1="0" x2="0" y2="9" stroke="' + RISK + '" stroke-width="1.1" opacity=".22"/></pattern>' +
       '</defs>');
     /* every mark sits in one untransformed group, so the pin projection can
        read a single CTM */
@@ -361,33 +499,63 @@
       s.push(line(X(lx, L[0]), Y(L[0]), X(lx, L[1]), Y(L[1]), INK, 1, { op: .14 }));
     }
 
+    /* ── screen 1: the risk is collective ──
+       One shading from the slope behind the upper row down across both
+       rows, the road and the block gaps — over the lot lines, not within
+       them. No edge: it is weather, not a boundary. */
+    if (alone) {
+      var RK = [[X0 - 60, LOT.up[1] + 30], [bx(2) + BW + 60, LOT.up[1] + 30], [bx(2) + BW + 60, LOT.lo[0] - 30], [X0 - 60, LOT.lo[0] - 30]];
+      s.push(poly(RK, "url(#riskg)", { attr: 'data-risk="1"' }));
+      s.push(poly(RK, "url(#riskh)", { attr: 'data-risk="1"' }));
+    }
+
+    /* ── the agent's thread, under the houses: it reaches each gate and
+       the house is drawn over its end ── */
+    if (thr) { s.push(thr.svg); }
+
     /* ── the collective boundary: the threshold EVENT, the only amber ──
-       The first time it appears — screen 3, the slider reaching 48 — the
-       edge draws itself in: a short stroke-draw from a full-perimeter dash
-       (style.css, @keyframes bnd-draw). Under reduced motion it is simply
-       there. Any later render at or above 48 draws it static. */
+       The first time it appears — screen 3, the press reaching 48 — the
+       edge draws itself in after the round's last home has filled: a
+       short stroke-draw from a full-perimeter dash (style.css, @keyframes
+       bnd-draw). Under reduced motion it is simply there. Any later render
+       at or above 48 draws it static. */
     if (crossed) {
       var draw = !bndShown && S.screen === 3 && !reducedMotion();
-      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' : "") }));
+      var wait = draw && roundEnd ? ' style="animation-delay:' + (roundEnd + 0.15).toFixed(2) + 's"' : "";
+      s.push(poly(BND, A, { op: .07, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' + wait : "") }));
       s.push(poly(BND, "none", { st: A, sw: 4, attr: 'data-boundary="edge"' +
-        (draw ? ' data-draw="1" stroke-dasharray="' + BND_LEN + '" stroke-dashoffset="' + BND_LEN + '"' : "") }));
+        (draw ? ' data-draw="1" stroke-dasharray="' + BND_LEN + '" stroke-dashoffset="' + BND_LEN + '"' + wait : "") }));
     }
     bndShown = crossed;
 
+    /* a house that is arriving in this round: drawn hollow, with its
+       solid self fading in over it the moment the thread reaches its gate */
+    function houseAt(i, on, ring) {
+      if (on && arriving(i)) {
+        var at = arriveAt[RANK[i]] || 0;
+        return house(i, false, ring) + '<g class="arrive" style="animation-delay:' + at.toFixed(2) + 's">' + house(i, true, false) + '</g>';
+      }
+      return house(i, on, ring);
+    }
+
     /* planting behind the upper row (far), the upper row, strips, then the
        near row and its garden */
+    function stripDelay(i) { return arriving(i) ? (arriveAt[RANK[i]] || 0) : null; }
     TREES.forEach(function (t) { s.push(tree(t[0], t[1], t[2], t[3])); });
-    s.push(strips(true, isIn, crossed));
+    s.push(strips(true, isIn, crossed, stripDelay));
     for (i = 0; i < PER_ROW; i++) {
-      s.push(house(i, alone ? i === ROSA : isIn(i), ringed && i === ROSA));
+      s.push(houseAt(i, alone ? i === ROSA : isIn(i), ringed && i === ROSA));
       if (verified && isIn(i)) { s.push(tick(i)); }
     }
-    s.push(strips(false, isIn, crossed));
+    s.push(strips(false, isIn, crossed, stripDelay));
     SHRUBS.forEach(function (t) { s.push(shrub(t[0], t[1], t[2])); });
     for (i = PER_ROW; i < HOMES; i++) {
-      s.push(house(i, isIn(i), false));
+      s.push(houseAt(i, isIn(i), false));
       if (verified && isIn(i)) { s.push(tick(i)); }
     }
+
+    /* the lens at the head of the thread, over everything */
+    if (thr) { s.push(thr.lens); }
 
     s.push('</g>');
     svg.innerHTML = s.join("");
@@ -515,7 +683,10 @@
 
   /* The tether: the line that ties the agreement object on screen 2 to the
      ring round no. 31. From the ring's edge to the nearest point on the
-     card's edge; hidden when the house is off-screen or under the card. */
+     card's edge; hidden when the house is off-screen or under the card.
+     Before she signs it is an ink tie. Once signed it is the start of her
+     agent's thread — plum, from her paper, ending in the lens mark at her
+     home (§ A: the thread begins at the human's paper). */
   function placeTether(m) {
     if (!tetherEl) { return; }
     var card = S.screen === 2 ? document.getElementById("deal-card") : null;
@@ -532,9 +703,17 @@
     var ux = dx / len, uy = dy / len;
     var ax = p0.x + ux * rad, ay = p0.y + uy * rad;
     tetherEl.setAttribute("viewBox", "0 0 " + window.innerWidth + " " + window.innerHeight);
+    var seg = ' x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) + '" x2="' + qx.toFixed(1) + '" y2="' + qy.toFixed(1) + '"';
+    if (S.joined) {
+      tetherEl.innerHTML =
+        '<line' + seg + ' stroke="' + P + '" stroke-width="6" stroke-linecap="round"/>' +
+        '<line' + seg + ' stroke="' + PLUM + '" stroke-width="2" stroke-linecap="round" opacity=".42"/>' +
+        lens(ax, ay, null);
+      return;
+    }
     tetherEl.innerHTML =
-      '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) + '" x2="' + qx.toFixed(1) + '" y2="' + qy.toFixed(1) + '" stroke="' + P + '" stroke-width="5" stroke-linecap="round"/>' +
-      '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) + '" x2="' + qx.toFixed(1) + '" y2="' + qy.toFixed(1) + '" stroke="' + INK + '" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<line' + seg + ' stroke="' + P + '" stroke-width="5" stroke-linecap="round"/>' +
+      '<line' + seg + ' stroke="' + INK + '" stroke-width="1.8" stroke-linecap="round"/>' +
       '<circle cx="' + ax.toFixed(1) + '" cy="' + ay.toFixed(1) + '" r="4" fill="' + INK + '" stroke="' + P + '" stroke-width="1.5"/>';
   }
 
@@ -590,8 +769,7 @@
   var joinBtn = document.getElementById("join");
   var joinedEl = document.getElementById("joined");
   var joinedN = document.getElementById("joined-n");
-  var range = document.getElementById("thr-range");
-  var railEl = range ? range.parentNode : null;
+  var inviteBtn = document.getElementById("invite");
   var ctlEl = document.getElementById("ctl");
   var countEl = document.getElementById("thr-count");
   var offerEl = document.getElementById("offer");
@@ -604,7 +782,6 @@
   var verBtn = document.getElementById("verify-toggle");
   var arrHead = document.getElementById("arr-head");
   var arrLine = document.getElementById("arr-line");
-  var arrProv = document.getElementById("arr-prov");
   var arrStatus = document.getElementById("arr-status");
   var arrN = document.getElementById("arr-n");
   var nextBtnEl = document.getElementById("next");
@@ -639,44 +816,48 @@
 
   /* Screen 5's READY line: the contrast, as two tabs joined by an arrow.
      "Alone · no offer" wears screen 1's state — muted, the hollow dashed
-     mark of a pending step — and "Together · coverage offer, final terms
-     pending" the green and the solid met mark of screen 4's chips. The
-     arrow is artwork; the spaces around it keep the words apart in
-     textContent. Nothing here says active, in force, signed or begun. */
+     mark of a pending step — and "Together · conditional offer secured"
+     the green and the solid met mark of screen 4's chips. The arrow is
+     artwork; the spaces around it keep the words apart in textContent.
+     Nothing here says covered, active, in force, signed or begun. */
   var MARK = '<svg class="xtab-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false">' +
              '<circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>';
   function tabs() {
     return '<span class="xtab xtab--alone">' + MARK + '<span class="xtab-t">Alone · no offer</span></span> ' +
            '<span class="xtab-arrow" aria-hidden="true">→</span> ' +
-           '<span class="xtab xtab--together">' + MARK + '<span class="xtab-t">Together · coverage offer, final terms pending</span></span>';
+           '<span class="xtab xtab--together">' + MARK + '<span class="xtab-t">Together · conditional offer secured</span></span>';
+  }
+
+  /* #invite's two states: a round remains, or the street is assembled.
+     Unjoined there is no agent to send, so the button is inert too. */
+  function inviteState() {
+    if (!S.joined) { return "none"; }
+    return S.committed >= NEED ? "done" : "ready";
   }
 
   function paint() {
     var open = S.committed >= NEED;
-    var lo = floor(), hi = ceil();
 
     /* screen 2 — the one action, or its result (with the live count) */
     if (joinBtn) { joinBtn.hidden = S.joined; }
     if (joinedEl) { joinedEl.hidden = !S.joined; }
     if (joinedN) { joinedN.textContent = String(S.committed); }
 
-    /* screen 3 — the slider's bounds follow `joined` */
-    if (range) {
-      if (+range.min !== lo) { range.min = String(lo); }
-      if (+range.max !== hi) { range.max = String(hi); }
-      if (+range.value !== S.committed) { range.value = String(S.committed); }
-      /* the track fills behind the thumb, so the distance still to travel is
-         visible without reading the number; the "48 needed" tick is placed
-         on the track by the same arithmetic */
-      range.style.setProperty("--p", ((S.committed - lo) / (hi - lo) * 100).toFixed(2) + "%");
-      if (railEl) { railEl.style.setProperty("--tick", ((NEED - lo) / (hi - lo)).toFixed(4)); }
-    }
+    /* screen 3 — the count, the agent's one line, the invite button */
     if (countEl) { countEl.textContent = String(S.committed); }
-    if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; }
+    if (ctlEl) { ctlEl.dataset.state = open ? "open" : "closed"; ctlEl.dataset.agent = S.joined ? "on" : "off"; }
     if (offerEl) { offerEl.dataset.state = open ? "open" : "closed"; }
     if (offerText) { offerText.textContent = conditionLine(open); }
+    if (inviteBtn) {
+      var st = inviteState();
+      inviteBtn.textContent = st === "done" ? "Street assembled" : "Invite the street";
+      /* not `disabled` and not aria-disabled: the button stays readable
+         and pressable in every state, and the press is simply answered
+         (below) when there is nothing to invite */
+      inviteBtn.dataset.state = st;
+    }
 
-    /* screen 4 — the count is the slider's, never clamped to 48 */
+    /* screen 4 — the count is the street's, never clamped to 48 */
     if (condN) { condN.textContent = String(S.committed); }
     if (stepPart) { stepPart.dataset.state = open ? "met" : "pending"; }
     if (stepImpr) { stepImpr.dataset.state = S.verified ? "met" : "pending"; }
@@ -687,73 +868,72 @@
     /* screen 5 — derived. Ready: the payoff returns to Maggie. The line is
        the contrast, two tabs joined by an arrow: Alone (screen 1's state —
        muted, the hollow dashed mark) → Together (green, the met mark): a
-       coverage offer with the final terms still pending. The three status
-       chips name what is settled (participation, the live count;
-       verification) and what is not (her share and premium — set before
-       she accepts). */
+       conditional offer secured. The three status chips name what is
+       settled (participation, the live count; verification) and what is
+       not (the terms and her acceptance — pending). */
     if (arrHead && arrLine) {
       if (ready()) {
         arrHead.innerHTML = spans(["Together, the offer", "Maggie couldn't get alone."]);
         arrLine.innerHTML = tabs();
-        /* (the former single green line, kept here for the record:
-           "Coverage for participating homes · three years · while 48 stay
-           in" — now facilitator material) */
       } else {
         arrHead.innerHTML = spans(["Still pending."]);
         arrLine.innerHTML = spans(missing());
       }
-      if (arrProv) { arrProv.hidden = !ready(); }
       if (arrStatus) { arrStatus.hidden = !ready(); }
       if (arrN) { arrN.textContent = String(S.committed); }
       screens[4].dataset.state = ready() ? "ready" : "pending";
     }
 
     /* chrome — Next steps aside while the screen's own action is still to
-       be taken: quiet paper on screen 2 until joined, on screen 4 until
-       verified. Its label and behaviour never change; only its weight. */
+       be taken: quiet paper on screen 2 until joined, on screen 3 until
+       the street reaches 48, on screen 4 until verified. Its label and
+       behaviour never change; only its weight. */
     if (nextBtnEl) {
       nextBtnEl.classList.toggle("cta--quiet",
-        (S.screen === 2 && !S.joined) || (S.screen === 4 && !S.verified));
+        (S.screen === 2 && !S.joined) || (S.screen === 3 && !open) || (S.screen === 4 && !S.verified));
     }
   }
 
   /* repaint the words, then whatever the open screen draws from them */
   function repaint() {
     paint();
+    save();
     if (S.screen >= 2) { drawFor(S.screen); buildPins(S.screen); }
     refit();
   }
 
   /* #join — Maggie authorises her agent to assemble the proposal. The only
-     thing that sets `joined`; it counts no. 31 in. It accepts nothing: her
-     share is set before she accepts, and acceptance is not modelled because
-     nothing exists to accept. */
+     thing that sets `joined`; it counts no. 31 in and draws her signature.
+     It accepts nothing: her share is set before she accepts, and
+     acceptance is not modelled because nothing exists to accept. */
   if (joinBtn) {
     joinBtn.addEventListener("click", function () {
       if (S.joined) { return; }
       S.joined = true;
-      S.committed = clampCommitted(S.committed + 1);
+      S.committed = START + 1;
       repaint();
       say("Joined the proposal. " + S.committed + " of 60. No. 31 is now counted in; no terms accepted yet.");
     });
   }
 
-  var lastOpen = null;
-  if (range) {
-    range.addEventListener("input", function () {
-      S.committed = clampCommitted(parseInt(range.value, 10) || 0);
-      var open = S.committed >= NEED;
+  /* #invite — her agent carries the proposal to the next households. One
+     round per press: three more agents accept, the thread reaches each
+     lot and the home fills; the count can only stand at 42, 45 or 48. At
+     48 the street is assembled and the press does nothing. Unjoined, the
+     button is inert: there is no agent to send. */
+  if (inviteBtn) {
+    inviteBtn.addEventListener("click", function () {
+      var st = inviteState();
+      if (st === "done") { say("The street is assembled: " + S.committed + " of 60. Nothing more to invite."); return; }
+      if (st === "none") { say("Her agent has no authority yet. Authorise it on the deal, screen 2."); return; }
+      var from = S.committed, to = Math.min(NEED, S.committed + ROUND);
+      S.committed = to;
+      round = { from: from, to: to };
       repaint();
-      if (open !== lastOpen) {
-        say(open
-          ? "Threshold met at " + S.committed + " of 60. Participation reached; improvements and verification still required."
-          : "Below the threshold at " + S.committed + " of 60. " + (NEED - S.committed) + " more needed.");
-      } else {
-        say(open
-          ? S.committed + " of 60 joined. The threshold of 48 is met."
-          : S.committed + " of 60 joined, " + (NEED - S.committed) + " short of 48.");
-      }
-      lastOpen = open;
+      var open = S.committed >= NEED;
+      say(open
+        ? "Street assembled: " + S.committed + " of 60. Participation reached; improvements and verification still required."
+        : S.committed + " of 60 joined. " + (NEED - S.committed) + " more households needed.");
     });
   }
 
@@ -772,32 +952,38 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   function altFor(n) {
-    var c = S.committed, hollow = HOMES - c;
+    var c = S.committed, hollow = HOMES - c, reached = c - (START + 1);
     var streetState = "The street with " + c + " of the sixty houses joined: each solid green with a " +
       "cleared frontage strip at the road. The remaining " + hollow + " are hollow with dashed edges and no strip. " +
+      (S.joined
+        ? "A thin plum thread, her agent's, runs from number 31 to the road" +
+          (reached > 0 ? " and along it to the " + reached + " households her agent has reached, ending in a lens mark. " : ", ending in a lens mark at the kerb. ")
+        : "") +
       (c >= NEED
         ? "An amber boundary encloses the whole street, hollow houses included. "
         : "There is no boundary around the street. ") +
       (S.verified ? "Every joined house carries a small ochre check: the surveyor's mark. " : "");
     if (n === 1) {
       return "Thorn Lane drawn in a shallow oblique: sixty houses in two rows of thirty either " +
-        "side of one road, in three blocks a side, with a planted slope behind. Every house is " +
-        "hollow with a dashed edge except number 31, Maggie's home, which is solid and ringed and " +
-        "labelled “Maggie's home, No. 31”. She has hardened her own lot and still has no offer, " +
-        "because the street around her sets the price.";
+        "side of one road, in three blocks a side, with a planted slope behind. A warm hatched " +
+        "shading runs from the slope down across every lot, the road and the gaps between blocks, " +
+        "ignoring the lot lines: the risk is the street's. Every house is hollow with a dashed " +
+        "edge except number 31, Maggie's home, which is solid and ringed and labelled " +
+        "“Maggie's home, No. 31”. She has hardened her own lot and the street still sets her price.";
     }
     if (n === 2) {
       return "Close on number 31, Maggie's home, ringed, and the houses either side of it. " +
         (S.joined
-          ? "Number 31 is solid: she has joined, and the count is " + c + " of sixty. "
-          : "Number 31 is hollow with a dashed edge: she has not joined; " + c + " others are solid. ") +
-        "A line ties the ring to the terms sheet above it.";
+          ? "Number 31 is solid: she has joined, and the count is " + c + " of sixty. A plum thread runs from " +
+            "the signed terms sheet to a lens mark at the ring: her agent's thread begins at her paper."
+          : "Number 31 is hollow with a dashed edge: she has not joined; " + c + " others are solid. " +
+            "A line ties the ring to the terms sheet above it.");
     }
     if (n === 3) { return streetState; }
     if (n === 4) { return streetState + "Three condition steps sit along the foot of the scene."; }
     return streetState + (ready()
-      ? "Together, the street holds the offer Maggie could not get alone; her share and premium are set before " +
-        "she accepts. Number 31 is labelled “Maggie's home”" +
+      ? "Together, the street holds a conditional offer Maggie could not get alone; the terms and her " +
+        "acceptance are pending. Number 31 is labelled “Maggie's home”" +
         (c < HOMES ? "; one house that has not joined is labelled “outside the arrangement”." : ".")
       : "The street is still pending.");
   }
@@ -805,7 +991,7 @@
   function drawFor(n) {
     if (n === 1)      { renderStreet({ mode: "alone", alt: altFor(n) }); }
     else if (n === 2) { renderStreet({ mode: "commit", ring: true, alt: altFor(n) }); }
-    else              { renderStreet({ mode: "commit", verified: S.verified, alt: altFor(n) }); }
+    else              { renderStreet({ mode: "commit", verified: S.verified, thread: true, alt: altFor(n) }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -967,11 +1153,14 @@
           ? Array.prototype.map.call(sp, function (x) { return x.textContent.trim(); }).join(" ")
           : h.textContent)
       : sc.dataset.label;
+    if (n === 3) {
+      said += " Proposal participants " + S.committed + " of 60, 48 needed. " + conditionLine(S.committed >= NEED) +
+        (S.joined ? "" : " Her agent has no authority yet: authorise it on the deal.");
+    }
     if (n === 5) {
       said += " " + (ready()
-        ? "Alone, no offer; together, a coverage offer, final terms pending. Participation " + S.committed +
-          " of 60; verification complete; your share and premium, set before you accept. " +
-          "Arranged by the service; it earns when coverage starts."
+        ? "Alone, no offer; together, a conditional offer secured. Participation " + S.committed +
+          " of 60; verification complete; terms and acceptance pending."
         : missing().join(". ") + ".");
     }
     announce.textContent = "Screen " + n + " of " + total + ". " +
@@ -983,13 +1172,15 @@
   }
 
   /* "Back to the start" — the ONE reset in the deck. The authorisation, the
-     slider's count and the verification all return to their entry values.
-     Going back with the arrow, the picker or a hash never resets anything. */
+     count and the verification all return to their entry values and the
+     stored state is cleared. Going back with the arrow, the picker or a
+     hash never resets anything. */
   function restart() {
     S.joined = false;
     S.committed = START;
     S.verified = false;
-    lastOpen = null;
+    round = null;
+    save();
     show(1);
     say("Back to the start. Not joined; 41 of 60 joined; verification pending.");
   }
@@ -1009,10 +1200,9 @@
     if (t) { show(parseInt(t.dataset.goto, 10)); }
   });
 
-  /* Arrow keys move the deck — except inside the threshold slider and the
-     picker, where the arrow keys belong to the control. A focused button
-     (Next, after a tap) has no use for left and right, so they still move
-     the deck. */
+  /* Arrow keys move the deck — except inside the picker, where the arrow
+     keys belong to the control. A focused button (Next, after a tap) has
+     no use for left and right, so they still move the deck. */
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
@@ -1069,6 +1259,7 @@
   });
 
   narrow = isNarrow();
+  load();
   paint();
   show(fromHash() || 1, false);
   moveCamera(screens[S.screen - 1].dataset.cam, true);

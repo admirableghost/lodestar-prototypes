@@ -18,6 +18,9 @@
                 last screen) clears it.
      S.choice   screen 5: keep | narrow | expand | null. Future authority
                 only; nothing on screen 4 reads it.
+   The grammar reads the same state: #deck carries data-auth ("" until a
+   decision, then "bounded" | "none"); the CSS draws the signature dash on
+   her paper and makes the boundary solid only for "bounded".
    There is no simulation control.
 
    WHAT IS INVENTED
@@ -250,12 +253,14 @@
 
   /* ── SCREEN 1 · the drafted work ────────────────────────────────────
      Every order is a draft here, whatever the authority: the reply and
-     the rows are the collection, counted and summed. Rendered once. */
+     the rows are the collection, counted and summed. Rendered once. The
+     line under the reply ("It's done the work. Every purchase still waits
+     for you.") is static in the HTML. */
   var s1Reply = document.getElementById("s1-reply");
   var s1Rows = document.getElementById("s1-rows");
   function renderS1() {
     if (s1Reply) {
-      s1Reply.textContent = word(ORDERS.length) + " orders drafted · " + fmt(sum(ORDERS)) + " USD. Placing them needs your authorisation.";
+      s1Reply.textContent = word(ORDERS.length) + " orders drafted · " + fmt(sum(ORDERS)) + " USD.";
     }
     if (s1Rows) {
       s1Rows.innerHTML = ORDERS.map(function (o) {
@@ -267,16 +272,20 @@
   /* ── SCREEN 3 · the customer authorises ──────────────────────────────
      The card carries data-decided ("" | "bounded" | "none") so the CSS can
      keep Authorise as the primary control until Keep draft-only is the
-     pressed one. Nothing here sets S.mode. */
+     pressed one. The deck carries the same value as data-auth for the
+     grammar: the signature dash on her paper and the solid boundary are
+     drawn only for "bounded". Nothing here sets S.mode. */
   var btnAuth = document.getElementById("authorise");
   var btnDraft = document.getElementById("draft-only");
   var authCard = document.getElementById("auth-card");
+  var deck = document.getElementById("deck");
   function renderS3() {
     var on = S.mode === "bounded";
     setBand("band3", S.mode, { ghost: (on && S.decided) ? "none" : null });
     if (btnAuth)  { btnAuth.setAttribute("aria-pressed",  String(S.decided && on)); }
     if (btnDraft) { btnDraft.setAttribute("aria-pressed", String(S.decided && !on)); }
     if (authCard) { authCard.dataset.decided = S.decided ? S.mode : ""; }
+    if (deck)     { deck.dataset.auth = S.decided ? S.mode : ""; }
   }
   function setMode(on) {
     S.mode = on ? "bounded" : "none";
@@ -293,9 +302,10 @@
      Derived from ORDERS under S.mode and nothing else. Authorised: the
      covered mistake is the hero — the cover's slip, its own paper between
      the placed rows and the returned row, tied to the order it remedied
-     by data-order; the placed rows and the returned row are quiet
-     evidence (the unit lives on the totals line); one totals line. Draft
-     only shows the day as it really would be: nothing placed, every order
+     by data-order; the placed rows are quiet evidence inside the boundary
+     and the returned row is the warm-paper slip crossing back over it
+     (the unit lives on the totals line); one totals line. Draft only
+     shows the day as it really would be: nothing placed, every order
      waiting, one way back to the decision. */
   var s4h = document.getElementById("s4-h");
   var dayAuth = document.getElementById("day-auth");

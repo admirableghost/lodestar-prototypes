@@ -40,20 +40,27 @@
   </defs>
 </svg>
 
-<!-- ONE WORKSPACE, FIVE BEATS.
-     The same paper panel — Halden's workspace — sits on the same dark field
-     on every screen. The customer speaks in it, the assistant replies in
-     it, and the one decision that matters (screen 3) is made in it. Beside
-     the panel, where it helps, a small cut-paper support: the three parties
-     (2), the permitted zone and its line (3, 5). The line is support; the
-     card is the object. Copy is the locked contract and nothing more.
-       1 · the request and the drafted work (every order, with its
-           amount); authority is missing
-       2 · the arrangement, as an offer card
+<!-- ONE WORKSPACE, FIVE BEATS — in the shared agent grammar.
+     HUMAN  her request on warm paper (#F3EBD7), first person, a hand-set
+            quote; on screens 2–5 a wordless paper stub stands for the same
+            note. Authority is given by a SIGNATURE DASH drawn on the paper
+            when she authorises on screen 3 (data-auth on the deck).
+     AGENT  Halden's dark plate (#262E36) with the plum rule; the LENS mark
+            (circle + handle) at the head of a continuous plum THREAD that
+            begins under her paper and runs through everything the agent
+            touches; activity is a pulse along the thread. Halden speaks in
+            short messages (.say), never paragraphs.
+     AUTHORITY AS GEOMETRY  on screen 3 the boundary (.inside) is drawn
+            around the thread — dashed until she decides, solid amber once
+            authorised; on screen 4 the thread and the placed orders stay
+            inside it and the returned control boards cross back over it to
+            her as a warm-paper slip.
+       1 · the request and the drafted work; authority is missing
+       2 · the arrangement, as an offer card with the three roles
        3 · the authorisation card: two buttons, nothing preselected
        4 · the day that follows — read from the mode set on 3
        5 · the next boundary: a choice about future authority only -->
-<main class="deck" id="deck">
+<main class="deck" id="deck" data-auth="">
 
 <!-- ══════ 1 · THE TASK ══════ -->
 <section class="screen screen--s1" data-screen="1" data-label="The task" data-cam="queue" data-veil="soft">
@@ -68,11 +75,16 @@
     <div class="ws" role="region" aria-label="Halden workspace">
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
-        <div class="msg msg--you"><p>Restock what's short across the branches. Approved suppliers only.</p></div>
-        <div class="msg msg--ai">
+        <i class="tline" aria-hidden="true"></i>
+        <!-- her request: warm paper, her words -->
+        <div class="paper">
+          <p>&ldquo;Restock what's short across the branches. Approved suppliers only.&rdquo;</p>
+        </div>
+        <div class="msg msg--ai msg--lead">
           <!-- the reply and the rows are derived from ORDERS in app.js:
                count, total and one row per order with its amount -->
-          <p id="s1-reply"></p>
+          <p class="say" id="s1-reply"></p>
+          <p class="say">It's done the work. Every purchase still waits for you.</p>
           <ul class="rows rows--parts" id="s1-rows"></ul>
         </div>
       </div>
@@ -82,11 +94,11 @@
 </section>
 
 <!-- ══════ 2 · THE ARRANGEMENT ══════
-     A contextual assistant message, not a diagram: the assistant names why
-     this task needs protection (placing = spending without the customer in
-     the room), then offers the arrangement as a dashed card — dashed because
-     it is proposed. The three-party drawing is small and secondary beside
-     it. No premium, share or limit is drawn. -->
+     A contextual assistant message, then the arrangement as a dashed card —
+     dashed because it is proposed. The three roles are three lines, each
+     with its mark (plate, seal, paper); the covered mistakes sit on the
+     card under the insurer's seal. No three-party drawing. No premium,
+     share or limit is drawn. -->
 <section class="screen screen--s2" data-screen="2" data-label="The arrangement" data-cam="boundary" data-veil="">
 
   <div class="top">
@@ -99,37 +111,28 @@
     <div class="ws" role="region" aria-label="Halden workspace">
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
-        <div class="msg msg--ai">
-          <p>Placing these means spending without you in the room. Protection comes with that authority.</p>
+        <i class="tline" aria-hidden="true"></i>
+        <div class="paper paper--stub" aria-hidden="true">
+          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
+          <span class="q">&ldquo;</span>
+        </div>
+        <div class="msg msg--ai msg--lead">
+          <p class="say">Placing these means spending without you in the room.</p>
           <div class="card card--offer">
             <p class="card-h">Act within cover</p>
-            <ul class="rows rows--lines">
-              <li>Halden funds an agreed share of the protection</li>
-              <li>An insurer specifies cover and handles claims</li>
-              <li>You decide what the agent may do</li>
+            <ul class="rows rows--roles">
+              <li data-role="agent">Halden distributes it and contributes to its cost</li>
+              <li data-role="insurer">An insurer underwrites the specified mistakes and handles covered losses</li>
+              <li data-role="you">You pay for the protected capability and set the authority</li>
             </ul>
+            <p class="covers">
+              <svg class="seal" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#2F5E7C" stroke-width="2.4"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#2F5E7C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>wrong part</span><span>wrong quantity</span><span>duplicate order</span>
+            </p>
           </div>
         </div>
       </div>
     </div>
-
-    <aside class="support support--triad">
-      <div class="triad" role="img" aria-label="A small drawing of three paper tags, Halden, an insurer and you, joined by dashed threads around one purchase order.">
-        <svg class="triad-lines" viewBox="0 0 220 176" aria-hidden="true">
-          <g fill="none" stroke="#B9B2A0" stroke-width="2" stroke-dasharray="6 6">
-            <line x1="46" y1="42" x2="92" y2="78"/>
-            <line x1="174" y1="42" x2="128" y2="78"/>
-            <line x1="110" y1="124" x2="110" y2="146"/>
-          </g>
-        </svg>
-        <span class="ptag ptag--ai"><b>Halden</b></span>
-        <span class="ptag ptag--ins"><b>Insurer</b></span>
-        <span class="ptag ptag--you"><b>You</b></span>
-        <span class="sheet sheet--mini sheet--mini-c" aria-hidden="true">
-          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".5"><line x1="0" y1="10" x2="100" y2="10"/><line x1="0" y1="28" x2="100" y2="28"/><line x1="0" y1="46" x2="64" y2="46"/></g></svg>
-        </span>
-      </div>
-    </aside>
   </div>
 
 </section>
@@ -138,10 +141,12 @@
      ONE card, framed as applying to this task ("For this restock"). Two
      buttons, nothing preselected; Next is never consent. Authorise is the
      primary control — filled, wider, taller — so a fresh participant finds
-     it before Next; Keep draft-only is the secondary outline. Beside the
-     card, a wordless support band: the permitted tray and its line, a
-     small order, the hatched exception. After a press the line moves (or
-     stays). The exception never moves. The card stays. -->
+     it before Next; Keep draft-only is the secondary outline. The boundary
+     (.inside) is drawn around the thread: dashed until she decides, solid
+     once she authorises, when the signature dash is drawn on her paper.
+     Beside the card, a wordless support band: the permitted tray and its
+     line, a small order, the hatched exception. After a press the line
+     moves (or stays). The exception never moves. The card stays. -->
 <section class="screen screen--s3" data-screen="3" data-label="Authorise" data-cam="boundary" data-veil="">
 
   <div class="top">
@@ -154,19 +159,27 @@
     <div class="ws" role="region" aria-label="Halden workspace">
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
-        <div class="msg msg--ai">
-          <div class="card card--auth" id="auth-card" data-decided="">
-            <p class="card-h">For this restock</p>
-            <dl class="terms">
-              <div><dt>Permitted</dt><dd>reorder stocked parts from approved suppliers</dd></div>
-              <div><dt>Limit</dt><dd>25,000 USD per order, 180,000 weekly</dd></div>
-              <div><dt>Covered</dt><dd>wrong part, wrong quantity, duplicate order</dd></div>
-              <div><dt>Yours</dt><dd>the demand forecast you supplied</dd></div>
-              <div class="hard"><dt>Always you</dt><dd>new supplier, over the limit</dd></div>
-            </dl>
-            <div class="acts acts--auth" role="group" aria-label="Your decision">
-              <button type="button" id="authorise" class="primary" aria-pressed="false">Authorise within these limits</button>
-              <button type="button" id="draft-only" aria-pressed="false">Keep draft-only</button>
+        <i class="tline" aria-hidden="true"></i>
+        <div class="paper paper--stub" aria-hidden="true">
+          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
+          <span class="q">&ldquo;</span>
+          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="msg msg--ai msg--lead">
+          <div class="inside" id="bound3">
+            <div class="card card--auth" id="auth-card" data-decided="">
+              <p class="card-h">For this restock</p>
+              <dl class="terms">
+                <div><dt>Permitted</dt><dd>reorder stocked parts from approved suppliers</dd></div>
+                <div><dt>Limit</dt><dd>25,000 USD per order, 180,000 weekly</dd></div>
+                <div><dt>Covered</dt><dd>wrong part, wrong quantity, duplicate order</dd></div>
+                <div><dt>Yours</dt><dd>the demand forecast you supplied</dd></div>
+                <div class="hard"><dt>Always you</dt><dd>new supplier, over the limit</dd></div>
+              </dl>
+              <div class="acts acts--auth" role="group" aria-label="Your decision">
+                <button type="button" id="authorise" class="primary" aria-pressed="false">Authorise within these limits</button>
+                <button type="button" id="draft-only" aria-pressed="false">Keep draft-only</button>
+              </div>
             </div>
           </div>
         </div>
@@ -197,12 +210,12 @@
 <!-- ══════ 4 · THE DAY ══════
      Read from ORDERS under the mode set on screen 3; every row, count and
      total is rendered by app.js. Authorised: the headline carries the
-     benefit ("… placed without a buyer."); the covered mistake is the hero
-     — the cover's slip steps out of the ledger as its own paper, between
-     the three placed rows and the returned one, still tied to the order it
-     remedied by data-order; the rows are quiet evidence; one totals line.
-     Draft-only: nothing placed, one waiting row, one authority row, one
-     way back. No simulation. -->
+     benefit ("… placed without a buyer."); inside the boundary the three
+     placed rows and the covered mistake — the hero slip on its own paper,
+     tied to the order it remedied by data-order; the returned control
+     boards cross back over the boundary to her as a warm-paper slip; one
+     totals line beneath. Draft-only: nothing placed, one waiting row, one
+     authority row, one way back. No simulation. -->
 <section class="screen screen--s4" data-screen="4" data-label="The day" data-cam="run" data-veil="soft">
 
   <div class="top">
@@ -215,20 +228,29 @@
     <div class="ws" role="region" aria-label="Halden workspace">
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
+        <i class="tline" aria-hidden="true"></i>
+        <div class="paper paper--stub" aria-hidden="true">
+          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
+          <span class="q">&ldquo;</span>
+          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
 
-        <div class="msg msg--ai" id="day-auth" hidden>
-          <!-- placed orders: quiet evidence -->
-          <ul class="done" id="day-rows"></ul>
-          <!-- the hero: the cover's slip, its own paper, tied to the order it
-               remedied (data-order); revealed when the screen opens -->
-          <p class="slip" id="day-slip" hidden></p>
-          <!-- the one that needed a person: set apart, on the approval side -->
-          <ul class="done done--ask" id="day-ask"></ul>
+        <div class="msg msg--ai msg--lead" id="day-auth" hidden>
+          <div class="inside inside--day">
+            <!-- placed orders: quiet evidence, inside the authority -->
+            <ul class="done" id="day-rows"></ul>
+            <!-- the hero: the cover's slip, its own paper, tied to the order it
+                 remedied (data-order); revealed when the screen opens -->
+            <p class="slip" id="day-slip" hidden></p>
+            <!-- the one that needed a person: a warm-paper slip crossing back
+                 over the boundary to her -->
+            <ul class="done done--ask" id="day-ask"></ul>
+          </div>
           <!-- the day summed: placed, and what awaits approval -->
           <p class="sum" id="day-sum"></p>
         </div>
 
-        <div class="msg msg--ai" id="day-draft">
+        <div class="msg msg--ai msg--lead" id="day-draft">
           <ul class="done">
             <li class="done-row done-row--ask done-row--wait" id="day-wait"></li>
             <li class="done-row done-row--mute"><span class="st">Authority</span><span class="what">draft only</span></li>
@@ -262,8 +284,14 @@
     <div class="ws" role="region" aria-label="Halden workspace">
       <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
       <div class="thread">
-        <div class="msg msg--ai">
-          <p id="s5-ctx"></p>
+        <i class="tline" aria-hidden="true"></i>
+        <div class="paper paper--stub" aria-hidden="true">
+          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
+          <span class="q">&ldquo;</span>
+          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="msg msg--ai msg--lead">
+          <p class="say" id="s5-ctx"></p>
           <div class="acts acts--dec" role="group" aria-labelledby="s5-h">
             <button type="button" data-choice="keep"   aria-pressed="false">Keep</button>
             <button type="button" data-choice="narrow" aria-pressed="false">Narrow</button>

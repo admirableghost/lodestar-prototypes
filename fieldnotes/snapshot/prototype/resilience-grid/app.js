@@ -25,11 +25,14 @@
 
    THE SEQUENCE
      1 The problem      availability retreats: Earlier / Now
-     2 The business     four parts on the terrain, one hub, three
-                        relationship types drawn three ways
-     3 The moment       eight events, one human call
-     4 The evidence     three columns over the subdued county
-     5 Market creation  the current limit and one conditional limit
+     2 The business     four parts on the terrain, one hub, three payer
+                        marks converging on it
+     3 The moment       eight events walked in four steps, one human call
+     4 The evidence     three plates over the subdued county
+     5 Market creation  the current limit and one potential frontier
+
+   STATE. `availability` and the moment's step persist in sessionStorage;
+   restart from screen 5 resets them.
 
    WHAT IS INVENTED AND WHAT IS NOT
    Alder County, the Mill Creek lateral, the 14:31 fault and every time on
@@ -306,10 +309,8 @@
     '<linearGradient id="flankE" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A3A47C"/><stop offset="1" stop-color="#5E6E52"/></linearGradient>' +
     '<linearGradient id="ridgeShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FA99C" stop-opacity=".28"/><stop offset=".45" stop-color="#9FA99C" stop-opacity="0"/><stop offset="1" stop-color="#121A15" stop-opacity=".22"/></linearGradient>' +
     '<linearGradient id="valley" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + C.valley + '"/><stop offset="1" stop-color="' + C.valleyLit + '"/></linearGradient>' +
-    /* screen 2's three arrowheads: filled (services bought), hollow (a proposed stake), small filled (evidence going out) */
-    '<marker id="arrSolid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker>' +
-    '<marker id="arrHollow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M1 1L11 6L1 11Z" fill="' + PAPER + '" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></marker>' +
-    '<marker id="arrDot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker>' +
+    /* screen 2's arrowhead: the three payer marks converge on the operation */
+    '<marker id="arrSolid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker>' +
     '<radialGradient id="heat" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="' + ALARM + '" stop-opacity=".45"/><stop offset="1" stop-color="' + ALARM + '" stop-opacity="0"/></radialGradient>' +
     /* the torn edge behind every headline block (applied from CSS) and the hatch for a locked-out recloser */
     '<filter id="s3-rough" x="-4%" y="-6%" width="108%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
@@ -508,6 +509,7 @@
       b.setAttribute("aria-pressed", String(b.dataset.set === state));
     });
     if (!quiet) { say(SAID[state]); }
+    persist();
   }
 
   function availPaths() {
@@ -553,11 +555,12 @@
     G["rg-labels"].innerHTML = T.join("");
   }
 
-  /* ══ screen 5: the current limit, and ONE conditional limit upslope.
-     Between the two, three small sage arrows point upslope — the
-     counter-movement to screen 1's retreat (which has none). They sit on
-     open ground between the communities; nothing between the limits is
-     filled. ══ */
+  /* ══ screen 5: the current limit, solid, as on screen 1 — it has not
+     moved — and ONE potential frontier upslope, dashed and sage, drawn as
+     a possibility. Between the two, three small sage arrows point upslope
+     — the counter-movement to screen 1's retreat (which has none). They
+     sit on open ground between the communities; nothing between the
+     limits is filled. ══ */
   var SAGE_INK = "#3E5640";
   var S5_ARROWS = [240, 745, 1150];
   function drawS5(f) {
@@ -582,48 +585,49 @@
     G["rg-availability"].innerHTML = A.join("");
     var label = labeller(T, f), LH = f.size * 1.3;
     var CURRENT = isPhone() ? [["Current", "b", C.label], ["availability limit", "b", C.label]] : [["Current availability limit", "b", C.label]];
-    var COULD = narrow ? [["Could become", "b", SAGE_INK], ["insurable again", "b", SAGE_INK]] : [["Could become insurable again", "b", SAGE_INK]];
+    var FRONTIER = [["Potential frontier", "b", SAGE_INK], ["with evidence and capital", "r", SAGE_INK]];
     f.avoidSolids = true; f.strictSolids = true;
     f.placed = f.placed.concat(arrowBoxes);
     label(130, edgeY(130), CURRENT, 0, 12, "middle");
-    label(620, condY(620), COULD, 0, -LH * COULD.length - 12, "middle");
+    label(620, condY(620), FRONTIER, 0, -LH * FRONTIER.length - 12, "middle");
     G["rg-labels"].innerHTML = T.join("");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 2 — an operating business. Four parts of the operation on the
-     terrain (the managed corridor, the ridge camera, the Mill Creek pad,
-     the station the contracted crews work from), joined by hairlines to
-     one hub, "The operation". THREE relationship types meet the hub, each
-     drawn as a different kind of line so they tell apart without colour:
-       build or fund   a DASHED stake coming IN, hollow arrowhead, from a
-                       dashed-outlined node — the whole link is proposed
-       buy services    PAIRED SOLID rails coming IN, filled arrowhead
-       use evidence    a DOTTED arrow going OUT of the hub to the insurer
-     Every link ends at the hub's rim, so the arrowhead is seen. No
-     shares, amounts or returns: nothing here has a size.
+     terrain as physical things (the managed corridor, the ridge camera,
+     the Mill Creek pad, the station the contracted crews work from), each
+     with its ring and its name, and one hub, "The operation". THREE PAYER
+     MARKS — public agencies, property owners, insurers — converge on the
+     hub from the open ground to its west, each a solid arrow ending on
+     the hub's rim, with one line under the hub: "Fund it, or buy its
+     services." No network diagram: nothing joins the parts to the hub, no
+     link is typed, and no share, amount or return has a size.
      ══════════════════════════════════════════════════════════════════════ */
 
   function drawS2(f) {
     var s = [], T = [], px = function (n) { return n * f.upp; };
-    /* the hub and nodes in px: smaller on a phone's short stage */
-    var HUB_PX = isPhone() ? 26 : 40, NODE_PX = isPhone() ? 11 : 16;
-    var CORE_R = px(HUB_PX), LINK_R = px(NODE_PX);
+    /* the hub and the payer marks in px: smaller on a phone's short stage */
+    var HUB_PX = isPhone() ? 26 : 40, NODE_PX = isPhone() ? 10 : 14;
+    var CORE_R = px(HUB_PX), MARK_R = px(NODE_PX);
+    var phone = isPhone(), LH = f.size * 1.3;
     var PARTS = [
       { at: [1000, crestY(1000) + CORRIDOR.bottom], lines: [["Vegetation management", "b"]], dx: 0, dy: 10, anc: "middle" },
-      { at: [1186, 240], lines: [["Detection", "b"]], dx: 16, dy: -22, anc: "start" },
+      { at: [1186, 240], lines: [["Detection", "b"]], dx: 16, dy: -22, anc: "start", ph: { dx: 16, dy: -40, anc: "start" } },
       { at: [1006, 772], lines: [["Equipment", "b"]], dx: 16, dy: -10, anc: "start" },
       { at: [1032, 806], lines: [["Response crews", "b"], ["contracted", "r"]], dx: 16, dy: 2, anc: "start" }
     ];
-    /* one short label per relationship: the line style carries the rest
-       (the actors are in the screen-reader paragraph, not on the terrain) */
-    var LINKS = [
-      { k: "fund", dir: "in",  x: 400,  y: 440, c: VENDOR,  bend: 40,  ldy: -30,
-        lines: [["Build or fund · proposed", "b", VENDOR]] },
-      { k: "buy",  dir: "in",  x: 250,  y: 640, c: PUBLIC,  bend: -40, ldy: -10,
-        lines: [["Buy services", "b", PUBLIC]] },
-      { k: "use",  dir: "out", x: 1300, y: 520, c: CARRIER, bend: 0,   ldy: -10,
-        lines: [["Use evidence", "b", CARRIER]] }
+    /* the three payers, fanned west of the hub; each converges on it. On a
+       phone's short stage they stack close to the hub, each named on two
+       lines to its left, and the line sits as a caption over the stack. */
+    var PAYERS = phone ? [
+      { x: 380, y: 300, c: PUBLIC,  bend: 8,  lines: [["Public", "b", PUBLIC], ["agencies", "b", PUBLIC]] },
+      { x: 404, y: 535, c: VENDOR,  bend: 0,  lines: [["Property", "b", VENDOR], ["owners", "b", VENDOR]] },
+      { x: 415, y: 654, c: CARRIER, bend: -8, lines: [["Insurers", "b", CARRIER]] }
+    ] : [
+      { x: 370, y: 410, c: PUBLIC,  bend: 34,  ldy: -30, lines: [["Public agencies", "b", PUBLIC]] },
+      { x: 250, y: 560, c: VENDOR,  bend: 0,   ldy: -10, lines: [["Property owners", "b", VENDOR]] },
+      { x: 330, y: 672, c: CARRIER, bend: -34, ldy: -10, lines: [["Insurers", "b", CARRIER]] }
     ];
 
     /* the corridor: a thinned, lighter band in the forest below the ridge */
@@ -631,11 +635,9 @@
     s.push('<path d="' + cd + '" fill="' + C.paper + '" opacity=".26"/><path d="' + cd + '" fill="url(#veg-hatch)"/>' +
            '<path d="' + cd + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(1.6)) + '" opacity=".9"/>');
 
-    var cp = SC.P(HUB.x, HUB.y);
+    /* the four parts: a ring on each physical thing, nothing joining them */
     PARTS.forEach(function (pt) {
       var a = SC.P(pt.at[0], pt.at[1]);
-      s.push('<line x1="' + n1(cp[0]) + '" y1="' + n1(cp[1]) + '" x2="' + n1(a[0]) + '" y2="' + n1(a[1]) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(1.3)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>');
       s.push('<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(5)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2)) + '"/>');
     });
 
@@ -650,50 +652,40 @@
       var p0 = trim(a, ra, [cx, cy]), p1 = trim(b, rb, [cx, cy]);
       return "M" + n1(p0[0]) + " " + n1(p0[1]) + " Q" + n1(cx) + " " + n1(cy) + " " + n1(p1[0]) + " " + n1(p1[1]);
     }
-    LINKS.forEach(function (q) {
+    var cp = SC.P(HUB.x, HUB.y);
+    PAYERS.forEach(function (q) {
       var qp = SC.P(q.x, q.y);
-      var d = q.dir === "out"
-        ? linkPath(cp, CORE_R + px(3), qp, LINK_R + px(4), px(q.bend))
-        : linkPath(qp, LINK_R + px(2), cp, CORE_R + px(4), px(q.bend));
-      var cx = n1(qp[0]), cy = n1(qp[1]);
-      if (q.k === "fund") {
-        s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(3.4)) + '" stroke-dasharray="' + n1(px(11)) + ' ' + n1(px(8)) + '" opacity=".85" color="' + q.c + '" marker-end="url(#arrHollow)"/>');
-        s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + n1(LINK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '" stroke-dasharray="' + n1(px(6)) + ' ' + n1(px(4.5)) + '"/>');
-      } else if (q.k === "buy") {
-        s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(6.5)) + '" opacity=".88" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
-        s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(2)) + '"/>');
-        s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + n1(LINK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3.4)) + '"/>');
-      } else {
-        s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(3.2)) + '" stroke-linecap="round" stroke-dasharray="0.1 ' + n1(px(8)) + '" opacity=".92" color="' + q.c + '" marker-end="url(#arrDot)"/>');
-        s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + n1(LINK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(2)) + '"/>');
-        s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + n1(LINK_R - px(7)) + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(2)) + '"/>');
-      }
+      var d = linkPath(qp, MARK_R + px(2), cp, CORE_R + px(4), px(q.bend));
+      s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(6)) + '" opacity=".55"/>');
+      s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '" opacity=".9" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
+      s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(MARK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '"/>');
+      s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(px(4)) + '" fill="' + q.c + '"/>');
     });
     s.push('<circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(CORE_R) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.4)) + '"/>');
     s.push('<circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(px(14)) + '" fill="' + INK + '"/>');
     G["rg-business"].innerHTML = s.join("");
 
-    /* the hub and the three nodes are places no label may cover */
+    /* the hub and the three marks are places no label may cover */
     var hp = f.proj(HUB.x, HUB.y), hr = HUB_PX - 4;
     f.placed.push({ left: hp[0] - hr, right: hp[0] + hr, top: hp[1] - hr, bottom: hp[1] + hr });
-    LINKS.forEach(function (q) { var p = f.proj(q.x, q.y), nr = NODE_PX - 6; f.placed.push({ left: p[0] - nr, right: p[0] + nr, top: p[1] - nr, bottom: p[1] + nr }); });
+    PAYERS.forEach(function (q) { var p = f.proj(q.x, q.y), nr = NODE_PX - 4; f.placed.push({ left: p[0] - nr, right: p[0] + nr, top: p[1] - nr, bottom: p[1] + nr }); });
     f.avoidSolids = true;
     var label = labeller(T, f);
-    /* the hub's word sits under its rim; on a phone, where the links
-       crowd the hub, it sits to the hub's left and the outbound link's
-       words are placed first */
-    if (isPhone()) { label(HUB.x, HUB.y, [["The operation", "b"]], -(HUB_PX + 8), -f.size * 0.65 - 3, "end"); }
-    else { label(HUB.x, HUB.y, [["The operation", "b"]], 0, HUB_PX + 8, "middle"); }
-    PARTS.forEach(function (pt) { label(pt.at[0], pt.at[1], pt.lines, pt.dx, pt.dy, pt.anc); });
-    (isPhone() ? [LINKS[2], LINKS[0], LINKS[1]] : LINKS).forEach(function (q) {
-      var left = q.x < HUB.x;
-      label(q.x, q.y, q.lines, left ? 26 : -26, q.ldy, left ? "start" : "end");
-    });
+    /* the hub's words sit under its rim, where the three arrows arrive */
+    if (phone) {
+      label(HUB.x, HUB.y, [["The operation", "b"]], 0, HUB_PX + 8, "middle");
+      label(PAYERS[0].x, PAYERS[0].y, [["Fund it, or buy its services.", "r"]], 0, -LH * 2 - 12, "middle");
+      PAYERS.forEach(function (q) { label(q.x, q.y, q.lines, -(NODE_PX + 8), -LH * q.lines.length / 2, "end"); });
+    } else {
+      label(HUB.x, HUB.y, [["The operation", "b"], ["Fund it, or buy its services.", "r"]], 0, HUB_PX + 8, "middle");
+      PAYERS.forEach(function (q) { label(q.x, q.y, q.lines, -(NODE_PX + 10), q.ldy, "end"); });
+    }
+    PARTS.forEach(function (pt) { var at = (phone && pt.ph) || pt; label(pt.at[0], pt.at[1], pt.lines, at.dx, at.dy, at.anc); });
     G["rg-labels"].innerHTML = T.join("");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 3 — the moment: eight events, three stages, one human decision
+     SCREEN 3 — the moment: eight events, four steps, one human decision
 
      THE DATA. Every time, place and authority class on this screen comes
      from S3_EVENTS, and nothing else on the screen is allowed to restate
@@ -702,10 +694,15 @@
      cannot make it). Nothing here executes the human decision, and nothing
      marks the record as proof of avoided loss.
 
-     THE STAGES. The replay plays the eight events in order, but the viewer
-     is only ever asked to read ONE stage of words at a time. The static
-     default is the end state (stage 3, decision pending). "Show all" is the
-     same scene with one grouped caption per stage.
+     THE STEPS. The viewer walks Detect → Coordinate → Act → Decision with
+     "Next step", one press at a time, on the same landscape; the marks
+     accumulate, the words are per step, and each word is attributed to
+     the actor acting within its own authority — the operation detects,
+     forecasts and holds its aircraft; the utility de-energises; Fire
+     District 3 holds the road; the duty chief decides. The default is
+     Detect. "Replay" walks the eight events on a clock through the same
+     words; "Show all" marks every step at once. The insurer never appears
+     on this screen.
 
      THE GRAMMAR. Incident marks are warm and alarm-coloured, the spread
      footprint dashed, the response routes solid warm lines — distinct from
@@ -713,78 +710,65 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   var S3_EVENTS = [
-    { n: 1, stage: 1, kind: "obs", t: "14:31", who: "Line sensor, Mill Creek lateral",
+    { n: 1, kind: "obs", t: "14:31", who: "Line sensor, Mill Creek lateral — the operation",
       what: ["Fault signature on the span.", "A flag, not yet a fire."],
-      state: "Observed", at: [960, 330],
-      lab: [["Line sensor 14:31", "b"]], dx: -22, dy: -30, anc: "end" },
-    { n: 2, stage: 1, kind: "obs", t: "14:33", who: "Ridge camera, Alder Peak",
+      state: "Observed", at: [960, 330] },
+    { n: 2, kind: "obs", t: "14:33", who: "Ridge camera, Alder Peak — the operation",
       what: ["Smoke at the same span."],
-      state: "Observed", at: [1186, 240],
-      lab: [["Ridge camera 14:33", "b"]], dx: 22, dy: -10, anc: "start" },
-    { n: 3, stage: 1, kind: "obs", t: "14:34", who: "Thermal satellite pass",
+      state: "Observed", at: [1186, 240] },
+    { n: 3, kind: "obs", t: "14:34", who: "Thermal satellite pass — the operation",
       what: ["Heat at the same coordinates.", "Ignition treated as verified."],
-      state: "Observed", at: [992, 190],
-      lab: [["Satellite 14:34", "b"]], dx: 22, dy: -12, anc: "start" },
-    { n: 4, stage: 2, kind: "act", t: "14:36", who: "Utility grid operations",
+      state: "Observed", at: [992, 190] },
+    { n: 4, kind: "act", t: "14:36", who: "The utility",
       what: ["Lateral de-energised. Reclosers locked out on two adjacent feeders."],
-      state: "Pre-authorised, bounded action", at: [1130, 356],
-      lab: [["Lateral de-energised 14:36", "b"]], dx: 22, dy: -24, anc: "start" },
-    { n: 5, stage: 2, kind: "mod", t: "14:38", who: "Spread model",
+      state: "Pre-authorised, bounded action, within the utility's own authority", at: [1130, 356] },
+    { n: 5, kind: "mod", t: "14:38", who: "Spread model — the operation",
       what: ["Canyon corridor run. The head turns toward the 320 homes above Mill Creek."],
-      state: "Model forecast, not a decision", at: [900, 540],
-      lab: [["Spread model 14:38", "b"], ["forecast", "r", FIRE]], dx: -22, dy: -14, anc: "end" },
-    { n: 6, stage: 2, kind: "act", t: "14:41", who: "Fire District 3",
+      state: "Model forecast, not a decision", at: [900, 540] },
+    { n: 6, kind: "act", t: "14:41", who: "Fire District 3",
       what: ["Two engines to the canyon mouth. The one road out held open."],
-      state: "Bounded action", at: [934, 652],
-      lab: [["Engines 14:41", "b"]], dx: -22, dy: -12, anc: "end" },
-    { n: 7, stage: 2, kind: "act", t: "14:43", who: "Autonomous suppression",
-      what: ["Four aircraft launched from the Mill Creek pad. One operator."],
-      state: "Bounded action; launched is not drop approved", at: [1006, 772],
-      lab: [["Aircraft launched 14:43", "b"]], dx: 30, dy: -34, anc: "start" },
-    { n: 8, stage: 3, kind: "dec", t: "14:47", who: "Duty chief, District 3",
-      what: ["Holds or releases the evacuation of 320 homes.", "Signs off on the drop over occupied parcels.", "The network cannot make either call."],
+      state: "Bounded action, within the district's own authority", at: [934, 652] },
+    { n: 7, kind: "act", t: "14:43", who: "Contracted aircraft — the operation",
+      what: ["Four aircraft launched from the Mill Creek pad and holding. One operator."],
+      state: "Bounded action; holding is not drop approved", at: [1006, 772] },
+    { n: 8, kind: "dec", t: "14:47", who: "Duty chief, District 3",
+      what: ["Holds or releases the evacuation of 320 homes.", "Signs off on the drop over occupied parcels.", "The operation cannot make either call."],
       state: "Decision, human, pending", at: [1124, 566] }
   ];
-  var S3_STAGES = [
-    { n: 1, from: 1, to: 3, title: "Signals are corroborated",
-      note: "Three sources, different physics, one span. Ignition treated as verified at 14:34.",
-      cap: { lines: [["Signals corroborated", "b"]], at: [992, 400], dx: 24, dy: -8, anc: "start" } },
-    { n: 2, from: 4, to: 7, title: "Bounded response is underway",
-      note: "Pre-authorised and narrow: the lateral is de-energised, two engines hold the one road out, four aircraft hold. The spread run is a forecast, not a decision.",
-      cap: { lines: [["Bounded response underway", "b"]], at: [968, 696], dx: -22, dy: -48, anc: "end" } },
-    { n: 3, from: 8, to: 8, title: "Consequential decisions remain human",
-      note: "The evacuation of 320 homes and the drop over occupied parcels wait on the duty chief. The network cannot make either call. Decision, human, pending.",
-      cap: null }
-  ];
-  function s3StageOf(step) { return step <= 3 ? 1 : step <= 7 ? 2 : 3; }
 
-  /* "Show all": one grouped marker per stage. The decision group shares
-     the duty chief's label (see S3_PLACES). */
-  var S3_GROUPS = [
-    { at: [992, 190],  lines: [["Signals 14:31–14:34", "b"]],  dx: 22, dy: -12, anc: "start" },
-    { at: [1130, 356], lines: [["Response 14:36–14:43", "b"]], dx: 22, dy: -24, anc: "start" }
+  /* the four steps; `to` is the last event each reaches */
+  var S3_STEPS = [
+    { id: "detect",     to: 3, title: "Detect",
+      note: "The operation's sensors and camera detect the ignition at 14:31; three sources corroborate it by 14:34." },
+    { id: "coordinate", to: 5, title: "Coordinate",
+      note: "The utility de-energises its lateral; the operation's model forecasts the spread toward Mill Creek. The forecast is not a decision." },
+    { id: "act",        to: 7, title: "Act",
+      note: "Fire District 3 sends two engines and holds the one road out open; the operation's contracted aircraft launch and hold." },
+    { id: "decision",   to: 8, title: "Decision",
+      note: "The evacuation of 320 homes and the drop over occupied parcels wait on the duty chief's approval. The operation cannot make either call. Pending." }
   ];
+  function s3StepOf(ev) { return ev <= 3 ? 0 : ev <= 5 ? 1 : ev <= 7 ? 2 : 3; }
 
-  /* the end state's words (stage 3, the default): the incident is the hero —
-     the community, the road, the aircraft and ONE decision tab. The drop
-     target and the evacuation footprint are drawn but carry no words of
-     their own in the default state; "Show all" (`allOnly`) keeps its
-     grouped set. `from` is the step they appear at. */
-  var S3_PLACES = [
-    { id: "mill",  from: 8, at: [842, 736],  dx: -6,  dy: -18, anc: "end",
+  /* the words, one set per step, each attributed to its actor. `step` is
+     the step that reads it (-1: every step); `from` the event it appears
+     at during a replay. "Show all" places every set at once. */
+  var S3_LABELS = [
+    { step: -1, from: 0, at: [842, 736],  dx: -6,  dy: -18, anc: "end",
       lines: [["Mill Creek", "b"], ["320 homes", "r"]] },
-    { id: "road",  from: 8, at: [968, 800],  dx: -16, dy: -12, anc: "end",
-      lines: [["Road held open", "b", FIRE]] },
-    { id: "air",   from: 8, at: [1100, 650], dx: 18,  dy: -4,  anc: "start", ph: { dx: 18, dy: -34, anc: "start" },
-      lines: [["Aircraft holding", "b"]] },
-    { id: "evac",  from: 8, at: [968, 696],  dx: -30, dy: -92, anc: "end", allOnly: true, ph: { dx: -22, dy: -48, anc: "end" },
-      lines: [["Evacuation", "b"]] },
-    { id: "drop",  from: 8, at: [972, 636],  dx: 0,   dy: -50, anc: "middle", allOnly: true,
-      lines: [["Suppression drop", "b"]] },
-    { id: "chief", from: 8, at: [1124, 566], dx: 40,  dy: -34, anc: "start", ph: { dx: -34, dy: -50, anc: "end" },
+    /* the decision is placed first, so in "Show all" it keeps its place */
+    { step: 3,  from: 8, at: [1124, 566], dx: 40,  dy: -34, anc: "start", ph: { dx: -34, dy: -50, anc: "end" },
       lines: [["Duty chief", "b"], ["evacuation and drop await approval", "r"]],
-      phone: [["Duty chief", "b"], ["evacuation and drop", "r"], ["await approval", "r"]],
-      all:   [["Decision 14:47 · pending", "b"], ["Duty chief", "b"], ["approval required", "r"]] }
+      phone: [["Duty chief", "b"], ["evacuation and drop", "r"], ["await approval", "r"]] },
+    { step: 0,  from: 1, at: [992, 400],  dx: 26,  dy: -14, anc: "start",
+      lines: [["Ignition detected 14:31", "b"], ["the operation", "r"]] },
+    { step: 1,  from: 4, at: [1130, 356], dx: 22,  dy: -30, anc: "start",
+      lines: [["Lateral de-energised", "b"], ["the utility", "r", UTILITY]] },
+    { step: 1,  from: 5, at: [900, 540],  dx: -22, dy: -20, anc: "end", ph: { dx: -22, dy: -54, anc: "end" },
+      lines: [["Spread forecast", "b"], ["the operation", "r"]] },
+    { step: 2,  from: 6, at: [968, 800],  dx: -16, dy: -20, anc: "end",
+      lines: [["Road held open", "b", FIRE], ["Fire District 3", "r", FIRE]] },
+    { step: 2,  from: 7, at: [1100, 650], dx: 18,  dy: -12, anc: "start", ph: { dx: 18, dy: -40, anc: "start" },
+      lines: [["Aircraft holding", "b"], ["the operation", "r"]] }
   ];
 
   /* scene geometry, world units */
@@ -796,17 +780,17 @@
   var S3_GATE    = [968, 696];
   var S3_FEEDERS = [[800, 352], [1130, 356]];
 
-  /* o.step  events reached, 0..8 · o.mode "focus" | "all" · o.live a replay
+  /* o.step  events reached, 0..8 · o.mode "step" | "all" · o.live a replay
      is running (the newest event gets a ring) · o.upp design units per px */
   function drawS3(s, o, label) {
     var step = o.step, px = function (n) { return n * o.upp; };
-    var stg = s3StageOf(Math.max(1, step));
+    var cur = s3StepOf(Math.max(1, step));
     var ig = SC.P(IGNITION.x, IGNITION.y), a, p;
-    /* the end state (stage 3, the default): the incident is the hero, so
-       the earlier stages' unlabelled ridge marks — the three signal marks,
-       their sight lines and the locked-out reclosers — sit faint. They are
-       full while the replay is in their stage and in "Show all". */
-    var faint = o.mode === "focus" && stg === 3;
+    /* at Decision the incident is the hero, so the detection step's
+       unlabelled ridge marks — the three signal marks, their sight lines
+       and the locked-out reclosers — sit faint. They are full on the
+       earlier steps and in "Show all". */
+    var faint = o.mode === "step" && cur === 3;
     var FAINT = '<g opacity=".35">', END = '</g>';
 
     if (step >= 1) {
@@ -884,7 +868,7 @@
     /* ── the marks: ○ observed · ● bounded action · ◇ forecast · ■ decision ── */
     function mark(ev, emph) {
       var m = SC.P(ev.at[0], ev.at[1]), x = n1(m[0]), y = n1(m[1]), k = ev.kind, r;
-      var dim = faint && ev.stage === 1;
+      var dim = faint && ev.n <= 3;
       if (dim) { s.push(FAINT); }
       if (o.live && emph) {
         s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(k === "dec" ? 34 : 22)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.2)) + '" opacity=".45"/>');
@@ -909,32 +893,21 @@
 
     if (!label) { return; }
 
-    /* ── the words: only the stage in progress, or the grouped captions ── */
-    if (o.mode === "focus" && stg < 3) {
-      S3_EVENTS.forEach(function (ev, i) {
-        if (i >= step || ev.stage !== stg) { return; }
-        label(ev.at[0], ev.at[1], ev.lab, ev.dx, ev.dy, ev.anc);
-      });
-      var st = S3_STAGES[stg - 1];
-      if (st.cap && step >= st.to) { label(st.cap.at[0], st.cap.at[1], st.cap.lines, st.cap.dx, st.cap.dy, st.cap.anc); }
-      return;
-    }
-    S3_PLACES.forEach(function (q) {
+    /* ── the words: the step in progress, or every step in "Show all" ── */
+    S3_LABELS.forEach(function (q) {
       if (step < q.from) { return; }
-      if (q.allOnly && o.mode !== "all") { return; }
+      if (o.mode !== "all" && q.step >= 0 && q.step !== cur) { return; }
       /* a phone's short stage: shorter lines (`phone`) and, where the
          authored side would sit on the roofs or the drop target, an
          authored phone offset (`ph`) */
-      var lines = o.mode === "all" && q.all ? q.all : (isPhone() && q.phone) || q.lines;
+      var lines = (isPhone() && q.phone) || q.lines;
       var at = (isPhone() && q.ph) || q;
       label(q.at[0], q.at[1], lines, at.dx, at.dy, at.anc);
     });
-    if (o.mode === "all") {
-      S3_GROUPS.forEach(function (g) { label(g.at[0], g.at[1], g.lines, g.dx, g.dy, g.anc); });
-    }
   }
 
-  var tlStep = S3_EVENTS.length, tlMode = "focus", tlTimer = null;
+  /* the default is the first step, Detect */
+  var tlStep = S3_STEPS[0].to, tlMode = "step", tlTimer = null;
   var STEP_MS = 1200;
 
   function renderS3() {
@@ -945,9 +918,9 @@
     G["rg-incident"].innerHTML = s.join("");
     G["rg-labels"].innerHTML = T.join("");
     svg.dataset.act = tlStep >= 6 ? "1" : "0";
-    /* the unlabelled sensors on the ridge light only while the replay is
-       in stage 1 (signals); otherwise they sit faint under the incident */
-    svg.dataset.see = (tlMode === "focus" && tlStep >= 1 && tlStep <= 3) ? "1" : "0";
+    /* the unlabelled sensors on the ridge light only on the Detect step;
+       otherwise they sit faint under the incident */
+    svg.dataset.see = (tlMode === "step" && tlStep >= 1 && tlStep <= 3) ? "1" : "0";
   }
 
   /* screen 4: the record, faint and wordless, under the columns. Mode
@@ -964,18 +937,34 @@
     if (btn) { btn.textContent = tlTimer ? "Pause" : "Replay"; }
     var all = document.getElementById("tl-all");
     if (all) { all.disabled = (tlMode === "all" && tlStep >= S3_EVENTS.length); }
+    /* Next step rests once Decision is reached, however it was reached;
+       Replay starts the walk again */
+    var nx = document.getElementById("tl-step");
+    if (nx) { nx.disabled = tlStep >= S3_EVENTS.length; }
     if (current === 3 && SC) { renderS3(); }
+    persist();
   }
 
   function tlStop() { clearInterval(tlTimer); tlTimer = null; }
 
-  function s3Announce(step) {
-    var ev = S3_EVENTS[step - 1];
+  function s3Announce(ev1) {
+    var ev = S3_EVENTS[ev1 - 1];
     if (!ev) { return; }
-    var st = S3_STAGES[ev.stage - 1];
-    var first = st.from === ev.n;
-    say((first ? "Stage " + st.n + " of 3, " + st.title + ". " : "") +
+    var k = s3StepOf(ev.n), st = S3_STEPS[k];
+    var first = k === 0 ? ev.n === 1 : S3_STEPS[k - 1].to + 1 === ev.n;
+    say((first ? "Step " + (k + 1) + " of " + S3_STEPS.length + ", " + st.title + ". " : "") +
         ev.t + ", " + ev.who + ". " + ev.what.join(" ") + " " + ev.state + ".");
+  }
+
+  /* Next step: Detect → Coordinate → Act → Decision, one press at a time,
+     each press a hard cut on the same landscape. Nothing it reaches
+     executes the decision. */
+  function tlNext() {
+    tlStop();
+    var k = Math.min(S3_STEPS.length - 1, s3StepOf(Math.max(1, tlStep)) + 1);
+    tlMode = "step"; tlStep = S3_STEPS[k].to;
+    paintTl();
+    say("Step " + (k + 1) + " of " + S3_STEPS.length + ", " + S3_STEPS[k].title + ". " + S3_STEPS[k].note);
   }
 
   /* Replay / Pause, in one control that is always labelled with the action
@@ -985,10 +974,10 @@
   function tlRun() {
     if (tlTimer) {
       tlStop(); paintTl();
-      say("Replay paused at step " + tlStep + " of " + S3_EVENTS.length + ".");
+      say("Replay paused at event " + tlStep + " of " + S3_EVENTS.length + ".");
       return;
     }
-    tlStep = 0; tlMode = "focus";
+    tlStep = 0; tlMode = "step";
     tlTimer = setInterval(function () {
       tlStep++;
       if (tlStep >= S3_EVENTS.length) { tlStep = S3_EVENTS.length; tlStop(); }
@@ -1005,15 +994,29 @@
     tlStep = S3_EVENTS.length;
     tlMode = "all";
     paintTl();
-    say("All eight steps shown, grouped into three stages. " +
-        S3_STAGES.map(function (st) { return "Stage " + st.n + ", " + st.title + ": " + st.note; }).join(" "));
+    say("All four steps shown at once. " +
+        S3_STEPS.map(function (st, i) { return "Step " + (i + 1) + ", " + st.title + ": " + st.note; }).join(" "));
   }
 
-  /* restart from the last screen: availability back to now, the replay to
-     its default end state */
+  /* ══ STATE — what persists for the session: the availability state and
+     where the moment's walk stands. Restart from the last screen clears it:
+     availability back to now, the moment back to Detect. ══ */
+  var STORE = "rg-state";
+  function persist() {
+    try { sessionStorage.setItem(STORE, JSON.stringify({ availability: S.availability, step: tlStep, mode: tlMode })); } catch (e) { /* private mode */ }
+  }
+  function restore() {
+    var v = null;
+    try { v = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (e) { v = null; }
+    if (!v) { return; }
+    if (v.availability === "earlier" || v.availability === "now") { S.availability = v.availability; }
+    if (v.mode === "all" || v.mode === "step") { tlMode = v.mode; }
+    if (typeof v.step === "number" && v.step >= 1 && v.step <= S3_EVENTS.length) { tlStep = Math.round(v.step); }
+  }
   function resetStates() {
     setAvailability("now", true);
-    tlStop(); tlStep = S3_EVENTS.length; tlMode = "focus";
+    tlStop(); tlStep = S3_STEPS[0].to; tlMode = "step";
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* private mode */ }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -1033,9 +1036,13 @@
 
   /* a small hook for facilitators and the QA script */
   window.__rg = {
-    stage: function (n) { tlStop(); tlMode = "focus"; tlStep = n === 1 ? 3 : n === 2 ? 7 : 8; paintTl(); },
-    step:  function (k) { tlStop(); tlMode = "focus"; tlStep = Math.max(0, Math.min(8, k)); paintTl(); },
+    /* stage(k): the step to show, 0 Detect · 1 Coordinate · 2 Act · 3 Decision */
+    stage: function (k) { tlStop(); tlMode = "step"; tlStep = S3_STEPS[Math.max(0, Math.min(3, k | 0))].to; paintTl(); },
+    /* step(e): events reached, 0..8 */
+    step:  function (e) { tlStop(); tlMode = "step"; tlStep = Math.max(0, Math.min(8, e)); paintTl(); },
+    next: tlNext,
     showAll: tlShowAll,
+    steps: S3_STEPS,
     set: function (st) { setAvailability(st); },
     events: S3_EVENTS,
     dropped: function () { return dropped.slice(); },
@@ -1043,12 +1050,16 @@
     vb: function () { return vb; }
   };
 
-  /* screen 4's "Recorded" is read from S3_EVENTS, so the column can never
+  /* screen 4's "Done" plate is read from S3_EVENTS, so it can never
      disagree with the moment */
   (function () {
     var el = document.getElementById("ev-recorded");
     if (!el || !S3_EVENTS.length) { return; }
-    el.textContent = S3_EVENTS.length + " events, " + S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
+    el.textContent = S3_EVENTS.length + " actions recorded, ";
+    var span = document.createElement("span");
+    span.className = "nw";
+    span.textContent = S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
+    el.appendChild(span);
   })();
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -1152,6 +1163,8 @@
     picker.appendChild(o);
   });
 
+  var tlStepBtn = document.getElementById("tl-step");
+  if (tlStepBtn) { tlStepBtn.addEventListener("click", tlNext); }
   var tlPlay = document.getElementById("tl-play");
   if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
   var tlAll = document.getElementById("tl-all");
@@ -1258,7 +1271,8 @@
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { refit(); }); }
 
   narrow = isNarrow();
-  setAvailability("now", true);
+  restore();
+  setAvailability(S.availability, true);
   show(fromHash() || 1, false);
   moveCamera(current, true);
 })();

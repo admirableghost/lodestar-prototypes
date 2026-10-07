@@ -170,7 +170,7 @@ body.rg {
 }
 .rg .screen > * { min-width: 0; }
 
-.rg .xhead, .rg .compare, .rg .xask, .rg .s3-ctl, .rg .ev, .rg .ev-line, .rg .tl-play, .rg .cta, .rg .iconbtn, .rg .picker, .rg select {
+.rg .xhead, .rg .compare, .rg .xask, .rg .s3-ctl, .rg .ev, .rg .tl-play, .rg .cta, .rg .iconbtn, .rg .picker, .rg select {
   pointer-events: auto;
 }
 
@@ -274,9 +274,8 @@ body.rg {
 .rg .ev-mark { width: 18px; height: 18px; flex: 0 0 auto; color: var(--edition-ink); }
 .rg .ev-v { font: 400 var(--x-lede)/1.3 var(--sans); color: var(--edition-ink); }
 .rg .ev-v--open { color: var(--ink-soft); }
-/* one sentence: let it sit on one line where there is room, and break
-   evenly rather than orphan its last word where there is not */
-.rg .ev-line { z-index: 3; align-self: end; max-width: 52ch; text-wrap: balance; }
+/* a time range is one word */
+.rg .nw { white-space: nowrap; }
 
 /* ══ CONTROLS ═══════════════════════════════════════════════════════════ */
 
@@ -294,7 +293,19 @@ body.rg {
   border-color: var(--hair); cursor: default;
 }
 
-/* screen 3: replay controls, bottom left */
+/* screen 3's primary action, "Next step": the ink, like the chrome's Next;
+   it rests once Decision is reached */
+.rg .tl-step {
+  background: var(--edition-ink); color: var(--paper);
+  border-color: var(--edition-ink);
+}
+.rg .tl-step:hover { background: #2A333B; border-color: #2A333B; }
+.rg .tl-step[disabled], .rg .tl-step[disabled]:hover {
+  color: var(--ink-soft); background: var(--edition-wash);
+  border-color: var(--hair);
+}
+
+/* screen 3: the step and replay controls, bottom left */
 .rg .s3-ctl {
   z-index: 3; align-self: end; justify-self: start;
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
@@ -383,10 +394,9 @@ body.rg {
 
   /* the desktop `align-self: end` would push these to the right of a
      column; on a stack everything hangs from the left edge */
-  .rg .s3-ctl, .rg .ev-line { align-self: flex-start; }
+  .rg .s3-ctl { align-self: flex-start; }
   .rg .xask, .rg .ev { align-self: stretch; }
   .rg .xq { max-width: 100%; }
-  .rg .ev-line { max-width: 100%; }
 
   .rg .chrome { padding: 0 var(--gutter) 11px; align-items: center; }
   .rg .chrome-r { width: 100%; }

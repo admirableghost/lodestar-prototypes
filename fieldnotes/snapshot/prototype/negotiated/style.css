@@ -865,40 +865,10 @@ body { background: var(--paper); }
 }
 .plate--ctl .thr-of { font: 400 clamp(18px, .6vw + 1vh, 22px)/1 var(--sans); letter-spacing: 0; color: var(--edition-ink); }
 
-/* the rail: the input is 44px tall for the hand and the thumb is the same
-   44px for the eye — one object, the size of a fingertip, on a thin track.
-   "48 needed" is marked ON the track so the viewer sees what they are
-   dragging toward before they reach it. The endpoints carry no numerals. */
-.plate--ctl .thr-rail { --thumb: 44px; position: relative; padding-bottom: 26px; margin: 0 0 12px; }
-.plate--ctl input[type="range"] { height: 44px; margin: 0; }
-.plate--ctl input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px; border: 0; border-radius: 2px;
-  background: linear-gradient(to right,
-    var(--green) 0 var(--p), color-mix(in srgb, var(--edition-ink) 32%, var(--paper)) var(--p) 100%);
-}
-.plate--ctl input[type="range"]::-moz-range-track { height: 4px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--edition-ink) 32%, var(--paper)); }
-.plate--ctl input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--green); }
-.plate--ctl input[type="range"]::-webkit-slider-thumb {
-  width: var(--thumb); height: var(--thumb); margin-top: -20px;
-  background: var(--paper); border: 3px solid var(--edition-ink); border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--paper), 0 6px 14px -8px rgba(22,21,15,.6);
-}
-.plate--ctl input[type="range"]::-moz-range-thumb {
-  width: 44px; height: 44px;
-  background: var(--paper); border: 3px solid var(--edition-ink); border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--paper), 0 6px 14px -8px rgba(22,21,15,.6);
-}
-/* the thumb fills the moment the threshold is met: state, said twice */
-#ctl[data-state="open"] input[type="range"]::-webkit-slider-thumb { background: var(--green); }
-#ctl[data-state="open"] input[type="range"]::-moz-range-thumb { background: var(--green); }
-/* --tick is written by app.js: (48 − min) / (max − min), because the rail's
-   floor follows whether no. 31 has joined (41 or 42) and its ceiling too */
-.plate--ctl .thr-tick {
-  left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--tick, 0.8)); top: 46px;
-  transform: translateX(-50%);
-  font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--edition-ink);
-}
-.plate--ctl .thr-tick i { top: -30px; height: 22px; width: 2px; background: var(--edition-ink); }
+/* (the slider — .thr-rail, the range input and the "48 needed" tick —
+   left screen 3 under CONTRACT-IMPL § D: participation now moves only by
+   #join and #invite. The count's style above stays; "48 needed" is now
+   written after the count. The agent plate is at the end of this file.) */
 
 /* the offer: a mark and ONE state line. Not a box. Closed and open differ
    by mark, colour and sentence — never by a fade — and survive greyscale. */
@@ -946,9 +916,6 @@ body { background: var(--paper); }
 @media (max-width: 899px) {
   .screen { padding-bottom: 8px; }
 }
-/* the slider's focus ring stays inside its own 44px box, clear of the
-   scale labels beneath the track */
-.plate--ctl input[type="range"]:focus-visible { outline-offset: -2px; border-radius: 8px; }
 
 /* ══════════════════════════════════════════════════════════════════════════
    DENSITY PASS — the sixty-word copy contract
@@ -1297,4 +1264,166 @@ body { background: var(--paper); }
   display: inline-block; padding: .05em .3em; border-radius: 3px;
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   font-weight: 700; font-size: 1.25em; line-height: 1; color: var(--edition-ink);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EXPERIENCE CONTRACT — the shared agent grammar, locally
+   (design-study/brief-align/CONTRACT-IMPL.md § A and § D). HUMAN: her
+   paper and her signature dash on screen 2. AGENT: the dark plate with its
+   plum rule on screen 3, the lens mark, and the plum thread drawn on the
+   street by app.js (its motion is here). PROVIDER: the carrier's ledger-
+   blue record with a seal on screen 4. Route-scoped, as everything above.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --plum:    #8A3450;   /* the agent — thread, rule, lens              */
+  --agent:   #262E36;   /* the agent's working surface                 */
+  --on-agent: #F3EBD7;  /* 11.9 : 1 on the agent surface               */
+  --on-agent-soft: #C4BDAB;   /*  7.6 : 1 — secondary words on the surface */
+  --on-agent-warn: #E3A93E;   /*  8.3 : 1 — the closed mark, never type    */
+  --on-agent-ok:   #A9B8A0;   /*  7.5 : 1 — the open mark                  */
+}
+
+/* ── screen 2 · her signature dash ─────────────────────────────────────
+   The short ink stroke that gives her agent its authority, drawn on the
+   sheet the moment she authorises (the result line appears, and a CSS
+   animation runs the stroke in). pathLength="100" on the path makes the
+   dash arithmetic independent of the curve. Under reduced motion the
+   global rule stops the animation, so the offset is pinned at 0 there. */
+.joined .sig { width: 64px; height: 22px; flex: 0 0 auto; overflow: visible; }
+.joined .sig path {
+  fill: none; stroke: var(--edition-ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+  animation: sig-draw .55s cubic-bezier(.4, 0, .2, 1) .08s forwards;
+}
+@keyframes sig-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .joined .sig path { stroke-dashoffset: 0; } }
+/* on a phone the result wraps after the dot, never inside the count */
+.joined .nb { white-space: nowrap; }
+@media (max-width: 599px) { .joined .sig { width: 48px; } .joined { gap: 10px; } }
+
+/* ── screen 3 · the agent plate ─────────────────────────────────────────
+   The wrapper keeps .plate--ctl's transparent box in the grid; the dark
+   surface inside it is the agent's. A plum rule along its left edge; the
+   lens mark at its head; the count; the agent's one line as a bubble;
+   the one action. The key sits under it on its own paper chip. */
+.plate--agent { gap: 10px; max-width: 480px; justify-self: end; align-items: stretch; }
+.agent-plate {
+  display: flex; flex-direction: column; align-items: stretch;
+  padding: clamp(14px, 1.8vh, 20px) clamp(16px, 1.6vw, 22px) clamp(16px, 2vh, 22px);
+  background: var(--agent); color: var(--on-agent);
+  border-radius: 6px;
+  box-shadow: inset 3px 0 0 var(--plum), 0 16px 34px -20px rgba(22,21,15,.6);
+  pointer-events: auto;
+}
+.agent-head { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 16px; }
+/* the key chip's own size is its entries' size (no glyph uses the inherited unit) */
+.plate--agent .leg--chip { font-size: 16px; }
+.agent-head .lens { width: 24px; height: 24px; flex: 0 0 auto; }
+.agent-head .lens circle { fill: var(--agent); stroke: var(--plum); stroke-width: 2.6; }
+.agent-head .lens line { stroke: var(--plum); stroke-width: 3; stroke-linecap: round; }
+.plate--agent .eyebrow, .plate--ctl.plate--agent .eyebrow { margin: 0; color: var(--on-agent-soft); }
+.plate--ctl.plate--agent .thr-fig { color: var(--on-agent); margin-bottom: 8px; }
+.plate--ctl.plate--agent .thr-of { color: var(--on-agent-soft); }
+/* the agent speaks in short messages: its one line sits in a bubble on
+   the surface, the mark in colour, the words in the paper tone */
+.plate--ctl.plate--agent .offer {
+  margin: 0 0 14px; padding: 10px 14px 11px;
+  background: color-mix(in srgb, var(--on-agent) 9%, var(--agent));
+  border-radius: 10px 10px 10px 3px;
+}
+.plate--ctl.plate--agent .offer-line { color: var(--on-agent); font-size: clamp(17px, .45vw + 1vh, 20px); }
+.plate--ctl.plate--agent .offer-mark--closed { color: var(--on-agent-warn); }
+.plate--ctl.plate--agent .offer-mark--open { color: var(--on-agent-ok); }
+#ctl[data-state="open"].plate--agent .offer-line { color: var(--on-agent); }
+/* the one action: the brightest thing on the surface while a round
+   remains — paper on the agent's dark — and a quiet outline once the
+   street is assembled or while her agent has no authority. Neither
+   disabled nor aria-disabled: it stays readable and pressable, and app.js
+   answers the press instead of acting on it. */
+.ibtn {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  min-height: 56px; padding: 0 20px;
+  background: var(--on-agent); color: var(--edition-ink);
+  border: 2px solid var(--on-agent); border-radius: var(--r-m);
+  font: 700 clamp(18px, .45vw + 1vh, 21px)/1.2 var(--sans);
+  text-align: center; cursor: pointer; white-space: normal;
+}
+.ibtn:hover { background: #FFF9EC; border-color: #FFF9EC; }
+.ibtn[data-state="done"], .ibtn[data-state="none"] {
+  background: transparent; color: var(--on-agent-soft);
+  border-color: color-mix(in srgb, var(--on-agent) 38%, transparent);
+  cursor: default;
+}
+.ibtn[data-state="done"]:hover, .ibtn[data-state="none"]:hover { background: transparent; border-color: color-mix(in srgb, var(--on-agent) 38%, transparent); }
+.ibtn:focus-visible { outline: 3px solid var(--on-agent); outline-offset: 3px; }
+/* no agent yet: the lens is dim too */
+#ctl[data-agent="off"] .agent-head .lens { opacity: .45; }
+
+/* ── the thread and the lens on the ground (drawn by app.js) ─────────────
+   A segment of the round just pressed carries a full-length dash and an
+   inline duration and delay; the keyframe runs the offset to zero, so the
+   thread is drawn along at one speed, lot by lot. A home, its strip and
+   the point where the thread touched its gate carry .arrive with the
+   delay of that moment: hidden until then, then in. The lens appears
+   when the thread stops. Under reduced motion app.js writes no dash and
+   no .arrive, and the global rule above stops every animation anyway. */
+@keyframes thr-draw { to { stroke-dashoffset: 0; } }
+@keyframes arrive { from { opacity: 0; } }
+@keyframes lens-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.22); } }
+#plan [data-thread] { animation: thr-draw 1s linear both; }
+#plan .arrive { animation: arrive .3s ease-out both; }
+/* while her agent is still working the street (screen 3, below 48) the
+   lens reads: a slow pulse at the head of the thread */
+#plan [data-lens][data-pulse] circle {
+  transform-box: fill-box; transform-origin: center;
+  animation: lens-pulse 2.2s ease-in-out infinite;
+}
+
+/* ── screen 4 · the carrier's record and the terms chip ─────────────────
+   Under the surveyor control, stacked. The carrier's conditions are the
+   PROVIDER's: a ledger-blue structured record with a ruled field and a
+   seal — ring and check — because they are firm. The terms chip keeps the
+   pending vocabulary: her share and premium are set before she accepts,
+   and there is no acceptance control. */
+.plate--verify { gap: 12px; align-items: stretch; }
+.plate--verify .vbtn { align-self: flex-start; }
+.steps--terms { grid-template-columns: 1fr; gap: 8px; }
+.step--carrier {
+  background: color-mix(in srgb, var(--carrier) 7%, var(--paper));
+  box-shadow: 0 0 0 1.5px var(--carrier);
+}
+.step--carrier .step-name, .step--carrier[data-state="met"] .step-name { color: var(--carrier); }
+.step--carrier .step-val {
+  margin-top: 5px; padding-top: 5px;
+  border-top: 1px solid color-mix(in srgb, var(--carrier) 32%, transparent);
+}
+/* the seal: a solid ring, the paper inside, the check in the carrier's blue */
+.step--carrier[data-state="met"] .step-mark circle { fill: var(--paper); stroke: var(--carrier); stroke-width: 2.2; stroke-dasharray: none; }
+.step--carrier[data-state="met"] .step-mark path { stroke: var(--carrier); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── short desktop windows ─────────────────────────────────────────────── */
+@media (min-width: 900px) and (max-height: 760px) {
+  .agent-plate { padding: 12px 16px 14px; }
+  .plate--ctl.plate--agent .thr-fig { font-size: clamp(40px, 2.2vw + 3vh, 56px); margin-bottom: 6px; }
+  .plate--ctl.plate--agent .offer { margin-bottom: 10px; padding: 8px 12px 9px; }
+  .plate--ctl.plate--agent .offer-line { font-size: 17px; }
+  .ibtn { min-height: 50px; font-size: 18px; }
+  .steps--terms .step { padding-top: calc(var(--x-gap) * .4); padding-bottom: calc(var(--x-gap) * .45); }
+  .steps--terms .step-mark { top: calc(var(--x-gap) * .4 - 1px); }
+}
+
+/* ── narrow: stacked ───────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+  .plate--agent { max-width: none; justify-self: stretch; padding: 0; gap: 8px; }
+  .agent-plate { padding: 14px 16px 16px; }
+  .plate--ctl.plate--agent .thr-fig { font-size: clamp(40px, 11vw, 54px); }
+  .plate--ctl.plate--agent .offer-line { font-size: 17px; }
+  .ibtn { font-size: 18px; }
+  .plate--verify { gap: 10px; }
+  .plate--verify .vbtn { align-self: stretch; justify-content: center; }
+  /* phone order on screen 4: headline, the three conditions, the control
+     with the carrier's record and the terms chip, then the street */
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  .plate--ctl.plate--agent .offer-line, .ibtn { font-size: 18px; }
 }

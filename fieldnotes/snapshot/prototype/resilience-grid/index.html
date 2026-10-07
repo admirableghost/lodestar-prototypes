@@ -54,45 +54,49 @@
 </section>
 
 <!-- ══════ 2 · AN OPERATING BUSINESS ══════
-     Four parts of the operation on the terrain (the managed corridor, the
-     ridge camera, the Mill Creek pad, the station the contracted crews
-     work from), one hub — "The operation" — and THREE relationship types
-     drawn as three different lines, each labelled once and briefly
-     (app.js, drawS2): a dashed inbound stake "Build or fund · proposed",
-     paired solid inbound arrows "Buy services", and a dotted OUTBOUND
-     arrow to the insurer "Use evidence" (not a purchase). The actors are
-     named for the screen reader only. The scene's unlabelled sensors,
+     Four parts of the operation on the terrain as physical things (the
+     managed corridor, the ridge camera, the Mill Creek pad, the station
+     the contracted crews work from), one hub — "The operation" — and
+     THREE PAYER MARKS converging on it (app.js, drawS2): Public agencies,
+     Property owners, Insurers, with one line under the hub, "Fund it, or
+     buy its services." No network diagram: nothing joins the parts to
+     the hub and no link is typed. The scene's unlabelled sensors,
      stations and pads are hidden on this screen (style.css). No shares,
      amounts or returns anywhere. No availability layer on this screen. -->
 <section class="screen" data-screen="2" data-label="The business">
   <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">01 / The business</p>
-    <h2 class="xd" tabindex="-1"><span>An operating business,</span><span>not a report.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>Prevention as a service,</span><span>paid for by everyone it protects.</span></h2>
     <p class="xlede xlede--line">Paid before any fire — not from losses avoided.</p>
   </div>
-  <p class="sr-only">The county with four parts of the operation marked on the terrain: a managed vegetation corridor on the slope below the ridge; the ridge camera that detects; the equipment on the Mill Creek suppression pad; and the fire station the contracted response crews work from. Each is joined by a fine line to one hub, the operation. Three different relationships meet that hub, drawn as three different lines. Build or fund: a dashed stake coming in from the insurer, the utility and the community, marked proposed. Buy defined services: solid arrows coming in from the utility, communities and owners. Use evidence: a dotted arrow going out from the operation to the insurer, for underwriting, which is not a purchase. The operation is paid before any fire, for the work it runs, not from losses avoided.</p>
+  <p class="sr-only">The county with four parts of the operation marked on the terrain as physical things: a managed vegetation corridor on the slope below the ridge; the ridge camera that detects; the equipment on the Mill Creek suppression pad; and the fire station the contracted response crews work from. One hub on the slope, the operation. Three payer marks converge on it from the open ground to its west: public agencies, property owners and insurers, who fund it, or buy its services. The operation is paid before any fire, for the work it runs, not from losses avoided.</p>
   <div class="gw"></div>
 </section>
 
 <!-- ══════ 3 · COORDINATED RESPONSE, HUMAN AUTHORITY ══════
      The eight events are DATA in app.js (S3_EVENTS). The scene zooms on
-     the canyon and Mill Creek; the map annotates one stage at a time. The
-     default end state carries four tabs — Mill Creek · 320 homes, Road
-     held open, Aircraft holding, and ONE decision tab, "Duty chief ·
-     evacuation and drop await approval"; the drop target and the
-     evacuation footprint are drawn without words. The ridge sensors sit
-     faint except during replay stage 1. The decision at 14:47 stays
-     pending; nothing on the screen executes it or claims a loss was
+     the canyon and Mill Creek. "Next step" (#tl-step, primary) walks
+     Detect → Coordinate → Act → Decision on the same landscape, one press
+     at a time; the marks accumulate, the words are per step and name the
+     actor acting within its own authority: the operation detects and
+     forecasts and holds its aircraft; the utility de-energises; Fire
+     District 3 holds the road; the duty chief decides. Default: Detect.
+     Replay walks the eight events on a clock through the same words;
+     Show all marks every step at once. "Mill Creek · 320 homes" stays on
+     every step; the drop target and the evacuation footprint are drawn
+     without words. The insurer never appears here. The decision at 14:47
+     stays pending; nothing on the screen executes it or claims a loss was
      avoided. -->
 <section class="screen" data-screen="3" data-label="The moment">
   <div class="xhead" style="grid-area:1/1/4/6">
     <p class="xeyebrow">02 / The moment</p>
     <h2 class="xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
   </div>
-  <p class="sr-only">The event, 14:31 to 14:47, on the canyon above Mill Creek. Stage one, signals corroborated: a line sensor on the Mill Creek lateral flags a fault at 14:31; the Alder Peak ridge camera sees smoke at the same span at 14:33; a thermal satellite pass confirms heat at the same coordinates at 14:34. Stage two, bounded response, pre-authorised and narrow: the utility de-energises the lateral at 14:36; a spread model runs the canyon corridor at 14:38 — a forecast, not a decision; Fire District 3 sends two engines to the canyon mouth and holds the one road out, the Mill Creek spur, open at 14:41; four aircraft launch from the Mill Creek pad at 14:43 and hold. Stage three: the evacuation of 320 homes and the suppression drop over occupied parcels wait on the duty chief's approval. The network cannot make either call. Replay plays the eight events in order; Show all marks all three stages at once.</p>
+  <p class="sr-only">The event, 14:31 to 14:47, on the canyon above Mill Creek, in four steps. Detect: the operation's line sensor on the Mill Creek lateral flags a fault at 14:31; its Alder Peak ridge camera sees smoke at the same span at 14:33; a thermal satellite pass confirms heat at the same coordinates at 14:34. Coordinate: the utility de-energises its lateral at 14:36, within its own authority; the operation's spread model runs the canyon corridor at 14:38 — a forecast, not a decision. Act: Fire District 3 sends two engines to the canyon mouth and holds the one road out, the Mill Creek spur, open at 14:41; the operation's four contracted aircraft launch from the Mill Creek pad at 14:43 and hold. Decision: the evacuation of 320 homes and the suppression drop over occupied parcels wait on the duty chief's approval. The operation cannot make either call. Next step advances one step; Replay plays the eight events in order; Show all marks all four steps at once.</p>
   <div class="gw"></div>
   <div class="s3-ctl" style="grid-area:8/1/9/6">
-    <div class="tl-controls" role="group" aria-label="Replay controls">
+    <div class="tl-controls" role="group" aria-label="The moment, step by step">
+      <button class="tl-play tl-step" type="button" id="tl-step">Next step</button>
       <button class="tl-play" type="button" id="tl-play">Replay</button>
       <button class="tl-play" type="button" id="tl-all">Show all</button>
     </div>
@@ -100,49 +104,50 @@
 </section>
 
 <!-- ══════ 4 · EVIDENCE, NOT ASSUMED SUCCESS ══════
-     Three columns over the subdued county, the moment's marks faint
-     beneath. "Recorded" is derived from S3_EVENTS by app.js; nothing here
-     is a result. -->
+     Three plates left to right as one arrow toward screen 5, the third
+     dashed, over the subdued county with the moment's marks faint
+     beneath. "Done" is derived from S3_EVENTS by app.js. No percentages,
+     no results. -->
 <section class="screen" data-screen="4" data-label="The evidence">
   <div class="xhead" style="grid-area:1/1/4/9">
     <p class="xeyebrow">03 / The evidence</p>
-    <h2 class="xd" tabindex="-1"><span>From a record</span><span>to evidence.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>What the operation did —</span><span>and what still</span><span>needs evaluating.</span></h2>
   </div>
-  <p class="sr-only">Three columns over the quiet county, joined left to right by arrows, with the eight marks of the moment faint on the terrain beneath. Recorded: eight events between 14:31 and 14:47, the event record from the moment. Observed: the road out is open, the drop is pending, the decision is pending. Evaluated: independently, still to come. The record is what happened; it is not a result. Evaluated evidence can inform an underwriting decision; one incident proves nothing on its own, and the independent evaluation is still to come.</p>
+  <p class="sr-only">Three plates over the quiet county, joined left to right by arrows, with the eight marks of the moment faint on the terrain beneath. Done: eight actions recorded between 14:31 and 14:47. Observed: the road out was held open; the drop and the decision are pending. To evaluate: independently, before underwriting relies on it. The record is what happened; it is not a result, and the independent evaluation is still to come.</p>
   <div class="gw"></div>
-  <ul class="ev" style="grid-area:4/1/7/10" aria-label="The evidence record, left to right">
+  <ul class="ev" style="grid-area:4/1/7/10" aria-label="The evidence, left to right">
     <li class="ev-col">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Recorded</span>
-      <span class="ev-v" id="ev-recorded">8 events, 14:31–14:47</span>
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Done</span>
+      <span class="ev-v" id="ev-recorded">8 actions recorded, 14:31–14:47</span>
     </li>
     <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
     <li class="ev-col">
       <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Observed</span>
-      <span class="ev-v">road open, drop pending, decision pending</span>
+      <span class="ev-v">road held open; drop and decision pending</span>
     </li>
     <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
     <li class="ev-col ev-col--open">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>Evaluated</span>
-      <span class="ev-v ev-v--open">independently, still to come</span>
+      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>To evaluate</span>
+      <span class="ev-v ev-v--open">independently, before underwriting relies on it</span>
     </li>
   </ul>
-  <p class="xlede ev-line" style="grid-area:7/1/9/8">Evaluated evidence can inform an underwriting decision. One incident proves nothing on its own.</p>
 </section>
 
 <!-- ══════ 5 · MARKET CREATION ══════
-     The current limit, solid, as on screen 1; and ONE conditional limit
-     upslope, dashed — "Could become insurable again" — with three small
-     sage arrows pointing upslope between the two limits: the
-     counter-movement to screen 1's retreat. Nothing is filled or restored
-     because the viewer arrived; the lede names the conditions. No
-     Earlier/Now control here. -->
+     The current availability limit, solid, as on screen 1 — it has not
+     moved — and ONE potential frontier upslope, dashed and sage, drawn as
+     a possibility: "Potential frontier · with evidence and capital". Three
+     small sage arrows point upslope between the two: the counter-movement
+     to screen 1's retreat. Nothing is filled or restored because the
+     viewer arrived; the lede names the conditions. No Earlier/Now control
+     here. -->
 <section class="screen" data-screen="5" data-label="Market creation">
   <div class="xhead" style="grid-area:1/1/5/9">
     <p class="xeyebrow">04 / Market creation</p>
-    <h2 class="xd" tabindex="-1"><span>Not the drone.</span><span>A market that might stay open.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>Prevention can</span><span>move the line.</span></h2>
     <p class="xlede">With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes.</p>
   </div>
-  <p class="sr-only">The same county as screen one, with the current availability limit drawn solid through the three communities and one dashed line a little upslope of it, labelled could become insurable again: a conditional limit. Three small arrows between the two lines point upslope, the opposite direction to the retreat on screen one. Nothing between them is filled. With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes; none of it has happened on this screen.</p>
+  <p class="sr-only">The same county as screen one, with the current availability limit drawn solid through the three communities, where it was, and one dashed sage line a little upslope of it, labelled potential frontier, with evidence and capital: a possibility, distinct from the confirmed limit. Three small arrows between the two lines point upslope, the opposite direction to the retreat on screen one. Nothing between them is filled. With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes; none of it has happened on this screen.</p>
   <div class="gw"></div>
   <div class="xask" style="grid-area:6/7/9/13">
     <p class="xq" tabindex="-1">What if prevention is infrastructure that keeps difficult risks insurable?</p>

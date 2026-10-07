@@ -5,24 +5,18 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>OpenCover — the buyer is not a person</title>
-<meta name="description" content="A hypothetical motor policy bought by a household's assistant: priorities and permissions set once by a person, an offer published as machine-readable data with explicit exclusions and verifiable service commitments, a purchase made inside her rules, and a relationship that is re-chosen continuously rather than renewed by default.">
+<title>OpenCover — the buyer never stops working</title>
+<meta name="description" content="A motor renewal handled by her agent, Muse: she sets what good looks like once; an insurer publishes an offer written for an agent; Muse shortlists, buys inside her rules, keeps shopping through the year and enforces the published promise when a claim settles late.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- A button, not an anchor. As an anchor to #deck it rewrote the hash, the
-     router read that as "no screen", and the user was thrown back to screen 1
-     — the opposite of skipping to content. It now moves focus to the heading
-     of whatever screen is open. It is keyboard-only until focused (the
-     sr-only idiom; .skip:focus reveals it), so it carries no visible words. -->
+<!-- A button, not an anchor: it moves focus to the heading of whatever screen
+     is open without touching the hash. Keyboard-only until focused. -->
 <button class="skip sr-only" type="button" id="skip">Skip to this screen's content</button>
 
-<!-- ═══════════════ THE GROUND ═══════════════
-     The register sheet is still drawn (app.js, renderWorld) and the camera
-     still pans it, but every screen paints its own warm paper over it, so
-     the ground is a quiet ruled field under the chrome and nothing more. -->
+<!-- ═══════════════ THE GROUND ═══════════════ a quiet ruled sheet -->
 <div class="world" id="world">
   <svg id="plan" preserveAspectRatio="xMidYMid slice" role="img"
        aria-label="A ruled register sheet, the ground the five screens sit on."></svg>
@@ -30,8 +24,8 @@
 <div class="veil" id="veil" aria-hidden="true"></div>
 <div class="pins" id="pins" aria-hidden="true"></div>
 
-<!-- shared SVG defs: the headline block's rough edge, the hatch for a day
-     late and for an offer that cannot be bought -->
+<!-- shared SVG defs: the headline block's rough edge; the plum hatch for a
+     day late; the warm hatch for an offer struck by one of her rules -->
 <svg class="oc-defs" aria-hidden="true" focusable="false" width="0" height="0">
   <defs>
     <filter id="oc3-rough" x="-4%" y="-6%" width="108%" height="112%">
@@ -44,315 +38,285 @@
     <pattern id="oc-hatch-warm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="7" stroke="#D9561F" stroke-width="1.6"/>
     </pattern>
+    <pattern id="oc-hatch-grey" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#8C8574" stroke-width="1.4"/>
+    </pattern>
+    <!-- the lens: Muse's mark, reused by <use> wherever the agent is -->
+    <symbol id="lens" viewBox="0 0 24 24">
+      <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.6"/>
+      <line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <!-- the seal: a ring and a check, the provider confirming -->
+    <symbol id="seal" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/>
+      <circle cx="16" cy="16" r="9.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".6"/>
+      <path d="M10.5 16.5 L14.5 20.5 L22 11.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </defs>
 </svg>
 
-<!-- ONE THOUGHT PER SCREEN, SIXTY WORDS OR FEWER.
-     design-study/brief-align/CONTRACT.md § OPENCOVER (with AMENDMENT A) is
-     the copy and state contract, verbatim, nothing added.
-     1 — her priorities and her permission: three groups, one object.
-     2 — the offer, with its remedy, published for an agent to read.
-     3 — the best fit inside her rules; recommended, with the agent's
-         one-line reason for each offer; not bought.
-     4 — her instructions become a permitted purchase: the ONE place a
-         purchase is made, as a snapshot of the offer's terms.
-     5 — eleven months on: nothing to check until something was bought;
-         once bought: covered, watched, remedied — the promise checked
-         against performance, the remedy applied.
-     "Coverage", never "cover", wherever the noun is on the glass.
-     Everything else is said aloud by the facilitator
-     (design-study/brief-align/opencover/FACILITATOR-NOTES.md).
-
-     THE AGENT DEVICE. The lens mark and a two-or-three-word state, the
-     same place on every screen (top left, above the eyebrow), painted by
-     paintAgent() from the purchase state: instructed · reading ·
-     recommends / bought · awaiting your permission / bought · confirmed ·
-     watched · remedied / nothing bought (CONTRACT-POLISH.md § OpenCover).
-     A thin plum thread runs from the mark down the left edge (decorative,
-     part of the screen's background, so nothing announces it): the five
-     screens read as one relationship — your protection, your agent. The
-     words count toward each screen's sixty.
-
-     DEEP LINKS. The hashes are #s/1 … #s/5 for the five screens above.
-     Links minted for the three-screen build map by BEAT, not by number:
-     old #s/1 (what she sets) → #s/1 · old #s/2 (the choice) → #s/3 ·
-     old #s/3 (the promise) → #s/5. #s/2 now means the offer, so an old
-     #s/2 link lands one beat early; it cannot be told apart from a new one
-     and is not rewritten. -->
+<!-- ONE THOUGHT PER SCREEN, SIXTY WORDS OR FEWER (CONTRACT-IMPL.md § B).
+     The grammar (§ A): HER paper is warm, first person, hand-set, and gives
+     authority by a signature dash. MUSE is a dark plate with the lens at the
+     head of a plum thread, speaking in short bubbles. The PROVIDER is a
+     ledger-blue record with ruled fields and a seal when it confirms.
+     1 — her rules: a conversation; she signs; the thread begins at her paper.
+     2 — the offer, written for an agent; Muse reads it field by field.
+     3 — Muse acts: hundreds reviewed, three shortlisted, one eligible, and
+         the purchase as Muse's own steps when her rules permit it.
+     4 — the year: Muse keeps shopping each month and stays.
+     5 — the claim: the promise enforced; the remedy applied on her paper.
+     Routes #s/1 … #s/5. State lives in sessionStorage; Next on 5 restarts. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · HER PRIORITIES, HER PERMISSION ══════
-     The standing instructions are the one object: a note she owns, on the
-     warm boundary rule, in three groups. Hard requirements first (an offer
-     that breaks one is never bought); then the ranking preference, which is
-     only a tie-break among eligible offers; then the permission, which is
-     the one number the agent tests before it buys or switches. "Never
-     lapse" is HER requirement of the agent, not a guarantee by anyone. -->
-<section class="screen oc oc1" data-screen="1" data-label="What she sets" data-cam="set" data-veil="soft">
-
-  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="1"></span></p>
-
+<!-- ══════ 1 · HER RULES ══════ -->
+<section class="screen oc oc1" data-screen="1" data-label="Her rules" data-cam="set" data-veil="soft">
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">01 / What she sets</p>
-      <h1 class="display oc-headline" tabindex="-1">Her priorities. Her permission.</h1>
+      <p class="oc-eyebrow">01 / Her rules</p>
+      <h1 class="display oc-headline" tabindex="-1">She sets what good looks like.</h1>
     </div>
   </header>
 
   <div class="oc-scene oc1-scene">
-    <article class="rules" aria-label="Her standing instructions to the agent, set by her and not by any insurer">
+    <!-- HER paper: the quote, the four quotes beside it, the signature -->
+    <article class="human" aria-label="Her note">
+      <svg class="quotes" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+        <!-- the four quotes that came in, as one small fanned stack -->
+        <g transform="rotate(-9 60 56)"><rect x="22" y="22" width="60" height="72" rx="2" fill="#FBF6EA" stroke="#16150F" stroke-width="1.6"/></g>
+        <g transform="rotate(-3 60 56)"><rect x="28" y="18" width="60" height="72" rx="2" fill="#FBF6EA" stroke="#16150F" stroke-width="1.6"/></g>
+        <g transform="rotate(4 60 56)"><rect x="34" y="14" width="60" height="72" rx="2" fill="#FBF6EA" stroke="#16150F" stroke-width="1.6"/></g>
+        <g transform="rotate(11 60 56)"><rect x="40" y="10" width="60" height="72" rx="2" fill="#FBF6EA" stroke="#16150F" stroke-width="1.6"/>
+          <g stroke="#16150F" stroke-width="2.2" stroke-linecap="round" opacity=".55">
+            <line x1="50" y1="26" x2="86" y2="26"/><line x1="50" y1="38" x2="78" y2="38"/><line x1="50" y1="50" x2="84" y2="50"/><line x1="50" y1="62" x2="72" y2="62"/>
+          </g></g>
+      </svg>
+      <p class="human-q"><span class="human-mark" aria-hidden="true">“</span>Renewal's due. Four quotes came in. Find the one that actually covers us.<span class="human-mark" aria-hidden="true">”</span></p>
+      <div class="sign" id="sign">
+        <button class="accept" type="button" id="rules-accept">Accept and sign</button>
+        <p class="signed" id="signed" role="status" hidden>
+          <svg class="sig" viewBox="0 0 140 30" aria-hidden="true" focusable="false">
+            <path class="sig-path" d="M4 20 C 18 2, 30 28, 46 15 S 72 4, 90 17 S 118 8, 136 14" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span>Signed</span>
+        </p>
+      </div>
+    </article>
 
-      <section class="rule-g rule-g--req" aria-label="Requirements">
-        <svg class="rule-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">
-          <!-- three hard lines: a bar each, stopped by a warm diamond -->
-          <g stroke="#16150F" stroke-width="3" stroke-linecap="round">
-            <line x1="10" y1="16" x2="78" y2="16"/>
-            <line x1="10" y1="36" x2="62" y2="36"/>
-            <line x1="10" y1="56" x2="70" y2="56"/>
-          </g>
-          <g fill="#D9561F">
-            <rect x="86" y="9" width="14" height="14" transform="rotate(45 93 16)"/>
-            <rect x="86" y="29" width="14" height="14" transform="rotate(45 93 36)"/>
-            <rect x="86" y="49" width="14" height="14" transform="rotate(45 93 56)"/>
-          </g>
-          <line x1="110" y1="4" x2="110" y2="68" stroke="#D9561F" stroke-width="4" stroke-linecap="round"/>
-        </svg>
-        <ul class="rule-l">
-          <li>Never lapse</li>
-          <li>Excess under 500</li>
-          <li>Keep Rosa, nineteen</li>
-        </ul>
-      </section>
+    <!-- the thread: it begins at her paper and runs to Muse -->
+    <div class="thread thread--s1" aria-hidden="true"><span class="thread-line"></span></div>
 
-      <section class="rule-g rule-g--pref" aria-label="Preference">
-        <svg class="rule-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">
-          <!-- a ranking: three bars in order, and the arrow that orders them -->
-          <g fill="#16150F">
-            <rect x="30" y="10" width="80" height="12" rx="2"/>
-            <rect x="30" y="30" width="56" height="12" rx="2" opacity=".62"/>
-            <rect x="30" y="50" width="34" height="12" rx="2" opacity=".36"/>
-          </g>
-          <path d="M14 10 V58 M6 50 L14 60 L22 50" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p class="rule-p">Rank on price, exclusions or settlement</p>
-      </section>
-
-      <section class="rule-g rule-g--perm" aria-label="Permission">
-        <!-- painted by paintPermission() from DELTA and the OC prices: the
-             span above the cheapest offer the agent may buy inside -->
-        <svg class="rule-art rule-art--perm" id="perm-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false"></svg>
-        <p class="rule-p rule-p--perm">Buy or switch up to 200 USD above the cheapest</p>
-      </section>
-
+    <!-- MUSE: the dark plate, the lens, the rules it will hold to -->
+    <article class="muse muse--s1" aria-label="Muse, her agent">
+      <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg>Muse</p>
+      <p class="bubble">I'll hold to these:</p>
+      <ul class="rules" id="rules">
+        <li class="rule">Never lapse</li>
+        <li class="rule">Rosa, nineteen, stays covered</li>
+        <li class="rule">Excess under 500 USD</li>
+        <li class="rule rule--delta">
+          <span class="rule-t">Switch up to</span>
+          <span class="seg" role="group" aria-label="Switching allowance">
+            <button type="button" data-delta="200" aria-pressed="true">200 USD</button>
+            <button type="button" data-delta="100" aria-pressed="false">100 USD</button>
+          </span>
+          <span class="rule-t">above the cheapest</span>
+          <span class="rule-note" id="delta-note" hidden>applies to the next purchase</span>
+        </li>
+      </ul>
     </article>
   </div>
-
 </section>
 
-<!-- ══════ 2 · AN OFFER HER AGENT CAN UNDERSTAND ══════
-     The offer is a document the insurer publishes, painted from the OC row
-     recommended() returns: five terms, and the remedy that sits under the
-     settlement promise. Published here; checked on screen 5. -->
+<!-- ══════ 2 · THE OFFER ══════ -->
 <section class="screen oc oc2" data-screen="2" data-label="The offer" data-cam="offers" data-veil="">
-
-  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="2"></span></p>
-
   <header class="oc-head">
     <div class="oc-title">
       <p class="oc-eyebrow">02 / The offer</p>
-      <h2 class="display oc-headline" tabindex="-1">An offer her agent can understand.</h2>
+      <h2 class="display oc-headline" tabindex="-1">An offer written for her agent.</h2>
     </div>
   </header>
 
   <div class="oc-scene oc2-scene">
-    <article class="offer" id="offer" aria-label="The offer, published as terms a machine can read">
-      <!-- painted by paintOffer() -->
+    <!-- MUSE reading: the lens at the head of the thread, the checks in sequence -->
+    <article class="muse muse--s2" aria-label="Muse reading the offer">
+      <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg>Reading Meridian Mutual</p>
+      <ol class="checks" id="checks" aria-live="polite">
+        <li class="check" data-field="rosa"><span class="tick" aria-hidden="true">✓</span>Rosa covered</li>
+        <li class="check" data-field="excess"><span class="tick" aria-hidden="true">✓</span>Excess 450</li>
+        <li class="check" data-field="settle"><span class="tick" aria-hidden="true">✓</span>Settlement 5 days</li>
+        <li class="check" data-field="remedy"><span class="tick" aria-hidden="true">✓</span>Remedy 50 USD</li>
+      </ol>
     </article>
 
-    <!-- who publishes it, who reads it: on the card's right edge, the two
-         phrases joined by one arrow that ends at the agent's lens mark —
-         the same mark the device at the top left carries -->
-    <aside class="pub" aria-label="Who publishes the offer and who reads it">
-      <p class="pub-l pub-l--ins">Published by the insurer.</p>
-      <svg class="pub-arrow" viewBox="0 0 24 54" aria-hidden="true" focusable="false">
-        <path d="M10 2 V50" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/>
-        <path d="M1 42 L10 52 L19 42" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <p class="pub-l pub-l--agt"><svg class="pub-lens" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg>Read by her agent.</p>
-    </aside>
-  </div>
+    <div class="thread thread--s2" aria-hidden="true"><span class="thread-line"></span></div>
 
+    <!-- the PROVIDER record: ledger-blue, ruled fields; a field lights as the lens reads it -->
+    <article class="record" id="record" aria-label="The offer Meridian Mutual publishes">
+      <svg class="record-lens" id="record-lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg>
+      <p class="record-co">Meridian Mutual</p>
+      <p class="record-price"><span class="record-n">1,340</span><span class="record-u">USD a year</span></p>
+      <ul class="fields">
+        <li class="field" data-field="excess"><button type="button" class="field-b">Excess 450 USD</button></li>
+        <li class="field" data-field="rosa"><button type="button" class="field-b">Named drivers covered</button></li>
+        <li class="field field--promise" data-field="settle"><button type="button" class="field-b">Settlement 5 working days from agreed liability</button></li>
+        <li class="field field--promise" data-field="remedy"><button type="button" class="field-b">Remedy 50 USD a day late, no separate claim needed</button></li>
+      </ul>
+    </article>
+  </div>
 </section>
 
-<!-- ══════ 3 · THE BEST FIT INSIDE HER RULES ══════
-     Eligibility is the hard filter; the preference only decides which term
-     each offer shows and the order the three are ranked in. The eligible
-     offer is RECOMMENDED here, and the foot line is the agent's one-line
-     reason for each of the three (OC[*].explain). Nothing is bought on
-     this screen. -->
-<section class="screen oc oc3" data-screen="3" data-label="The choice" data-cam="offers" data-veil="">
-
-  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="3"></span></p>
-
+<!-- ══════ 3 · THE AGENT ACTS ══════
+     The purchase is performed HERE, by Muse, as its own sequenced steps, on
+     screen entry, only when permitted(): Meridian eligible, 155 ≤ delta, and
+     signed. No human control buys. -->
+<section class="screen oc oc3" data-screen="3" data-label="The agent acts" data-cam="offers" data-veil="">
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">03 / The choice</p>
-      <h2 class="display oc-headline" tabindex="-1">The best fit inside her rules.</h2>
+      <p class="oc-eyebrow">03 / The agent acts</p>
+      <h2 class="display oc-headline" tabindex="-1">Hundreds reviewed. Three shortlisted. One eligible.</h2>
     </div>
-    <!-- the group's name is for assistive tech only: with the agent strip
-         and the agent's reason line, the three cards leave the sixty words
-         no room for a visible label the buttons do not need -->
-    <div class="rank" role="group" aria-labelledby="rank-l">
-      <p class="rank-l sr-only" id="rank-l">Rank on</p>
-      <div class="xchoice">
-        <button type="button" data-pref="price"  aria-pressed="true">Price</button>
-        <button type="button" data-pref="excl"   aria-pressed="false">Fewest exclusions</button>
-        <button type="button" data-pref="settle" aria-pressed="false">Fastest settlement</button>
-      </div>
+    <!-- her signed paper, small, in the corner: the authority Muse acts inside -->
+    <div class="paper-corner" id="paper-corner" aria-hidden="true">
+      <svg class="sig sig--small" viewBox="0 0 140 30" focusable="false">
+        <path class="sig-path" d="M4 20 C 18 2, 30 28, 46 15 S 72 4, 90 17 S 118 8, 136 14" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
+      </svg>
     </div>
   </header>
 
-  <div class="oc-scene oc3-scene" id="cmp" aria-live="polite">
-    <!-- painted by paintCompare() -->
+  <div class="oc-scene oc3-scene">
+    <!-- the stream of offers compressing to three -->
+    <svg class="stream" id="stream" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+
+    <ol class="shortlist" id="shortlist" aria-label="Three shortlisted">
+      <li class="of" data-id="candlewick" data-ok="0">
+        <p class="of-co">Candlewick Direct</p>
+        <p class="of-p">1,185 USD</p>
+        <p class="of-t"><span class="sr-only">Struck: </span>excludes Rosa</p>
+        <svg class="strike" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 6 L100 4" stroke="#D9561F" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>
+      </li>
+      <li class="of" data-id="meridian" data-ok="1">
+        <p class="of-co">Meridian Mutual</p>
+        <p class="of-p">1,340 USD</p>
+        <p class="of-t">eligible</p>
+        <svg class="of-seal" id="of-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg>
+      </li>
+      <li class="of" data-id="pell" data-ok="0">
+        <p class="of-co">Pell &amp; Roe</p>
+        <p class="of-p">1,420 USD</p>
+        <p class="of-t"><span class="sr-only">Struck: </span>excess 900</p>
+        <svg class="strike" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 4 L100 6" stroke="#D9561F" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>
+      </li>
+    </ol>
+
+    <!-- MUSE acting: painted by paintAct() from permitted() and the snapshot -->
+    <article class="muse muse--s3" id="act" aria-label="Muse acting" aria-live="polite">
+      <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+      <ol class="steps" id="act-steps" hidden>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Within your allowance · 155 above the cheapest</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Bought · Meridian Mutual confirms</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Old policy ends after confirmation</li>
+      </ol>
+      <p class="status" id="act-status" hidden><svg class="status-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg><span id="act-status-t"></span></p>
+      <p class="bubble bubble--hold" id="act-hold" hidden></p>
+      <div class="slot" id="act-slot"></div>
+    </article>
   </div>
-
-  <!-- the foot line reads the purchase (paintCompare): until #buy on
-       screen 4 it is the agent's reason for each offer; after it, ranking
-       is presentation only and the line says so -->
-  <footer class="oc-line oc3-foot-line">
-    <p class="oc-state oc-state--why"><span class="oc-dot" aria-hidden="true"></span><span id="s3-state">Meridian fits all three rules. Candlewick excludes Rosa. Pell &amp; Roe's excess is 900.</span></p>
-  </footer>
-
 </section>
 
-<!-- ══════ 4 · HER INSTRUCTIONS BECOME A PERMITTED PURCHASE ══════
-     Three steps, one action. #buy is the ONE place a purchase is made: it
-     copies the recommended offer's name and terms into S.purchase (a
-     snapshot) if permitted(). The marks fill in order — permission, then
-     confirmation, then coverage — and the prior coverage is never cancelled
-     before the insurer confirms: step three's old-coverage bar runs on with
-     no end until the confirmation step is done (a stylesheet sibling rule
-     on data-done, so timing cannot draw the end first). Her standing
-     permission and the offer's published terms are what let the agent
-     complete this without her — identity and payment are on file, the
-     requirements are met, not waived. No external transaction is made
-     (provenance and build status: FACILITATOR-NOTES.md).
-     #buy is the PRIMARY control here: while it is available the chrome's
-     Next is drawn as a secondary (body[data-primary="buy"]). -->
-<section class="screen oc oc4" data-screen="4" data-label="The purchase" data-cam="offers" data-veil="soft">
-
-  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="4"></span></p>
-
+<!-- ══════ 4 · THE YEAR ══════ reads only the snapshot -->
+<section class="screen oc oc4" data-screen="4" data-label="The year" data-cam="offers" data-veil="soft">
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">04 / The purchase</p>
-      <h2 class="display oc-headline" tabindex="-1">Her instructions become a permitted purchase.</h2>
+      <p class="oc-eyebrow">04 / The year</p>
+      <h2 class="display oc-headline" tabindex="-1">It keeps shopping.</h2>
     </div>
+    <p class="held" id="year-held" hidden></p>
   </header>
 
   <div class="oc-scene oc4-scene">
-    <ol class="steps" id="steps" aria-label="The purchase, in three steps">
+    <div class="year-bought" id="year-bought" hidden>
+      <!-- the year as a bar: prepaid value shrinking; the thread along it; the
+           prepared leaving path in grey under it -->
+      <div class="year-row">
+        <label class="year-l" for="year"><span class="year-m">Month <b id="year-m">1</b></span></label>
+        <input class="year-r" type="range" id="year" min="1" max="12" step="1" value="1" aria-valuemin="1" aria-valuemax="12">
+      </div>
+      <svg class="yearbar" id="yearbar" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
 
-      <li class="step" data-step="permit" data-done="0">
-        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
-          <!-- the permission span, painted by paintSteps() from the model -->
-          <g class="step-art-perm" id="step-perm"></g>
-        </svg>
-        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Permission checked</p>
-        <p class="step-s">within 200 USD</p>
-      </li>
+      <!-- MUSE's check for the shown month, re-run on the thread -->
+      <article class="muse muse--s4" aria-label="Muse's check this month">
+        <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+        <ul class="ychecks" id="ychecks">
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Eligible alternatives · none</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Prepaid value remaining · <b id="year-left">11</b> months</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Switching requirements · prepared</span></li>
+          <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Continuity · replacement first, then cancel</span></li>
+        </ul>
+        <p class="verdict" id="year-verdict">Stay.</p>
+      </article>
+    </div>
 
-      <li class="step" data-step="confirm" data-done="0">
-        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
-          <!-- the insurer's sheet, and its seal that fills on confirmation -->
-          <rect x="62" y="8" width="96" height="94" rx="3" fill="#FBF6EA" stroke="#16150F" stroke-width="2.5"/>
-          <g stroke="#16150F" stroke-width="3" stroke-linecap="round" opacity=".5">
-            <line x1="76" y1="26" x2="128" y2="26"/>
-            <line x1="76" y1="40" x2="140" y2="40"/>
-            <line x1="76" y1="54" x2="118" y2="54"/>
-            <line x1="76" y1="68" x2="134" y2="68"/>
-          </g>
-          <circle class="step-seal" cx="138" cy="80" r="16" fill="#FBF6EA" stroke="#16150F" stroke-width="3"/>
-          <path class="step-tick" d="M130 80 L136 86 L147 73" fill="none" stroke="#F3EBD7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Insurer confirms</p>
-        <p class="step-s">identity and payment on file</p>
-      </li>
-
-      <li class="step" data-step="cover" data-done="0">
-        <svg class="step-art" viewBox="0 0 220 110" aria-hidden="true" focusable="false">
-          <!-- two coverages on one line of time: the old one runs on with
-               no end (width 200, to the edge) until the confirmation step
-               is done; then the stylesheet ends it at 138, past the mark
-               the new one starts at (104). They overlap; there is no gap. -->
-          <line x1="10" y1="92" x2="210" y2="92" stroke="#16150F" stroke-width="2" opacity=".35"/>
-          <line class="step-now" x1="104" y1="12" x2="104" y2="100" stroke="#16150F" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/>
-          <rect class="step-old" x="10" y="54" width="200" height="20" rx="3" fill="#16150F" opacity=".32"/>
-          <rect class="step-new" x="104" y="24" width="106" height="20" rx="3" fill="none" stroke="#8A3450" stroke-width="2.5"/>
-        </svg>
-        <p class="step-h"><span class="step-mark" aria-hidden="true"></span>Coverage in place</p>
-        <p class="step-s">old policy ends after confirmation</p>
-      </li>
-
-    </ol>
-
-    <div class="buy-row">
-      <button class="buy" type="button" id="buy">Buy inside her rules</button>
-      <p class="bought" id="bought-state" role="status" hidden>
-        <svg class="bought-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <circle cx="12" cy="12" r="11" fill="#8A3450"/>
-          <path d="M6.5 12.5 L10.5 16.5 L17.5 8.5" fill="none" stroke="#F3EBD7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span id="bought-label"></span>
-      </p>
+    <div class="pending" id="year-pending">
+      <p class="pending-l">Nothing to watch — no policy was bought.</p>
+      <div class="slot" id="year-slot"></div>
     </div>
   </div>
-
 </section>
 
-<!-- ══════ 5 · ELEVEN MONTHS ON ══════
-     Two states, painted by paintPerformance() from the SNAPSHOT and nothing
-     else. PENDING (no snapshot — fresh load, deep link, picker, back, reload
-     before any purchase): "Nothing bought yet.", one line, one button back
-     to the purchase; no calculation, no insurer line, no "retained".
-     BOUGHT: the benefit as the headline — "Covered, watched, remedied." —
-     then one calculation from the snapshot's settlement days and remedy
-     and the one missed entry in LEDGER. The clock starts at agreed
-     liability; the remedy is a published term that applied on the miss,
-     with no separate claim. Then the continuing selection: alternatives
-     rechecked, none eligible, coverage retained, the miss recorded. -->
-<section class="screen oc oc5" data-screen="5" data-label="Eleven months on" data-cam="after" data-veil="soft">
-
-  <p class="agent"><svg class="agent-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="#8A3450" stroke-width="2.6"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/></svg><span class="agent-t" data-agent="5"></span></p>
-
+<!-- ══════ 5 · THE CLAIM ══════ reads only the snapshot -->
+<section class="screen oc oc5" data-screen="5" data-label="The claim" data-cam="after" data-veil="soft">
   <header class="oc-head">
     <div class="oc-title">
-      <p class="oc-eyebrow">05 / Eleven months on</p>
+      <p class="oc-eyebrow">05 / The claim</p>
       <h2 class="display oc-headline" id="oc5-headline" tabindex="-1">Nothing bought yet.</h2>
     </div>
-    <!-- bought only: the snapshot's name, and that it was bought -->
-    <p class="oc3-id" id="oc3-id" hidden></p>
+    <p class="held" id="claim-held" hidden></p>
   </header>
 
   <div class="oc-scene oc5-scene">
-    <!-- pending: no policy, so nothing is checked and nothing is drawn -->
-    <div class="oc5-pending" id="oc5-pending">
-      <p class="oc5-line">No policy to check. The recommendation was not bought.</p>
-      <button class="buy" type="button" id="to-purchase" data-goto="4">Back to the purchase</button>
+    <div class="claim-bought" id="claim-bought" hidden>
+      <!-- the promise, from the snapshot, before the claim -->
+      <p class="promise" id="promise"></p>
+      <!-- the clock on the thread: promised days in ledger blue, late days hatched plum -->
+      <div class="clock" id="clock"></div>
+      <div class="claim-row">
+        <button class="accept accept--claim" type="button" id="claim">Report a claim</button>
+        <!-- MUSE enforcing: the steps, in sequence -->
+        <article class="muse muse--s5" id="enforce" aria-label="Muse enforcing the promise" aria-live="polite" hidden>
+          <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+          <ol class="steps" id="claim-steps">
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Claim reported</li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Liability agreed · clock starts</li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>5 working days promised</li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Settled on day nine</li>
+            <li class="astep astep--remedy"><span class="astep-a" aria-hidden="true">→</span>4 late × 50 USD = 200 USD remedy applied under the policy</li>
+          </ol>
+        </article>
+        <!-- it ends on HER paper: the remedy applied, no transfer, no bank -->
+        <aside class="human human--slip" id="slip" hidden aria-label="Her note">
+          <p class="human-q human-q--s">No separate claim needed.</p>
+          <svg class="sig sig--small" viewBox="0 0 140 30" aria-hidden="true" focusable="false">
+            <path class="sig-path" d="M4 20 C 18 2, 30 28, 46 15 S 72 4, 90 17 S 118 8, 136 14" fill="none" stroke="#16150F" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </aside>
+      </div>
     </div>
-    <!-- bought: painted by paintPerformance() -->
-    <figure class="calc" id="oc3-calc" aria-label="The settlement promise checked against performance" hidden></figure>
+
+    <div class="pending" id="claim-pending">
+      <p class="pending-l">No policy to claim on.</p>
+      <div class="slot" id="claim-slot"></div>
+    </div>
   </div>
-
-  <footer class="oc3-foot" id="oc3-foot" hidden></footer>
-
 </section>
 
 </main>
 
-<!-- ═══════════════ CHROME ═══════════════
-     Small controls in the bottom gutter. No bar: the paper runs behind
-     them to all four edges. -->
+<!-- the ONE way back to her rules: moved by app.js into whichever pending
+     slot the open screen needs, with the label that state calls for -->
+<template id="to-rules-tpl"><button class="accept accept--back" type="button" id="to-rules" data-goto="1">Back to her rules</button></template>
+
+<!-- ═══════════════ CHROME ═══════════════ -->
 <div class="chrome">
   <div class="chrome-r">
     <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">

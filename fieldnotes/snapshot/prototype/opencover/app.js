@@ -1,278 +1,62 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   OpenCover · insurance written to be read by the customer's machine
+   OpenCover · the buyer never stops working
    No framework, no build step, no external request. Three files.
 
-   Forked from prototype/resilience-grid/app.js. The navigation, the camera,
-   the per-screen --fit search and the pin projection are that file's
-   machinery, inherited verbatim. What is new is the ground it draws and the
-   three objects this concept needs: the stated record, the offer document,
-   the performance ledger.
+   Built to design-study/brief-align/CONTRACT-IMPL.md § A (the shared agent
+   grammar) and § B (OpenCover: copy, controls, state, visuals), with
+   EXPERIENCE-STORYBOARD.md § 01 for intent.
 
-   THE GROUND
-   This prototype has no territory. Its subject is published terms, so the
-   ground is a REGISTER: a ruled sheet in one world space 1600 x 1000,
-   carrying three records — what the person stated, the three offers read as
-   data, the performance ledger — with arrows from the first to the second to
-   the third, and a heavier arrow returning from the ledger to the offers.
-   That return arrow is the whole strategic claim drawn once: the market
-   re-opens on a missed commitment, not on a renewal date.
+   THE GRAMMAR, IN CODE
+   HER paper is warm; her words are first person; her authority is the
+   signature dash drawn on #rules-accept. MUSE is the dark plate, the lens
+   at the head of a plum thread, speaking in short bubbles. The PROVIDER is
+   a ledger-blue record with ruled fields and a seal when it confirms.
 
-   WHAT IS INVENTED
-   All of it. Meridian Mutual, Candlewick Direct and Pell & Roe Assurance are
-   invented insurers; every premium, excess, exclusion, commitment, remedy and
-   performance check below is invented; the household and its stated
-   priorities are invented. Screen 1 says so, plainly, on the glass. No real
-   insurer, policy, price or assistant is described anywhere in these files,
-   and no invented figure is attached to any real company.
+   THE ONE RULE THAT CANNOT BEND
+   The purchase happens ONLY on screen 3, as Muse's own sequenced steps,
+   when permitted(): Meridian eligible AND 155 ≤ delta AND signed. No
+   human control buys. Next never consents. Screens 4 and 5 read only the
+   snapshot, which a later edit of the allowance never changes.
+
+   The navigation, the camera, the per-screen --fit search and the pin
+   projection below the PAINT section are inherited from the earlier build.
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
   /* ══════════════════════════════════════════════════════════════════════
-     CONTENT — one structure per object, all of it here, so copy can be
-     swapped without touching layout.
+     ONE SOURCE OF TRUTH — the three shortlisted offers. Eligibility is a
+     hard filter drawn from her rules; nothing is scored.
      ══════════════════════════════════════════════════════════════════════ */
-
-  /* The four things the household stated. Order is the priority order. */
-  var PRIORITIES = [
-    { id: "lapse",  name: "Never lapse",
-      k: "continuity.no_lapse = required",
-      said: "Coverage must never have a gap, including at renewal." },
-    { id: "excess", name: "Cap the excess",
-      k: "excess.max_usd = 500",
-      said: "No excess above 500 USD on any claim." },
-    { id: "driver", name: "Keep the named driver",
-      k: "named_driver.keep = \"rosa\"",
-      said: "Rosa stays a covered driver. She is nineteen." },
-    { id: "settle", name: "Speed over price",
-      k: "settlement.commitment > premium.lowest",
-      said: "A published settlement time beats a lower premium." }
-  ];
-
-  /* The permission boundary, in the one number the assistant has to test. */
-  var DELTA = 200;            /* USD a year above the cheapest offer */
-
-  var OFFERS = [
-    {
-      id: "meridian", name: "Meridian Mutual",
-      ref: "offer/meridian-mutual/v9",
-      meta: "motor · 12 months · published",
-      premium: 1340, price: "1,340.00 USD / yr",
-      why: "",
-      scores: {
-        lapse:  { ok: true, v: "guaranteed" },
-        excess: { ok: true, v: "450 USD" },
-        driver: { ok: true, v: "no age condition" },
-        settle: { ok: true, v: "5 days, with a remedy" }
-      },
-      doc: [
-        { h: "terms", rows: [
-          { k: "product",                      v: "motor · 12 months" },
-          { k: "annual_premium",               v: "1,340.00 USD" },
-          { k: "excess.standard",              v: "450.00 USD" },
-          { k: "excess.windscreen",            v: "0.00 USD" },
-          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
-        ] },
-        { h: "covered perils", rows: [
-          { k: "third_party_liability",        v: "unlimited" },
-          { k: "fire_and_theft",               v: "included" },
-          { k: "named_driver.all_listed",      v: "included, no age condition" },
-          { k: "driving_abroad",               v: "30 days a year" }
-        ] },
-        { h: "not covered", cls: "out", rows: [
-          { k: "track_use",                    v: "excluded", out: true },
-          { k: "commercial_hire",              v: "excluded", out: true },
-          { k: "personal_effects",             v: "excluded above 400.00 USD", out: true }
-        ] },
-        { h: "service commitments", cls: "com", rows: [
-          { k: "first_response.days",  v: "1 working day",
-            rem: "remedy 25.00 USD credit" },
-          { k: "settlement.days",      v: "5 working days from agreed liability",
-            rem: "remedy 50.00 USD per day late, paid without a claim" },
-          { k: "renewal_notice.days",  v: "30, with the new price published" },
-          { k: "performance.published", v: "monthly, machine-readable" }
-        ] }
-      ]
-    },
-    {
-      id: "candlewick", name: "Candlewick Direct",
-      ref: "offer/candlewick-direct/v4",
-      meta: "motor · 12 months · published",
-      premium: 1185, price: "1,185.00 USD / yr",
-      why: "the named driver would be uninsured",
-      scores: {
-        lapse:  { ok: true,  v: "guaranteed" },
-        excess: { ok: true,  v: "500 USD" },
-        driver: { ok: false, v: "under 25 excluded" },
-        settle: { ok: false, v: "none published" }
-      },
-      doc: [
-        { h: "terms", rows: [
-          { k: "product",                      v: "motor · 12 months" },
-          { k: "annual_premium",               v: "1,185.00 USD" },
-          { k: "excess.standard",              v: "500.00 USD" },
-          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
-        ] },
-        { h: "covered perils", rows: [
-          { k: "third_party_liability",        v: "unlimited" },
-          { k: "fire_and_theft",               v: "included" },
-          { k: "windscreen",                   v: "included, 0.00 USD excess" }
-        ] },
-        { h: "not covered", cls: "out", rows: [
-          { k: "named_driver.under_25",        v: "excluded — Rosa is nineteen", out: true },
-          { k: "driving_abroad",               v: "excluded", out: true },
-          { k: "courtesy_car",                 v: "excluded", out: true }
-        ] },
-        { h: "service commitments", cls: "com", rows: [
-          { k: "first_response.days",        v: "1 working day" },
-          { k: "first_response.remedy",      nul: true, v: "nothing is owed if it is missed" },
-          { k: "settlement.days",            nul: true, v: "no settlement time is published" },
-          { k: "renewal_notice.days",        v: "21, price published on request" }
-        ] }
-      ]
-    },
-    {
-      id: "pell", name: "Pell & Roe Assurance",
-      ref: "offer/pell-and-roe/v2",
-      meta: "motor · 12 months · published",
-      premium: 1420, price: "1,420.00 USD / yr",
-      why: "the excess would be 900 USD, twice the stated cap",
-      scores: {
-        lapse:  { ok: true,  v: "guaranteed" },
-        excess: { ok: false, v: "900 USD" },
-        driver: { ok: true,  v: "covered" },
-        settle: { ok: true,  v: "10 days, with a remedy" }
-      },
-      doc: [
-        { h: "terms", rows: [
-          { k: "product",                      v: "motor · 12 months" },
-          { k: "annual_premium",               v: "1,420.00 USD" },
-          { k: "excess.standard",              v: "900.00 USD" },
-          { k: "continuity.no_lapse",          v: "true, guaranteed at renewal" }
-        ] },
-        { h: "covered perils", rows: [
-          { k: "third_party_liability",        v: "unlimited" },
-          { k: "fire_and_theft",               v: "included" },
-          { k: "named_driver.all_listed",      v: "included, no age condition" },
-          { k: "windscreen",                   v: "included, 75.00 USD excess" }
-        ] },
-        { h: "not covered", cls: "out", rows: [
-          { k: "theft.unattended",             v: "excluded", out: true },
-          { k: "modifications",                v: "excluded if undeclared", out: true },
-          { k: "driving_abroad",               v: "excluded", out: true }
-        ] },
-        { h: "service commitments", cls: "com", rows: [
-          { k: "first_response.days",   v: "2 working days" },
-          { k: "settlement.days",       v: "10 working days from agreed liability",
-            rem: "remedy 20.00 USD per day late" },
-          { k: "renewal_notice.days",   v: "30, with the new price published" }
-        ] }
-      ]
-    }
-  ];
-
-  /* Eleven months of the bought policy, checked against what it promised. */
-  var LEDGER = [
-    { name: "First response within 1 working day",
-      k: "first_response.days = 1 · remedy = 25.00 USD credit",
-      checks: [1, 1, 1], tag: "Met", cls: "met",
-      said: "Three claims notified. Three responses inside the day." },
-    { name: "Settlement within 5 working days of agreed liability",
-      k: "settlement.days = 5 · remedy = 50.00 USD per day late",
-      checks: [1, 1, 0], tag: "Missed once", cls: "miss",
-      /* the same facts as numbers, so screen 3 can show the arithmetic
-         rather than restate it: promised and observed are working days
-         counted from AGREED LIABILITY; the remedy is per day late */
-      key: "settlement.days", promised: 5, observed: 9, perDay: 50,
-      onClaim: "the third claim",
-      said: "Nine working days on the third claim. Remedy applied automatically: 200.00 USD, with no claim made for it." },
-    { name: "Renewal price published 30 days ahead",
-      k: "renewal_notice.days = 30 · performance.published = monthly",
-      checks: [1], tag: "Met", cls: "met",
-      said: "Published, machine-readable, on day thirty-four." }
-  ];
-
-  /* ══════════════════════════════════════════════════════════════════════
-     ONE SOURCE OF TRUTH
-
-     Every screen reads this table. Eligibility is a HARD filter drawn from
-     the customer's own standing instructions, so an offer that breaks one is
-     never bought however cheap it is — which is the whole argument. The
-     preference then only decides WHICH TERM is shown and why the eligible
-     offer won; it never overrides eligibility.
-
-     Nothing is scored. Where an offer publishes no commitment, that absence
-     is shown as an absence and never treated as a zero or a promise.
-     ══════════════════════════════════════════════════════════════════════ */
-
   var OC = [
-    { id: "meridian", name: "Meridian Mutual", short: "Meridian", price: "1,340.00", num: 1340,
-      excess: "450.00 USD", excessNum: 450, driver: "Every named driver, no age condition",
-      settle: "5 working days, remedy 50.00 USD per day late", settlePublished: true, settleDays: 5,
-      /* the published remedy, USD per working day late; null where no
-         settlement time is published, so there is nothing to remedy */
-      remedyPerDay: 50,
-      /* exclusions that reach HER household: the count "fewest exclusions" ranks on */
-      hits: 0,
-      /* the one term each preference turns on, three words or fewer. This is
-         what the glass shows; the long forms above stay for the notes. */
-      term: { price: "1,340 USD", excl: "No age condition", settle: "5 working days" },
-      /* the agent's one clause on this offer, for screen 3's foot line;
-         the three clauses are joined winner first, then table order */
-      explain: "Meridian fits all three rules.",
-      eligible: true, bar: null, verdict: "Fits",
-      why: { price:  "the lowest price she can actually buy",
-             excl:   "no exclusion that reaches her household",
-             settle: "the only published settlement time with a remedy behind it" } },
-    { id: "candlewick", name: "Candlewick Direct", price: "1,185.00", num: 1185,
-      excess: "500.00 USD", excessNum: 500, driver: "Drivers under 25 excluded",
-      settle: "No settlement time published", settlePublished: false, settleDays: null,
-      remedyPerDay: null,
-      hits: 1,
-      term: { price: "1,185 USD", excl: "Under 25 excluded", settle: "None published" },
-      explain: "Candlewick excludes Rosa.",
-      eligible: false, bar: "Rosa is nineteen, so this excludes a driver she told the agent to keep.",
-      barShort: "excludes drivers under 25 — Rosa is nineteen", verdict: "Excludes Rosa" },
-    { id: "pell", name: "Pell & Roe", longName: "Pell & Roe Assurance", price: "1,420.00", num: 1420,
-      excess: "900.00 USD", excessNum: 900, driver: "Every named driver",
-      settle: "10 working days", settlePublished: true, settleDays: 10,
-      remedyPerDay: 20,
-      hits: 0,
-      term: { price: "1,420 USD", excl: "No age condition", settle: "10 working days" },
-      explain: "Pell & Roe's excess is 900.",
-      eligible: false, bar: "The excess is 900 USD, twice the 500 she capped.",
-      barShort: "excess 900 USD, twice her 500 cap", verdict: "Excess 900" }
+    { id: "meridian", name: "Meridian Mutual", num: 1340, excessNum: 450,
+      settleDays: 5, remedyPerDay: 50, eligible: true, bar: null },
+    { id: "candlewick", name: "Candlewick Direct", num: 1185, excessNum: 500,
+      settleDays: null, remedyPerDay: null, eligible: false,
+      bar: "excludes drivers under 25 — Rosa is nineteen" },
+    { id: "pell", name: "Pell & Roe", num: 1420, excessNum: 900,
+      settleDays: 10, remedyPerDay: 20, eligible: false,
+      bar: "excess 900 USD, above her 500 cap" }
   ];
 
-  /* How each preference ORDERS the three. Ordering is presentation; it never
-     touches eligibility, so the bought offer is the same in every order. */
-  var RANK = {
-    price:  function (a, b) { return a.num - b.num; },
-    excl:   function (a, b) { return (a.hits - b.hits) || (a.num - b.num); },
-    settle: function (a, b) {
-      var da = a.settleDays == null ? Infinity : a.settleDays,
-          db = b.settleDays == null ? Infinity : b.settleDays;
-      return (da - db) || (a.num - b.num);
-    }
-  };
-  var PREF_SAID = { price: "price", excl: "fewest exclusions", settle: "fastest settlement" };
+  /* the one claim of the year, checked against what the policy promised:
+     promised and observed are working days counted from AGREED LIABILITY */
+  var LEDGER = { key: "settlement.days", observed: 9 };
 
   /* ══════════════════════════════════════════════════════════════════════
-     STATE — a preference and a purchase, both set on the glass, both read
-     later (design-study/brief-align/CONTRACT.md § OPENCOVER).
-       pref     · chosen on screen 3, read by screen 3 only.
-       purchase · null until #buy on screen 4; then a SNAPSHOT of the offer
-                  bought — name and terms COPIED at that moment, not a
-                  reference to the live table — read by screens 4 and 5.
-     Both survive a reload (sessionStorage: oc-pref, oc-purchase as JSON).
-     A browser that refuses storage starts on price with nothing bought.
-     Restarting from screen 5 clears both. Nothing is ever bought by
-     navigation: the only writer of S.purchase is buy().
+     STATE  S = { delta: 200|100, signed, purchase: null|snapshot, month, claim }
+       delta    · her switching allowance, set on screen 1; editable after
+                  signing; a later edit never touches the snapshot.
+       signed   · set by #rules-accept only.
+       purchase · null until Muse buys on screen 3; then a SNAPSHOT of the
+                  offer — name and terms COPIED at that moment.
+       month    · the month screen 4 shows (1–12; 0 = not yet shown).
+       claim    · null until #claim on screen 5; then { agreed, settled }.
+     All of it survives a reload (sessionStorage oc-s as JSON). Restarting
+     from screen 5 clears it. The only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { pref: "price", purchase: null };
+  var S = { delta: 200, signed: false, purchase: null, month: 0, claim: null };
 
-  /* a stored snapshot is trusted only if it is whole: every term the bought
-     state paints must be present and of the right kind, or it is no purchase */
   function snapshotOf(raw) {
     if (!raw || typeof raw !== "object") { return null; }
     var ok = typeof raw.id === "string" && typeof raw.name === "string" && raw.name &&
@@ -284,393 +68,436 @@
               : null;
   }
   try {
-    if (RANK[sessionStorage.getItem("oc-pref")]) { S.pref = sessionStorage.getItem("oc-pref"); }
-    S.purchase = snapshotOf(JSON.parse(sessionStorage.getItem("oc-purchase") || "null"));
-    sessionStorage.removeItem("oc-bought");   /* the earlier build's flag; never read */
+    var raw = JSON.parse(sessionStorage.getItem("oc-s") || "null");
+    if (raw && typeof raw === "object") {
+      S.delta = raw.delta === 100 ? 100 : 200;
+      S.signed = raw.signed === true;
+      S.purchase = snapshotOf(raw.purchase);
+      S.month = (raw.month >= 1 && raw.month <= 12) ? Math.round(raw.month) : 0;
+      S.claim = (raw.claim && typeof raw.claim === "object" && raw.claim.agreed === true)
+                ? { agreed: true, settled: LEDGER.observed } : null;
+    }
+    /* the earlier builds' keys; never read */
+    sessionStorage.removeItem("oc-pref"); sessionStorage.removeItem("oc-purchase"); sessionStorage.removeItem("oc-bought");
   } catch (e) { /* private mode, or a stored value that is not JSON */ }
 
   function persist() {
-    try {
-      sessionStorage.setItem("oc-pref", S.pref);
-      if (S.purchase) { sessionStorage.setItem("oc-purchase", JSON.stringify(S.purchase)); }
-      else { sessionStorage.removeItem("oc-purchase"); }
-    } catch (e) { /* private mode */ }
+    try { sessionStorage.setItem("oc-s", JSON.stringify(S)); } catch (e) { /* private mode */ }
   }
 
-  /* the cheapest ELIGIBLE offer; eligibility is never traded away. This is
-     the offer screen 2 publishes, screen 3 recommends and screen 4 may buy. */
   function recommended() {
     return OC.filter(function (o) { return o.eligible; })
              .reduce(function (a, b) { return a.num <= b.num ? a : b; });
   }
-  /* the PURCHASED offer: the snapshot, or null. Never recommended(): a
-     recommendation is not a purchase, and screen 5 has nothing to check
-     until the purchase on screen 4 has been made. */
+  function cheapest() { return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; }); }
+  function gap() { return recommended().num - cheapest().num; }   /* 1340 − 1185 = 155 */
   function bought() { return S.purchase; }
 
-  /* the cheapest offer of the three, eligible or not: the floor her
-     permission is measured from */
-  function cheapest() {
-    return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; });
-  }
-
-  /* the agent's reason for each of the three, as one line: the recommended
-     offer's clause first, then the others in table order. Screen 3's foot
-     until the purchase. */
-  function explainLine() {
-    var win = recommended();
-    return [win].concat(OC.filter(function (o) { return o !== win; }))
-      .map(function (o) { return o.explain; }).join(" ");
-  }
-
-  /* ── the agent device: the lens mark and a two-or-three-word state, the
-     same place on every screen, read from the purchase state
-     (design-study/brief-align/CONTRACT-POLISH.md § OpenCover). The plum
-     thread that runs from the mark down the left edge is drawn by the
-     stylesheet (.screen.oc's background), so the five screens read as one
-     relationship. Named from the model (the recommended offer, the
-     snapshot), never from a literal, so the device can only name what the
-     screen shows. */
-  function shortName(o) {
-    /* the snapshot carries the full name; the device shows the table's
-       short form for the same id, and the snapshot's name if there is none */
-    var row = OC.filter(function (x) { return x.id === o.id; })[0];
-    return (row && row.short) || o.name;
-  }
-  function agentLine(n) {
-    var p = bought();
-    switch (n) {
-      case 1: return "instructed";
-      case 2: return "reading";
-      case 3: return p ? "bought " + shortName(p) : "recommends " + shortName(recommended());
-      case 4: return p ? "bought · confirmed" : "awaiting your permission";
-      case 5: return p ? "watched · remedied" : "nothing bought";
-    }
-    return "";
-  }
-  /* the state, said aloud: the middle dot becomes a pause */
-  function agentSaid(n) { return agentLine(n).replace(/ · /g, ", "); }
-  function paintAgent() {
-    Array.prototype.forEach.call(document.querySelectorAll("[data-agent]"), function (el) {
-      el.innerHTML = "<b>Your agent</b><span class=\"agent-sep\"> · </span>" +
-                     esc(agentLine(parseInt(el.dataset.agent, 10)))
-                       .split(" · ").join("<span class=\"agent-sep\"> · </span>");
-    });
-  }
-
-  /* on screen 4, until the purchase, #buy is the primary control and the
-     chrome's Next is drawn as a secondary; everywhere else Next is primary */
-  function markPrimary() {
-    document.body.dataset.primary = (current === 4 && !bought()) ? "buy" : "";
-  }
-
-  /* ── screen 1: the permission span, drawn from the model ───────────────
-     A line from the cheapest offer to DELTA above it, closed by her warm
-     boundary mark; the recommended offer sits inside it as a plum dot. No
-     text: the sentence under it says what it is. */
-  function permSpan(x0, x1, y, dotR, stroke, price) {
-    var floor = cheapest().num;
-    var num = (price == null) ? recommended().num : price;
-    var u = Math.max(0, Math.min(1, (num - floor) / DELTA));
-    var xr = x0 + (x1 - x0) * u;
-    return '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y +
-             '" stroke="#16150F" stroke-width="' + stroke + '" stroke-linecap="round"/>' +
-           '<line x1="' + x0 + '" y1="' + (y - 10) + '" x2="' + x0 + '" y2="' + (y + 10) +
-             '" stroke="#16150F" stroke-width="' + stroke + '" stroke-linecap="round"/>' +
-           '<rect x="' + (x1 - 7) + '" y="' + (y - 7) + '" width="14" height="14" fill="#D9561F" transform="rotate(45 ' + x1 + " " + y + ')"/>' +
-           '<line x1="' + (x1 + 14) + '" y1="' + (y - 24) + '" x2="' + (x1 + 14) + '" y2="' + (y + 24) +
-             '" stroke="#D9561F" stroke-width="4" stroke-linecap="round"/>' +
-           '<circle class="perm-dot" cx="' + xr.toFixed(1) + '" cy="' + y + '" r="' + dotR + '" fill="#8A3450"/>';
-  }
-
-  function paintPermission() {
-    var host = document.getElementById("perm-art");
-    if (!host) { return; }
-    host.innerHTML = permSpan(10, 92, 36, 7, 3);
-  }
-
-  /* ── screen 2: the offer object, from the same row screens 3–5 use ─────
-     Five terms and the remedy, nothing else: the insurer, the price, the
-     excess, who is covered, the settlement promise with its clock, and the
-     remedy that applies when the promise is missed. The full published
-     document (perils, exclusions, the other commitments) stays in OFFERS. */
-  function paintOffer() {
-    var host = document.getElementById("offer");
-    if (!host) { return; }
-    var o = recommended();
-    var full = OFFERS.filter(function (x) { return x.id === o.id; })[0] || null;
-    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
-    var perDay = miss ? miss.perDay : null;
-    host.innerHTML =
-      '<svg class="offer-sheet" viewBox="0 0 320 22" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
-        '<rect x="0" y="4" width="92" height="4" rx="2" fill="#16150F" opacity=".55"/>' +
-        '<rect x="104" y="4" width="150" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
-        '<rect x="0" y="15" width="60" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
-        '<rect x="104" y="15" width="200" height="4" rx="2" fill="#16150F" opacity=".22"/>' +
-      "</svg>" +
-      '<p class="offer-co">' + esc(o.name) + "</p>" +
-      '<p class="offer-price"><span class="offer-n">' + grp(o.num) + '</span><span class="offer-u">USD a year</span></p>' +
-      '<ul class="offer-terms">' +
-        "<li>Excess " + o.excessNum + " USD</li>" +
-        "<li>Named drivers covered</li>" +
-        '<li class="is-promise">Settlement ' + o.settleDays + " working days from agreed liability</li>" +
-        (perDay != null && full
-          ? '<li class="is-remedy"><svg class="remedy-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
-              '<path d="M6 3 V14 H18 M13 9 L19 14 L13 19" fill="none" stroke="#8A3450" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
-            "</svg>Remedy " + perDay + " USD a day late, no separate claim needed</li>"
-          : "") +
-      "</ul>";
-  }
-
-  /* ── screen 3: three offers, ONE term each, and a verdict word ────────
-     The eligible offer is RECOMMENDED. This screen never buys. */
-  function paintCompare() {
-    var host = document.getElementById("cmp");
-    if (!host) { return; }
-    var win = recommended(), pref = S.pref;
-    host.innerHTML = OC.slice().sort(RANK[pref]).map(function (o) {
-      var unp = (pref === "settle" && !o.settlePublished);
-      return '<div class="of" data-win="' + (o === win ? "1" : "0") +
-             '" data-ok="' + (o.eligible ? "1" : "0") + '">' +
-             '<p class="of-co">' + esc(o.name) + "</p>" +
-             '<p class="of-v' + (unp ? " of-v--none" : "") + '">' + esc(o.term[pref]) + "</p>" +
-             '<p class="of-t' + (o.eligible ? "" : " of-t--no") + '">' +
-               '<span class="sr-only">' + (o === win ? "Recommended: " : (o.eligible ? "Eligible" : "Cannot be bought: ")) + "</span>" +
-               esc(o === win ? o.verdict : (o.eligible ? "" : o.verdict)) +
-               (o.eligible ? "" : '<span class="sr-only"> — ' + esc(o.bar) + "</span>") +
-             "</p>" +
-             "</div>";
-    }).join("");
-
-    Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
-      b.setAttribute("aria-pressed", String(b.dataset.pref === pref));
-    });
-    /* the foot line reads the purchase: before it, the agent's reason for
-       each of the three; after it, re-ranking is presentation only and the
-       policy stands */
-    var p = bought();
-    var line = document.getElementById("s3-state");
-    if (line) {
-      line.textContent = p ? "Already bought. Ranking does not change the policy."
-                           : explainLine();
-    }
-    say("Ranked on " + PREF_SAID[pref] + ". " +
-        (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
-           : "The agent recommends " + win.name + ". " + explainLine() + " Not bought yet."));
-  }
-
-  /* ── screen 4: the purchase, in three steps ───────────────────────────
-     The steps are marked from the snapshot. Step one's drawing is the same
-     permission span as screen 1, with the offer's price inside it: the one
-     number the agent tests (the snapshot's premium once bought, the
-     recommended offer's until then). The marks fill IN ORDER — permission,
-     then confirmation, then coverage — and the prior coverage is never cancelled
-     before the insurer confirms: step three's old-cover bar runs on with no
-     end until the confirmation step is done, and only then ends, after the
-     mark the new cover starts at. That order is enforced in the stylesheet
-     (the old bar's end is a sibling rule on the confirmation step's
-     data-done), so no timing can draw the end first. */
-  var stepTimers = [];
-  function paintSteps(animate) {
-    var p = bought();
-    var art = document.getElementById("step-perm");
-    if (art) { art.innerHTML = permSpan(22, 170, 60, 9, 3.5, p ? p.premium : null); }
-    var steps = Array.prototype.slice.call(document.querySelectorAll("#steps .step"));
-    var buyBtn = document.getElementById("buy");
-    var state = document.getElementById("bought-state");
-    var label = document.getElementById("bought-label");
-    stepTimers.forEach(clearTimeout); stepTimers = [];
-
-    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!p) {
-      steps.forEach(function (s) { s.dataset.done = "0"; });
-      if (label) { label.textContent = ""; }
-      if (buyBtn) { buyBtn.hidden = false; buyBtn.disabled = false; }
-      if (state) { state.hidden = true; }
-      return;
-    }
-    /* the state replaces the action at once, named from the snapshot; the
-       three marks then land one after another (or at once, under reduced
-       motion or on a reload) */
-    if (label) { label.textContent = "Bought · " + p.name; }
-    if (buyBtn) { buyBtn.hidden = true; }
-    if (state) { state.hidden = false; }
-    if (animate && !reduce) {
-      steps.forEach(function (s, i) {
-        stepTimers.push(setTimeout(function () { s.dataset.done = "1"; }, 100 + i * 300));
-      });
-    } else {
-      steps.forEach(function (s) { s.dataset.done = "1"; });
-    }
-  }
-
-  /* the one test the agent runs before it buys: the recommended offer is
-     eligible by construction, and its price must sit inside her permission
-     (DELTA above the cheapest). Always true with the current three offers;
-     kept as a real check so "Permission checked" is computed, not asserted. */
+  /* the one test Muse runs before it buys: the eligible offer sits inside
+     her allowance, and she has signed */
   function permitted() {
     var o = recommended();
-    return !!o && o.eligible && (o.num - cheapest().num) <= DELTA;
+    return !!o && o.eligible && gap() <= S.delta && S.signed === true;
   }
 
-  /* the ONE writer of S.purchase: the snapshot of the recommended offer's
-     terms at this moment — copied, not referenced, so a later change of
-     preference or of the table cannot rewrite what was bought */
+  /* the ONE writer of S.purchase: called by paintAct on screen 3 entry,
+     only when permitted() and nothing is bought yet */
   function buy() {
-    if (S.purchase || !permitted()) { return; }
+    if (S.purchase || !permitted()) { return false; }
     var o = recommended();
-    S.purchase = {
-      id: o.id, name: o.name, premium: o.num, excess: o.excessNum,
-      settleDays: o.settleDays, remedyPerDay: o.remedyPerDay, within: DELTA
-    };
+    S.purchase = { id: o.id, name: o.name, premium: o.num, excess: o.excessNum,
+                   settleDays: o.settleDays, remedyPerDay: o.remedyPerDay, within: S.delta };
     persist();
-    paintSteps(true);
-    paintCompare();
-    paintPerformance();
-    paintAgent();
-    markPrimary();
-    refit();
-    say("Bought: " + S.purchase.name + ". Permission checked, within " + DELTA +
-        " USD. Insurer confirms, identity and payment on file. Coverage in place; the old policy ends after confirmation.");
+    return true;
   }
 
-  /* starting over: back to price, nothing bought — the state the first
-     screen describes. Called when the deck wraps from screen 5 to screen 1. */
-  function restart() {
-    S.pref = "price"; S.purchase = null;
-    persist();
-    paintCompare();
-    paintSteps(false);
-    paintPerformance();
-    paintAgent();
-  }
-
-  /* ── screen 5 reads the SNAPSHOT, and only the snapshot ──────────────
-     Two states. PENDING (no snapshot): nothing to check — the headline says
-     so, one line says why, one button goes back to the purchase; no
-     calculation, no insurer line, no "retained". BOUGHT: ONE calculation —
-     promised (the snapshot's settlement days, counted from agreed
-     liability) → observed (the one missed entry in LEDGER) → the remedy
-     (late days × the snapshot's published remedy), applied on the miss with
-     no separate claim; then the continuing selection, computed from the
-     table: alternatives rechecked, none eligible, coverage retained, the
-     miss recorded. The arithmetic is done here, in code, from those
-     numbers. The headline is the benefit: covered, watched, remedied. */
+  function reduce() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function grp(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  var statusEl = document.getElementById("state-status");
+  function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
-  function paintPerformance() {
+  /* one timer list per sequence, so a repaint never races an older run */
+  var timers = { offer: [], act: [], claim: [] };
+  function clearSeq(k) { timers[k].forEach(clearTimeout); timers[k] = []; }
+  function seq(k, fns, gapMs, animate) {
+    clearSeq(k);
+    if (!animate || reduce()) { fns.forEach(function (f) { f(); }); return; }
+    fns.forEach(function (f, i) { timers[k].push(setTimeout(f, 120 + i * gapMs)); });
+  }
+
+  /* the ONE way back to her rules: a single #to-rules button, moved into
+     whichever pending slot the open screen needs, labelled for that state */
+  var toRules = (function () {
+    var tpl = document.getElementById("to-rules-tpl");
+    return tpl ? tpl.content.firstElementChild.cloneNode(true) : null;
+  })();
+  function placeToRules(slotId, label) {
+    if (!toRules) { return; }
+    var slot = slotId ? document.getElementById(slotId) : null;
+    if (!slot) { if (toRules.parentNode) { toRules.parentNode.removeChild(toRules); } return; }
+    toRules.textContent = label;
+    if (toRules.parentNode !== slot) { slot.appendChild(toRules); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 1 · her rules — the allowance control, the signature
+     ══════════════════════════════════════════════════════════════════════ */
+  function paintRules() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-delta]"), function (b) {
+      b.setAttribute("aria-pressed", String(parseInt(b.dataset.delta, 10) === S.delta));
+    });
+    var acc = document.getElementById("rules-accept"), signed = document.getElementById("signed");
+    if (acc) { acc.hidden = S.signed; }
+    if (signed) { signed.hidden = !S.signed; }
+    var note = document.getElementById("delta-note");
+    if (note) { note.hidden = !bought(); }
+    var corner = document.getElementById("paper-corner");
+    if (corner) { corner.dataset.signed = S.signed ? "1" : "0"; }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-delta]"), function (b) {
+    b.addEventListener("click", function () {
+      S.delta = parseInt(b.dataset.delta, 10) === 100 ? 100 : 200;
+      persist(); paintRules(); paintAct(false); refit();
+      say("Switch up to " + S.delta + " USD above the cheapest." + (bought() ? " Applies to the next purchase." : ""));
+    });
+  });
+  var acceptBtn = document.getElementById("rules-accept");
+  if (acceptBtn) {
+    acceptBtn.addEventListener("click", function () {
+      S.signed = true; persist();
+      var sig = document.querySelector("#signed .sig");
+      if (sig) { sig.classList.remove("is-drawn"); }
+      paintRules(); paintAct(false);
+      /* the dash draws on the paper (instant under reduced motion) */
+      if (sig) { requestAnimationFrame(function () { sig.classList.add("is-drawn"); }); }
+      var s = document.getElementById("signed"); if (s) { s.focus && s.setAttribute("tabindex", "-1"); }
+      refit();
+      say("Signed. Muse holds to her rules: never lapse; Rosa, nineteen, stays covered; excess under 500 USD; switch up to " + S.delta + " USD above the cheapest.");
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 2 · the offer — the lens reads the record field by field
+     ══════════════════════════════════════════════════════════════════════ */
+  var FIELDS = ["excess", "rosa", "settle", "remedy"];
+  function litField(f) {
+    Array.prototype.forEach.call(document.querySelectorAll("#record .field"), function (li) {
+      li.dataset.lit = (li.dataset.field === f) ? "1" : (li.dataset.lit === "1" || li.dataset.read === "1") ? "0" : "0";
+      if (li.dataset.field === f) { li.dataset.read = "1"; }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#checks .check"), function (li) {
+      li.dataset.hot = (li.dataset.field === f) ? "1" : "0";
+    });
+    var lens = document.getElementById("record-lens"), rec = document.getElementById("record");
+    var li = rec ? rec.querySelector('.field[data-field="' + f + '"]') : null;
+    if (lens && li && rec) {
+      var r = li.getBoundingClientRect(), b = rec.getBoundingClientRect();
+      lens.style.top = (r.top - b.top + r.height / 2) + "px";
+      lens.dataset.on = "1";
+    }
+  }
+  function paintOffer(animate) {
+    var checks = Array.prototype.slice.call(document.querySelectorAll("#checks .check"));
+    checks.forEach(function (c) { c.dataset.shown = "0"; c.dataset.hot = "0"; });
+    Array.prototype.forEach.call(document.querySelectorAll("#record .field"), function (li) { li.dataset.lit = "0"; li.dataset.read = "0"; });
+    var lens = document.getElementById("record-lens"); if (lens) { lens.dataset.on = "0"; }
+    seq("offer", FIELDS.map(function (f) {
+      return function () {
+        litField(f);
+        var c = document.querySelector('#checks .check[data-field="' + f + '"]');
+        if (c) { c.dataset.shown = "1"; }
+      };
+    }), 520, animate);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#record .field-b"), function (b) {
+    b.addEventListener("click", function () {
+      clearSeq("offer");
+      var f = b.parentNode.dataset.field;
+      Array.prototype.forEach.call(document.querySelectorAll("#checks .check"), function (c) { c.dataset.shown = "1"; });
+      litField(f);
+      say("Muse reads: " + b.textContent.trim());
+    });
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 3 · Muse acts — the stream, the three cards, the purchase steps
+     ══════════════════════════════════════════════════════════════════════ */
+  function paintStream() {
+    var host = document.getElementById("stream");
+    if (!host) { return; }
+    var s = [], i, n = 56, W = 1200;
+    /* hundreds of thin lines from the top edge converging on three landings */
+    var landings = [W * 0.167, W * 0.5, W * 0.833];
+    for (i = 0; i < n; i++) {
+      var x0 = 8 + (W - 16) * (i / (n - 1));
+      var tgt = landings[i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2];
+      var mid = x0 + (tgt - x0) * 0.5;
+      var w = (i % 7 === 0) ? 1.6 : 0.9, op = (i % 5 === 0) ? 0.55 : 0.28;
+      s.push('<path d="M' + x0.toFixed(1) + ' 0 C ' + x0.toFixed(1) + ' 40, ' + mid.toFixed(1) + ' 50, ' + tgt.toFixed(1) + ' 88" fill="none" stroke="#8A3450" stroke-width="' + w + '" opacity="' + op + '" vector-effect="non-scaling-stroke"/>');
+    }
+    host.innerHTML = s.join("");
+  }
+
+  function actStatusText() {
     var p = bought();
-    var head    = document.getElementById("oc5-headline");
-    var id      = document.getElementById("oc3-id");
-    var calc    = document.getElementById("oc3-calc");
-    var pending = document.getElementById("oc5-pending");
-    var foot    = document.getElementById("oc3-foot");
+    if (!p) { return ""; }
+    return (S.delta !== p.within ? "Already bought · " : "Bought · ") + p.name;
+  }
 
-    if (!p) {
-      /* PENDING. The recommendation was not bought; there is no policy
-         whose promise could be checked, so none is drawn. */
-      if (head) { head.textContent = "Nothing bought yet."; }
-      if (id) { id.hidden = true; id.innerHTML = ""; }
-      if (calc) { calc.hidden = true; calc.innerHTML = ""; }
-      if (foot) { foot.hidden = true; foot.innerHTML = ""; }
-      if (pending) { pending.hidden = false; }
-      reserveNav();
+  /* screen 3's state, on entry (animate) or on a repaint (not):
+       bought      — steps shown done, status from the snapshot
+       permitted   — Muse buys NOW: snapshot first, then the steps in sequence
+       blocked 100 — Muse stops; the decision returns to her
+       unsigned    — no authority; back to her rules */
+  function paintAct(animate) {
+    var steps = Array.prototype.slice.call(document.querySelectorAll("#act-steps .astep"));
+    var list = document.getElementById("act-steps");
+    var status = document.getElementById("act-status"), statusT = document.getElementById("act-status-t");
+    var hold = document.getElementById("act-hold");
+    var seal = document.getElementById("of-seal");
+    var act = document.getElementById("act");
+    clearSeq("act");
+
+    var fresh = false;
+    if (!bought() && permitted() && animate) { fresh = buy(); }
+    var p = bought();
+
+    if (p) {
+      if (hold) { hold.hidden = true; hold.textContent = ""; }
+      placeToRules(null);
+      if (list) { list.hidden = false; }
+      if (act) { act.dataset.state = "bought"; }
+      var reveal = steps.map(function (li, i) {
+        return function () {
+          li.dataset.on = "1";
+          if (i === 1) {
+            if (statusT) { statusT.textContent = actStatusText(); }
+            if (status) { status.hidden = false; }
+            if (seal) { seal.dataset.on = "1"; }
+          }
+        };
+      });
+      if (fresh) {
+        steps.forEach(function (li) { li.dataset.on = "0"; });
+        if (status) { status.hidden = true; }
+        if (seal) { seal.dataset.on = "0"; }
+        seq("act", reveal, 650, true);
+        say("Muse acts. Within your allowance, 155 above the cheapest. Bought: " + p.name + " confirms. Old policy ends after confirmation.");
+      } else {
+        reveal.forEach(function (f) { f(); });
+        if (statusT) { statusT.textContent = actStatusText(); }
+      }
       return;
     }
 
-    /* BOUGHT. Every term below is the snapshot's — the name on the line,
-       the promised days, the remedy per day — not the live table's. */
-    if (head) { head.textContent = "Covered, watched, remedied."; }
+    /* no purchase: steps and seal are off; the decision returns to her */
+    steps.forEach(function (li) { li.dataset.on = "0"; });
+    if (list) { list.hidden = true; }
+    if (status) { status.hidden = true; }
+    if (seal) { seal.dataset.on = "0"; }
+    if (hold) { hold.hidden = false; }
+    if (!S.signed) {
+      if (act) { act.dataset.state = "unsigned"; }
+      if (hold) { hold.textContent = "No authority yet."; }
+      placeToRules("act-slot", "Back to her rules");
+    } else {
+      if (act) { act.dataset.state = "blocked"; }
+      if (hold) { hold.textContent = gap() + " above the cheapest — over your " + S.delta + " USD allowance. Your call."; }
+      placeToRules("act-slot", "Revise the allowance");
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 4 · the year — reads the snapshot; the month control
+     ══════════════════════════════════════════════════════════════════════ */
+  function shownMonth() { return S.month >= 1 ? S.month : 1; }
+  function paintYearBar() {
+    var host = document.getElementById("yearbar");
+    if (!host) { return; }
+    var m = shownMonth(), W = 1200, H = 150, x0 = 10, x1 = W - 10, bw = x1 - x0, seg = bw / 12;
+    var s = [], i;
+    /* the thread runs along the bar; the check sits on it at the shown month */
+    s.push('<line x1="' + x0 + '" y1="40" x2="' + x1 + '" y2="40" stroke="#8A3450" stroke-width="2" opacity=".42" vector-effect="non-scaling-stroke"/>');
+    /* the bar: months passed in grey hatch, prepaid value remaining in ledger blue */
+    for (i = 0; i < 12; i++) {
+      var x = x0 + i * seg, spent = i < m;
+      s.push('<rect x="' + (x + 2).toFixed(1) + '" y="58" width="' + (seg - 4).toFixed(1) + '" height="34" rx="2" fill="' +
+             (spent ? "url(#oc-hatch-grey)" : "rgba(47,94,124,.18)") + '" stroke="' + (spent ? "#8C8574" : "#2F5E7C") +
+             '" stroke-width="' + (spent ? 1.2 : 2) + '" vector-effect="non-scaling-stroke"/>');
+    }
+    /* the marker: the lens' centre on the thread at the shown month */
+    var mx = x0 + (m - 0.5) * seg;
+    s.push('<line x1="' + mx.toFixed(1) + '" y1="22" x2="' + mx.toFixed(1) + '" y2="100" stroke="#8A3450" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>');
+    s.push('<circle cx="' + mx.toFixed(1) + '" cy="40" r="9" fill="#262E36" stroke="#8A3450" stroke-width="2.5" vector-effect="non-scaling-stroke"/>');
+    /* the leaving steps, prepared and grey: three nodes on a dashed path
+       under the bar — confirm new, cancel old, requirements — never taken */
+    var py = 126;
+    s.push('<line x1="' + x0 + '" y1="' + py + '" x2="' + x1 + '" y2="' + py + '" stroke="#8C8574" stroke-width="1.6" stroke-dasharray="6 7" opacity=".7" vector-effect="non-scaling-stroke"/>');
+    [0.25, 0.5, 0.75].forEach(function (u) {
+      s.push('<circle cx="' + (x0 + bw * u).toFixed(1) + '" cy="' + py + '" r="7" fill="#FBF6EA" stroke="#8C8574" stroke-width="1.6" vector-effect="non-scaling-stroke"/>');
+    });
+    host.innerHTML = s.join("");
+    host.setAttribute("viewBox", "0 0 " + W + " " + H);
+  }
+  function paintYear() {
+    var p = bought();
+    var held = document.getElementById("year-held");
+    var boughtBox = document.getElementById("year-bought"), pending = document.getElementById("year-pending");
+    if (!p) {
+      if (held) { held.hidden = true; held.textContent = ""; }
+      if (boughtBox) { boughtBox.hidden = true; }
+      if (pending) { pending.hidden = false; }
+      placeToRules("year-slot", "Back to her rules");
+      return;
+    }
     if (pending) { pending.hidden = true; }
-    if (id) {
-      id.hidden = false;
-      id.dataset.bought = "1";
-      id.innerHTML = '<span class="oc3-state">Bought</span>' +
-                     '<span class="oc3-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>";
+    if (boughtBox) { boughtBox.hidden = false; }
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
+    var m = shownMonth();
+    var r = document.getElementById("year"); if (r) { r.value = String(m); r.setAttribute("aria-valuenow", String(m)); r.setAttribute("aria-valuetext", "Month " + m + " of 12"); }
+    var mEl = document.getElementById("year-m"); if (mEl) { mEl.textContent = String(m); }
+    var left = document.getElementById("year-left"); if (left) { left.textContent = String(12 - m); }
+    paintYearBar();
+    /* the check re-runs: the ticks land again for the shown month */
+    var ul = document.getElementById("ychecks");
+    if (ul) { ul.classList.remove("is-run"); void ul.offsetWidth; ul.classList.add("is-run"); }
+  }
+  var yearRange = document.getElementById("year");
+  if (yearRange) {
+    var onYear = function () {
+      var v = parseInt(yearRange.value, 10);
+      S.month = (v >= 1 && v <= 12) ? v : 1;
+      persist(); paintYear();
+      say("Month " + S.month + ". Eligible alternatives, none. Prepaid value remaining, " + (12 - S.month) + " months. Switching requirements prepared. Continuity: replacement first, then cancel. Stay.");
+    };
+    yearRange.addEventListener("input", onYear);
+    yearRange.addEventListener("change", onYear);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SCREEN 5 · the claim — reads the snapshot; the clock on the thread
+     ══════════════════════════════════════════════════════════════════════ */
+  function paintClock(p, after) {
+    var host = document.getElementById("clock");
+    if (!host) { return; }
+    var promised = p.settleDays, n = after ? LEDGER.observed : promised, i, cells = [];
+    for (i = 1; i <= n; i++) {
+      var lateCell = i > promised, x = (i - 1) * 100 + 6;
+      cells.push('<rect x="' + x + '" y="14" width="88" height="72" rx="3" fill="' +
+        (lateCell ? "url(#oc3-hatch)" : "rgba(47,94,124,.16)") + '" stroke="' +
+        (lateCell ? "#8A3450" : "#2F5E7C") + '" stroke-width="' + (lateCell ? 2.4 : 2) +
+        '" vector-effect="non-scaling-stroke"/>');
     }
-
-    var miss = LEDGER.filter(function (l) { return l.cls === "miss" && l.key; })[0] || null;
-    var promised = p.settleDays,
-        observed = miss ? miss.observed : null,
-        perDay   = p.remedyPerDay,
-        late     = (promised != null && observed != null) ? Math.max(0, observed - promised) : null,
-        remedy   = (late != null && perDay != null) ? late * perDay : null;
-
-    if (calc) { calc.hidden = false; }
-    if (calc && miss && remedy != null) {
-      /* the clock, as cells: the promised days in ledger blue, the late days
-         hatched in plum. No numbers in the cells; the figures sit under them. */
-      var cells = [], i, n = observed;
-      for (i = 1; i <= n; i++) {
-        var lateCell = i > promised, x = (i - 1) * 100 + 6;
-        cells.push('<rect x="' + x + '" y="14" width="88" height="72" rx="3" fill="' +
-          (lateCell ? "url(#oc3-hatch)" : "rgba(47,94,124,.16)") + '" stroke="' +
-          (lateCell ? "#8A3450" : "#2F5E7C") + '" stroke-width="' + (lateCell ? 2.4 : 2) +
-          '" vector-effect="non-scaling-stroke"/>');
+    host.innerHTML =
+      '<svg class="calc-strip" viewBox="0 0 ' + (n * 100) + ' 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+        '<line x1="2" y1="2" x2="2" y2="98" stroke="#16150F" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+        '<path d="M6 8 V2 H' + (promised * 100 - 6) + ' V8" fill="none" stroke="#2F5E7C" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+        (after ? '<path d="M' + (promised * 100 + 6) + ' 8 V2 H' + (n * 100 - 6) + ' V8" fill="none" stroke="#8A3450" stroke-width="2" vector-effect="non-scaling-stroke"/>' : "") +
+        cells.join("") +
+      "</svg>";
+    host.style.setProperty("--cells", String(n));
+  }
+  function paintClaim(animate) {
+    var p = bought();
+    var head = document.getElementById("oc5-headline");
+    var held = document.getElementById("claim-held");
+    var boughtBox = document.getElementById("claim-bought"), pending = document.getElementById("claim-pending");
+    var promise = document.getElementById("promise");
+    var btn = document.getElementById("claim"), enforce = document.getElementById("enforce"), slip = document.getElementById("slip");
+    var steps = Array.prototype.slice.call(document.querySelectorAll("#claim-steps .astep"));
+    clearSeq("claim");
+    if (!p) {
+      if (head) { head.textContent = "Nothing bought yet."; }
+      if (held) { held.hidden = true; held.textContent = ""; }
+      if (boughtBox) { boughtBox.hidden = true; }
+      if (pending) { pending.hidden = false; }
+      placeToRules("claim-slot", "Back to her rules");
+      return;
+    }
+    if (pending) { pending.hidden = true; }
+    if (boughtBox) { boughtBox.hidden = false; }
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
+    if (!S.claim) {
+      if (head) { head.textContent = "A promise her agent can enforce."; }
+      if (promise) {
+        promise.hidden = false;
+        promise.innerHTML = "Settlement " + p.settleDays + " working days from agreed liability<span class=\"promise-sep\" aria-hidden=\"true\"> · </span>Remedy " + p.remedyPerDay + " USD a day late";
       }
-      var strip =
-        '<svg class="calc-strip" viewBox="0 0 ' + (n * 100) + ' 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
-          '<line x1="2" y1="2" x2="2" y2="98" stroke="#16150F" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
-          '<path d="M6 8 V2 H' + (promised * 100 - 6) + ' V8" fill="none" stroke="#2F5E7C" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
-          '<path d="M' + (promised * 100 + 6) + ' 8 V2 H' + (n * 100 - 6) + ' V8" fill="none" stroke="#8A3450" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
-          cells.join("") +
-        "</svg>";
-      var arrow =
-        '<svg class="calc-link" viewBox="0 0 48 48" aria-hidden="true" focusable="false">' +
-          '<path d="M4 24 H36" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round"/>' +
-          '<path d="M30 14 L42 24 L30 34" fill="none" stroke="#8A3450" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
-        "</svg>";
-      calc.innerHTML =
-        '<div class="calc-days" style="--n:' + n + ';--p:' + promised + '">' + strip + "</div>" +
-        '<div class="calc-step calc-step--p">' +
-          '<p class="calc-n">' + promised + "</p>" +
-          '<p class="calc-w">working days promised</p>' +
-          '<p class="calc-s">from agreed liability</p>' +
-        "</div>" +
-        arrow +
-        '<div class="calc-step calc-step--o">' +
-          '<p class="calc-n">' + observed + "</p>" +
-          '<p class="calc-w">observed</p>' +
-          '<p class="calc-s">' + late + " late × " + perDay + " USD</p>" +
-        "</div>" +
-        arrow +
-        '<div class="calc-step calc-step--r">' +
-          '<p class="calc-n"><span class="calc-big">' + grp(remedy) + '</span><span class="calc-u">USD</span></p>' +
-          '<p class="calc-w">applied automatically</p>' +
-          '<p class="calc-s">no separate claim needed</p>' +
-        "</div>" +
-        /* the loop, under the figures: the five beats the agent runs, as
-           one quiet row — what was promised, what was observed, the miss,
-           the remedy, and the record the next check reads from */
-        '<p class="calc-loop" aria-label="The loop: promise, observed, miss, remedy, recorded">' +
-          ["promise", "observed", "miss", "remedy", "recorded"].map(function (w, i) {
-            /* each arrow is bound to the word it points at, so a wrap on a
-               phone breaks before "→ recorded", never after a bare arrow */
-            return "<span>" + (i ? '<span class="calc-loop-a" aria-hidden="true">→</span>' : "") + w + "</span>";
-          }).join("") +
-        "</p>";
-    } else if (calc) {
-      /* no published settlement time means nothing to check and nothing
-         owed. Unreachable with the current model, where the only offer that
-         can be bought publishes a commitment; kept so the screen never lies. */
-      calc.innerHTML = '<div class="calc-step calc-step--o"><p class="calc-w">No settlement time published.</p></div>';
+      paintClock(p, false);
+      if (btn) { btn.hidden = false; }
+      if (enforce) { enforce.hidden = true; }
+      if (slip) { slip.hidden = true; }
+      steps.forEach(function (li) { li.dataset.on = "0"; });
+      return;
     }
+    /* after the claim: the steps, then the headline, then her slip */
+    if (promise) { promise.hidden = true; }
+    if (btn) { btn.hidden = true; }
+    if (enforce) { enforce.hidden = false; }
+    var late = Math.max(0, S.claim.settled - p.settleDays), remedy = late * p.remedyPerDay;
+    var last = steps[4];
+    if (last) {
+      last.innerHTML = '<span class="astep-a" aria-hidden="true">→</span>' + late + " late × " + p.remedyPerDay + " USD = " + grp(remedy) + " USD remedy applied under the policy";
+    }
+    var fns = steps.map(function (li, i) {
+      return function () {
+        li.dataset.on = "1";
+        if (i === 3) { paintClock(p, true); }
+        if (i === 4) {
+          if (head) { head.textContent = "Settled on day nine. The remedy applied."; }
+          if (slip) { slip.hidden = false; }
+          refit();
+        }
+      };
+    });
+    if (animate) {
+      steps.forEach(function (li) { li.dataset.on = "0"; });
+      if (slip) { slip.hidden = true; }
+      if (head) { head.textContent = "A promise her agent can enforce."; }
+      paintClock(p, false);
+      seq("claim", fns, 600, true);
+    } else {
+      paintClock(p, true);
+      fns.forEach(function (f) { f(); });
+    }
+  }
+  var claimBtn = document.getElementById("claim");
+  if (claimBtn) {
+    claimBtn.addEventListener("click", function () {
+      if (!bought() || S.claim) { return; }
+      S.claim = { agreed: true, settled: LEDGER.observed };
+      persist();
+      paintClaim(true);
+      var e = document.getElementById("enforce"); if (e) { e.setAttribute("tabindex", "-1"); e.focus(); }
+      say("Claim reported. Liability agreed, clock starts. 5 working days promised. Settled on day nine. 4 late times 50 USD, 200 USD remedy applied under the policy. No separate claim needed.");
+    });
+  }
 
-    /* continuing selection: a missed commitment re-opens the agent's
-       permission to re-shop, not her instructions. Whether any other offer
-       clears them is computed from the same table screen 3 reads; today none
-       does, so coverage is retained and the miss is recorded. Nothing
-       switches by itself, and nothing here says the service was good. */
-    if (foot) {
-      var others = OC.filter(function (x) { return x.id !== p.id; });
-      var clears = others.filter(function (x) { return x.eligible; });
-      foot.hidden = false;
-      foot.innerHTML =
-        '<p class="oc3-end">Alternatives rechecked · ' +
-          (clears.length ? esc(clears[0].name) + " eligible" : "none eligible") + "</p>" +
-        '<p class="oc3-end oc3-end--k">Coverage retained. Missed commitment recorded.</p>';
-    }
-    reserveNav();
+  /* starting over: nothing signed, nothing bought — the state the first
+     screen describes. Called when the deck wraps from screen 5 to screen 1. */
+  function restart() {
+    S = { delta: 200, signed: false, purchase: null, month: 0, claim: null };
+    persist();
+    var sig = document.querySelector("#signed .sig"); if (sig) { sig.classList.remove("is-drawn"); }
+    paintAll(false);
+  }
+
+  function paintAll(animate) {
+    paintRules();
+    paintOffer(animate);
+    paintAct(animate);
+    paintYear();
+    paintClaim(animate);
+  }
+
+  /* on entry to a screen, its sequence runs (screen 3 may buy) */
+  function enter(n) {
+    if (n === 1) { paintRules(); }
+    if (n === 2) { paintOffer(true); }
+    if (n === 3) { paintAct(true); }
+    if (n === 4) { paintYear(); }
+    if (n === 5) { paintClaim(false); }
   }
 
   /* the navigation corner stays clear of the foot: measure the chrome once
@@ -685,23 +512,8 @@
   }
   window.addEventListener("resize", reserveNav);
 
-  Array.prototype.forEach.call(document.querySelectorAll("[data-pref]"), function (b) {
-    b.addEventListener("click", function () {
-      S.pref = b.dataset.pref;
-      persist();
-      paintCompare();
-      refit();
-    });
-  });
-  var buyBtn = document.getElementById("buy");
-  if (buyBtn) { buyBtn.addEventListener("click", buy); }
-
-  paintPermission();
-  paintOffer();
-  paintCompare();
-  paintSteps(false);
-  paintPerformance();
-  paintAgent();
+  paintStream();
+  paintAll(false);
 
   /* Restored: the world palette and its frame sat inside the state block the
      recomposition replaced, and renderWorld below is still its consumer. */
@@ -1015,16 +827,6 @@
     });
   }
 
-  /* One polite live region for state changes that are not screen changes.
-     The screen announcer (#announce) handles navigation; this handles
-     everything else, so the two never overwrite each other mid-sentence. */
-  var statusEl = document.getElementById("state-status");
-  function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
-
-  function esc(t) {
-    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-
   /* ══════════════════════════════════════════════════════════════════════
      PER-SCREEN DRAW
      ══════════════════════════════════════════════════════════════════════ */
@@ -1148,10 +950,9 @@
   var nextLabel = document.getElementById("next-label");
   var current = 1;
 
-  /* Next labels, per SCREEN-COPY.md § OPENCOVER. Screen 3's "Buy inside her
-     rules" leads to the screen where that action lives; the purchase itself
-     is the #buy button on screen 4. */
-  var CTA = ["The offer", "Choose", "Buy inside her rules", "Eleven months on", "Back to the start"];
+  /* Next labels, per CONTRACT-IMPL.md § B. Next only moves between screens:
+     it never consents, signs, buys or claims. */
+  var CTA = ["The offer", "The agent acts", "The year", "The claim", "Back to the start"];
 
   screens.forEach(function (sc, i) {
     var o = document.createElement("option");
@@ -1163,9 +964,9 @@
   anchorPlates();
 
   /* going FORWARD off the last screen (Next, or the right arrow) is the
-     restart: preference back to price, nothing bought. The picker, a deep
-     link, the back arrow and a reload never reset — they restore whatever
-     the session holds, or show the pending state. */
+     restart: nothing signed, nothing bought, the allowance back to 200. The
+     picker, a deep link, the back arrow and a reload never reset — they
+     restore whatever the session holds, or show the pending state. */
   function forward() {
     if (current === total) { restart(); }
     show(current + 1);
@@ -1181,7 +982,8 @@
     nextLabel.textContent = CTA[n - 1];
 
     document.getElementById("veil").dataset.veil = sc.dataset.veil || "";
-    markPrimary();
+    /* the screen's own sequence runs on entry; screen 3 may buy here */
+    enter(n);
 
     drawFor(n);
     /* the chrome's width changes with the picker's and the CTA's labels, so
@@ -1204,15 +1006,19 @@
       : sc.dataset.label;
     /* the state a screen depends on is announced with it */
     var extra = "", p = bought();
-    if (n === 3) {
-      extra = " Ranked on " + PREF_SAID[S.pref] + ". " +
-              (p ? "Already bought: " + p.name + ". Ranking does not change the policy."
-                 : "Recommended: " + recommended().name + ". " + explainLine() + " Not bought yet.");
+    if (n === 1) {
+      extra = S.signed ? " Signed. Switch up to " + S.delta + " USD above the cheapest." + (p ? " Applies to the next purchase." : "")
+                       : " Muse proposes four rules; the allowance is " + S.delta + " USD. One action: accept and sign.";
     }
-    if (n === 4) { extra = p ? " Bought: " + p.name + "." : " Not yet bought. One action: buy inside her rules."; }
-    if (n === 5) { extra = p ? " Bought: " + p.name + ". The agent watched the promise and applied the remedy." : " No policy to check. The recommendation was not bought. One action: back to the purchase."; }
-    announce.textContent = "Screen " + n + " of " + total + ". " +
-      "Your agent: " + agentSaid(n) + ". " + said.replace(/\s+/g, " ").trim() + extra;
+    if (n === 2) { extra = " Muse reads Meridian Mutual: Rosa covered, excess 450, settlement 5 working days from agreed liability, remedy 50 USD a day late."; }
+    if (n === 3) {
+      extra = p ? " " + actStatusText() + ". Within your allowance, 155 above the cheapest. Old policy ends after confirmation."
+                : (!S.signed ? " No authority yet. One action: back to her rules."
+                             : " 155 above the cheapest, over your " + S.delta + " USD allowance. Your call. One action: revise the allowance.");
+    }
+    if (n === 4) { extra = p ? " Bought: " + p.name + ". Month " + shownMonth() + ". Eligible alternatives, none. Stay." : " Nothing to watch, no policy was bought. One action: back to her rules."; }
+    if (n === 5) { extra = p ? (S.claim ? " Bought: " + p.name + ". The remedy applied under the policy; no separate claim needed." : " Bought: " + p.name + ". One action: report a claim.") : " No policy to claim on. One action: back to her rules."; }
+    announce.textContent = "Screen " + n + " of " + total + ". " + said.replace(/\s+/g, " ").trim() + extra;
 
     if (push !== false) {
       try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }

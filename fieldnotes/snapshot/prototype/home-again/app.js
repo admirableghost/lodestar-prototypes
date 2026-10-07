@@ -6,17 +6,29 @@
    browser proof: the same scene vocabulary — a solid cut-paper home, its
    replacement plan as amber construction linework on the same footprint, one
    ground plane, one path — carried through five compositions.
+   Copy and state: design-study/brief-align/CONTRACT-IMPL.md § F.
 
-     1  a way home, arranged        the home and its prepared plan
-     2  choose the replacement      the plan in front, the standard chosen
-     3  reserve the recovery        people and capacity attached to the plan
-     4  activate the arrangements   a covered event; the plan becomes the job
-     5  home again                  the plan resolved into a lived-in home
+     1  choose your way home       three ways home, drawn; the chosen one
+                                   stands behind the home today as its plan
+     2  three commitments, made now  temporary living · the chosen plan with
+                                   the named builder · Marta coordinates
+     3  the loss                   the home as an outline; the three hold
+     4  the arrangement activates  the approved recovery composition; the
+                                   regional-event branch keeps the queue
+     5  home again                 the chosen house, lived in; three honoured
 
-   ONE STATE. { screen, std, event } is the only source of truth. Every
-   drawing and every label is a function of it, so a choice made on screen 2
-   is what screen 5 shows, and a regional event shown on screen 4 is still
-   constraining screen 5.
+   ONE STATE. { screen, home, agreed, event } is the only source of truth,
+   persisted in sessionStorage. Every drawing and label is a function of it:
+   the house chosen on screen 1 is the plan on 2, the site on 4 and the home
+   on 5; a regional event shown on 4 is still the context on 5. Next never
+   agrees to anything: only #agree does, and restart clears all of it.
+
+   THREE WAYS HOME, drawn differently (never told apart by copy alone):
+     a  like-for-like                the same house, same footprint
+     b  faster and smaller           a low, narrow, panel-built house
+     c  hardened to a higher standard  the footprint, with a seamed roof,
+                                     ember ticks, screened vents, masonry
+                                     base and a cleared edge
 
    CALLOUTS. Labels that belong to things in the drawing are authored once as
    data. In landscape they are drawn into the scene as SVG text beside the
@@ -26,8 +38,6 @@
 
    WHAT IS INVENTED. All of it: the household, the town, the builder, the
    recovery lead. No real insurer, provider, price, count or date appears.
-   The commitments and their conditions are the ones the previous version
-   carried; nothing new has been promised to make the story tidier.
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -41,12 +51,31 @@
       GARAGE = "#3A372F", MUTED = "#5A554A", BLOCK = "#6B675E", WARN = "#A8502A",
       LIT = "#F2CF7A", SLAB = "#CFC4A6";
 
-  var S = { screen: 1, std: 2, event: false };
-  var STD_NAME = ["As it stood", "To current code", "Code plus hardening"];
-  var STD_LINE = ["Rebuilt as it stood, with nothing changed",
-                  "To current code, where the old house predates it",
-                  "Code, plus an ember-resistant roof, screened vents and a cleared edge"];
-  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", assess: "Assessed at the time", constrained: "Constrained", falls: "Queued" };
+  var HOMES = ["a", "b", "c"];
+  var HOME_NAME = { a: "Like-for-like", b: "Faster and smaller", c: "Hardened to a higher standard" };
+  var HOME_LINE = { a: "The same house on the same footprint",
+                    b: "A smaller, panel-built house, sooner",
+                    c: "The footprint, with a seamed roof, ember-resistant edges, screened vents and a cleared edge" };
+  var BUILDER = "Ardren &amp; Sons";
+  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", begun: "Begun", holds: "Holds", honoured: "Honoured",
+                     constrained: "Constrained", falls: "Queued" };
+
+  /* ── state, persisted ────────────────────────────────────────────────── */
+  var KEY = "ha-state";
+  var S = { screen: 1, home: "a", agreed: false, event: false };
+  function load() {
+    try {
+      var o = JSON.parse(sessionStorage.getItem(KEY) || "null");
+      if (o && typeof o === "object") {
+        if (HOMES.indexOf(o.home) >= 0) { S.home = o.home; }
+        S.agreed = o.agreed === true; S.event = o.event === true;
+      }
+    } catch (e) { /* storage unavailable: the state lives for the page */ }
+  }
+  function save() {
+    try { sessionStorage.setItem(KEY, JSON.stringify({ home: S.home, agreed: S.agreed, event: S.event })); } catch (e) { /* ignore */ }
+  }
+  function clear() { try { sessionStorage.removeItem(KEY); } catch (e) { /* ignore */ } }
 
   var scale = 1, portrait = false, legend = [];
   function px(n) { return n / scale; }
@@ -80,12 +109,11 @@
 
   /* a state word drawn as a mark + text, never colour alone */
   function mark(x, y, kind, anc) {
-    var s = [], w = px(9), c = kind === "constrained" || kind === "falls" ? WARN : (kind === "assess" ? MUTED : INK);
+    var s = [], w = px(9), c = kind === "constrained" || kind === "falls" ? WARN : INK;
     var mx = anc === "end" ? x - px(6) - w : x;
-    if (kind === "agreed") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2) + '" fill="' + c + '"/>'); }
-    else if (kind === "reserved") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2 - px(1)) + '" fill="none" stroke="' + c + '" stroke-width="' + n1(px(2)) + '"/>'); }
-    else if (kind === "assess") { s.push(line(mx, y - px(4), mx + w, y - px(4), c, px(2.4))); }
-    else { s.push(rect(mx, y - px(8.5), w, w, "url(#warnhatch)", { stroke: c, sw: px(1.6) })); }
+    if (kind === "reserved") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2 - px(1)) + '" fill="none" stroke="' + c + '" stroke-width="' + n1(px(2)) + '"/>'); }
+    else if (kind === "constrained" || kind === "falls") { s.push(rect(mx, y - px(8.5), w, w, "url(#warnhatch)", { stroke: c, sw: px(1.6) })); }
+    else { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2) + '" fill="' + c + '"/>'); }
     var tx = anc === "end" ? mx - px(6) : mx + w + px(6);
     s.push(text(tx, y, STATE_WORD[kind].toUpperCase(), 11.5, { w: 700, ls: 1.1, anc: anc || "start", fill: c }));
     return s.join("");
@@ -105,71 +133,111 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     THE PROPERTY — one geometry, drawn two ways
+     THE PROPERTY — one geometry per way home, drawn solid or as a plan
      ══════════════════════════════════════════════════════════════════════ */
-  function features(std, asPlan, edge) {
+  /* hardening features on the footprint of a/c: ember ticks on the roof
+     edge, screened vents, and — on the ground only — the cleared edge */
+  function features(asPlan, edge) {
     var s = [], i, t, x, y, col = asPlan ? AMBER : PAPER;
-    if (std >= 1) {
-      s.push('<path d="M470 452 L665 338 L860 452" fill="none" stroke="' + col + '" stroke-width="' + (asPlan ? 1.6 : 1.4) +
-             '" opacity="' + (asPlan ? ".9" : ".55") + '"' + (asPlan ? ' stroke-dasharray="6 5"' : "") + '/>');
+    s.push('<path d="M470 452 L665 338 L860 452" fill="none" stroke="' + col + '" stroke-width="' + (asPlan ? 1.6 : 1.4) +
+           '" opacity="' + (asPlan ? ".9" : ".55") + '"' + (asPlan ? ' stroke-dasharray="6 5"' : "") + '/>');
+    for (i = 1; i <= 6; i++) {
+      t = i / 7;
+      x = 450 + 215 * t; y = 448 - 126 * t; s.push(line(x, y, x + 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
+      x = 665 + 215 * t; y = 322 + 126 * t; s.push(line(x, y, x - 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
     }
-    if (std >= 2) {
-      for (i = 1; i <= 6; i++) {
-        t = i / 7;
-        x = 450 + 215 * t; y = 448 - 126 * t; s.push(line(x, y, x + 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
-        x = 665 + 215 * t; y = 322 + 126 * t; s.push(line(x, y, x - 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
-      }
-      [600, 820].forEach(function (vx) {
-        s.push(rect(vx, 566, 26, 16, asPlan ? "none" : INK, { stroke: col, sw: 2 }));
-        s.push(line(vx + 8.5, 566, vx + 8.5, 582, col, 1.3)); s.push(line(vx + 17, 566, vx + 17, 582, col, 1.3));
-      });
-      /* the cleared edge is a ground feature: only drawn when the thing it
-         belongs to is standing on the ground */
-      if (edge !== false) { s.push('<path d="M400 640 Q665 668 1030 640" fill="none" stroke="' + (asPlan ? AMBER : SAGE2) + '" stroke-width="2.6" stroke-dasharray="11 9" opacity=".85"/>'); }
-    }
+    [600, 820].forEach(function (vx) {
+      s.push(rect(vx, 566, 26, 16, asPlan ? "none" : INK, { stroke: col, sw: 2 }));
+      s.push(line(vx + 8.5, 566, vx + 8.5, 582, col, 1.3)); s.push(line(vx + 17, 566, vx + 17, 582, col, 1.3));
+    });
+    if (edge !== false) { s.push('<path d="M400 640 Q665 668 1030 640" fill="none" stroke="' + (asPlan ? AMBER : SAGE2) + '" stroke-width="2.6" stroke-dasharray="11 9" opacity=".85"/>'); }
+    return s.join("");
+  }
+  /* the hardened house's own marks: roof seams and a masonry base band */
+  function hardening(asPlan) {
+    var s = [], col = asPlan ? AMBER : PAPER;
+    [[665, 346, 556, 448], [665, 346, 774, 448], [665, 392, 614, 448], [665, 392, 716, 448]].forEach(function (p) {
+      s.push(line(p[0], p[1], p[2], p[3], col, 1.6, { op: asPlan ? .9 : .5 }));
+    });
+    s.push(rect(470, 582, 390, 18, asPlan ? "none" : BLOCK, { stroke: col, sw: asPlan ? 1.6 : 0, op: asPlan ? .9 : 1 }));
+    if (!asPlan) { s.push(line(470, 591, 860, 591, PAPER, 1, { op: .35 })); }
     return s.join("");
   }
 
   function home(o) {
-    o = o || {}; var s = [], win = o.lit ? LIT : PAPER;
-    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") + '" opacity="' + (o.op == null ? 1 : o.op) + '">');
+    o = o || {}; var s = [], h = o.home || S.home, win = o.lit ? LIT : PAPER;
+    s.push('<g data-home="' + h + '" transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") + '" opacity="' + (o.op == null ? 1 : o.op) + '">');
     if (o.tree !== false) {
       s.push(rect(392, 520, 16, 84, INK));
       s.push('<circle cx="400" cy="470" r="86" fill="' + SAGE2 + '"/><circle cx="372" cy="492" r="62" fill="' + SAGE + '"/><circle cx="434" cy="455" r="58" fill="' + SAGE + '"/>');
     }
-    s.push(rect(470, 448, 390, 152, INK));
-    s.push('<polygon points="450,448 665,322 880,448" fill="' + INK + '"/>');
-    s.push('<polyline points="450,448 665,322 880,448" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
-    s.push(rect(770, 352, 30, 70, INK)); s.push(rect(766, 348, 38, 8, INK));
-    s.push(rect(478, 492, 130, 8, PAPER, { op: .9 })); s.push(rect(490, 500, 7, 100, PAPER, { op: .9 })); s.push(rect(596, 500, 7, 100, PAPER, { op: .9 }));
-    s.push(rect(525, 516, 40, 84, o.lit ? LIT : PAPER)); s.push(rect(525, 506, 40, 7, PAPER));
-    s.push('<circle cx="556" cy="560" r="2.4" fill="' + INK + '"/>');
-    s.push(rect(640, 500, 60, 56, win)); s.push(rect(740, 500, 60, 56, win));
-    s.push(line(670, 500, 670, 556, INK, 3) + line(640, 528, 700, 528, INK, 3) + line(770, 500, 770, 556, INK, 3) + line(740, 528, 800, 528, INK, 3));
-    s.push(rect(860, 500, 130, 100, GARAGE));
-    s.push(line(876, 528, 974, 528, PAPER, 2, { op: .5 }) + line(876, 552, 974, 552, PAPER, 2, { op: .5 }) + line(876, 576, 974, 576, PAPER, 2, { op: .5 }));
-    s.push('<path d="M470 600 L1000 600 L1040 626 L430 626 Z" fill="' + INK + '" opacity=".12"/>');
-    s.push(features(o.std == null ? S.std : o.std, false));
+    if (h === "b") {
+      /* faster and smaller: low pitch, narrow, no garage; panel seams */
+      s.push(rect(560, 480, 240, 120, INK));
+      s.push('<polygon points="536,480 680,404 824,480" fill="' + INK + '"/>');
+      s.push('<polyline points="536,480 680,404 824,480" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
+      s.push(line(640, 480, 640, 600, PAPER, 1.4, { op: .35 }) + line(720, 480, 720, 600, PAPER, 1.4, { op: .35 }));
+      s.push(rect(596, 530, 34, 70, o.lit ? LIT : PAPER)); s.push('<circle cx="622" cy="566" r="2.2" fill="' + INK + '"/>');
+      s.push(rect(690, 520, 60, 48, win)); s.push(line(720, 520, 720, 568, INK, 3) + line(690, 544, 750, 544, INK, 3));
+      s.push('<path d="M560 600 L800 600 L830 626 L530 626 Z" fill="' + INK + '" opacity=".12"/>');
+    } else {
+      s.push(rect(470, 448, 390, 152, INK));
+      s.push('<polygon points="450,448 665,322 880,448" fill="' + INK + '"/>');
+      s.push('<polyline points="450,448 665,322 880,448" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
+      s.push(rect(770, 352, 30, 70, INK)); s.push(rect(766, 348, 38, 8, INK));
+      s.push(rect(478, 492, 130, 8, PAPER, { op: .9 })); s.push(rect(490, 500, 7, 100, PAPER, { op: .9 })); s.push(rect(596, 500, 7, 100, PAPER, { op: .9 }));
+      s.push(rect(525, 516, 40, 84, o.lit ? LIT : PAPER)); s.push(rect(525, 506, 40, 7, PAPER));
+      s.push('<circle cx="556" cy="560" r="2.4" fill="' + INK + '"/>');
+      s.push(rect(640, 500, 60, 56, win)); s.push(rect(740, 500, 60, 56, win));
+      s.push(line(670, 500, 670, 556, INK, 3) + line(640, 528, 700, 528, INK, 3) + line(770, 500, 770, 556, INK, 3) + line(740, 528, 800, 528, INK, 3));
+      s.push(rect(860, 500, 130, 100, GARAGE));
+      s.push(line(876, 528, 974, 528, PAPER, 2, { op: .5 }) + line(876, 552, 974, 552, PAPER, 2, { op: .5 }) + line(876, 576, 974, 576, PAPER, 2, { op: .5 }));
+      s.push('<path d="M470 600 L1000 600 L1040 626 L430 626 Z" fill="' + INK + '" opacity=".12"/>');
+      if (h === "c") { s.push(hardening(false)); s.push(features(false, o.edge)); }
+    }
     s.push("</g>");
     return s.join("");
   }
 
   function plan(o) {
-    o = o || {}; var s = [];
-    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
+    o = o || {}; var s = [], h = o.home || S.home;
+    s.push('<g data-home="' + h + '" transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
            '" fill="none" stroke="' + AMBER + '" stroke-width="3" stroke-linejoin="round" opacity="' + (o.op == null ? 1 : o.op) + '">');
-    s.push('<polygon points="450,448 665,322 880,448" fill="url(#hatch)" stroke="none"/><polygon points="450,448 665,322 880,448"/>');
-    s.push(rect(470, 448, 390, 152, "none", { stroke: AMBER, sw: 3 }) + rect(860, 500, 130, 100, "none", { stroke: AMBER, sw: 3 }) + rect(770, 352, 30, 70, "none", { stroke: AMBER, sw: 3 }));
-    s.push(line(665, 322, 665, 600, AMBER, 2, { dash: "3 7" }) + line(470, 520, 860, 520, AMBER, 2, { op: .8 }));
-    if (o.ticks !== false) { s.push(line(1012, 448, 1012, 600, AMBER, 2) + line(1004, 448, 1020, 448, AMBER, 2) + line(1004, 600, 1020, 600, AMBER, 2)); }
-    if (o.openings) {
-      s.push(rect(525, 516, 40, 84, "none", { stroke: AMBER, sw: 2 }) + rect(640, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) +
-             rect(740, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) + rect(478, 492, 130, 8, "none", { stroke: AMBER, sw: 2 }));
+    if (h === "b") {
+      s.push('<polygon points="536,480 680,404 824,480" fill="url(#hatch)" stroke="none"/><polygon points="536,480 680,404 824,480"/>');
+      s.push(rect(560, 480, 240, 120, "none", { stroke: AMBER, sw: 3 }));
+      s.push(line(680, 404, 680, 600, AMBER, 2, { dash: "3 7" }) + line(640, 480, 640, 600, AMBER, 1.6, { op: .8 }) + line(720, 480, 720, 600, AMBER, 1.6, { op: .8 }));
+      if (o.ticks !== false) { s.push(line(846, 480, 846, 600, AMBER, 2) + line(838, 480, 854, 480, AMBER, 2) + line(838, 600, 854, 600, AMBER, 2)); }
+      if (o.openings) { s.push(rect(596, 530, 34, 70, "none", { stroke: AMBER, sw: 2 }) + rect(690, 520, 60, 48, "none", { stroke: AMBER, sw: 2 })); }
+    } else {
+      s.push('<polygon points="450,448 665,322 880,448" fill="url(#hatch)" stroke="none"/><polygon points="450,448 665,322 880,448"/>');
+      s.push(rect(470, 448, 390, 152, "none", { stroke: AMBER, sw: 3 }) + rect(860, 500, 130, 100, "none", { stroke: AMBER, sw: 3 }) + rect(770, 352, 30, 70, "none", { stroke: AMBER, sw: 3 }));
+      s.push(line(665, 322, 665, 600, AMBER, 2, { dash: "3 7" }) + line(470, 520, 860, 520, AMBER, 2, { op: .8 }));
+      if (o.ticks !== false) { s.push(line(1012, 448, 1012, 600, AMBER, 2) + line(1004, 448, 1020, 448, AMBER, 2) + line(1004, 600, 1020, 600, AMBER, 2)); }
+      if (o.openings) {
+        s.push(rect(525, 516, 40, 84, "none", { stroke: AMBER, sw: 2 }) + rect(640, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) +
+               rect(740, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) + rect(478, 492, 130, 8, "none", { stroke: AMBER, sw: 2 }));
+      }
+      if (h === "c") { s.push(hardening(true)); s.push(features(true, o.edge)); }
     }
-    s.push(features(o.std == null ? S.std : o.std, true, o.edge));
     s.push("</g>");
     return s.join("");
   }
+
+  /* the home today, as an outline: what the loss leaves of it */
+  function outline(o) {
+    o = o || {}; var s = [];
+    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
+           '" fill="none" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round" opacity=".7">');
+    s.push('<polygon points="450,448 665,322 880,448"/>' + rect(470, 448, 390, 152, "none", { stroke: INK, sw: 2.4 }) +
+           rect(860, 500, 130, 100, "none", { stroke: INK, sw: 2.4 }) + rect(770, 352, 30, 70, "none", { stroke: INK, sw: 2.4 }));
+    s.push("</g>");
+    return s.join("");
+  }
+
+  /* the footprint's extent and the door's position, per way home */
+  var EXTENT = { a: [453, 995], b: [540, 820], c: [453, 995] };
+  var DOOR_TX = { a: 70, b: 125, c: 70 };
 
   function figure(x, y, o) {
     o = o || {}; var s = [], k = o.k || 1, c = o.fill || INK;
@@ -236,89 +304,59 @@
   function block(x, y, w, h) { return '<g class="block-wide" filter="url(#rough)">' + rect(x, y, w, h, BLOCK, { rx: 3, filter: "url(#grain)" }) + "</g>"; }
   function footprint(x1, x2, y) { return line(x1, y, x2, y, AMBER, 2.4, { dash: "12 9" }); }
 
-  /* ── 1 · the approved frame ──────────────────────────────────────────── */
+  /* ── 1 · the approved frame: the home today, the chosen plan behind it ── */
   function scene1() {
-    /* exactly the approved frame: the home as it stands today carries no
-       hardening, and the plan behind it is the plain drawing — the standard
-       is chosen on the next screen */
     var s = [sky()];
-    s.push(plan({ tx: 100, ty: -180, std: 0 }));
-    s.push(footprint(484, 1070, 626)); s.push(path(70)); s.push(home({ tx: 70, std: 0 }));
+    s.push(plan({ tx: 100, ty: -180, edge: false }));   /* the plan floats behind the home; its cleared edge is a ground feature */
+    s.push(footprint(484, 1070, 626)); s.push(path(70)); s.push(home({ tx: 70, home: "a" }));
+    /* the smaller plan ends short of the annotation, so its lead runs out
+       along the clear sky above the roof before dropping to the words */
+    if (S.home === "b") { s.push(line(950, 420, 1090, 420, AMBER, 2)); }
     s.push('<line id="lead-plan" x1="1090" y1="420" x2="1090" y2="446" stroke="' + AMBER + '" stroke-width="2"/>');
-    s.push('<text id="anno-plan-1" class="anno" x="1128" y="468" text-anchor="end" font-size="' + n1(px(15)) + '">Your replacement plan,</text>');
-    s.push('<text id="anno-plan-2" class="anno" x="1128" y="488" text-anchor="end" font-size="' + n1(px(15)) + '">agreed in advance</text>');
+    s.push('<text id="anno-plan-1" class="anno" x="1128" y="468" text-anchor="end" font-size="' + n1(px(15)) + '">Your way home,</text>');
+    s.push('<text id="anno-plan-2" class="anno" x="1128" y="488" text-anchor="end" font-size="' + n1(px(15)) + '">chosen now</text>');
     s.push(leader(1095, 632, 1095, 652)); s.push(text(1128, 670, "Your home today", 15, { anc: "end" }));
-    s.push(block(56, 82, 556, 304));
+    s.push(block(56, 82, 600, 304));   /* wide enough for the three lines at the type floor (0.94) when the frame scales to 0.90 */
     return s.join("");
   }
 
-  /* ── 2 · the plan in front, the standard chosen ──────────────────────── */
-  function scene2() {
-    var s = [sky({ sunX: 1140, sunY: 80, sunR: 140 })];
-    /* The current home sits below the selection controls, wherever their
-       last row actually ends: the control group is HTML and wraps to two
-       rows at short widths, so its rendered bottom is measured (in design
-       units) and the illustration is placed a clear gap beneath it. */
-    var ty = 270;
-    var ctl = document.querySelector('.screen[data-screen="2"] .copy--controls');
-    if (!portrait && ctl) {
-      var cr = ctl.getBoundingClientRect(), oy = parseFloat(root.style.getPropertyValue("--oy")) || 0;
-      var apexNeeded = (cr.bottom - oy) / scale + 28;      /* 28 design units of clear space */
-      ty = Math.max(270, apexNeeded - 322 * 0.62);          /* the ghost's roof apex is at 322·k + ty */
-    }
-    s.push('<g id="s2-ghost" opacity=".42">' + home({ tx: -210, ty: ty, k: .62, std: 0, tree: false }) + "</g>");
-    s.push(callout({ x: 126, y: ty + 394, title: "Your home today" }));
-    s.push(footprint(440, 1040, 626)); s.push(path(60));
-    s.push(plan({ tx: 60, openings: true, ticks: false }));
-    /* the standard's name only: its features are labelled where they sit on
-       the drawing, so the describing sentence no longer runs across the roof */
-    s.push(callout({ x: 1122, y: 306, anc: "end", eyebrow: "REPLACEMENT PLAN", title: STD_NAME[S.std] }));
-    if (S.std >= 1) {
-      s.push(callout({ x: 606, y: 282, title: S.std >= 2 ? "Ember-resistant roof, to code" : "Built to current code",
-                       note: S.std >= 2 ? [] : ["Where the old house predates it."], lead: [640, 372, 640, 292, AMBER] }));
-    }
-    if (S.std >= 2) {
-      s.push(callout({ x: 700, y: 712, title: "Screened vents", lead: [673, 584, 700, 696, AMBER] }));
-      s.push(callout({ x: 1122, y: 712, anc: "end", title: "Cleared edge", lead: [1040, 650, 1080, 696, AMBER] }));
-    }
-    /* as it stood: the one note sits where the feature callout sits in the
-       other states — above the roof, never across it */
-    if (S.std === 0) { s.push(callout({ x: 606, y: 282, note: ["Nothing is added to the drawing."] })); }
-    s.push(block(56, 82, 520, 248));
-    return s.join("");
-  }
-
-  /* ── 3 · the arrangements are the subject; the plan is their anchor ────
-     The plan is reduced and set top-centre. Three commitment groups stand on
+  /* ── 2 and 3 · the three commitments around the house ───────────────────
+     The house is reduced and set top-centre: on 2 it is the chosen plan, on
+     3 it is the home today as an outline. Three commitment groups stand on
      the ground beneath it, each in its own column with its own illustration,
-     primary label, name and state, and each tied back to the one plan by a
-     light dashed leader — coordinated arrangements, not a sequence. */
-  function scene3() {
-    var s = [sky({ sunX: 1120, sunY: 90, sunR: 130 })];
-    s.push(footprint(690, 1004, 420));
-    s.push(plan({ tx: 427, ty: 70, k: .58, openings: true, ticks: false, edge: false }));
-    s.push(callout({ x: 1004, y: 236, anc: "end", eyebrow: "REPLACEMENT PLAN · " + STD_NAME[S.std].toUpperCase(), state: "agreed" }));
-    /* ties from the plan's base to each arrangement */
+     label and state, each tied back to the house by a light dashed leader. */
+  function commitments(centre, state, notes) {
+    var s = [], e = EXTENT[S.home];
+    s.push(footprint(427 + e[0] * .58, 427 + e[1] * .58, 420));
+    s.push(centre);
     s.push(leader(760, 422, 236, 520, AMBER, "5 6"));
     s.push(leader(846, 422, 586, 492, AMBER, "5 6"));
     s.push(leader(934, 422, 936, 480, AMBER, "5 6"));
-    /* A · builder capacity, reserved */
-    s.push(timber(100, 540));
-    s.push(callout({ x: 58, y: 620, title: "Builder capacity reserved", state: "reserved",
-                     note: ["Ardren &amp; Sons, Calder Reach.", "Under the agreed conditions; scarce at this standard."] }));
-    /* B · recovery lead, named in advance */
+    /* temporary living · the chosen plan with the named builder · Marta */
+    s.push(smallHome(140, 480, { k: .5, lit: false }));
+    s.push(callout({ x: 58, y: 620, title: "Temporary living", state: state, note: notes ? ["From the first night."] : [] }));
     s.push(figure(586, 598, { board: true, k: 1.2 }));
-    s.push(callout({ x: 430, y: 620, title: "Recovery lead named", state: "agreed",
-                     note: ["Marta Ives. Named now, not at the claim."] }));
-    /* C · temporary living, agreed */
-    s.push(smallHome(880, 480, { k: .5, lit: false }));
-    s.push(callout({ x: 800, y: 620, title: "Temporary living agreed", state: "agreed",
-                     note: ["Calder Reach, from the first night.", "Arranged now; used after a covered event."] }));
+    s.push(callout({ x: 430, y: 620, title: "Marta coordinates", state: state, note: notes ? ["Named now, not at the loss."] : [] }));
+    s.push(timber(830, 540));
+    s.push(callout({ x: 800, y: 620, title: "The chosen plan", state: state, note: [HOME_NAME[S.home] + " · " + BUILDER] }));
+    return s.join("");
+  }
+  function scene2() {
+    var s = [sky({ sunX: 1120, sunY: 90, sunR: 130 })];
+    s.push(commitments(plan({ tx: 427, ty: 70, k: .58, openings: true, ticks: false, edge: false }), S.agreed ? "agreed" : null, true));
     s.push(block(56, 82, 520, 196));
     return s.join("");
   }
+  function scene3() {
+    var s = [sky({ sun: false, dusk: true })];
+    var slab = EXTENT.a;
+    s.push(rect(427 + slab[0] * .58 + 8, 416, (slab[1] - slab[0]) * .58 - 16, 8, SLAB, { stroke: INK, sw: 1.2 }));
+    s.push(commitments(outline({ tx: 427, ty: 70, k: .58 }), "holds", false));
+    s.push(block(56, 82, 400, 150));
+    return s.join("");
+  }
 
-  /* ── 4 · the plan becomes action ─────────────────────────────────────────
+  /* ── 4 · the arrangement activates ───────────────────────────────────────
      The page-wide scene carries only the dusk paper; the recovery scene is
      its own bounded SVG inside the screen's flow layout (see paintScene4),
      so its labels can live in wrapping HTML areas beside the artwork. */
@@ -339,9 +377,8 @@
         s.push(line(p[0] + 18, 300, p[0] + 34, 272, WARN, 2, { op: .8 }) + line(p[0] + 78, 300, p[0] + 92, 276, WARN, 2, { op: .8 }));
       });
     }
-    /* the two coordination paths, from the lead to each arrangement */
-    /* the right-hand path is routed to the foundation itself — it arrives at
-       the slab's near edge, above the caption's reading area, never into it */
+    /* the two coordination paths, from the lead to each arrangement; the
+       right-hand path arrives at the slab's near edge, never into the caption */
     var L = "M560 304 Q430 352 318 304", R = "M620 304 Q740 346 826 288";
     s.push('<path d="' + L + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"/>');
     s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (ev ? ' opacity=".55"' : "") + '/>');
@@ -353,7 +390,7 @@
     s.push('<g id="s4-subj-temp">' + smallHome(185, 196, { k: .48, lit: true }) + "</g>");
     /* the recovery lead */
     s.push('<g id="s4-subj-marta">' + figure(590, 302, { board: true, k: 1.15 }) + "</g>");
-    /* the rebuild site: a cleared slab with the agreed plan standing on it as the instruction */
+    /* the rebuild site: a cleared slab with the chosen plan standing on it as the instruction */
     s.push('<g id="s4-subj-site">');
     s.push(rect(830, 292, 262, 14, SLAB, { stroke: INK, sw: 1.6 }));
     [850, 905, 975, 1040].forEach(function (x, i) { s.push(line(x, 292, x + 18, 274 - (i % 2) * 8, INK, 1.8, { op: .5 })); });
@@ -369,12 +406,11 @@
     s4.innerHTML = s.join("");
     /* labels and states, from the one state */
     var det = document.getElementById("s4-site-detail"), st = document.getElementById("s4-site-state"), cap = document.getElementById("s4-cap");
-    if (det) { det.textContent = STD_NAME[S.std] + " · Ardren & Sons"; }
-    if (st) { st.dataset.kind = ev ? "queued" : "released"; st.textContent = ev ? "Reserved start queued" : "Released under the agreed conditions"; }
+    if (det) { det.textContent = HOME_NAME[S.home] + " · Ardren & Sons"; }
+    if (st) { st.dataset.kind = ev ? "queued" : "released"; st.textContent = ev ? "Reserved start queued" : "Reserved start released"; }
     if (cap) { cap.dataset.kind = ev ? "constrained" : "available"; cap.textContent = ev ? "Constrained" : "Available"; }
-    /* the bounded scene: fit the box to the room the flow leaves it */
-    /* the box frames the artwork band only (design y 140–430), so the scene
-       never carries an empty sky above the subjects */
+    /* the bounded scene frames the artwork band only (design y 140–430), so
+       it never carries an empty sky above the subjects */
     if (!portrait) {
       var wrap = box.parentNode, h = wrap.clientHeight, w = wrap.clientWidth;
       var bw = Math.min(w, h * 1180 / 290), bh = bw * 290 / 1180;
@@ -384,37 +420,37 @@
       box.style.width = "100%"; box.style.height = (window.innerWidth * 290 / 820) + "px";
       s4.setAttribute("viewBox", "180 140 820 290");
       legend = Array.prototype.map.call(document.querySelectorAll(".s4-label"), function (p) {
-        var em = p.querySelector("em");
+        var em = p.querySelector("em"), sp = p.querySelector("span");
         /* the legend carries the label's own state wording, never a remapped one */
-        return { title: p.querySelector("b").textContent, note: [p.querySelector("span").textContent],
+        return { title: p.querySelector("b").textContent, note: sp ? [sp.textContent] : [],
                  state: em ? em.dataset.kind : null, stateText: em ? em.textContent : null };
       });
     }
   }
 
-  /* ── 5 · the plan resolved into the home ─────────────────────────────── */
+  /* ── 5 · the chosen plan resolved into the home ──────────────────────── */
   function scene5() {
-    /* normal: a low warm sun behind the solid home. Constrained: the sun
-       stays high and small, so the plan's amber linework never sits on it. */
-    var ev = S.event, s = [ev ? sky({ sunX: 1130, sunY: 90, sunR: 120 }) : sky({ sunX: 1010, sunY: 420, sunR: 170, warm: true })];
-    if (!ev) {
-      s.push('<g opacity=".22">' + plan({ tx: 70, ticks: false }) + "</g>");
-      s.push(path(70)); s.push(home({ tx: 70, lit: true }));
-      s.push(figure(700, 760, { case_: true, k: .9 }));
-    } else {
-      s.push(footprint(484, 1070, 626)); s.push(rect(530, 586, 460, 16, SLAB, { stroke: INK, sw: 1.6 }));
-      s.push(plan({ tx: 70, ticks: false, openings: true })); s.push(path(70));
-      s.push(figure(690, 712, { board: true }));
-      s.push(callout({ x: 714, y: 700, title: "Marta Ives still runs the recovery." }));
-      s.push(smallHome(1040, 580, { lit: true }));
-      s.push(callout({ x: 1136, y: 700, anc: "end", title: "Temporary living holds." }));
-      /* the state word and mark only: the copy beneath carries the sentence */
-      s.push(callout({ x: 58, y: 632, eyebrow: "REGIONAL CAPACITY", ebFill: MUTED, state: "constrained" }));
-    }
-    s.push(block(56, 82, 596, 304));
+    var s = [sky({ sunX: 1010, sunY: 420, sunR: 170, warm: true })];
+    s.push('<g opacity=".22">' + plan({ tx: 70, ticks: false }) + "</g>");
+    s.push(path(DOOR_TX[S.home])); s.push(home({ tx: 70, lit: true }));
+    s.push(figure(700, 760, { case_: true, k: .9 }));
+    s.push(block(56, 82, 430, 150));
     return s.join("");
   }
   var SCENES = [scene1, scene2, scene3, scene4, scene5];
+
+  /* the three ways home, drawn small inside their buttons */
+  function paintOptions() {
+    Array.prototype.forEach.call(document.querySelectorAll(".options [data-home]"), function (b) {
+      var art = b.querySelector(".opt-art"); if (!art || art.firstChild) { return; }
+      var h = b.dataset.home, k = scale; scale = 1;
+      /* the thumbnail's ink and paper are variables, so a pressed button can
+         swap them and the house stays legible on the dark ground */
+      var art1 = home({ home: h, tree: false }).split(INK).join("var(--art-ink)").split(GARAGE).join("var(--art-ink)").split(PAPER).join("var(--art-paper)");
+      art.innerHTML = '<svg viewBox="430 300 640 380" aria-hidden="true" focusable="false">' + art1 + "</svg>";
+      scale = k;
+    });
+  }
 
   /* ══════════════════════════════════════════════════════════════════════
      CAMERA — landscape fits the 1180×820 frame; portrait frames the
@@ -422,7 +458,7 @@
      ══════════════════════════════════════════════════════════════════════ */
   var REGION = {
     1: [{ x: 440, y: 40, w: 740, h: 720 }, { x: 330, y: 40, w: 850, h: 720 }],
-    2: [{ x: 330, y: 250, w: 850, h: 520 }, { x: 240, y: 230, w: 940, h: 560 }],
+    2: [{ x: 60, y: 230, w: 1120, h: 400 }, { x: 60, y: 220, w: 1120, h: 420 }],
     3: [{ x: 60, y: 230, w: 1120, h: 400 }, { x: 60, y: 220, w: 1120, h: 420 }],
     4: [{ x: 300, y: 230, w: 900, h: 560 }, { x: 240, y: 210, w: 960, h: 600 }],
     5: [{ x: 380, y: 240, w: 780, h: 560 }, { x: 300, y: 220, w: 860, h: 600 }]
@@ -448,10 +484,10 @@
   function annoPlan() {
     var p1 = document.getElementById("anno-plan-1"), p2 = document.getElementById("anno-plan-2"), ld = document.getElementById("lead-plan");
     if (!p1 || !portrait) { return; }
-    var u = px(14);
-    p2.setAttribute("x", 765); p2.setAttribute("y", n1(142 - u * 1.4)); p2.setAttribute("text-anchor", "middle");
-    p1.setAttribute("x", 765); p1.setAttribute("y", n1(142 - u * 2.65)); p1.setAttribute("text-anchor", "middle");
-    ld.setAttribute("x1", 765); ld.setAttribute("y1", 142); ld.setAttribute("x2", 765); ld.setAttribute("y2", n1(142 - u));
+    var u = px(14), cx = 765;
+    p2.setAttribute("x", cx); p2.setAttribute("y", n1(142 - u * 1.4)); p2.setAttribute("text-anchor", "middle");
+    p1.setAttribute("x", cx); p1.setAttribute("y", n1(142 - u * 2.65)); p1.setAttribute("text-anchor", "middle");
+    ld.setAttribute("x1", cx); ld.setAttribute("y1", 142); ld.setAttribute("x2", cx); ld.setAttribute("y2", n1(142 - u));
   }
   /* the legend: the same callouts, as readable HTML, under the scene */
   function paintLegend() {
@@ -481,34 +517,53 @@
      ══════════════════════════════════════════════════════════════════════ */
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
   var total = screens.length;
-  var NEXT = ["Choose your rebuild", "Reserve the recovery", "Activate the arrangements", "Home again", "Start again"];
+  var NEXT = ["Three commitments", "The loss", "The arrangement", "Home again", "Start again"];
   var prevBtn = document.getElementById("prev"), nextBtn = document.getElementById("next");
-  var nextLabel = document.getElementById("next-label"), where = document.getElementById("where");
+  var nextLabel = document.getElementById("next-label"), picker = document.getElementById("picker");
   var announce = document.getElementById("announce"), status = document.getElementById("state-status");
   function say(m) { if (status) { status.textContent = m; } }
-  var stdBtns = Array.prototype.slice.call(document.querySelectorAll("[data-std]"));
-  var stdWord = Array.prototype.slice.call(document.querySelectorAll("[data-std-word]"));
+  var homeBtns = Array.prototype.slice.call(document.querySelectorAll(".options [data-home]"));
+  var homeWord = Array.prototype.slice.call(document.querySelectorAll("[data-home-name]"));
+  var agreeBtn = document.getElementById("agree"), sig = document.getElementById("sig");
   var evBtn = document.getElementById("event-toggle");
-  var evWord = Array.prototype.slice.call(document.querySelectorAll("[data-ev-word]"));
   var branch = Array.prototype.slice.call(document.querySelectorAll("[data-branch]"));
 
+  screens.forEach(function (sc, i) {
+    var o = document.createElement("option");
+    o.value = String(i + 1); o.textContent = (i + 1) + " · " + sc.dataset.label;
+    picker.appendChild(o);
+  });
+
   function paintControls() {
-    stdBtns.forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.std === S.std ? "true" : "false"); });
-    stdWord.forEach(function (e) { e.textContent = STD_NAME[S.std]; });
-    if (evBtn) { evBtn.setAttribute("aria-pressed", S.event ? "true" : "false"); evBtn.textContent = S.event ? "Return to normal conditions" : "Show a regional event"; }
-    evWord.forEach(function (e) { e.textContent = S.event ? "Constrained" : "Available"; });
+    body.setAttribute("data-home", S.home);
+    homeBtns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.home === S.home ? "true" : "false"); });
+    homeWord.forEach(function (e) { e.textContent = HOME_NAME[S.home]; });
+    if (agreeBtn) { agreeBtn.setAttribute("aria-pressed", S.agreed ? "true" : "false"); agreeBtn.textContent = S.agreed ? "Agreed" : "Agree to the three commitments"; }
+    if (sig) { if (S.agreed) { sig.removeAttribute("hidden"); } else { sig.setAttribute("hidden", ""); } }   /* an <svg> has no .hidden property */
+    if (evBtn) { evBtn.setAttribute("aria-pressed", S.event ? "true" : "false"); }
     branch.forEach(function (e) { e.hidden = (e.dataset.branch === "event") !== S.event; });
   }
-  stdBtns.forEach(function (b) {
-    b.addEventListener("click", function () { S.std = +b.dataset.std; paintControls(); draw(); say("Rebuild standard set to " + STD_NAME[S.std] + ". " + STD_LINE[S.std] + "."); });
+  homeBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      S.home = b.dataset.home; save(); paintControls(); draw();
+      say(HOME_NAME[S.home] + " chosen. " + HOME_LINE[S.home] + ". It carries through every later screen.");
+    });
   });
-  if (evBtn) {
-    evBtn.addEventListener("click", function () {
-      S.event = !S.event; paintControls(); draw();
-      say(S.event ? "Regional event shown. Capacity constrained. Three commitments unchanged; the reserved start falls back to the queue." : "Normal conditions restored. All four commitments held.");
+  if (agreeBtn) {
+    agreeBtn.addEventListener("click", function () {
+      if (S.agreed) { return; }
+      S.agreed = true; save(); paintControls(); draw();
+      say("Agreed. Temporary living from the first night, " + HOME_NAME[S.home] + " with Ardren and Sons, and Marta coordinates.");
     });
   }
-  function reset() { S.std = 2; S.event = false; paintControls(); show(1); say("Journey reset. Code plus hardening, normal conditions."); }
+  if (evBtn) {
+    evBtn.addEventListener("click", function () {
+      S.event = !S.event; save(); paintControls(); draw();
+      say(S.event ? "Regional event shown. Capacity constrained; the reserved start is queued, and extra payment does not buy priority. Temporary living, Marta and your plan continue."
+                  : "Normal conditions restored. Capacity available; the reserved start released.");
+    });
+  }
+  function reset() { S.home = "a"; S.agreed = false; S.event = false; clear(); paintControls(); show(1); say("Journey reset. Nothing chosen or agreed; normal conditions."); }
   var restart = document.getElementById("restart");
   if (restart) { restart.addEventListener("click", reset); }
 
@@ -517,7 +572,7 @@
     S.screen = n;
     screens.forEach(function (sc, i) { sc.hidden = (i + 1 !== n); });
     body.setAttribute("data-screen", String(n));
-    prevBtn.disabled = n === 1; nextLabel.textContent = NEXT[n - 1]; where.textContent = n + " of " + total;
+    prevBtn.disabled = n === 1; nextLabel.textContent = NEXT[n - 1]; picker.value = String(n);
     paintControls(); draw(); window.scrollTo(0, 0);
     var h = screens[n - 1].querySelector("h1, h2");
     announce.textContent = "Screen " + n + " of " + total + ". " + (h ? h.textContent.replace(/\s+/g, " ").trim() : "");
@@ -525,6 +580,7 @@
   }
   prevBtn.addEventListener("click", function () { show(S.screen - 1); });
   nextBtn.addEventListener("click", function () { if (S.screen === total) { reset(); return; } show(S.screen + 1); });
+  picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
@@ -533,10 +589,10 @@
     if (e.key === "ArrowLeft") { show(S.screen - 1); }
   });
   /* #b/1..5 now; the old three-screen #s/1..3 map to the beat with the same
-     idea — 1 before the loss → 1, 2 what is promised → 3, 3 the first days → 4 */
+     idea — 1 before the loss → 1, 2 what is promised → 2, 3 the first days → 4 */
   function fromHash() {
     var m = /#b\/(\d)/.exec(location.hash); if (m) { return +m[1]; }
-    var o = /#s\/(\d)/.exec(location.hash); if (o) { return { 1: 1, 2: 3, 3: 4 }[+o[1]] || 1; }
+    var o = /#s\/(\d)/.exec(location.hash); if (o) { return { 1: 1, 2: 2, 3: 4 }[+o[1]] || 1; }
     return null;
   }
   window.addEventListener("hashchange", function () { var n = fromHash(); if (n !== null && n !== S.screen) { show(n, false); } });
@@ -544,5 +600,6 @@
   var skip = document.getElementById("skip");
   if (skip) { skip.addEventListener("click", function () { var h = screens[S.screen - 1].querySelector("h1, h2"); if (h) { h.focus(); } }); }
 
+  load(); paintOptions();
   show(fromHash() || 1, false);
 })();

@@ -39,45 +39,60 @@
 </div>
 
 <!-- ONE THOUGHT PER SCREEN — and at most sixty visible words per screen.
-     1 acting alone fails · 2 the deal, before joining · 3 the street reaches
-     the threshold (the boundary draws itself in at 48) · 4 participation
-     is not the final condition · 5 together, the offer Maggie couldn't get
-     alone — alone, no offer; together, a coverage offer with the final
-     terms pending, her share and premium set before she accepts (or it is
-     still pending).
-     Copy is the locked contract (design-study/story-expansion/SCREEN-COPY.md,
-     NEGOTIATED). Everything the facilitator says aloud lives in
+     1 the risk is collective, the insurance isn't · 2 the deal, before
+     joining · 3 her agent talks to the street (the boundary draws itself in
+     at 48) · 4 participation is not the final condition · 5 together, the
+     offer Maggie couldn't get alone — alone, no offer; together, a
+     conditional offer secured, terms and acceptance pending.
+     Copy is the implementation contract (design-study/brief-align/
+     CONTRACT-IMPL.md § D). Everything the facilitator says aloud lives in
      FACILITATOR-NOTES.md, not here. Empty space is the street showing
      through, and is deliberate.
 
-     STATE — one object in app.js: { screen, joined, committed, verified }.
+     STATE — one object in app.js: { screen, joined, committed, verified },
+     kept in sessionStorage across reloads.
      `joined` means the household (Maggie, no. 31) has authorised its agent
      to ASSEMBLE the proposal — never that it has accepted terms: no
      contribution, price or acceptance mechanism exists in any source, so
      there is nothing to accept yet. It is false on entry and set only by
      the #join button on screen 2, which also moves `committed` from 41 (the
      others) to 42 (the others plus no. 31). `committed` is moved otherwise
-     only by the slider on screen 3 — floor 42 when joined, 41 when not —
-     and never reset by navigation; `verified` is false until the surveyor
-     control on screen 4 is pressed. Only "Back to the start" from screen 5
-     resets all three. Screen 5 is DERIVED: ready = committed ≥ 48 AND
-     verified, and "ready" means the street holds a conditional offer with
-     Maggie's share and premium still to be set and accepted — never that
-     anything is in force. Nothing on screen 5 is ever reached merely by
-     pressing Next.
+     only by #invite on screen 3 — one round of acceptances per press,
+     42 → 45 → 48; at 48 the button reads "Street assembled" and does
+     nothing — and never by navigation; `verified` is false until the
+     surveyor control on screen 4 is pressed. Only "Back to the start" from
+     screen 5 resets all three. Screen 5 is DERIVED: ready = committed ≥ 48
+     AND verified, and "ready" means the street holds a conditional offer
+     with the terms and Maggie's acceptance still pending — never that
+     anything is covered or active. Nothing on screen 5 is ever reached
+     merely by pressing Next.
+
+     THE SHARED AGENT GRAMMAR (CONTRACT-IMPL § A), implemented locally:
+     HUMAN — her paper (the terms sheet on screen 2) and her signature
+     dash, drawn when she authorises. AGENT — the dark plate on screen 3
+     with its plum rule, the lens mark, and the plum thread that begins at
+     her paper (screen 2's tether turns plum once signed) and reaches the
+     street lot by lot as households accept (drawn in the street's SVG by
+     app.js). PROVIDER — the carrier's conditions on screen 4 as a
+     ledger-blue record with a seal. Names: "her agent" only.
 
      DISCOVERABILITY — the customer action is the primary control on its
-     screen: #join on screen 2 and #verify-toggle on screen 4 are the dark
-     buttons; the chrome's Next drops to a quiet paper button on those two
-     screens until the action has been taken (app.js, paint()). -->
+     screen: #join on screen 2, #invite on screen 3 and #verify-toggle on
+     screen 4; the chrome's Next drops to a quiet paper button on those
+     screens until the action has been taken (app.js, paint()). Next never
+     joins, invites, verifies or accepts. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · ACTING ALONE ══════ -->
-<section class="screen" data-screen="1" data-label="Acting alone" data-cam="street" data-veil="soft">
+<!-- ══════ 1 · THE RISK IS COLLECTIVE ══════
+     Maggie prepared her home; the offer she wants depends on the street
+     around her. The risk shading runs across all sixty lots regardless of
+     lot lines (drawn by app.js in "alone" mode); no individual offer on
+     her home. -->
+<section class="screen" data-screen="1" data-label="The risk" data-cam="street" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h1 class="display xd" tabindex="-1"><span>She did the work.</span><span>The street</span><span>set the price.</span></h1>
-    <p class="xcons">One hardened lot. No offer, on her own.</p>
+    <h1 class="display xd" tabindex="-1"><span>The risk is collective.</span><span>The insurance isn't.</span></h1>
+    <p class="xcons">Maggie hardened her lot. The street still sets her price.</p>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
@@ -121,7 +136,10 @@
       <button type="button" class="jbtn" id="join">Authorise my agent to assemble the proposal</button>
       <!-- the count is written by paint() from S.committed, so the result
            line and the street can never disagree -->
-      <p class="joined" id="joined" hidden><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><span>Joined the proposal · <span id="joined-n">42</span> of 60</span></p>
+      <!-- the result carries her SIGNATURE DASH — the short ink stroke
+           that gives her agent its authority (CONTRACT-IMPL § A) — drawn
+           the moment the sheet is signed; instant under reduced motion -->
+      <p class="joined" id="joined" hidden><svg class="sig" viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path pathLength="100" d="M2 15 C 9 3, 15 21, 23 11 S 38 5, 45 13 S 56 19, 62 7"/></svg><span>Joined the proposal · <span class="nb"><span id="joined-n">42</span> of 60</span></span></p>
     </div>
   </div>
 
@@ -129,34 +147,45 @@
 
 </section>
 
-<!-- ══════ 3 · THE STREET ══════
-     ONE THOUGHT: the participation threshold is the product, and the street
-     has to be assembled to reach it. The street is the hero; the count is
-     said once; the condition is one line. The slider is the only place in
-     the deck that moves `committed` after joining, and the value it sets
-     is what screens 4 and 5 read. The headline never claims the threshold. -->
+<!-- ══════ 3 · HER AGENT TALKS TO THE STREET ══════
+     ONE THOUGHT: the participation threshold is the product, and her agent
+     assembles the street to reach it. The street is the hero; the count is
+     said once; the condition is one line, spoken by the agent. #invite is
+     the only place in the deck that moves `committed` after joining: one
+     round of visible acceptances per press (42 → 45 → 48), the thread
+     reaching lot by lot and homes filling as their agents accept; at 48
+     the boundary draws itself in and the button reads "Street assembled".
+     The user can stop short, and the street stays below the threshold on
+     every later screen. The headline never claims the threshold.
+     THE AGENT PLATE: the dark working surface with the plum rule and the
+     lens mark at its head; the state line is the agent's one message. The
+     key sits on its own paper chip beneath. Unjoined, there is no agent to
+     send: the button is inert (aria-disabled) and the count stays at 41. -->
 <section class="screen screen--offer" data-screen="3" data-label="The street" data-cam="commit" data-veil="">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h2 class="display xd" tabindex="-1"><span>Assemble</span><span>the street.</span></h2>
+    <h2 class="display xd" tabindex="-1"><span>Her agent</span><span>talks to the street.</span></h2>
   </div>
 
-  <div class="plate plate--ctl" id="ctl" data-state="closed" style="grid-area:1/8/5/13">
-    <p class="eyebrow" id="thr-label">Proposal participants</p>
-    <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60</span></p>
-    <div class="thr-rail">
-      <input type="range" id="thr-range" min="41" max="59" step="1" value="41"
-             aria-describedby="offer-line thr-tick" aria-label="Proposal participants, out of sixty">
-      <span class="thr-tick" id="thr-tick"><i aria-hidden="true"></i>48 needed</span>
-    </div>
-    <div class="offer" id="offer" data-state="closed">
-      <p class="offer-line" id="offer-line">
-        <svg class="offer-mark offer-mark--closed" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><defs><pattern id="warnhatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="10" height="10" fill="url(#warnhatch)" stroke="currentColor" stroke-width="1.6"/></svg>
-        <svg class="offer-mark offer-mark--open" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-        <span id="offer-text">Not yet. Seven more households needed.</span>
+  <div class="plate plate--ctl plate--agent" id="ctl" data-state="closed" style="grid-area:1/8/5/13">
+    <div class="agent-plate">
+      <p class="agent-head">
+        <svg class="lens" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7"/><line x1="15.5" y1="15.5" x2="22" y2="22"/></svg>
+        <span class="eyebrow" id="thr-label">Proposal participants</span>
       </p>
+      <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60 · 48 needed</span></p>
+      <div class="offer" id="offer" data-state="closed">
+        <p class="offer-line" id="offer-line">
+          <svg class="offer-mark offer-mark--closed" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><defs><pattern id="warnhatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="10" height="10" fill="url(#warnhatch)" stroke="currentColor" stroke-width="1.6"/></svg>
+          <svg class="offer-mark offer-mark--open" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span id="offer-text">Not yet. Seven more households needed.</span>
+        </p>
+      </div>
+      <!-- the label and aria-disabled are written by paint(): "Invite the
+           street" while a round remains, "Street assembled" at 48 -->
+      <button type="button" class="ibtn" id="invite" aria-describedby="offer-line">Invite the street</button>
     </div>
-    <p class="leg">
+    <p class="leg leg--chip">
       <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Joined</span>
       <span class="leg-i leg-i--out"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Not joined</span>
     </p>
@@ -170,18 +199,34 @@
      ONE THOUGHT: participation is one of three conditions, not the last.
      Three separated steps on the street scene. Participation reads the
      live count; Improvements and Verification turn on one explicit press
-     of the surveyor control — nothing is verified by navigation. -->
+     of the surveyor control — nothing is verified by navigation. Under
+     the control, the carrier's conditions (the PROVIDER's ledger-blue
+     record, sealed: they are firm) and the terms chip — her share and
+     premium, set before she accepts. There is no acceptance control:
+     no approved terms exist to accept. -->
 <section class="screen screen--cond" data-screen="4" data-label="The conditions" data-cam="street" data-veil="">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
     <h2 class="display xd" tabindex="-1"><span>Participation is not</span><span>the final condition.</span></h2>
   </div>
 
-  <div class="plate plate--ctl plate--verify" style="grid-area:1/8/4/13">
+  <div class="plate plate--ctl plate--verify" style="grid-area:1/8/5/13">
     <button type="button" class="vbtn" id="verify-toggle" aria-pressed="false">
       <svg class="vbtn-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
       <span>Surveyor verifies the work</span>
     </button>
+    <ol class="steps steps--terms" aria-label="The carrier's conditions and your terms">
+      <li class="step step--carrier" data-state="met">
+        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+        <p class="step-name">Carrier conditions</p>
+        <p class="step-val">coverage for participating homes, three years, while 48 stay in</p>
+      </li>
+      <li class="step" data-state="pending">
+        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
+        <p class="step-name">Your share and premium</p>
+        <p class="step-val">set before you accept</p>
+      </li>
+    </ol>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/8/13"></div>
@@ -212,22 +257,21 @@
      "Ready" is the payoff that returns to Maggie: "Together, the offer
      Maggie couldn't get alone." The line is the contrast, two tabs joined
      by an arrow — Alone · no offer (screen 1's state: muted, hollow mark)
-     → Together · coverage offer, final terms pending (green, met mark) —
-     with her SHARE AND PREMIUM still to be set and accepted: no
-     contribution, price or acceptance exists in any source, so nothing
-     here may say in force, active, signed or begun. Headline, the tabs,
-     the live count in the chips, the boundary, the "Maggie's home" label
-     on no. 31 and the "outside the arrangement" label are all written by
-     app.js from the state object. The headline block takes eight columns
-     here (the other screens' six) so the two tabs sit on one line at
-     1180px; the street band below is empty at those rows. -->
+     → Together · conditional offer secured (green, met mark) — with the
+     TERMS AND HER ACCEPTANCE still pending: no contribution, price or
+     acceptance exists in any source, so nothing here may say covered,
+     active, in force, signed or begun. Headline, the tabs, the live count
+     in the chips, the boundary, the "Maggie's home" label on no. 31 and
+     the "outside the arrangement" label are all written by app.js from the
+     state object. The headline block takes eight columns here (the other
+     screens' six) so the two tabs sit on one line at 1180px; the street
+     band below is empty at those rows. (The service line left the glass:
+     it is facilitator material.) -->
 <section class="screen screen--arr" data-screen="5" data-label="The street" data-cam="ready" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/9">
     <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
     <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification pending</span></p>
-    <!-- READY state only: who arranged it and when it earns -->
-    <p class="xcons xcons--prov" id="arr-prov" hidden>Arranged by the service · earns when coverage starts</p>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/8/13"></div>
@@ -249,8 +293,8 @@
       </li>
       <li class="step" data-state="pending">
         <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-        <p class="step-name">Your share and premium</p>
-        <p class="step-val">set before you accept</p>
+        <p class="step-name">Terms and acceptance</p>
+        <p class="step-val">pending</p>
       </li>
     </ol>
     <p class="leg leg--chip">
