@@ -38,6 +38,9 @@
     <pattern id="oc-hatch-warm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="7" stroke="#D9561F" stroke-width="1.6"/>
     </pattern>
+    <pattern id="oc-hatch-sage" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#4A6E54" stroke-width="1.4"/>
+    </pattern>
     <pattern id="oc-hatch-grey" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" stroke="#8C8574" stroke-width="1.4"/>
     </pattern>
@@ -250,7 +253,8 @@
       </div>
       <svg class="yearbar" id="yearbar" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
 
-      <!-- MUSE's check for the shown month, re-run on the thread -->
+      <!-- the STAY panel: Muse's check for the shown month, re-run on the thread -->
+      <div class="year-stay" id="year-stay">
       <article class="muse muse--s4" aria-label="Muse's check this month">
         <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
         <ul class="ychecks" id="ychecks">
@@ -274,6 +278,37 @@
           <li>Cancel the old policy</li>
           <li>Preserve continuity</li>
         </ol>
+      </div>
+      </div>
+
+      <!-- the SWITCH panel — development-only scenario (?dev=switch), see
+           app.js DEV. Proposed, unapproved commercial assumptions: a later
+           eligible offer at month seven; the first six months prepaid and
+           non-refundable; no cancellation penalty after six months. Painted
+           by paintYear() from S.switch; the switch is performed by Muse on
+           reaching month seven, within her standing authority, and persists. -->
+      <div class="year-switch" id="year-switch" hidden>
+        <article class="muse muse--s4 muse--switch" id="sw" aria-label="Muse switching" aria-live="polite">
+          <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+          <p class="bubble bubble--find" id="sw-find"></p>
+          <ul class="ychecks ychecks--sw" id="swchecks">
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Rosa covered</span></li>
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Excess <b id="sw-excess">450</b></span></li>
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Remedy · same terms</span></li>
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Prepaid · none left</span></li>
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Cancellation · no penalty</span></li>
+            <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Within your authority</span></li>
+          </ul>
+          <ol class="steps" id="sw-steps">
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span><span id="sw-step-buy">Bought · the replacement confirms</span></li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Effective date confirmed</li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span><span id="sw-step-cancel">Old policy cancelled</span></li>
+            <li class="astep"><span class="astep-a" aria-hidden="true">→</span>No lapse</li>
+          </ol>
+          <p class="status" id="sw-status" hidden><svg class="status-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg><span id="sw-status-t"></span></p>
+          <p class="bubble bubble--hold" id="sw-hold" hidden></p>
+          <div class="slot" id="sw-slot"></div>
+        </article>
       </div>
     </div>
 

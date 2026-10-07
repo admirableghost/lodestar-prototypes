@@ -100,7 +100,19 @@
   var STOPS = [START + 1, START + 1 + ROUND, NEED];
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
-  var S = { screen: 1, joined: false, committed: START, verified: false };
+  var S = { screen: 1, joined: false, committed: START, verified: false, accepted: false, confirmed: false };
+  /* DEVELOPMENT-ONLY · the covered ending, reached only with ?dev=covered
+     in the URL. The commercial terms it shows are proposed and unapproved
+     (DECISIONS-REQUIRED § 2). Without the flag S.accepted is never set and
+     the approved conditional-offer ending is the only ending. */
+  var DEV = (function () { try { return new URLSearchParams(location.search).get("dev") === "covered"; } catch (e) { return false; } })();
+  /* covered: the street is ready AND Maggie has accepted the carrier's terms */
+  /* covered only once the carrier has confirmed — her acceptance alone
+     covers nothing; the other households' acceptances and the carrier's
+     confirmation are the events that set `confirmed` */
+  function covered() { return DEV && ready() && S.accepted === true && S.confirmed === true; }
+  /* while the acceptance round runs, paint() leaves the log's reveal to its timers */
+  var accBusy = false;
   /* the street is READY — participation reached and verified — and holds
      a conditional offer Maggie could not get alone, the terms and her
      acceptance still pending. Not "covered": there are no terms yet. */
@@ -118,14 +130,16 @@
     S.joined = o.joined === true;
     S.committed = S.joined && STOPS.indexOf(o.committed) !== -1 ? o.committed : START;
     S.verified = o.verified === true;
+    S.accepted = DEV && o.accepted === true;
+    S.confirmed = S.accepted && o.confirmed === true;
     /* a street that was assembled before the reload has already had its
        boundary drawn; it must not draw itself again on screen 3 */
     bndShown = S.committed >= NEED;
   }
   function save() {
     try {
-      if (!S.joined && !S.verified) { sessionStorage.removeItem(KEY); }
-      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified })); }
+      if (!S.joined && !S.verified && !S.accepted) { sessionStorage.removeItem(KEY); }
+      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified, accepted: DEV && S.accepted, confirmed: DEV && S.confirmed })); }
     } catch (e) { /* storage off: the state still lives for this page */ }
   }
   /* is household i in the committed set? The order grows out from no. 31
@@ -536,9 +550,10 @@
     if (crossed) {
       var draw = !bndShown && S.screen === 3 && !reducedMotion();
       var wait = draw && roundEnd ? ' style="animation-delay:' + (roundEnd + 0.15).toFixed(2) + 's"' : "";
+      var BC = covered() ? "#2F5E7C" : A;   /* amber while an offer; the carrier's blue once covered */
       bndRuns(isIn).forEach(function (r) {
-        s.push(poly(r.pts, A, { op: .09, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' + wait : "") }));
-        s.push(poly(r.pts, "none", { st: A, sw: 3.5, attr: 'data-boundary="edge"' +
+        s.push(poly(r.pts, BC, { op: covered() ? .14 : .09, attr: 'data-boundary="fill"' + (draw ? ' data-draw="1"' + wait : "") }));
+        s.push(poly(r.pts, "none", { st: BC, sw: 3.5, attr: 'data-boundary="edge"' +
           (draw ? ' data-draw="1" stroke-dasharray="' + r.len + '" stroke-dashoffset="' + r.len + '"' + wait : "") }));
       });
     }
@@ -841,7 +856,7 @@
   function tabs() {
     return '<span class="xtab xtab--alone">' + MARK + '<span class="xtab-t">Alone · no offer</span></span> ' +
            '<span class="xtab-arrow" aria-hidden="true">→</span> ' +
-           '<span class="xtab xtab--together">' + MARK + '<span class="xtab-t">Together · conditional offer secured</span></span>';
+           '<span class="xtab xtab--together">' + MARK + '<span class="xtab-t">' + (covered() ? "Together · covered" : "Together · conditional offer secured") + '</span></span>';
   }
 
   /* #invite's two states: a round remains, or the street is assembled.
@@ -901,7 +916,7 @@
        not (the terms and her acceptance — pending). */
     if (arrHead && arrLine) {
       if (ready()) {
-        arrHead.innerHTML = spans(["Together, the offer", "Maggie couldn't get alone."]);
+        arrHead.innerHTML = covered() ? spans(["Together, the cover", "Maggie couldn't get alone."]) : spans(["Together, the offer", "Maggie couldn't get alone."]);
         arrLine.innerHTML = tabs();
       } else {
         arrHead.innerHTML = spans(["Still pending."]);
@@ -909,7 +924,16 @@
       }
       if (arrStatus) { arrStatus.hidden = !ready(); }
       if (arrN) { arrN.textContent = String(S.committed); }
-      screens[4].dataset.state = ready() ? "ready" : "pending";
+      screens[4].dataset.state = covered() ? "covered" : ready() ? "ready" : "pending";
+      /* development scenario: the carrier's terms and her acceptance */
+      var terms = document.getElementById("terms"), accBtn = document.getElementById("accept"), accLog = document.getElementById("acc-log");
+      var tStep = document.getElementById("arr-terms"), tName = document.getElementById("arr-terms-name"), tVal = document.getElementById("arr-terms-val");
+      if (terms) { terms.hidden = !(DEV && ready()); }
+      if (accBtn) { accBtn.hidden = !DEV || !ready() || !!S.accepted; }
+      if (accLog) { accLog.hidden = !S.accepted; if (S.accepted && !accBusy) { Array.prototype.forEach.call(accLog.children, function (li) { li.dataset.on = "1"; }); } }
+      if (tStep) { tStep.dataset.state = covered() ? "met" : "pending"; }
+      if (tName) { tName.textContent = covered() ? "Terms" : "Terms and acceptance"; }
+      if (tVal) { tVal.textContent = covered() ? "accepted · 48 of 48" : "pending"; }
     }
 
     /* chrome — Next steps aside while the screen's own action is still to
@@ -985,6 +1009,30 @@
       say(open
         ? "Street assembled: " + S.committed + " of 60. Participation reached; improvements and verification still required."
         : S.committed + " of 60 joined. " + (NEED - S.committed) + " more households needed.");
+    });
+  }
+
+  /* #accept — Maggie accepts the carrier's terms (development scenario).
+     The only writer of S.accepted. Her acceptance is recorded at once; the
+     other households' agents accept and the carrier confirms as timed
+     events, and the street's runs turn the carrier's blue on the last. */
+  var accTimers = [];
+  var acceptBtn = document.getElementById("accept");
+  if (acceptBtn) {
+    acceptBtn.addEventListener("click", function () {
+      if (!DEV || !ready() || S.accepted) { return; }
+      S.accepted = true;
+      accTimers.forEach(clearTimeout); accTimers = [];
+      var log = document.getElementById("acc-log");
+      if (!reducedMotion() && log) {
+        accBusy = true;
+        Array.prototype.forEach.call(log.children, function (li) { li.dataset.on = "0"; });
+        repaint();   /* her acceptance: button gone, log shown, nothing covered yet */
+        [[80, 0], [900, 1], [1900, 2]].forEach(function (it) {
+          accTimers.push(setTimeout(function () { var li = log.children[it[1]]; if (li) { li.dataset.on = "1"; } if (it[1] === 2) { S.confirmed = true; accBusy = false; repaint(); } }, it[0]));
+        });
+      } else { S.confirmed = true; repaint(); }
+      say("Accepted. The other 47 participating households accept; the carrier confirms coverage for the 48 participating homes. Homes that did not join are not covered.");
     });
   }
 
