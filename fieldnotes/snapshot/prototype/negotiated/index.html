@@ -91,8 +91,8 @@
 <section class="screen" data-screen="1" data-label="The risk" data-cam="street" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h1 class="display xd" tabindex="-1"><span>The risk is collective.</span><span>The insurance isn't.</span></h1>
-    <p class="xcons">Maggie protected her home. She still couldn't get an offer.</p>
+    <h1 class="display xd" tabindex="-1"><span>Her home is ready.</span><span>Her street isn't.</span></h1>
+    <p class="xcons">Maggie hardened her home and still can't get an offer. The risk is the street's. What if the street could make itself insurable?</p>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/9/13"></div>
@@ -118,28 +118,28 @@
 <section class="screen screen--deal" data-screen="2" data-label="The deal" data-cam="deal" data-veil="soft">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h2 class="display xd" tabindex="-1"><span>Know the deal</span><span>before you join.</span></h2>
+    <h2 class="display xd" tabindex="-1"><span>Spend what,</span><span>to be insurable?</span></h2>
   </div>
 
   <!-- The terms sheet. A paper object: five terms read as term · value,
        each with the mark of the party that carries it (households green,
        fund plum, carrier blue, surveyor ochre), then the one action. -->
+  <!-- Her agent's assessment of no. 31: three improvements, each with its
+       one-time cost and its illustrative effect on the premium she could
+       receive inside a completed collective programme. She can pick one,
+       several, or none; financing is her separate decision; authorising her
+       agent is the one action. Figures are hypothetical and documented
+       privately. -->
   <div class="plate plate--agree" id="deal-card" style="grid-area:1/8/9/13">
-    <dl class="sheet" aria-label="The terms attached to Maggie's home, no. 31">
-      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Work</dt> <dd>harden your lot</dd></div>
-      <div class="tm tm--you"><svg class="ag-mark" viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg><dt>Your share</dt> <dd>set before you accept</dd></div>
-      <div class="tm tm--fund"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Financing</dt> <dd>fund pays contractors now; repaid via property bill over twelve years</dd></div>
-      <div class="tm tm--carrier"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Coverage</dt> <dd>for participating homes, three years, while 48 stay in</dd></div>
-      <div class="tm tm--survey"><svg class="ag-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/></svg><dt>Starts</dt> <dd>after verified work and accepted terms</dd></div>
-    </dl>
+    <ul class="opts" id="opts" aria-label="Improvements for no. 31"></ul>
+    <div class="fin" id="fin">
+      <p class="fin-l" id="fin-line"></p>
+      <div class="fin-ctl"><button type="button" class="pick" id="fin-yes" aria-pressed="false">Finance</button><button type="button" class="pick" id="fin-no" aria-pressed="true">Upfront</button></div>
+    </div>
+    <p class="proj" id="proj"></p>
     <div class="sheet-act">
-      <button type="button" class="jbtn" id="join">Authorise my agent to assemble the proposal</button>
-      <!-- the count is written by paint() from S.committed, so the result
-           line and the street can never disagree -->
-      <!-- the result carries her SIGNATURE DASH — the short ink stroke
-           that gives her agent its authority (CONTRACT-IMPL § A) — drawn
-           the moment the sheet is signed; instant under reduced motion -->
-      <p class="joined" id="joined" hidden><svg class="sig" viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path pathLength="100" d="M2 15 C 9 3, 15 21, 23 11 S 38 5, 45 13 S 56 19, 62 7"/></svg><span>Joined the proposal · <span class="nb"><span id="joined-n">42</span> of 60</span></span></p>
+      <button type="button" class="jbtn" id="join">Authorise</button>
+      <p class="joined" id="joined" hidden><svg class="sig" viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path pathLength="100" d="M2 15 C 9 3, 15 21, 23 11 S 38 5, 45 13 S 56 19, 62 7"/></svg><span>Authorised · <span class="nb"><span id="joined-n">42</span></span></span></p>
     </div>
   </div>
 
@@ -210,26 +210,17 @@
 <section class="screen screen--cond" data-screen="4" data-label="The conditions" data-cam="street" data-veil="">
 
   <div class="xhead xhead--block" style="grid-area:1/1/4/7">
-    <h2 class="display xd" tabindex="-1"><span>Participation is not</span><span>the final condition.</span></h2>
+    <h2 class="display xd" tabindex="-1"><span>The street</span><span>changes.</span></h2>
   </div>
 
-  <div class="plate plate--ctl plate--verify" style="grid-area:1/8/5/13">
-    <button type="button" class="vbtn" id="verify-toggle" aria-pressed="false">
-      <svg class="vbtn-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-      <span>Surveyor verifies the work</span>
-    </button>
-    <ol class="steps steps--terms" id="pre-terms" aria-label="The carrier's conditions and your terms">
-      <li class="step step--carrier" data-state="met">
-        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-        <p class="step-name">Carrier conditions</p>
-        <p class="step-val">coverage for participating homes, three years, while 48 stay in</p>
-      </li>
-      <li class="step" id="step-share" data-state="pending">
-        <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-        <p class="step-name">Your share and premium</p>
-        <p class="step-val" id="step-share-val">set before you accept</p>
-      </li>
-    </ol>
+  <!-- The work, as it happens. The agent coordinates; contractors install,
+       an independent verifier confirms, the insurer reassesses. Nothing here
+       is a customer control: it unfolds once participation is reached, and
+       Replay shows it again without redoing any of it. -->
+  <div class="plate plate--ctl plate--work" id="work" style="grid-area:1/8/5/13">
+    <p class="agent-head"><svg class="lens" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7"/><line x1="15.5" y1="15.5" x2="22" y2="22"/></svg><span class="eyebrow">Coordinated</span></p>
+    <ol class="agent-log agent-log--work" id="work-log"></ol>
+    <button type="button" class="ibtn ibtn--sm" id="work-replay" hidden>Replay</button>
   </div>
 
   <!-- The carrier's terms, issued once participation and verification are
@@ -242,7 +233,7 @@
       <div><dt>Premium</dt><dd><b id="t-prem">2,400</b> a year</dd></div>
       <div><dt>Deductible</dt><dd><b id="t-ded">2,500</b></dd></div>
       <div><dt>Cover</dt><dd><b id="t-prog">3</b> years, while <b id="t-need">48</b> stay in</dd></div>
-      <div><dt>Repayment</dt><dd><b id="t-pay">99.90</b> monthly, <b id="t-term">12</b> years</dd></div>
+      <div id="t-fin-row"><dt>Repayment</dt><dd><b id="t-pay">99.90</b> monthly, <b id="t-term">12</b> years</dd></div>
     </dl>
     <p class="terms-note" id="terms-note">Repayments outlast the cover.</p>
     <button type="button" class="vbtn abtn" id="accept">Accept these terms</button>
@@ -263,14 +254,13 @@
     </li>
     <li class="step" id="step-impr" data-state="pending">
       <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-      <p class="step-name">Improvements</p>
-      <p class="step-val">each lot hardened</p>
+      <p class="step-name">Verified risk reduction</p>
+      <p class="step-val" id="risk-val">pending</p>
     </li>
     <li class="step" id="step-ver" data-state="pending">
       <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-      <p class="step-name">Verification</p>
-      <p class="step-val">independent surveyor, every season</p>
-      <p class="step-state" id="ver-state">Pending</p>
+      <p class="step-name">Carrier approval</p>
+      <p class="step-val" id="ver-state">pending</p>
     </li>
   </ol>
 
@@ -296,6 +286,8 @@
   <div class="xhead xhead--block" style="grid-area:1/1/4/9">
     <h2 class="display xd" tabindex="-1" id="arr-head"><span>Still pending.</span></h2>
     <p class="xcons xcons--arr" id="arr-line"><span>Participation below 48</span><span>Verification pending</span></p>
+    <!-- individual offers: each home priced on its own verified risk -->
+    <ul class="offers" id="offers" hidden></ul>
   </div>
 
   <div class="gw" aria-hidden="true" style="grid-area:4/1/8/13"></div>

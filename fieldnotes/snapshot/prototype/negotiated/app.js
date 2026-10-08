@@ -100,7 +100,61 @@
   var STOPS = [START + 1, START + 1 + ROUND, NEED];
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
-  var S = { screen: 1, joined: false, committed: START, verified: false, accepted: false, bound: false };
+  var S = { screen: 1, joined: false, committed: START, verified: false, accepted: false, bound: false,
+            sel: [], fin: false, stage: 0 };
+
+  /* ── THE ILLUSTRATIVE MODEL (hypothetical, auditable; documented privately
+     in NEGOTIATED-NEIGHBORHOOD-REVIEW.md). Pricing is not proportional to
+     dollars spent: each improvement carries an effectiveness for THIS lot,
+     and the premium a participant could receive inside a completed
+     programme is the lot's base premium reduced by the verified
+     effectiveness it adds. Nobody is priced on signatures. ── */
+  var OPTIONS = [
+    { id: "vents", name: "Ember-resistant vents", cost: 1800, eff: 0.10, years: 5 },
+    { id: "veg",   name: "Vegetation clearance", cost: 4200, eff: 0.18, years: 5 },
+    { id: "roof",  name: "Ember-resistant roof edge", cost: 9500, eff: 0.14, years: 12 }
+  ];
+  var BASE_PREMIUM = 2900;   /* no. 31 inside a completed programme, with its existing hardening, no new work */
+  var EFF_CAP = 0.35;        /* the most any one lot's verified work can move its premium */
+  var APR_FIN = 0.031, DEDUCT = 2500, PROGRAMME = 3;
+  function selOpts() { return OPTIONS.filter(function (o) { return S.sel.indexOf(o.id) >= 0; }); }
+  function selEff() { return Math.min(EFF_CAP, selOpts().reduce(function (a, o) { return a + o.eff; }, 0)); }
+  function selCost() { return selOpts().reduce(function (a, o) { return a + o.cost; }, 0); }
+  function premiumFor(eff) { return Math.round(BASE_PREMIUM * (1 - eff)); }
+  function myPremium() { return premiumFor(selEff()); }
+  function finYears() { return selOpts().reduce(function (a, o) { return Math.max(a, o.years); }, 0) || 5; }
+  /* standard amortising payment: P·r / (1 − (1+r)^−n) */
+  function amort(P, apr, years) { var r = apr / 12, n = years * 12; return P * r / (1 - Math.pow(1 + r, -n)); }
+  function finMonthly() { return selCost() ? amort(selCost(), APR_FIN, finYears()) : 0; }
+  function money(v) {
+    var t = (Math.abs(v - Math.round(v)) < 0.005) ? String(Math.round(v)) : v.toFixed(2);
+    var parts = t.split("."); return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+  }
+  /* the street's decisions, by commitment rank: what each participating
+     household chose. Different households, different work; some none. */
+  var KIND_EFF = { big: 0.32, small: 0.12, existing: 0.20, none: 0.05 };
+  function kindOf(rank) {
+    if (rank === 0) { return S.joined ? "mine" : "existing"; }
+    var r = rank % 12;                      /* a fixed mix across the street */
+    return r < 5 ? "big" : r < 9 ? "small" : r < 11 ? "existing" : "none";
+  }
+  function effOf(rank) { return kindOf(rank) === "mine" ? (0.20 + selEff()) : KIND_EFF[kindOf(rank)]; }
+  /* the second condition: verified risk reduction across the participants,
+     as the average effectiveness of their verified hardening. Signatures
+     alone cannot meet it; a street of "none" choices would fail it. */
+  var RISK_MIN = 0.18;
+  function riskScore() { var n = S.committed, t = 0, r; for (r = 0; r < n; r++) { t += effOf(r); } return n ? t / n : 0; }
+  function nnTest() { try { return sessionStorage.getItem("nn-test") || ""; } catch (e) { return ""; } }
+  function riskMet() { return S.committed >= NEED && riskScore() >= RISK_MIN && nnTest() !== "risk-short"; }
+  /* the workflow on screen 4: 1 contractors confirmed · 2 installed ·
+     3 completion evidence · 4 independent verification · 5 evidence to the
+     insurer · 6 insurer reassessed. External parties do each; the agent
+     coordinates. Verification cannot precede installation; the insurer
+     cannot reassess without verified evidence. */
+  var STAGES = ["Contractors confirmed", "Improvements installed", "Completion evidence in", "Independent verification done", "Evidence to the insurer", "Insurer reassesses"];
+  function stageMax() { if (nnTest() === "work-incomplete") { return 1; } if (nnTest() === "verification-fails") { return 3; } return STAGES.length; }
+  function verifiedNow() { return S.stage >= 4; }
+  function insurerApproved() { return S.stage >= 6 && riskMet() && nnTest() !== "carrier-declines"; }
 
   /* ── the programme's commercial model (approved workshop scenario) ─────
      The hardening work is financed over twelve years; the insurance
@@ -122,11 +176,11 @@
   /* coverage exists only once every condition has been met AND the carrier
      has confirmed it. Participation alone is never coverage. */
   function covered() { return ready() && S.accepted === true && S.bound === true; }
+  function ready() { return insurerApproved(); }   /* terms exist only once the insurer has reassessed and approved */
   var accBusy = false;
   /* the street is READY — participation reached and verified — and holds
      a conditional offer Maggie could not get alone, the terms and her
      acceptance still pending. Not "covered": there are no terms yet. */
-  function ready() { return S.committed >= NEED && S.verified; }
 
   /* kept across reloads in sessionStorage; only values the deck can reach
      are read back, anything else is the entry state */
@@ -140,6 +194,10 @@
     S.joined = o.joined === true;
     S.committed = S.joined && STOPS.indexOf(o.committed) !== -1 ? o.committed : START;
     S.verified = o.verified === true;
+    S.sel = Array.isArray(o.sel) ? o.sel.filter(function (id) { return OPTIONS.some(function (x) { return x.id === id; }); }) : [];
+    S.fin = o.fin === true && S.sel.length > 0;
+    S.stage = (S.committed >= NEED && o.stage >= 0 && o.stage <= STAGES.length) ? Math.round(o.stage) : 0;
+    S.verified = S.stage >= 4;
     S.accepted = o.accepted === true;
     S.bound = S.accepted && o.bound === true;
     /* a street that was assembled before the reload has already had its
@@ -149,7 +207,7 @@
   function save() {
     try {
       if (!S.joined && !S.verified && !S.accepted) { sessionStorage.removeItem(KEY); }
-      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified, accepted: S.accepted, bound: S.bound })); }
+      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified, accepted: S.accepted, bound: S.bound, sel: S.sel, fin: S.fin, stage: S.stage })); }
     } catch (e) { /* storage off: the state still lives for this page */ }
   }
   /* is household i in the committed set? The order grows out from no. 31
@@ -388,6 +446,11 @@
      drawn only while verification is ILLUSTRATED. It is the one ochre on
      the ground and it means "a surveyor is shown to have passed this lot" —
      never "this lot is covered". */
+  /* installed work on a lot: an amber band along the frontage of the house */
+  function workMark(i) {
+    var up = i < PER_ROW, x = hx(i) + (PITCH - HW) / 2, d0 = up ? HD0.up : HD0.lo;
+    return poly([[x, d0 + (up ? -1 : HD + 1), HH * .35], [x + HW, d0 + (up ? -1 : HD + 1), HH * .35]], "none", { st: A, sw: 2.2, op: .9 });
+  }
   function tick(i) {
     var cx = hcx(i), cy = hcy(i) - 7;
     return '<g data-tick="1"><circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5.2" fill="' + SURVEY + '" stroke="' + P + '" stroke-width="1.3"/>' +
@@ -486,7 +549,8 @@
     var alone = mode === "alone";
     var C = alone ? 0 : S.committed;
     var crossed = !alone && C >= NEED;
-    var verified = !alone && !!opts.verified;
+    var verified = !alone && !!opts.verified, installed = !alone && !!opts.installed;
+    function hasWork(i) { var k = kindOf(RANK[i]); return k === "big" || k === "small" || (k === "mine" && S.sel.length > 0); }
     var ringed = alone || !!opts.ring;
     function isIn(i) { return !alone && inSet(i, C); }
     var s = [], i;
@@ -586,12 +650,14 @@
     s.push(strips(true, isIn, crossed, stripDelay));
     for (i = 0; i < PER_ROW; i++) {
       s.push(houseAt(i, alone ? i === ROSA : isIn(i), ringed && i === ROSA));
+      if (installed && isIn(i) && hasWork(i)) { s.push(workMark(i)); }
       if (verified && isIn(i)) { s.push(tick(i)); }
     }
     s.push(strips(false, isIn, crossed, stripDelay));
     SHRUBS.forEach(function (t) { s.push(shrub(t[0], t[1], t[2])); });
     for (i = PER_ROW; i < HOMES; i++) {
       s.push(houseAt(i, isIn(i), false));
+      if (installed && isIn(i) && hasWork(i)) { s.push(workMark(i)); }
       if (verified && isIn(i)) { s.push(tick(i)); }
     }
 
@@ -836,7 +902,7 @@
      threshold: "Not yet. {k} more households needed." with k = 48 − count,
      as a word up to twelve and a number above; k = 1 takes the singular. */
   function conditionLine(open) {
-    if (open) { return "Participation reached. Improvements and verification still required."; }
+    if (open) { return "Participation reached. Verified risk reduction still required."; }
     var short = NEED - S.committed;
     return "Not yet. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed.";
   }
@@ -880,13 +946,14 @@
        repayment mechanism is already in the deal (screen 2, Financing). No
        new institution, subsidy or concession is invented. */
     if (S.committed < NEED) {
-      return [{ t: "No. 52: can't pay for the work", k: "obj" },
-              { t: "Financing offered · repaid on the bill", k: "ans" },
-              { t: "No. 52 still deciding", k: "obj" },
-              { t: "Three others join · " + S.committed + " of 60" }];
+      return [{ t: "Coordinating hardening across Thorn Lane" },
+              { t: "No. 52's agent: declined the financing offer", k: "obj" },
+              { t: "No. 17: vents only · No. 40: existing hardening" },
+              { t: "Three join · " + S.committed + " of 60" }];
     }
-    return [{ t: "Proposal sent to the next households" }, { t: "Their agents respond" },
-            { t: "Three confirmed · threshold reached" }];
+    return [{ t: "No. 9's agent: declined the proposal", k: "obj" },
+            { t: "No. 22: full package, financed · No. 36: clearance only" },
+            { t: "Three join · 48. Verified risk reduction still required" }];
   }
 
   function inviteState() {
@@ -894,7 +961,40 @@
     return S.committed >= NEED ? "done" : "ready";
   }
 
+  /* ── screen 2: paint the choice from the model ── */
+  function paintChoice() {
+    var ul = document.getElementById("opts"); if (!ul) { return; }
+    ul.innerHTML = OPTIONS.map(function (o) {
+      var on = S.sel.indexOf(o.id) >= 0, delta = premiumFor(Math.min(EFF_CAP, o.eff)) - BASE_PREMIUM;
+      return '<li><button type="button" class="opt" data-opt="' + o.id + '" aria-pressed="' + on + '"' + (S.joined ? ' disabled' : '') + '>' +
+        '<span class="opt-n">' + o.name + '</span><span class="opt-c">' + money(o.cost) + '</span><span class="opt-d">' + money(delta) + '/yr</span></button></li>';
+    }).join("") + '<li><button type="button" class="opt opt--none" data-opt="none" aria-pressed="' + (S.sel.length === 0) + '"' + (S.joined ? ' disabled' : '') + '><span class="opt-n">No new work</span><span class="opt-d">' + money(BASE_PREMIUM) + '/yr if eligible</span></button></li>';
+    var fl = document.getElementById("fin-line"), fy = document.getElementById("fin-yes"), fn = document.getElementById("fin-no"), fin = document.getElementById("fin");
+    var cost = selCost();
+    if (fin) { fin.hidden = !cost; }
+    if (fl && cost) { fl.textContent = "Finance " + money(cost) + " USD · " + finYears() + " years · 3.1% · " + money(finMonthly()) + "/month"; }
+    if (fy) { fy.setAttribute("aria-pressed", S.fin ? "true" : "false"); fy.hidden = S.joined; }
+    if (fn) { fn.setAttribute("aria-pressed", S.fin ? "false" : "true"); fn.hidden = S.joined; }
+    if (fl && cost && S.joined) { fl.textContent = (S.fin ? "Financed · " : "Upfront · ") + fl.textContent.replace(/^Finance /, ""); }
+    var pr = document.getElementById("proj");
+    if (pr) {
+      var benefit = BASE_PREMIUM - myPremium();
+      pr.innerHTML = "Projected <b>" + money(myPremium()) + " USD/yr</b> in a completed programme. Renewals can change.";
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#opts"), function (ul) {
+    ul.addEventListener("click", function (e) {
+      var b = e.target.closest("button.opt"); if (!b || S.joined) { return; }
+      var id = b.dataset.opt;
+      if (id === "none") { S.sel = []; S.fin = false; }
+      else { var i = S.sel.indexOf(id); if (i >= 0) { S.sel.splice(i, 1); } else { S.sel.push(id); } if (!S.sel.length) { S.fin = false; } }
+      save(); paintChoice(); say(S.sel.length ? "Selected: " + selOpts().map(function (o) { return o.name; }).join(", ") + ". Projected premium " + money(myPremium()) + " USD a year inside a completed programme." : "No additional work. Projected premium " + money(BASE_PREMIUM) + " USD a year, if eligible.");
+    });
+  });
+  ["fin-yes", "fin-no"].forEach(function (id) { var b = document.getElementById(id); if (b) { b.addEventListener("click", function () { if (S.joined) { return; } S.fin = id === "fin-yes"; save(); paintChoice(); say(S.fin ? "Financing accepted, subject to the lender's confirmation: " + money(finMonthly()) + " a month." : "Paying upfront."); }); } });
+
   function paint() {
+    paintChoice();
     var open = S.committed >= NEED;
     var busy = !!(ctlEl && ctlEl.dataset.busy === "1");
 
@@ -922,10 +1022,15 @@
     /* screen 4 — the count is the street's, never clamped to 48 */
     if (condN) { condN.textContent = String(S.committed); }
     if (stepPart) { stepPart.dataset.state = open ? "met" : "pending"; }
-    if (stepImpr) { stepImpr.dataset.state = S.verified ? "met" : "pending"; }
-    if (stepVer) { stepVer.dataset.state = S.verified ? "met" : "pending"; }
-    if (verState) { verState.textContent = S.verified ? "Verified" : "Pending"; }
-    if (verBtn) { verBtn.setAttribute("aria-pressed", S.verified ? "true" : "false"); }
+    var rv = document.getElementById("risk-val");
+    if (stepImpr) { stepImpr.dataset.state = (verifiedNow() && riskMet()) ? "met" : "pending"; }
+    if (rv) { rv.textContent = !verifiedNow() ? "pending verification" : riskMet() ? Math.round(riskScore() * 100) + "% average, verified" : "verified · below threshold"; }
+    if (stepVer) { stepVer.dataset.state = insurerApproved() ? "met" : "pending"; }
+    if (verState) { verState.textContent = S.stage < 6 ? "pending" : insurerApproved() ? "approved" : riskMet() ? "declined" : "not reached"; }
+    var wl = document.getElementById("work-log"), wr = document.getElementById("work-replay");
+    if (wl) { wl.innerHTML = STAGES.map(function (t, i) { return '<li data-on="' + (S.stage > i ? "1" : "0") + '"' + (i === 3 ? ' data-k="ver"' : i === 5 ? ' data-k="ins"' : '') + '>' + t + "</li>"; }).join("") +
+      (S.stage >= 1 && S.stage >= stageMax() && stageMax() < STAGES.length ? '<li data-on="1" data-k="obj">' + (stageMax() === 1 ? "Installation not completed. No verification, no reassessment." : "Verification failed. Nothing sent to the insurer.") + "</li>" : ""); }
+    if (wr) { wr.hidden = !(open && S.stage >= stageMax()); }
 
     /* screen 5 — derived. Ready: the payoff returns to Maggie. The line is
        the contrast, two tabs joined by an arrow: Alone (screen 1's state —
@@ -942,6 +1047,15 @@
         arrLine.innerHTML = spans(missing());
       }
       if (arrStatus) { arrStatus.hidden = !ready(); }
+      var offers = document.getElementById("offers");
+      if (offers) {
+        offers.hidden = !covered();
+        offers.innerHTML = [
+          ["No. 31 · " + (S.sel.length ? selOpts().map(function (o) { return { vents: "vents", veg: "clearance", roof: "roof edge" }[o.id]; }).join(" + ") : "existing hardening"), myPremium()],
+          ["No. 17 · vents", premiumFor(0.10)],
+          ["No. 40 · existing hardening", premiumFor(0)]
+        ].map(function (r) { return "<li><span>" + r[0] + "</span><b>" + money(r[1]) + "/yr</b></li>"; }).join("");
+      }
       if (arrN) { arrN.textContent = String(S.committed); }
       screens[4].dataset.state = covered() ? "covered" : ready() ? "ready" : "pending";
       var terms = document.getElementById("terms"), accBtn = document.getElementById("accept"), accLog = document.getElementById("acc-log");
@@ -953,8 +1067,11 @@
       var preTerms = document.getElementById("pre-terms");
       if (preTerms) { preTerms.hidden = ready(); }
       var setT = function (id, t) { var e = document.getElementById(id); if (e) { e.textContent = t; } };
-      setT("t-prem", money(PREMIUM)); setT("t-ded", money(DEDUCT));
-      setT("t-pay", money(monthlyPayment())); setT("t-term", String(YEARS)); setT("t-prog", String(PROGRAMME));
+      setT("t-prem", money(myPremium())); setT("t-ded", money(DEDUCT));
+      var finRow = document.getElementById("t-fin-row"), tn = document.getElementById("terms-note");
+      if (finRow) { finRow.hidden = !(S.fin && selCost()); }
+      if (tn) { tn.hidden = !(S.fin && selCost() && finYears() > PROGRAMME); }
+      setT("t-pay", money(finMonthly())); setT("t-term", String(finYears())); setT("t-prog", String(PROGRAMME));
       setT("acc-others", (NEED - 1) + " others accepted"); setT("t-need", String(NEED));
       if (accBtn) { accBtn.hidden = !ready() || !!S.accepted; }
       if (accLog) { accLog.hidden = !S.accepted; if (S.accepted && !accBusy) { Array.prototype.forEach.call(accLog.children, function (li) { li.dataset.on = "1"; }); } }
@@ -996,7 +1113,7 @@
       S.joined = true;
       S.committed = START + 1;
       repaint();
-      say("Joined the proposal. " + S.committed + " of 60. No. 31 is now counted in; no terms accepted yet.");
+      say("Authorised. " + (S.sel.length ? selOpts().map(function (o) { return o.name; }).join(", ") + (S.fin ? ", financed" : ", paid upfront") : "No additional work") + ". Your agent coordinates the street; nothing is accepted yet.");
     });
   }
 
@@ -1131,10 +1248,28 @@
       : "The street is still pending.");
   }
 
+  var workTimers = [], workBusy = false;
+  function runWork(from) {
+    if (workBusy) { return; }
+    workBusy = true;
+    workTimers.forEach(clearTimeout); workTimers = [];
+    if (S.committed < NEED) { return; }
+    var max = stageMax(), k;
+    S.stage = Math.max(0, Math.min(from, max)); S.verified = S.stage >= 4; repaint();
+    if (reducedMotion()) { S.stage = max; S.verified = S.stage >= 4; repaint(); workBusy = false; return; }
+    for (k = S.stage + 1; k <= max; k++) {
+      (function (k) { workTimers.push(setTimeout(function () { S.stage = k; S.verified = k >= 4; repaint(); if (k === 4) { say("Independent verification conducted."); } if (k === 6) { say(insurerApproved() ? "The insurer reassessed the street and approved. Terms issued." : "The insurer reassessed the street: " + (riskMet() ? "not approved." : "verified reduction below the programme threshold.")); } }, (k - S.stage) * 1100)); })(k);
+    }
+    workTimers.push(setTimeout(function () { workBusy = false; workTimers = []; }, (max - S.stage) * 1100 + 50));
+  }
+  var workReplay = document.getElementById("work-replay");
+  if (workReplay) { workReplay.addEventListener("click", function () { runWork(0); say("Showing the work again. Nothing is installed, verified or assessed twice."); }); }
   function drawFor(n) {
+    if (n === 4 && S.committed >= NEED && S.stage < stageMax() && !workBusy && !workTimers.length) { setTimeout(function () { runWork(S.stage); }, 0); }
+    if (n !== 4) { workTimers.forEach(clearTimeout); workTimers = []; workBusy = false; }
     if (n === 1)      { renderStreet({ mode: "alone", alt: altFor(n) }); }
     else if (n === 2) { renderStreet({ mode: "commit", ring: true, alt: altFor(n) }); }
-    else              { renderStreet({ mode: "commit", verified: S.verified, thread: true, alt: altFor(n) }); }
+    else              { renderStreet({ mode: "commit", verified: S.stage >= 4, installed: S.stage >= 2, thread: true, alt: altFor(n) }); }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
