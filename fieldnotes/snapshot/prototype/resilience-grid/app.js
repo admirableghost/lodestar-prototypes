@@ -8,12 +8,11 @@
    right, the valley road across the front), drawn as an elevated oblique
    scene: terrain and light, vegetation, buildings and streets, one power
    corridor. The scene is generated once per resize for the live stage and
-   shared by all five screens (#rg-terrain, #rg-vegetation, #rg-buildings,
+   shared by all six screens (#rg-terrain, #rg-vegetation, #rg-buildings,
    #rg-infra). Each screen's information layer is a separate group drawn
    with the same projection P(wx, wy) from the same world anchors:
-   #rg-availability (1, 5), #rg-business (2), #rg-incident (3; faint on 4),
-   #rg-evidence (4), #rg-labels. The camera is fixed; screens 3 and 4 zoom
-   the whole scene 1.4x on the canyon by viewBox, so every layer stays
+   #rg-availability (1, 5), #rg-business (2, 4, 6), #rg-incident (3), #rg-labels.
+   The camera is fixed; screen 3 zooms the whole scene 1.4x on the canyon by viewBox, so every layer stays
    registered.
 
    THE WORDS
@@ -23,16 +22,17 @@
    keep clear of the roofs). The copy is the locked contract: the code adds
    no word that is not in it.
 
-   THE SEQUENCE
-     1 The problem      availability retreats: Earlier / Now
-     2 The business     four parts on the terrain, one hub, three payer
-                        marks converging on it
-     3 The moment       eight events walked in four steps, one human call
-     4 The evidence     three plates over the subdued county
-     5 Market creation  the current limit and one potential frontier
+   THE SEQUENCE (six frames, one beat each)
+     1 The problem      one home loses its cover; Muse finds no offer
+     2 The proposition  the prevention company; the community commissions it
+     3 The moment       detect, coordinate, act; contained at the corridor
+     4 The evidence     three seasons of verified record
+     5 The offer        cover returns, conditional; accept or decline
+     6 The venture      three paying customers; the investor's two roles
 
-   STATE. `availability` and the moment's step persist in sessionStorage;
-   restart from screen 5 resets them.
+   STATE. What the household and the community did, where the incident
+   stands, the season reached and the decision persist in sessionStorage;
+   restart from screen 6 clears them.
 
    WHAT IS INVENTED AND WHAT IS NOT
    Alder County, the Mill Creek lateral, the 14:31 fault and every time on
@@ -348,7 +348,7 @@
 
   /* ══ CAMERA: the fixed projection; screens 3 and 4 zoom the whole scene
      on the canyon by viewBox (<= 1.6x); reduced motion lands instantly ══ */
-  var ZOOM = { 3: { z: 1.4, at: [1000, 620] }, 4: { z: 1.4, at: [1000, 620] } };
+  var ZOOM = { 3: { z: 1.4, at: [1000, 620] } };
   var vb = null, camTimer = 0;
   function targetVB(n) {
     var zm = ZOOM[n];
@@ -396,7 +396,7 @@
     var s = sr.width / vbT.w, upp = 1 / s;
     var sc = screens[n - 1];
     var boxes = [];
-    Array.prototype.forEach.call(sc.querySelectorAll(".xhead > *, .compare, .xask, .s3-ctl, .ev, .ev-line"), function (p) {
+    Array.prototype.forEach.call(sc.querySelectorAll(".xhead > *, .plate, .s3-ctl, .ev, .xlede--take"), function (p) {
       var r = p.getBoundingClientRect();
       if (r.width > 2 && r.height > 2) { boxes.push(r); }
     });
@@ -492,25 +492,31 @@
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 1 — availability: two states. S is screen 1's only state;
-     nothing else reads or writes it. Only the availability group and its
-     labels change between the two.
+     STATE — what the household and the community did, where the incident
+     stands, the season reached, the decision. Restart clears it.
      ══════════════════════════════════════════════════════════════════════ */
-
-  var S = { availability: "now" };
-  var SAID = {
-    earlier: "Earlier availability limit: the offer area reached the foot of the slope.",
-    now: "Now: the current availability limit runs through the three communities. The band between the two limits is where availability has retreated."
-  };
-  function setAvailability(state, quiet) {
-    S.availability = state;
-    if (screens[0]) { screens[0].dataset.state = state; }
-    Array.prototype.forEach.call(document.querySelectorAll(".compare button"), function (b) {
-      b.setAttribute("aria-pressed", String(b.dataset.set === state));
-    });
-    if (!quiet) { say(SAID[state]); }
-    persist();
+  var STORE = "rg-state";
+  var S = { asked: false, commissioned: false, step: 0, season: 1, decision: null };
+  function isDefault() { return !S.asked && !S.commissioned && S.step === 0 && S.season === 1 && !S.decision; }
+  function persist() { try { if (isDefault()) { sessionStorage.removeItem(STORE); } else { sessionStorage.setItem(STORE, JSON.stringify(S)); } } catch (e) { /* private mode */ } }
+  function restore() {
+    var v = null;
+    try { v = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (e) { v = null; }
+    if (!v || typeof v !== "object") { return; }
+    S.asked = v.asked === true; S.commissioned = v.commissioned === true;
+    S.step = Math.max(0, Math.min(3, v.step | 0));
+    S.season = Math.max(1, Math.min(3, (v.season | 0) || 1));
+    S.decision = (v.decision === "accept" || v.decision === "decline") ? v.decision : null;
   }
+  function resetStates() {
+    tlStop();
+    S = { asked: false, commissioned: false, step: 0, season: 1, decision: null };
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+  }
+
+  /* the one household the story follows: no. 12, on the upper lane of Mill Creek */
+  var HOME = { x: 990, y: 722 };
+  var CURRENT_LABEL = function () { return isPhone() ? [["Current", "b", C.label], ["availability limit", "b", C.label]] : [["Current availability limit", "b", C.label]]; };
 
   function availPaths() {
     var edge = [], prev = [], cond = [], x;
@@ -518,632 +524,373 @@
     return { edge: edge, prev: prev, cond: cond };
   }
   function area(pts) { return SC.smooth(pts) + 'L' + (SC.W + 10) + ' ' + (SC.H + 10) + 'L-10 ' + (SC.H + 10) + 'Z'; }
-
-  function drawS1(f) {
-    var A = [], T = [], q = availPaths();
-    A.push('<g class="avail-state" data-state="earlier">' +
-      '<path d="' + area(q.prev) + '" fill="' + C.avail + '" opacity=".11"/>' +
-      '<path d="' + SC.smooth(q.prev) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/>' +
-      '<path d="' + SC.smooth(q.prev) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="2.2"/></g>');
-    A.push('<g class="avail-state" data-state="now">' +
-      '<path d="' + area(q.edge) + '" fill="' + C.avail + '" opacity=".11"/>' +
-      '<path d="' + SC.smooth(q.prev) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="1.1" stroke-dasharray="3 7" stroke-linecap="round" opacity=".55"/>' +
-      '<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/>' +
-      '<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="2.2"/></g>');
-    G["rg-availability"].innerHTML = A.join("");
-
-    var label = labeller(T, f), LH = f.size * 1.3;
-    /* a narrow stage breaks the long tabs so they fit the band */
-    var phone = isPhone();
-    var EARLIER = phone ? [["Earlier", "b", C.label], ["availability limit", "b", C.label]] : [["Earlier availability limit", "b", C.label]];
-    var CURRENT = phone ? [["Current", "b", C.label], ["availability limit", "b", C.label]] : [["Current availability limit", "b", C.label]];
-    var RETREAT = narrow ? [["Where availability", "b", C.label], ["has retreated", "b", C.label]] : [["Where availability has retreated", "b", C.label]];
-    SETTLEMENTS.forEach(function (s) { label(s.cx, s.cy + s.ry + 30, [[s.id, "b"]], 0, -LH / 2 - 4, "middle"); });
-    var base = f.placed.slice();
-    f.avoidSolids = true; f.strictSolids = true;
-    T.push('<g class="avail-state" data-state="earlier">');
-    label(130, prevY(130), EARLIER, 0, -LH * EARLIER.length - 14, "middle");
-    T.push('</g>');
-    f.placed = base.slice();
-    T.push('<g class="avail-state" data-state="now">');
-    label(130, prevY(130), EARLIER, 0, -LH * EARLIER.length - 14, "middle");
-    label(130, edgeY(130), CURRENT, 0, 12, "middle");
-    /* the retreat annotation: between Alder and Mill Creek, in the band */
-    var rx = narrow ? 670 : 620;
-    label(rx, (edgeY(rx) + prevY(rx)) / 2, RETREAT, 0, -LH * RETREAT.length / 2, "middle");
-    T.push('</g>');
-    G["rg-labels"].innerHTML = T.join("");
+  function homeRing(out, px, col) {
+    var h = SC.P(HOME.x, HOME.y);
+    out.push('<circle cx="' + n1(h[0]) + '" cy="' + n1(h[1] - px(4)) + '" r="' + n1(px(17)) + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(5)) + '" opacity=".85"/>' +
+             '<circle cx="' + n1(h[0]) + '" cy="' + n1(h[1] - px(4)) + '" r="' + n1(px(17)) + '" fill="none" stroke="' + col + '" stroke-width="' + n1(px(2.4)) + '"/>');
+  }
+  function settlementLabels(label, LH, which) {
+    SETTLEMENTS.forEach(function (s) { if (which && which.indexOf(s.id) < 0) { return; } label(s.cx, s.cy + s.ry + 30, [[s.id, "b"]], 0, -LH / 2 - 4, "middle"); });
   }
 
-  /* ══ screen 5: the current limit, solid, as on screen 1 — it has not
-     moved — and ONE potential frontier upslope, dashed and sage, drawn as
-     a possibility. Between the two, three small sage arrows point upslope
-     — the counter-movement to screen 1's retreat (which has none). They
-     sit on open ground between the communities; nothing between the
-     limits is filled. ══ */
-  var SAGE_INK = "#3E5640";
-  var S5_ARROWS = [240, 745, 1150];
-  function drawS5(f) {
+  /* ══ screen 1: the field as it is now, and the one home outside it ══ */
+  function drawS1(f) {
     var A = [], T = [], q = availPaths(), px = function (n) { return n * f.upp; };
     A.push('<path d="' + area(q.edge) + '" fill="' + C.avail + '" opacity=".11"/>');
-    /* the band between the confirmed limit and the possible frontier: a
-       light sage wash, so the homes it holds are the focal point. Washed,
-       not filled as available — the frontier stays dashed and hypothetical. */
-    A.push('<path d="' + SC.smooth(q.cond) + SC.smooth(q.edge.slice().reverse()).replace(/^M/, "L") + 'Z" fill="' + SAGE + '" opacity=".16"/>');
-    A.push('<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + C.paper + '" stroke-width="5" opacity=".45"/>' +
-           '<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + SAGE + '" stroke-width="2.4" stroke-dasharray="9 7" stroke-linecap="round"/>');
     A.push('<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/>' +
            '<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="2.2"/>');
-    var arrowBoxes = [];
-    S5_ARROWS.forEach(function (x) {
-      /* from just above the current limit to just below the conditional one */
-      var a = SC.P(x, edgeY(x)), b = SC.P(x, condY(x));
-      var y0 = a[1] - px(7), y1 = b[1] + px(7), cx = (a[0] + b[0]) / 2, hw = px(4.5), hl = px(6);
-      if (y0 - y1 < px(12)) { return; }
-      var d = 'M' + n1(cx) + ' ' + n1(y0) + 'L' + n1(cx) + ' ' + n1(y1) + 'M' + n1(cx - hw) + ' ' + n1(y1 + hl) + 'L' + n1(cx) + ' ' + n1(y1) + 'L' + n1(cx + hw) + ' ' + n1(y1 + hl);
-      A.push('<path d="' + d + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(5.5)) + '" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>' +
-             '<path d="' + d + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(2.2)) + '" stroke-linecap="round" stroke-linejoin="round"/>');
-      var s0 = f.proj(x, edgeY(x)), s1 = f.proj(x, condY(x));
-      arrowBoxes.push({ left: s0[0] - 8, right: s0[0] + 8, top: s1[1] + 4, bottom: s0[1] - 4 });
-    });
+    homeRing(A, px, ALARM);
     G["rg-availability"].innerHTML = A.join("");
     var label = labeller(T, f), LH = f.size * 1.3;
-    var CURRENT = isPhone() ? [["Current", "b", C.label], ["availability limit", "b", C.label]] : [["Current availability limit", "b", C.label]];
-    var FRONTIER = [["Potential frontier", "b", SAGE_INK], ["with evidence and capital", "r", SAGE_INK]];
+    settlementLabels(label, LH, ["Mill Creek"]);
     f.avoidSolids = true; f.strictSolids = true;
-    f.placed = f.placed.concat(arrowBoxes);
-    label(130, edgeY(130), CURRENT, 0, 12, "middle");
-    label(620, condY(620), FRONTIER, 0, -LH * FRONTIER.length - 12, "middle");
+    label(HOME.x, HOME.y, [["No. 12", "b", ALARM]], 24, -LH / 2 - 6, "start");
+    label(130, edgeY(130), CURRENT_LABEL(), 0, 12, "middle");
     G["rg-labels"].innerHTML = T.join("");
   }
 
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 2 — an operating business. Four parts of the operation on the
-     terrain as physical things (the managed corridor, the ridge camera,
-     the Mill Creek pad, the station the contracted crews work from), each
-     with its ring and its name, and one hub, "The operation". THREE PAYER
-     MARKS — public agencies, property owners, insurers — converge on the
-     hub from the open ground to its west, each a solid arrow ending on
-     the hub's rim, with one line under the hub: "Fund it, or buy its
-     services." No network diagram: nothing joins the parts to the hub, no
-     link is typed, and no share, amount or return has a size.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  function drawS2(f) {
-    var s = [], T = [], px = function (n) { return n * f.upp; };
-    /* the hub and the payer marks in px: smaller on a phone's short stage */
-    var HUB_PX = isPhone() ? 26 : 40, NODE_PX = isPhone() ? 10 : 14;
-    var CORE_R = px(HUB_PX), MARK_R = px(NODE_PX);
-    var phone = isPhone(), LH = f.size * 1.3;
-    var PARTS = [
-      { at: [1000, crestY(1000) + CORRIDOR.bottom], lines: [["Vegetation management", "b"]], dx: 0, dy: 10, anc: "middle" },
-      { at: [1186, 240], lines: [["Detection", "b"]], dx: 16, dy: -22, anc: "start", ph: { dx: 16, dy: -40, anc: "start" } },
-      { at: [1006, 772], lines: [["Equipment", "b"]], dx: 16, dy: -10, anc: "start" },
-      { at: [1032, 806], lines: [["Response crews", "b"], ["contracted", "r"]], dx: 16, dy: 2, anc: "start" }
-    ];
-    /* the three payers, fanned west of the hub; each converges on it. On a
-       phone's short stage they stack close to the hub, each named on two
-       lines to its left, and the line sits as a caption over the stack. */
-    var PAYERS = phone ? [
-      { x: 380, y: 300, c: PUBLIC,  bend: 8,  lines: [["Public", "b", PUBLIC], ["agencies", "b", PUBLIC]] },
-      { x: 404, y: 535, c: VENDOR,  bend: 0,  lines: [["Property", "b", VENDOR], ["owners", "b", VENDOR]] },
-      { x: 415, y: 654, c: CARRIER, bend: -8, lines: [["Insurers", "b", CARRIER]] }
-    ] : [
-      { x: 370, y: 410, c: PUBLIC,  bend: 34,  ldy: -30, lines: [["Public agencies", "b", PUBLIC]] },
-      { x: 250, y: 560, c: VENDOR,  bend: 0,   ldy: -10, lines: [["Property owners", "b", VENDOR]] },
-      { x: 330, y: 672, c: CARRIER, bend: -34, ldy: -10, lines: [["Insurers", "b", CARRIER]] }
-    ];
-
-    /* the corridor: a thinned, lighter band in the forest below the ridge */
+  /* ══ screen 2: the corridor and the contracted parts, named as things ══ */
+  var PARTS = [
+    { at: [1000, crestY(1000) + CORRIDOR.bottom], lines: [["Vegetation corridor", "b"], ["maintained", "r"]], dx: 0, dy: 10, anc: "middle" },
+    { at: [1186, 240], lines: [["Detection", "b"], ["contracted", "r"]], dx: 16, dy: -22, anc: "start", ph: { dx: 16, dy: -40, anc: "start" } },
+    { at: [1006, 772], lines: [["Aircraft", "b"], ["contracted", "r"]], dx: 16, dy: -10, anc: "start" },
+    { at: [1032, 806], lines: [["Crews", "b"], ["contracted", "r"]], dx: 16, dy: 2, anc: "start" }
+  ];
+  function corridorDraw(s, px, strong) {
     var cd = wpath(corridorPts(), true);
-    s.push('<path d="' + cd + '" fill="' + C.paper + '" opacity=".26"/><path d="' + cd + '" fill="url(#veg-hatch)"/>' +
+    s.push('<path d="' + cd + '" fill="' + C.paper + '" opacity="' + (strong ? ".3" : ".2") + '"/><path d="' + cd + '" fill="url(#veg-hatch)"/>' +
            '<path d="' + cd + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(1.6)) + '" opacity=".9"/>');
-
-    /* the four parts: a ring on each physical thing, nothing joining them */
+  }
+  function partRings(s, px) {
     PARTS.forEach(function (pt) {
       var a = SC.P(pt.at[0], pt.at[1]);
       s.push('<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(11)) + '" fill="' + PAPER + '" opacity=".75"/>' +
              '<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(8)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2.6)) + '"/>' +
              '<circle cx="' + n1(a[0]) + '" cy="' + n1(a[1]) + '" r="' + n1(px(3.2)) + '" fill="' + INK + '"/>');
     });
-
-    /* a quadratic from a to b, bent by `bend`, trimmed so it starts and
-       ends on the rims of the two circles rather than at their centres */
-    function linkPath(a, ra, b, rb, bend) {
-      var cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2 + bend;
-      var trim = function (p, r, toward) {
-        var dx = toward[0] - p[0], dy = toward[1] - p[1], d = Math.sqrt(dx * dx + dy * dy) || 1;
-        return [p[0] + dx / d * r, p[1] + dy / d * r];
-      };
-      var p0 = trim(a, ra, [cx, cy]), p1 = trim(b, rb, [cx, cy]);
-      return "M" + n1(p0[0]) + " " + n1(p0[1]) + " Q" + n1(cx) + " " + n1(cy) + " " + n1(p1[0]) + " " + n1(p1[1]);
-    }
-    var cp = SC.P(HUB.x, HUB.y);
-    PAYERS.forEach(function (q) {
-      var qp = SC.P(q.x, q.y);
-      var d = linkPath(qp, MARK_R + px(2), cp, CORE_R + px(4), px(q.bend));
-      s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(6)) + '" opacity=".55"/>');
-      s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(2)) + '" opacity=".7" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
-      s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(MARK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '"/>');
-      s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(px(4)) + '" fill="' + q.c + '"/>');
-    });
-    s.push('<circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(CORE_R) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.4)) + '"/>');
-    s.push('<circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(px(14)) + '" fill="' + INK + '"/>');
+  }
+  function drawS2(f) {
+    var s = [], T = [], px = function (n) { return n * f.upp; };
+    corridorDraw(s, px, true);
+    partRings(s, px);
     G["rg-business"].innerHTML = s.join("");
-
-    /* the hub and the three marks are places no label may cover */
-    var hp = f.proj(HUB.x, HUB.y), hr = HUB_PX - 4;
-    f.placed.push({ left: hp[0] - hr, right: hp[0] + hr, top: hp[1] - hr, bottom: hp[1] + hr });
-    PAYERS.forEach(function (q) { var p = f.proj(q.x, q.y), nr = NODE_PX - 4; f.placed.push({ left: p[0] - nr, right: p[0] + nr, top: p[1] - nr, bottom: p[1] + nr }); });
     f.avoidSolids = true;
     var label = labeller(T, f);
-    /* the hub's words sit under its rim, where the three arrows arrive */
-    if (phone) {
-      label(HUB.x, HUB.y, [["The operation", "b"]], 0, HUB_PX + 8, "middle");
-      label(PAYERS[0].x, PAYERS[0].y, [["Fund it, or buy its services.", "r"]], 0, -LH * 2 - 12, "middle");
-      PAYERS.forEach(function (q) { label(q.x, q.y, q.lines, -(NODE_PX + 8), -LH * q.lines.length / 2, "end"); });
-    } else {
-      label(HUB.x, HUB.y, [["The operation", "b"], ["Fund it, or buy its services.", "r"]], 0, HUB_PX + 8, "middle");
-      PAYERS.forEach(function (q) { label(q.x, q.y, q.lines, -(NODE_PX + 10), q.ldy, "end"); });
-    }
-    PARTS.forEach(function (pt) { var at = (phone && pt.ph) || pt; label(pt.at[0], pt.at[1], pt.lines, at.dx, at.dy, at.anc); });
+    PARTS.forEach(function (pt) { var at = (isPhone() && pt.ph) || pt; label(pt.at[0], pt.at[1], pt.lines, at.dx, at.dy, at.anc); });
     G["rg-labels"].innerHTML = T.join("");
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     SCREEN 3 — the moment: eight events, four steps, one human decision
-
-     THE DATA. Every time, place and authority class on this screen comes
-     from S3_EVENTS, and nothing else on the screen is allowed to restate
-     it. Kinds: obs observed · act bounded, pre-authorised action · mod
-     model forecast (not a decision) · dec human decision (the network
-     cannot make it). Nothing here executes the human decision, and nothing
-     marks the record as proof of avoided loss.
-
-     THE STEPS. The viewer walks Detect → Coordinate → Act → Decision with
-     "Next step", one press at a time, on the same landscape; the marks
-     accumulate, the words are per step, and each word is attributed to
-     the actor acting within its own authority — the operation detects,
-     forecasts and holds its aircraft; the utility de-energises; Fire
-     District 3 holds the road; the duty chief decides. The default is
-     Detect. "Replay" walks the eight events on a clock through the same
-     words; "Show all" marks every step at once. The insurer never appears
-     on this screen.
-
-     THE GRAMMAR. Incident marks are warm and alarm-coloured, the spread
-     footprint dashed, the response routes solid warm lines — distinct from
-     the cool availability field, which this screen does not draw.
+     SCREEN 3 — the moment, three beats: detect · coordinate · act. The
+     prepared corridor across the canyon mouth is where the fire stops.
+     The authority that approves the drop and the road closure is the
+     district's; Resilience Grid coordinates, it does not authorise.
      ══════════════════════════════════════════════════════════════════════ */
-
-  var S3_EVENTS = [
-    { n: 1, kind: "obs", t: "14:31", who: "Line sensor, Mill Creek lateral — the operation",
-      what: ["Fault signature on the span.", "A flag, not yet a fire."],
-      state: "Observed", at: [960, 330] },
-    { n: 2, kind: "obs", t: "14:33", who: "Ridge camera, Alder Peak — the operation",
-      what: ["Smoke at the same span."],
-      state: "Observed", at: [1186, 240] },
-    { n: 3, kind: "obs", t: "14:34", who: "Thermal satellite pass — the operation",
-      what: ["Heat at the same coordinates.", "Ignition treated as verified."],
-      state: "Observed", at: [992, 190] },
-    { n: 4, kind: "act", t: "14:36", who: "The utility",
-      what: ["Lateral de-energised. Reclosers locked out on two adjacent feeders."],
-      state: "Pre-authorised, bounded action, within the utility's own authority", at: [1130, 356] },
-    { n: 5, kind: "mod", t: "14:38", who: "Spread model — the operation",
-      what: ["Canyon corridor run. The head turns toward the 320 homes above Mill Creek."],
-      state: "Model forecast, not a decision", at: [900, 540] },
-    { n: 6, kind: "act", t: "14:41", who: "Fire District 3",
-      what: ["Two engines to the canyon mouth. The one road out held open."],
-      state: "Bounded action, within the district's own authority", at: [934, 652] },
-    { n: 7, kind: "act", t: "14:43", who: "Contracted aircraft — the operation",
-      what: ["Four aircraft launched from the Mill Creek pad and holding. One operator."],
-      state: "Bounded action; holding is not drop approved", at: [1006, 772] },
-    { n: 8, kind: "dec", t: "14:47", who: "Duty chief, District 3",
-      what: ["Holds or releases the evacuation of 320 homes.", "Signs off on the drop over occupied parcels.", "The operation cannot make either call."],
-      state: "Decision, human, pending", at: [1124, 566] }
-  ];
-
-  /* the four steps; `to` is the last event each reaches */
-  var S3_STEPS = [
-    { id: "detect",     to: 3, title: "Detect",
-      note: "The operation's sensors and camera detect the ignition at 14:31; three sources corroborate it by 14:34." },
-    { id: "coordinate", to: 5, title: "Coordinate",
-      note: "The utility de-energises its lateral; the operation's model forecasts the spread toward Mill Creek. The forecast is not a decision." },
-    { id: "act",        to: 7, title: "Act",
-      note: "Fire District 3 sends two engines and holds the one road out open; the operation's contracted aircraft launch and hold." },
-    { id: "decision",   to: 8, title: "Decision",
-      note: "The evacuation of 320 homes and the drop over occupied parcels wait on the duty chief's approval. The operation cannot make either call. Pending." }
-  ];
-  function s3StepOf(ev) { return ev <= 3 ? 0 : ev <= 5 ? 1 : ev <= 7 ? 2 : 3; }
-
-  /* the words, one set per step, each attributed to its actor. `step` is
-     the step that reads it (-1: every step); `from` the event it appears
-     at during a replay. "Show all" places every set at once. */
-  var S3_LABELS = [
-    { step: -1, from: 0, at: [842, 736],  dx: -6,  dy: -18, anc: "end",
-      lines: [["Mill Creek", "b"], ["320 homes", "r"]] },
-    /* the decision is placed first, so in "Show all" it keeps its place */
-    { step: 3,  from: 8, at: [1124, 566], dx: 40,  dy: -34, anc: "start", ph: { dx: -34, dy: -50, anc: "end" },
-      lines: [["Duty chief", "b"], ["evacuation and drop await approval", "r"]],
-      phone: [["Duty chief", "b"], ["evacuation and drop", "r"], ["await approval", "r"]] },
-    { step: 0,  from: 1, at: [992, 400],  dx: 26,  dy: -14, anc: "start",
-      lines: [["Ignition detected 14:31", "b"], ["the operation", "r"]] },
-    { step: 1,  from: 4, at: [1130, 356], dx: 22,  dy: -30, anc: "start",
-      lines: [["Lateral de-energised", "b"], ["the utility", "r", UTILITY]] },
-    { step: 1,  from: 5, at: [900, 540],  dx: -22, dy: -20, anc: "end", ph: { dx: -22, dy: -54, anc: "end" },
-      lines: [["Spread forecast", "b"], ["the operation", "r"]] },
-    { step: 2,  from: 6, at: [968, 800],  dx: -16, dy: -20, anc: "end",
-      lines: [["Road held open", "b", FIRE], ["Fire District 3", "r", FIRE]] },
-    { step: 2,  from: 7, at: [1100, 650], dx: 18,  dy: -12, anc: "start", ph: { dx: 18, dy: -40, anc: "start" },
-      lines: [["Aircraft holding", "b"], ["the operation", "r"]] }
-  ];
-
-  /* scene geometry, world units */
   var S3_WEDGE   = [[992,400],[1040,476],[1070,556],[1084,660],[1060,666],[962,668],[862,654],[858,576],[896,490],[936,432]];
+  var S3_HELD    = [[992,400],[1040,476],[1062,548],[1050,572],[990,580],[930,574],[880,560],[896,490],[936,432]];   /* the footprint, stopped at the break */
+  var BREAK      = [[840,598],[900,580],[960,572],[1020,576],[1090,590],[1140,610]];  /* the prepared corridor across the canyon mouth */
   var S3_AIR     = [[1006, 772], [1068, 770], [1098, 724], [1100, 650]];
-  var S3_AIRHOLD = [1100, 650];
-  var S3_DROP    = [972, 636];
-  var S3_ENGINES = [[1032, 806], [1016, 752], [996, 700], [952, 662], [934, 652]];
-  var S3_GATE    = [968, 696];
-  var S3_FEEDERS = [[800, 352], [1130, 356]];
-
-  /* the one road out of Mill Creek, held open: the hero of Act, Decision
-     and the evidence screen. Drawn at full strength wherever it appears. */
+  var S3_ENGINES = [[1032, 806], [1016, 752], [996, 700], [960, 640], [930, 600]];
+  var S3_STEPS = [
+    { title: "Detect",     note: "Resilience Grid's contracted sensors flag the ignition at the canyon head and model its likely path toward Mill Creek. A forecast, not a decision." },
+    { title: "Coordinate", note: "Resilience Grid coordinates the utility, which de-energises its line, and the contracted aircraft, which launch and hold. Fire District 3 approves the drop and the road closure." },
+    { title: "Act",        note: "Crews work the prepared corridor above the homes while the evacuation route stays open. The fire reaches the corridor and stops. No homes reached." }
+  ];
+  var S3_LABELS = [
+    { step: -1, from: 1, at: [842, 736], dx: -6, dy: -18, anc: "end", lines: [["Mill Creek", "b"], ["320 homes", "r"]] },
+    { step: 0, from: 1, at: [992, 400],  dx: 26, dy: -14, anc: "start", lines: [["Ignition detected 15:02", "b"], ["likely path · Mill Creek", "r"]] },
+    { step: 1, from: 2, at: [800, 520],  dx: -18, dy: -22, anc: "end", ph: { dx: -10, dy: -48, anc: "end" }, lines: [["Resilience Grid", "b"], ["coordinating", "r"]] },
+    { step: 1, from: 2, at: [1130, 356], dx: 22, dy: -30, anc: "start", lines: [["Utility · line de-energised", "b", UTILITY]] },
+    { step: 1, from: 2, at: [1100, 650], dx: 18, dy: -12, anc: "start", ph: { dx: 18, dy: -40, anc: "start" }, lines: [["Aircraft · launched, holding", "b"]] },
+    { step: 1, from: 2, at: [1032, 806], dx: 18, dy: -4, anc: "start", lines: [["Fire District 3", "b", FIRE], ["approves drop and road closure", "r", FIRE]], phone: [["Fire District 3", "b", FIRE], ["approves drop,", "r", FIRE], ["road closure", "r", FIRE]] },
+    { step: 2, from: 3, at: [930, 600],  dx: -20, dy: -24, anc: "end", ph: { dx: -14, dy: -50, anc: "end" }, lines: [["Crews at the", "b", FIRE], ["prepared corridor", "b", FIRE]] },
+    { step: 2, from: 3, at: [968, 800],  dx: -16, dy: -20, anc: "end", lines: [["Evacuation route open", "b", FIRE]] },
+    { step: 2, from: 3, at: [1060, 548], dx: 22, dy: -10, anc: "start", lines: [["Contained 15:41", "b"], ["no homes reached", "r"]] }
+  ];
   function roadHold(s, px) {
     s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(12)) + '" opacity=".7"/>');
     s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(8)) + '" opacity=".28"/>');
     s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2.4)) + '"/>');
   }
-
-  /* o.step  events reached, 0..8 · o.mode "step" | "all" · o.live a replay
-     is running (the newest event gets a ring) · o.upp design units per px */
+  /* o.step beats reached 0..3 · o.live a replay is running */
   function drawS3(s, o, label) {
     var step = o.step, px = function (n) { return n * o.upp; };
-    var cur = s3StepOf(Math.max(1, step));
-    var ig = SC.P(IGNITION.x, IGNITION.y), a, p;
-    /* at Decision the incident is the hero, so the detection step's
-       unlabelled ridge marks — the three signal marks, their sight lines
-       and the locked-out reclosers — sit faint. They are full on the
-       earlier steps and in "Show all". */
-    /* in step mode only the step in progress is at full strength; what
-       earlier steps drew sits faint beneath it. The road, once held, and
-       the threatened community stay full on every later step: they are
-       the two heroes of the moment. */
-    var stepping = o.mode === "step";
-    var faint = stepping && cur === 3;
-    var FAINT = '<g opacity=".35">', END = '</g>';
-    function was(k) { return stepping && k < cur; }   /* step k is behind the one in progress */
-    function dimOpen(k) { if (was(k)) { s.push(FAINT); } }
-    function dimClose(k) { if (was(k)) { s.push(END); } }
-    /* the threatened community, from the first step: a soft halo under
-       Mill Creek's homes, alarm-coloured, no words */
+    var ig = SC.P(IGNITION.x, IGNITION.y), p, a;
+    var cur = Math.max(0, step - 1);
+    var FAINT = '<g opacity=".4">', END = '</g>';
+    /* the prepared corridor across the canyon mouth: there from the first beat, the hero of the third */
+    var bk = SC.smooth(BREAK.map(function (q) { return SC.P(q[0], q[1]); }));
+    s.push('<path d="' + bk + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(step >= 3 ? 16 : 11)) + '" opacity="' + (step >= 3 ? ".8" : ".45") + '"/>' +
+           '<path d="' + bk + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(step >= 3 ? 7 : 5)) + '" opacity="' + (step >= 3 ? ".95" : ".6") + '" stroke-dasharray="' + n1(px(10)) + ' ' + n1(px(5)) + '"/>');
     if (step >= 1) {
-      /* the one road out of Mill Creek, present from the first step as what
-         is at stake; it is only HELD from step three (roadHold, below) */
-      s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(2.2)) + '" opacity="' + (step >= 6 ? ".0" : ".32") + '" stroke-dasharray="' + n1(px(5)) + ' ' + n1(px(5)) + '"/>');
+      /* the threatened community and its one road out, at stake from the first beat */
       var mc = SC.P(962, 712); mc[1] += px(4);
-      s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="' + ALARM + '" opacity="' + (cur === 0 ? '.10' : '.06') + '"/>' +
-             '<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + ALARM + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity="' + (cur === 0 ? '.8' : '.35') + '"/>');
-    }
-
-    if (step >= 1) {
-      dimOpen(0);
-      s.push('<path d="' + wpath(LATERAL) + '" fill="none" stroke="' + (step >= 4 ? S3_HOLD : ALARM) +
-             '" stroke-width="' + n1(px(2.2)) + '" stroke-dasharray="' + n1(px(7)) + ' ' + n1(px(5)) + '" opacity=".9"/>');
+      s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="' + ALARM + '" opacity="' + (step >= 3 ? ".04" : ".09") + '"/>' +
+             '<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + ALARM + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity="' + (step >= 3 ? ".25" : ".7") + '"/>');
+      if (step < 3) { s.push('<path d="' + wpath(MILLROAD) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(2.2)) + '" opacity=".32" stroke-dasharray="' + n1(px(5)) + ' ' + n1(px(5)) + '"/>'); }
+      /* the likely path: a dashed forecast, until the fire is held */
+      var wd = wpath(step >= 3 ? S3_HELD : S3_WEDGE, true);
+      s.push('<path d="' + wd + '" fill="' + C.paper + '" opacity=".28"/>');
+      s.push('<path d="' + wd + '" fill="' + (step >= 3 ? ALARM : FIRE) + '" opacity="' + (step >= 3 ? ".3" : ".22") + '"/>');
+      s.push('<path d="' + wd + '" fill="none" stroke="' + (step >= 3 ? ALARM : FIRE) + '" stroke-width="' + n1(px(1.8)) + '"' + (step >= 3 ? '' : ' stroke-dasharray="' + n1(px(6)) + ' ' + n1(px(5)) + '"') + ' opacity=".95"/>');
+      /* the ignition */
+      s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(40)) + '" fill="url(#heat)"/>');
+      s.push('<g stroke="' + ALARM + '" stroke-width="' + n1(px(2.2)) + '">');
+      for (a = 0; a < 8; a++) { var th = (a / 8) * Math.PI * 2; s.push('<line x1="' + n1(ig[0] + Math.cos(th) * px(7)) + '" y1="' + n1(ig[1] + Math.sin(th) * px(7)) + '" x2="' + n1(ig[0] + Math.cos(th) * px(15)) + '" y2="' + n1(ig[1] + Math.sin(th) * px(15)) + '"/>'); }
+      s.push('</g><circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(5)) + '" fill="' + ALARM + '"/>');
+      p = SC.P(1186, 240);
+      s.push('<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1]) + '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity="' + (cur === 0 ? ".6" : ".25") + '"/>');
     }
     if (step >= 2) {
-      p = SC.P(1186, 240);
-      s.push((faint ? FAINT : '') + '<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1]) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>' + (faint ? END : ''));
-      s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(step >= 3 ? 46 : 26)) + '" fill="url(#heat)"/>');
+      if (cur > 1) { s.push(FAINT); }
+      /* the utility's line, de-energised; the aircraft's path and hold; the hub coordinating; the district's approval */
+      s.push('<path d="' + wpath(LATERAL) + '" fill="none" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(2.2)) + '" stroke-dasharray="' + n1(px(7)) + ' ' + n1(px(5)) + '" opacity=".9"/>');
+      var fq = SC.P(1130, 356), r = px(9);
+      s.push('<rect x="' + n1(fq[0] - r) + '" y="' + n1(fq[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="' + PAPER + '" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.8)) + '"/><rect x="' + n1(fq[0] - r) + '" y="' + n1(fq[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="url(#s3-hatch)"/>');
+      s.push('<path d="' + wpath(S3_AIR) + '" fill="none" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.8)) + '"/>');
+      [[1040, 772, -90], [1082, 752, -50], [1098, 706, -8], [1100, 664, 0]].forEach(function (q) { var c = SC.P(q[0], q[1]); s.push('<path d="M-7 4L0 -4L7 4" fill="none" stroke="' + S3_HOLD + '" stroke-width="2.2" transform="translate(' + n1(c[0]) + ' ' + n1(c[1]) + ') rotate(' + q[2] + ') scale(' + n1(o.upp) + ')"/>'); });
+      var hb = SC.P(800, 520);
+      s.push('<circle cx="' + n1(hb[0]) + '" cy="' + n1(hb[1]) + '" r="' + n1(px(14)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2.6)) + '"/><circle cx="' + n1(hb[0]) + '" cy="' + n1(hb[1]) + '" r="' + n1(px(5)) + '" fill="' + INK + '"/>');
+      [[1130, 356], [1100, 650], [1032, 806]].forEach(function (q) { s.push('<path d="' + Qc([800, 520], [(800 + q[0]) / 2, Math.min(520, q[1]) - 40], q) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.1)) + '" stroke-dasharray="' + n1(px(3)) + ' ' + n1(px(4)) + '" opacity=".55"/>'); });
+      var ap = SC.P(1032, 806), ar = px(12);
+      s.push('<circle cx="' + n1(ap[0]) + '" cy="' + n1(ap[1]) + '" r="' + n1(ar) + '" fill="' + PAPER + '" stroke="' + FIRE + '" stroke-width="' + n1(px(2.4)) + '"/><path d="M' + n1(ap[0] - px(5)) + ' ' + n1(ap[1]) + 'L' + n1(ap[0] - px(1)) + ' ' + n1(ap[1] + px(4)) + 'L' + n1(ap[0] + px(6)) + ' ' + n1(ap[1] - px(4)) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2.4)) + '" stroke-linecap="round"/>');
+      if (cur > 1) { s.push(END); }
     }
     if (step >= 3) {
-      p = SC.P(IGNITION.x, 120);
-      s.push((faint ? FAINT : '') + '<line x1="' + n1(p[0]) + '" y1="' + n1(p[1]) + '" x2="' + n1(ig[0]) + '" y2="' + n1(ig[1] - px(16)) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(1)) + '" stroke-dasharray="' + n1(px(2)) + ' ' + n1(px(5)) + '" opacity=".6"/>' + (faint ? END : ''));
-      s.push('<g stroke="' + ALARM + '" stroke-width="' + n1(px(2.2)) + '">');
-      for (a = 0; a < 8; a++) {
-        var th = (a / 8) * Math.PI * 2;
-        s.push('<line x1="' + n1(ig[0] + Math.cos(th) * px(7)) + '" y1="' + n1(ig[1] + Math.sin(th) * px(7)) +
-               '" x2="' + n1(ig[0] + Math.cos(th) * px(15)) + '" y2="' + n1(ig[1] + Math.sin(th) * px(15)) + '"/>');
-      }
-      s.push('</g>');
-      s.push('<circle cx="' + n1(ig[0]) + '" cy="' + n1(ig[1]) + '" r="' + n1(px(5)) + '" fill="' + ALARM + '"/>');
-    }
-    if (step >= 1) { dimClose(0); }
-    if (step >= 4) {
-      dimOpen(1);
-      if (faint) { s.push(FAINT); }
-      S3_FEEDERS.forEach(function (q) {
-        var f = SC.P(q[0], q[1]), r = px(9);
-        s.push('<rect x="' + n1(f[0] - r) + '" y="' + n1(f[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="' + PAPER +
-               '" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.8)) + '"/>' +
-               '<rect x="' + n1(f[0] - r) + '" y="' + n1(f[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="url(#s3-hatch)"/>');
-      });
-      if (faint) { s.push(END); }
-    }
-    if (step >= 5) {
-      /* the modelled corridor: translucent, dashed edge — a forecast */
-      var wd = wpath(S3_WEDGE, true);
-      s.push('<path d="' + wd + '" fill="' + C.paper + '" opacity=".28"/>');
-      s.push('<path d="' + wd + '" fill="' + FIRE + '" opacity=".26"/>');
-      s.push('<path d="' + wd + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(1.8)) + '" stroke-dasharray="' + n1(px(6)) + ' ' + n1(px(5)) + '" opacity=".95"/>');
-    }
-    if (step >= 4) { dimClose(1); }
-    if (step >= 6) {
-      /* the road out, held open: never faint once it is held */
       roadHold(s, px);
-      dimOpen(2);
       s.push('<path d="' + wpath(S3_ENGINES) + '" fill="none" stroke="' + FIRE + '" stroke-width="' + n1(px(2.6)) + '"/>');
-      [[1016, 752], [996, 700]].forEach(function (q) {
-        var e = SC.P(q[0], q[1]);
-        s.push('<rect x="' + n1(e[0] - px(6)) + '" y="' + n1(e[1] - px(4)) + '" width="' + n1(px(12)) + '" height="' + n1(px(8)) + '" rx="' + n1(px(1)) + '" fill="' + FIRE + '"/>');
-      });
-      p = SC.P(934, 652);
-      s.push('<circle cx="' + n1(p[0]) + '" cy="' + n1(p[1]) + '" r="' + n1(px(4)) + '" fill="' + FIRE + '"/>');
+      [[1016, 752], [996, 700], [960, 640]].forEach(function (q) { var e = SC.P(q[0], q[1]); s.push('<rect x="' + n1(e[0] - px(6)) + '" y="' + n1(e[1] - px(4)) + '" width="' + n1(px(12)) + '" height="' + n1(px(8)) + '" rx="' + n1(px(1)) + '" fill="' + FIRE + '"/>'); });
+      /* the fire's edge, stopped on the corridor: a solid line along the break */
+      s.push('<path d="' + bk + '" fill="none" stroke="' + ALARM + '" stroke-width="' + n1(px(2.4)) + '" opacity=".9"/>');
     }
-    if (step >= 7) {
-      s.push('<path d="' + wpath(S3_AIR) + '" fill="none" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.8)) + '"/>');
-      [[1040, 772, -90], [1082, 752, -50], [1098, 706, -8], [1100, 664, 0]].forEach(function (q) {
-        var c = SC.P(q[0], q[1]);
-        s.push('<path d="M-7 4L0 -4L7 4" fill="none" stroke="' + S3_HOLD + '" stroke-width="2.2" transform="translate(' + n1(c[0]) + ' ' + n1(c[1]) + ') rotate(' + q[2] + ') scale(' + n1(o.upp) + ')"/>');
-      });
-    }
-    if (step >= 6) { dimClose(2); }
-    if (step >= 8) {
-      /* the two paths that wait on one person: dashed because pending.
-         The decision is not executed here — nothing closes these. */
-      var Cc = S3_EVENTS[7].at, dp = SC.P(S3_DROP[0], S3_DROP[1]), gp = SC.P(S3_GATE[0], S3_GATE[1]);
-      var dash = '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(2)) + '" stroke-dasharray="' + n1(px(6)) + ' ' + n1(px(6)) + '"';
-      s.push('<path d="' + Qc(S3_AIRHOLD, [1040, 626], [S3_DROP[0] + 16, S3_DROP[1] + 4]) + dash + ' opacity=".9"/>');
-      s.push('<circle cx="' + n1(dp[0]) + '" cy="' + n1(dp[1]) + '" r="' + n1(px(18)) + '" fill="' + PAPER + '" opacity=".5"/>');
-      s.push('<circle cx="' + n1(dp[0]) + '" cy="' + n1(dp[1]) + '" r="' + n1(px(18)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.8)) + '" stroke-dasharray="' + n1(px(3)) + ' ' + n1(px(4)) + '"/>');
-      s.push('<line x1="' + n1(gp[0] - px(13)) + '" y1="' + n1(gp[1] - px(3)) + '" x2="' + n1(gp[0] + px(13)) + '" y2="' + n1(gp[1] + px(3)) +
-             '" stroke="' + INK + '" stroke-width="' + n1(px(4)) + '"/>');
-      s.push('<path d="' + Qc([Cc[0] - 14, Cc[1] + 14], [1110, 626], [S3_AIRHOLD[0] + 8, S3_AIRHOLD[1] - 6]) + dash + '/>');
-      s.push('<path d="' + Qc([Cc[0] - 26, Cc[1] + 10], [1030, 606], [S3_GATE[0] + 16, S3_GATE[1] - 6]) + dash + '/>');
-    }
-
-    /* ── the marks: ○ observed · ● bounded action · ◇ forecast · ■ decision ── */
-    function mark(ev, emph) {
-      var m = SC.P(ev.at[0], ev.at[1]), x = n1(m[0]), y = n1(m[1]), k = ev.kind, r;
-      var dim = (faint && ev.n <= 3) || was(s3StepOf(ev.n));
-      if (dim) { s.push(FAINT); }
-      if (o.live && emph) {
-        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(k === "dec" ? 34 : 22)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.2)) + '" opacity=".45"/>');
-      }
-      if (k === "obs") {
-        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(7.5)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(2)) + '"/>');
-      } else if (k === "act") {
-        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(7.5)) + '" fill="' + INK + '"/>');
-      } else if (k === "mod") {
-        r = px(7.5);
-        s.push('<rect x="' + n1(m[0] - r) + '" y="' + n1(m[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" fill="' + PAPER +
-               '" stroke="' + FIRE + '" stroke-width="' + n1(px(2)) + '" stroke-dasharray="' + n1(px(3)) + ' ' + n1(px(2.5)) + '" transform="rotate(45 ' + x + ' ' + y + ')"/>');
-      } else {
-        r = px(11);
-        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(26)) + '" fill="' + PAPER + '" opacity=".9"/>');
-        s.push('<circle cx="' + x + '" cy="' + y + '" r="' + n1(px(26)) + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(px(1.4)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity=".8"/>');
-        s.push('<rect x="' + n1(m[0] - r) + '" y="' + n1(m[1] - r) + '" width="' + n1(r * 2) + '" height="' + n1(r * 2) + '" rx="' + n1(px(2)) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.4)) + '"/>');
-      }
-      if (dim) { s.push(END); }
-    }
-    S3_EVENTS.forEach(function (ev, i) { if (i < step) { mark(ev, i === step - 1); } });
-
     if (!label) { return; }
-
-    /* ── the words: the step in progress, or every step in "Show all" ── */
     S3_LABELS.forEach(function (q) {
       if (step < q.from) { return; }
-      if (o.mode !== "all" && q.step >= 0 && q.step !== cur) { return; }
-      /* a phone's short stage: shorter lines (`phone`) and, where the
-         authored side would sit on the roofs or the drop target, an
-         authored phone offset (`ph`) */
-      var lines = (isPhone() && q.phone) || q.lines;
-      var at = (isPhone() && q.ph) || q;
+      if (q.step >= 0 && q.step !== cur) { return; }
+      var lines = (isPhone() && q.phone) || q.lines, at = (isPhone() && q.ph) || q;
       label(q.at[0], q.at[1], lines, at.dx, at.dy, at.anc);
     });
   }
-
-  /* the default is the first step, Detect */
-  var tlStep = S3_STEPS[0].to, tlMode = "step", tlTimer = null;
-  var STEP_MS = 1200;
-
+  var tlTimer = null, STEP_MS = 1700, detail = false;
   function renderS3() {
     var f = frame(3), s = [], T = [];
     clearInfo();
     f.avoidSolids = true;
-    drawS3(s, { step: tlStep, mode: tlMode, live: !!tlTimer, upp: f.upp }, labeller(T, f));
+    drawS3(s, { step: S.step, live: !!tlTimer, upp: f.upp }, detail ? null : labeller(T, f));
     G["rg-incident"].innerHTML = s.join("");
     G["rg-labels"].innerHTML = T.join("");
-    svg.dataset.act = tlStep >= 6 ? "1" : "0";
-    /* the unlabelled sensors on the ridge light only on the Detect step;
-       otherwise they sit faint under the incident */
-    svg.dataset.see = (tlMode === "step" && tlStep >= 1 && tlStep <= 3) ? "1" : "0";
+    svg.dataset.act = S.step >= 3 ? "1" : "0";
+    svg.dataset.see = S.step === 1 ? "1" : "0";
   }
-
-  /* screen 4: the record, faint and wordless, under the columns. Mode
-     "all" so every mark of the record is drawn at one strength (the
-     screen-3 end-state fade does not apply); no labels are asked for. */
-  function drawS4(f) {
-    var s = [], r = [], px = function (n) { return n * f.upp; };
-    drawS3(s, { step: S3_EVENTS.length, mode: "all", live: false, upp: f.upp }, null);
-    roadHold(r, px);
-    G["rg-incident"].innerHTML = '<g opacity=".38">' + s.join("") + '</g>' + r.join("");
-  }
-
   function paintTl() {
-    var btn = document.getElementById("tl-play");
-    if (btn) { btn.textContent = tlTimer ? "Pause" : "Replay"; }
-    var all = document.getElementById("tl-all");
-    if (all) { all.disabled = (tlMode === "all" && tlStep >= S3_EVENTS.length); }
-    /* Next step rests once Decision is reached, however it was reached;
-       Replay starts the walk again */
-    var nx = document.getElementById("tl-step");
-    if (nx) { nx.disabled = tlStep >= S3_EVENTS.length; }
-    var now = document.getElementById("tl-now");
-    if (now) {
-      var k = s3StepOf(Math.max(1, tlStep));
-      now.innerHTML = tlMode === "all" ? "<b>All four steps</b>" : "<b>" + (k + 1) + " of " + S3_STEPS.length + "</b> · " + S3_STEPS[k].title;
-    }
+    var btn = document.getElementById("tl-play"), nx = document.getElementById("tl-step"), all = document.getElementById("tl-all"), now = document.getElementById("tl-now"), take = document.getElementById("take-3");
+    if (btn) { btn.textContent = tlTimer ? "Pause" : "Replay"; btn.setAttribute("aria-pressed", tlTimer ? "true" : "false"); }
+    if (nx) { nx.disabled = S.step >= 3; }
+    if (all) { all.disabled = S.step >= 3; }
+    if (now) { now.innerHTML = S.step === 0 ? "<b>Ready</b> · press Next step" : "<b>" + S.step + " of 3</b> · " + S3_STEPS[S.step - 1].title; }
+    if (take) { take.hidden = S.step < 3 || detail; }
+    var mb = document.getElementById("more-3"), mp = document.getElementById("more-panel");
+    if (mb) { mb.setAttribute("aria-expanded", detail ? "true" : "false"); mb.textContent = detail ? "Close detail" : "Operational detail"; }
+    if (mp) { mp.hidden = !detail; }
     if (current === 3 && SC) { renderS3(); }
+    paintCta();
+    persist();
+  }
+  function tlStop() { clearInterval(tlTimer); tlTimer = null; }
+  function tlNext() {
+    tlStop();
+    if (S.step >= 3) { return; }
+    S.step += 1; paintTl();
+    say("Step " + S.step + " of 3, " + S3_STEPS[S.step - 1].title + ". " + S3_STEPS[S.step - 1].note);
+  }
+  function tlRun() {
+    if (tlTimer) { tlStop(); paintTl(); say("Paused at step " + S.step + " of 3."); return; }
+    S.step = 0; paintTl();
+    tlNext();
+    tlTimer = setInterval(function () { if (S.step >= 3) { tlStop(); paintTl(); return; } tlNext(); if (S.step >= 3) { tlStop(); paintTl(); } }, STEP_MS);
+    paintTl();
+  }
+  function tlFinish() { tlStop(); S.step = 3; paintTl(); say("The incident, complete. " + S3_STEPS.map(function (st, i) { return "Step " + (i + 1) + ", " + st.title + ": " + st.note; }).join(" ")); }
+
+  /* ══ screen 4: three seasons of record over the subdued county ══ */
+  var SEASONS = [
+    { prev: "44 km corridor maintained", resp: "Mill Creek fire held at the corridor", exp: "Assessment pending" },
+    { prev: "44 km corridor · 2 fuel breaks", resp: "Mill Creek fire held · 2 more · 1 late", exp: "Assessment pending" },
+    { prev: "44 km corridor · 2 fuel breaks · 61 homes hardened", resp: "Mill Creek fire held · 3 more · 1 late", exp: "Loss modelled −28% · risk remains above Rim" }
+  ];
+  function paintSeason() {
+    var k = S.season, sn = SEASONS[k - 1];
+    var set = function (id, t) { var e = document.getElementById(id); if (e) { e.textContent = t; } };
+    var now = document.getElementById("season-now"); if (now) { now.innerHTML = "<b>Season " + k + "</b>"; }
+    set("ev-prev", sn.prev); set("ev-resp", sn.resp); set("ev-exp", sn.exp);
+    var col = document.getElementById("ev-exp-col"); if (col) { col.classList.toggle("ev-col--open", k < 3); }
+    var ver = document.getElementById("ev-ver"); if (ver) { ver.hidden = k < 3; }
+    var nx = document.getElementById("season-next");
+    if (nx) { nx.disabled = k >= 3; }
+    if (current === 4 && SC) { drawFor(4); }
+    paintCta(); persist();
+  }
+  function seasonNext() { if (S.season >= 3) { return; } S.season += 1; paintSeason(); say("Season " + S.season + ". Prevention: " + SEASONS[S.season - 1].prev + ". Response: " + SEASONS[S.season - 1].resp + ". Exposure: " + SEASONS[S.season - 1].exp + "." + (S.season === 3 ? " Verified by an independent review; Kestrel Mutual uses it in a new underwriting assessment." : "")); }
+  function seasonAll() { S.season = 3; paintSeason(); say("All three seasons. " + SEASONS[2].prev + ". " + SEASONS[2].resp + ". " + SEASONS[2].exp + ". Verified by an independent review; Kestrel Mutual uses it in a new underwriting assessment."); }
+  function drawS4(f) {
+    var s = [], T = [], px = function (n) { return n * f.upp; };
+    corridorDraw(s, px, S.season >= 1);
+    if (S.season >= 2) {
+      /* two fuel breaks: the canyon-mouth break and one above Rim */
+      [BREAK, [[1240, 600], [1300, 584], [1360, 578], [1420, 586], [1470, 602]]].forEach(function (b) { var d = SC.smooth(b.map(function (q) { return SC.P(q[0], q[1]); })); s.push('<path d="' + d + '" fill="none" stroke="' + C.paper + '" stroke-width="' + n1(px(10)) + '" opacity=".5"/><path d="' + d + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(4.5)) + '" stroke-dasharray="' + n1(px(10)) + ' ' + n1(px(5)) + '" opacity=".85"/>'); });
+    }
+    if (S.season >= 3) {
+      /* what remains: the wind-driven exposure above Rim, hatched, not hidden */
+      var zone = [[1250, 340], [1480, 330], [1560, 420], [1500, 520], [1300, 530], [1240, 440]];
+      var zd = wpath(zone, true);
+      s.push('<path d="' + zd + '" fill="url(#s3-hatch)" opacity=".55"/><path d="' + zd + '" fill="none" stroke="' + S3_HOLD + '" stroke-width="' + n1(px(1.6)) + '" stroke-dasharray="' + n1(px(5)) + ' ' + n1(px(4)) + '"/>');
+    }
+    var mc = SC.P(962, 712); mc[1] += px(4);
+    s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(1.6)) + '" opacity=".7"/>');
+    G["rg-business"].innerHTML = s.join("");
+    var label = labeller(T, f), LH = f.size * 1.3;
+    f.avoidSolids = true;
+    settlementLabels(label, LH, ["Mill Creek"]);
+    G["rg-labels"].innerHTML = T.join("");
+  }
+
+  /* ══ screen 5: the field after — an offer area above the current limit, no. 12 inside it ══ */
+  function drawS5(f) {
+    var A = [], T = [], q = availPaths(), px = function (n) { return n * f.upp; };
+    A.push('<path d="' + area(q.cond) + '" fill="' + C.avail + '" opacity=".11"/>');
+    A.push('<path d="' + SC.smooth(q.edge) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="1.1" stroke-dasharray="3 7" stroke-linecap="round" opacity=".55"/>');
+    A.push('<path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + C.paper + '" stroke-width="6" opacity=".5"/><path d="' + SC.smooth(q.cond) + '" fill="none" stroke="' + C.availEdge + '" stroke-width="2.2"/>');
+    homeRing(A, px, S.decision === "accept" ? CARRIER : S.decision === "decline" ? INK : C.availEdge);
+    G["rg-availability"].innerHTML = A.join("");
+    var label = labeller(T, f), LH = f.size * 1.3;
+    settlementLabels(label, LH, ["Mill Creek"]);
+    f.avoidSolids = true; f.strictSolids = true;
+    label(HOME.x, HOME.y, [["No. 12", "b", C.label]], 24, -LH / 2 - 6, "start");
+    label(130, condY(130), isPhone() ? [["Offer area", "b", C.label], ["service active", "r", C.label]] : [["Offer area · service active", "b", C.label]], 0, 12, "middle");
+    G["rg-labels"].innerHTML = T.join("");
+  }
+  function paintOffer() {
+    var acc = document.getElementById("accept"), dec = document.getElementById("decline"), done = document.getElementById("decided");
+    if (acc) { acc.setAttribute("aria-pressed", S.decision === "accept" ? "true" : "false"); }
+    if (dec) { dec.setAttribute("aria-pressed", S.decision === "decline" ? "true" : "false"); }
+    if (done) { done.hidden = !S.decision; done.textContent = S.decision === "accept" ? "Accepted · cover from 1 July 2037, service active" : S.decision === "decline" ? "Declined · no cover; offer open 30 days" : ""; }
+    if (current === 5 && SC) { drawFor(5); }
     persist();
   }
 
-  function tlStop() { clearInterval(tlTimer); tlTimer = null; }
-
-  function s3Announce(ev1) {
-    var ev = S3_EVENTS[ev1 - 1];
-    if (!ev) { return; }
-    var k = s3StepOf(ev.n), st = S3_STEPS[k];
-    var first = k === 0 ? ev.n === 1 : S3_STEPS[k - 1].to + 1 === ev.n;
-    say((first ? "Step " + (k + 1) + " of " + S3_STEPS.length + ", " + st.title + ". " : "") +
-        ev.t + ", " + ev.who + ". " + ev.what.join(" ") + " " + ev.state + ".");
-  }
-
-  /* Next step: Detect → Coordinate → Act → Decision, one press at a time,
-     each press a hard cut on the same landscape. Nothing it reaches
-     executes the decision. */
-  function tlNext() {
-    tlStop();
-    var k = Math.min(S3_STEPS.length - 1, s3StepOf(Math.max(1, tlStep)) + 1);
-    tlMode = "step"; tlStep = S3_STEPS[k].to;
-    paintTl();
-    say("Step " + (k + 1) + " of " + S3_STEPS.length + ", " + S3_STEPS[k].title + ". " + S3_STEPS[k].note);
-  }
-
-  /* Replay / Pause, in one control that is always labelled with the action
-     it performs. Replay always starts from the first event; Pause stops
-     the clock where it is. The replay is a stepped sequence, not an
-     animation: under prefers-reduced-motion the steps still arrive. */
-  function tlRun() {
-    if (tlTimer) {
-      tlStop(); paintTl();
-      say("Replay paused at event " + tlStep + " of " + S3_EVENTS.length + ".");
-      return;
+  /* ══ screen 6: the hub and three paying customers; the investor's line, distinct ══ */
+  var PAYERS = [
+    { x: 330, y: 400, c: PUBLIC,  bend: 34,  lines: [["Municipality", "b", PUBLIC], ["readiness, response coordination", "r", PUBLIC]], phone: [["Municipality", "b", PUBLIC], ["readiness, coordination", "r", PUBLIC]] },
+    { x: 230, y: 560, c: VENDOR,  bend: 0,   lines: [["Residents", "b", VENDOR], ["local prevention, protection", "r", VENDOR]] },
+    { x: 330, y: 690, c: CARRIER, bend: -34, lines: [["Insurers", "b", CARRIER], ["verified risk services", "r", CARRIER]] }
+  ];
+  function drawS6(f) {
+    var s = [], T = [], px = function (n) { return n * f.upp; };
+    var HUB_PX = isPhone() ? 24 : 36, NODE_PX = isPhone() ? 10 : 13, CORE_R = px(HUB_PX), MARK_R = px(NODE_PX), LH = f.size * 1.3;
+    corridorDraw(s, px, true);
+    var mc = SC.P(962, 712); mc[1] += px(4);
+    s.push('<ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="' + SAGE + '" opacity=".12"/><ellipse cx="' + n1(mc[0]) + '" cy="' + n1(mc[1]) + '" rx="' + n1(px(132)) + '" ry="' + n1(px(88)) + '" fill="none" stroke="' + SAGE + '" stroke-width="' + n1(px(1.6)) + '" opacity=".8"/>');
+    function linkPath(a, ra, b, rb, bend) {
+      var cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2 + bend;
+      var trim = function (p, r, toward) { var dx = toward[0] - p[0], dy = toward[1] - p[1], d = Math.sqrt(dx * dx + dy * dy) || 1; return [p[0] + dx / d * r, p[1] + dy / d * r]; };
+      var p0 = trim(a, ra, [cx, cy]), p1 = trim(b, rb, [cx, cy]);
+      return "M" + n1(p0[0]) + " " + n1(p0[1]) + " Q" + n1(cx) + " " + n1(cy) + " " + n1(p1[0]) + " " + n1(p1[1]);
     }
-    tlStep = 0; tlMode = "step";
-    tlTimer = setInterval(function () {
-      tlStep++;
-      if (tlStep >= S3_EVENTS.length) { tlStep = S3_EVENTS.length; tlStop(); }
-      paintTl();
-      s3Announce(tlStep);
-    }, STEP_MS);
-    tlStep++;
-    paintTl();
-    s3Announce(tlStep);
+    var cp = SC.P(HUB.x, HUB.y);
+    PAYERS.forEach(function (q) {
+      var qp = SC.P(q.x, q.y), d = linkPath(qp, MARK_R + px(2), cp, CORE_R + px(4), px(q.bend));
+      s.push('<path d="' + d + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(6)) + '" opacity=".55"/>');
+      s.push('<path d="' + d + '" fill="none" stroke="' + q.c + '" stroke-width="' + n1(px(2.2)) + '" opacity=".8" color="' + q.c + '" marker-end="url(#arrSolid)"/>');
+      s.push('<circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(MARK_R) + '" fill="' + PAPER + '" stroke="' + q.c + '" stroke-width="' + n1(px(3)) + '"/><circle cx="' + n1(qp[0]) + '" cy="' + n1(qp[1]) + '" r="' + n1(px(4)) + '" fill="' + q.c + '"/>');
+    });
+    /* the investor's line: dashed, once, from the insurer's mark to the hub's rim — not a service payment */
+    var ip = SC.P(PAYERS[2].x, PAYERS[2].y);
+    var di = linkPath(ip, MARK_R + px(2), cp, CORE_R + px(4), px(-70));
+    s.push('<path d="' + di + '" fill="none" stroke="' + PAPER + '" stroke-width="' + n1(px(6)) + '" opacity=".5"/><path d="' + di + '" fill="none" stroke="' + CARRIER + '" stroke-width="' + n1(px(1.6)) + '" stroke-dasharray="' + n1(px(4)) + ' ' + n1(px(5)) + '" opacity=".8"/>');
+    s.push('<circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(CORE_R) + '" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="' + n1(px(3.4)) + '"/><circle cx="' + n1(cp[0]) + '" cy="' + n1(cp[1]) + '" r="' + n1(px(12)) + '" fill="' + INK + '"/>');
+    G["rg-business"].innerHTML = s.join("");
+    var hp = f.proj(HUB.x, HUB.y), hr = HUB_PX - 4;
+    f.placed.push({ left: hp[0] - hr, right: hp[0] + hr, top: hp[1] - hr, bottom: hp[1] + hr });
+    PAYERS.forEach(function (q) { var p = f.proj(q.x, q.y), nr = NODE_PX - 4; f.placed.push({ left: p[0] - nr, right: p[0] + nr, top: p[1] - nr, bottom: p[1] + nr }); });
+    f.avoidSolids = true;
+    var label = labeller(T, f);
+    label(HUB.x, HUB.y, [["Resilience Grid", "b"], ["annual contracts fund next season's work", "r"]], 0, HUB_PX + 8, "middle");
+    PAYERS.forEach(function (q) { label(q.x, q.y, (isPhone() && q.phone) || q.lines, -(NODE_PX + 10), -LH, "end"); });
+    label(560, 640, [["Investment · once", "r", CARRIER]], 0, -LH / 2, "middle");
+    settlementLabels(label, LH, ["Mill Creek"]);
+    G["rg-labels"].innerHTML = T.join("");
   }
 
-  function tlShowAll() {
-    tlStop();
-    tlStep = S3_EVENTS.length;
-    tlMode = "all";
-    paintTl();
-    say("All four steps shown at once. " +
-        S3_STEPS.map(function (st, i) { return "Step " + (i + 1) + ", " + st.title + ": " + st.note; }).join(" "));
-  }
-
-  /* ══ STATE — what persists for the session: the availability state and
-     where the moment's walk stands. Restart from the last screen clears it:
-     availability back to now, the moment back to Detect. ══ */
-  var STORE = "rg-state";
-  function persist() {
-    try { sessionStorage.setItem(STORE, JSON.stringify({ availability: S.availability, step: tlStep, mode: tlMode })); } catch (e) { /* private mode */ }
-  }
-  function restore() {
-    var v = null;
-    try { v = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (e) { v = null; }
-    if (!v) { return; }
-    if (v.availability === "earlier" || v.availability === "now") { S.availability = v.availability; }
-    if (v.mode === "all" || v.mode === "step") { tlMode = v.mode; }
-    if (typeof v.step === "number" && v.step >= 1 && v.step <= S3_EVENTS.length) { tlStep = Math.round(v.step); }
-  }
-  function resetStates() {
-    setAvailability("now", true);
-    tlStop(); tlStep = S3_STEPS[0].to; tlMode = "step";
-    try { sessionStorage.removeItem(STORE); } catch (e) { /* private mode */ }
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     PER-SCREEN DRAW
-     ══════════════════════════════════════════════════════════════════════ */
-
+  /* ══ per-screen draw and the HTML state ══ */
   function drawFor(n) {
     if (!SC) { return; }
     svg.dataset.screen = String(n);
     clearInfo();
-    if (n === 1)      { drawS1(frame(1)); }
+    if (n === 1) { drawS1(frame(1)); }
     else if (n === 2) { drawS2(frame(2)); }
-    else if (n === 3) { paintTl(); }
+    else if (n === 3) { renderS3(); }
     else if (n === 4) { drawS4(frame(4)); }
     else if (n === 5) { drawS5(frame(5)); }
+    else if (n === 6) { drawS6(frame(6)); }
+  }
+  function paintS1() {
+    var ask = document.getElementById("ask"), note = document.getElementById("cust-note-1"), m = document.getElementById("muse-1"), take = document.getElementById("take-1");
+    if (ask) { ask.hidden = S.asked; } if (note) { note.hidden = S.asked; }
+    if (m) { m.hidden = !S.asked; } if (take) { take.hidden = !S.asked; }
+  }
+  function paintS2() {
+    var b = document.getElementById("commission"), note = document.getElementById("cust-note-2"), d = document.getElementById("commissioned");
+    if (b) { b.hidden = S.commissioned; } if (note) { note.hidden = S.commissioned; } if (d) { d.hidden = !S.commissioned; }
+  }
+  function askMuse() { if (S.asked) { return; } S.asked = true; paintS1(); paintCta(); persist(); say("Muse searched nine insurers. No standard-market offer for Mill Creek. Better shopping can't fix a place too risky to insure."); }
+  function commission() { if (S.commissioned) { return; } S.commissioned = true; paintS2(); paintCta(); persist(); say("Commissioned: Alder County signs a three-year contract with Resilience Grid. It contracts existing providers and coordinates their work."); }
+  function decide(d) { S.decision = d; paintOffer(); say(d === "accept" ? "Accepted. Cover from 1 July 2037, while the prevention service stays active." : "Declined. No cover; the offer stands for thirty days."); }
+
+  /* the chrome's Next completes the open beat before it advances: the ask,
+     the commission, the incident, the seasons. Screen 5's decision stays the
+     household's; Next never accepts or declines. */
+  function pending(n) {
+    if (n === 1 && !S.asked) { return "Ask Muse"; }
+    if (n === 2 && !S.commissioned) { return "Commission the service"; }
+    if (n === 3 && S.step < 3) { return "Finish the incident"; }
+    if (n === 4 && S.season < 3) { return "Next season"; }
+    return null;
+  }
+  var CTA = ["The proposition", "The moment", "The evidence", "The offer", "The venture", "Back to workshop"];
+  function paintCta() { if (nextLabel) { nextLabel.textContent = pending(current) || CTA[current - 1]; } }
+  function forward() {
+    var p = pending(current);
+    if (p) {
+      if (current === 1) { askMuse(); }
+      else if (current === 2) { commission(); }
+      else if (current === 3) { tlFinish(); }
+      else if (current === 4) { seasonAll(); }
+      return;
+    }
+    if (current === total) { resetStates(); location.href = "../../workshop/"; return; }
+    show(current + 1);
   }
 
-  /* a small hook for facilitators and the QA script */
-  window.__rg = {
-    /* stage(k): the step to show, 0 Detect · 1 Coordinate · 2 Act · 3 Decision */
-    stage: function (k) { tlStop(); tlMode = "step"; tlStep = S3_STEPS[Math.max(0, Math.min(3, k | 0))].to; paintTl(); },
-    /* step(e): events reached, 0..8 */
-    step:  function (e) { tlStop(); tlMode = "step"; tlStep = Math.max(0, Math.min(8, e)); paintTl(); },
-    next: tlNext,
-    showAll: tlShowAll,
-    steps: S3_STEPS,
-    set: function (st) { setAvailability(st); },
-    events: S3_EVENTS,
-    dropped: function () { return dropped.slice(); },
-    scene: function () { return SC; },
-    vb: function () { return vb; }
-  };
+  window.__rg = { S: function () { return S; }, step: function (e) { tlStop(); S.step = Math.max(0, Math.min(3, e | 0)); paintTl(); }, season: function (k) { S.season = Math.max(1, Math.min(3, k | 0)); paintSeason(); }, dropped: function () { return dropped.slice(); }, scene: function () { return SC; }, vb: function () { return vb; } };
 
-  /* screen 4's "Done" plate is read from S3_EVENTS, so it can never
-     disagree with the moment */
-  (function () {
-    var el = document.getElementById("ev-recorded");
-    if (!el || !S3_EVENTS.length) { return; }
-    el.textContent = S3_EVENTS.length + " actions recorded, ";
-    var span = document.createElement("span");
-    span.className = "nw";
-    span.textContent = S3_EVENTS[0].t + "–" + S3_EVENTS[S3_EVENTS.length - 1].t;
-    el.appendChild(span);
-  })();
-
-  /* ══════════════════════════════════════════════════════════════════════
-     FIT — a block is never given a height it then has to clip; instead
-     the whole composition gives way. The stage (.gw) is not a block.
-     ══════════════════════════════════════════════════════════════════════ */
-
+  /* ══ FIT ══ */
   var FIT_FLOOR = 0.74;
-
-  function stageBox(sc) {
-    var r = sc.getBoundingClientRect(), cs = getComputedStyle(sc);
-    return {
-      top: r.top + parseFloat(cs.paddingTop), bottom: r.bottom - parseFloat(cs.paddingBottom),
-      left: r.left + parseFloat(cs.paddingLeft), right: r.right - parseFloat(cs.paddingRight)
-    };
-  }
-
+  function stageBox(sc) { var r = sc.getBoundingClientRect(), cs = getComputedStyle(sc); return { top: r.top + parseFloat(cs.paddingTop), bottom: r.bottom - parseFloat(cs.paddingBottom), left: r.left + parseFloat(cs.paddingLeft), right: r.right - parseFloat(cs.paddingRight) }; }
   function spills(sc) {
     if (narrow) { return sc.scrollHeight > sc.clientHeight + 1; }
     var box = stageBox(sc), rects = [], bad = false, i, j;
     Array.prototype.forEach.call(sc.children, function (el) {
-      if (el.classList.contains("gw")) { return; }
+      if (el.classList.contains("gw") || el.hidden) { return; }
       var r = el.getBoundingClientRect();
       if (r.width < 2 || r.height < 2) { return; }
-      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 ||
-          r.left < box.left - 1 || r.right > box.right + 1) { bad = true; }
+      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 || r.left < box.left - 1 || r.right > box.right + 1) { bad = true; }
       rects.push(r);
     });
-    for (i = 0; i < rects.length && !bad; i++) {
-      for (j = i + 1; j < rects.length; j++) {
-        if (rects[i].left < rects[j].right - 1 && rects[i].right > rects[j].left + 1 &&
-            rects[i].top < rects[j].bottom - 1 && rects[i].bottom > rects[j].top + 1) {
-          bad = true; break;
-        }
-      }
-    }
+    for (i = 0; i < rects.length && !bad; i++) { for (j = i + 1; j < rects.length; j++) { if (rects[i].left < rects[j].right - 1 && rects[i].right > rects[j].left + 1 && rects[i].top < rects[j].bottom - 1 && rects[i].bottom > rects[j].top + 1) { bad = true; break; } } }
     if (!bad) {
       Array.prototype.forEach.call(sc.querySelectorAll("*"), function (el) {
         if (bad) { return; }
-        if (el.closest(".gw")) { return; }
+        if (el.closest(".gw") || el.closest("details")) { return; }
         if (el.clientWidth <= 1 || el.clientHeight <= 1) { return; }
         if (!el.textContent || !el.textContent.trim()) { return; }
         var cs = getComputedStyle(el);
@@ -1153,42 +900,20 @@
     }
     return bad;
   }
-
   function fitScreen(sc) {
     if (!sc || sc.hidden) { return; }
     sc.style.setProperty("--fit", "1");
     if (narrow) { return; }
     if (!spills(sc)) { return; }
     var lo = FIT_FLOOR, hi = 1, best = FIT_FLOOR, mid, i;
-    for (i = 0; i < 7; i++) {
-      mid = (lo + hi) / 2;
-      sc.style.setProperty("--fit", mid.toFixed(4));
-      if (spills(sc)) { hi = mid; } else { lo = mid; best = mid; }
-    }
+    for (i = 0; i < 7; i++) { mid = (lo + hi) / 2; sc.style.setProperty("--fit", mid.toFixed(4)); if (spills(sc)) { hi = mid; } else { lo = mid; best = mid; } }
     sc.style.setProperty("--fit", best.toFixed(4));
-    for (i = 0; i < 8 && best > FIT_FLOOR && spills(sc); i++) {
-      best = Math.max(FIT_FLOOR, best - 0.025);
-      sc.style.setProperty("--fit", best.toFixed(4));
-    }
+    for (i = 0; i < 8 && best > FIT_FLOOR && spills(sc); i++) { best = Math.max(FIT_FLOOR, best - 0.025); sc.style.setProperty("--fit", best.toFixed(4)); }
   }
-
-  /* the labels test themselves against the blocks, so every screen is
-     drawn again once --fit and the fonts have settled the blocks' boxes */
   var fitPending = null;
-  function refit() {
-    cancelAnimationFrame(fitPending);
-    fitPending = requestAnimationFrame(function () {
-      fitScreen(screens[current - 1]);
-      buildScene();
-      drawFor(current);
-      moveCamera(current);
-    });
-  }
+  function refit() { cancelAnimationFrame(fitPending); fitPending = requestAnimationFrame(function () { fitScreen(screens[current - 1]); buildScene(); drawFor(current); moveCamera(current); }); }
 
-  /* ══════════════════════════════════════════════════════════════════════
-     NAVIGATION
-     ══════════════════════════════════════════════════════════════════════ */
-
+  /* ══ NAVIGATION ══ */
   var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
   var total = screens.length;
   var picker = document.getElementById("picker");
@@ -1197,126 +922,66 @@
   var nextBtn = document.getElementById("next");
   var nextLabel = document.getElementById("next-label");
   var current = 1;
+  screens.forEach(function (sc, i) { var o = document.createElement("option"); o.value = String(i + 1); o.textContent = (i + 1) + " of " + total + " · " + sc.dataset.label; picker.appendChild(o); });
 
-  var CTA = ["See the business", "The moment", "The evidence", "Market creation", "Back to the start"];
-
-  screens.forEach(function (sc, i) {
-    var o = document.createElement("option");
-    o.value = String(i + 1);
-    o.textContent = (i + 1) + " of " + total + " · " + sc.dataset.label;
-    picker.appendChild(o);
-  });
-
-  var tlStepBtn = document.getElementById("tl-step");
-  if (tlStepBtn) { tlStepBtn.addEventListener("click", tlNext); }
-  var tlPlay = document.getElementById("tl-play");
-  if (tlPlay) { tlPlay.addEventListener("click", tlRun); }
-  var tlAll = document.getElementById("tl-all");
-  if (tlAll) { tlAll.addEventListener("click", tlShowAll); }
-  Array.prototype.forEach.call(document.querySelectorAll(".compare button"), function (b) {
-    b.addEventListener("click", function () { setAvailability(b.dataset.set); });
-  });
+  var on = function (id, fn) { var el = document.getElementById(id); if (el) { el.addEventListener("click", fn); } };
+  on("ask", askMuse); on("commission", commission);
+  on("tl-step", tlNext); on("tl-play", tlRun); on("tl-all", tlFinish);
+  on("more-3", function () { detail = !detail; paintTl(); say(detail ? "Operational detail open; the map's labels stand down while it is read." : "Operational detail closed."); });
+  on("season-next", seasonNext);
+  on("accept", function () { decide("accept"); }); on("decline", function () { decide("decline"); });
+  on("restart", function () { resetStates(); show(1); say("Back to the start. Nothing is kept."); });
 
   function show(n, push) {
     n = ((n - 1 + total) % total) + 1;
     current = n;
     var sc = screens[n - 1];
-    /* the one stage moves into the open screen */
     var host = sc.querySelector(".gw");
     if (host && stage.parentNode !== host) { host.appendChild(stage); }
     screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
     picker.value = String(n);
     prevBtn.disabled = n === 1;
-    nextLabel.textContent = CTA[n - 1];
-
-    /* leaving screen 3 stops the clock */
-    if (n !== 3) { tlStop(); }
-
-    /* fit before the labels are placed: both read the settled layout */
+    if (n !== 3) { tlStop(); detail = false; }
+    paintS1(); paintS2(); paintSeason(); paintOffer(); paintTl(); paintCta();
     buildScene();
     fitScreen(sc);
     drawFor(n);
     moveCamera(n);
     refit();
-
-    /* headlines are authored as one span per line; join them with a space */
-    var h = sc.querySelector(".xd");
-    var spans = h ? h.querySelectorAll("span") : [];
-    var said = h
-      ? (spans.length
-          ? Array.prototype.map.call(spans, function (x) { return x.textContent.trim(); }).join(" ")
-          : h.textContent)
-      : sc.dataset.label;
+    var h = sc.querySelector(".xd"), spans = h ? h.querySelectorAll("span") : [];
+    var said = h ? (spans.length ? Array.prototype.map.call(spans, function (x) { return x.textContent.trim(); }).join(" ") : h.textContent) : sc.dataset.label;
     announce.textContent = "Screen " + n + " of " + total + ". " + said.replace(/\s+/g, " ").trim();
-
-    if (push !== false) {
-      try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ }
-    }
+    if (push !== false) { try { history.replaceState(null, "", "#s/" + n); } catch (e) { /* file:// */ } }
   }
-
   prevBtn.addEventListener("click", function () { show(current - 1); });
-  nextBtn.addEventListener("click", function () {
-    if (current === total) { resetStates(); }
-    show(current + 1);
-  });
+  nextBtn.addEventListener("click", forward);
   picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
-
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
-    if (tag === "select" || tag === "input" || tag === "button") { return; }
-    if (e.key === "ArrowRight") { show(current + 1); }
+    if (tag === "select" || tag === "input" || tag === "button" || tag === "a" || tag === "summary") { return; }
+    if (e.key === "ArrowRight") { forward(); }
     if (e.key === "ArrowLeft") { show(current - 1); }
   });
 
-  /* ══════════════════════════════════════════════════════════════════════
-     BOOT
-     ══════════════════════════════════════════════════════════════════════ */
-
+  /* ══ BOOT ══ */
   var relayout;
   window.addEventListener("resize", function () {
     clearTimeout(relayout);
     relayout = setTimeout(function () {
-      narrow = isNarrow();
-      stage.style.height = "";
-      screens.forEach(function (s) {
-        var h = s.hidden;
-        if (h) { s.hidden = false; }
-        fitScreen(s);
-        if (h) { s.hidden = true; }
-      });
-      buildScene(true);
-      drawFor(current);
-      moveCamera(current, true);
+      narrow = isNarrow(); stage.style.height = "";
+      screens.forEach(function (s) { var h = s.hidden; if (h) { s.hidden = false; } fitScreen(s); if (h) { s.hidden = true; } });
+      buildScene(true); drawFor(current); moveCamera(current, true);
     }, 140);
   });
-
-  /* skip button: move focus to the open screen's heading */
   var skip = document.getElementById("skip");
-  if (skip) {
-    skip.addEventListener("click", function () {
-      var sc = screens[current - 1];
-      var h = sc && (sc.querySelector(".xd") || sc.querySelector(".xeyebrow"));
-      if (h) { h.focus(); h.scrollIntoView({ block: "start" }); }
-    });
-  }
-
-  function fromHash() {
-    var m = /#s\/(\d+)/.exec(location.hash);
-    return m ? parseInt(m[1], 10) : null;
-  }
-  window.addEventListener("hashchange", function () {
-    var n = fromHash();
-    if (n !== null && n !== current) { show(n, false); }
-  });
-
-  /* the label widths are estimated, but the blocks' boxes are measured, so
-     the screen is drawn once more when the webfont has arrived */
+  if (skip) { skip.addEventListener("click", function () { var sc = screens[current - 1]; var h = sc && (sc.querySelector(".xd") || sc.querySelector(".xeyebrow")); if (h) { h.focus(); h.scrollIntoView({ block: "start" }); } }); }
+  function fromHash() { var m = /#s\/(\d+)/.exec(location.hash); return m ? parseInt(m[1], 10) : null; }
+  window.addEventListener("hashchange", function () { var n = fromHash(); if (n !== null && n !== current) { show(n, false); } });
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { refit(); }); }
 
   narrow = isNarrow();
   restore();
-  setAvailability(S.availability, true);
   show(fromHash() || 1, false);
   moveCamera(current, true);
 })();

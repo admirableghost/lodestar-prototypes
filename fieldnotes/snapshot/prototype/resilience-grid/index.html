@@ -6,155 +6,169 @@
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Resilience Grid 2036 — Alder County</title>
-<meta name="description" content="A regional wildfire prevention network in 2036, in an invented wildland-urban-interface county — built from capabilities that already exist, and honest about the operating agreement and the evidence that would have to come with it.">
+<meta name="description" content="A regional wildfire prevention company in 2036, in an invented county: one household loses its cover, the community buys a safer region, prevention and coordinated response hold a fire before the homes, a season of verified performance changes the assessment, an offer returns, and three paying customers keep the service running. Fictional county, insurer and figures.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="rg">
 
-<!-- A button, not an anchor: it moves focus to the open screen's heading
-     without touching the hash (an anchor to #deck used to throw the router
-     back to screen 1). -->
 <button class="skip" type="button" id="skip">Skip to this screen's content</button>
 
-<!-- ONE THOUGHT PER SCREEN, under 60 visible words per state. What a
-     facilitator says aloud lives in FACILITATOR-NOTES.md; what a screen
-     reader hears stays detailed in the .sr-only paragraphs.
-
-     THE GROUND is one stage (#stage, below, inside screen 1's .gw to
-     begin with) that app.js moves into whichever screen is open. On a
-     wide stage it is fixed behind the copy; on a narrow one it sits in
-     the flow after the copy and the control, and the screen scrolls.
-     Every word on the terrain is SVG text drawn by app.js on a paper tab,
-     so it is read by the word gate.
-
-     SEQUENCE: 1 The problem · 2 The business · 3 The moment · 4 The
-     evidence · 5 Market creation. The hashes #s/1..5 keep their numbers. -->
+<!-- SIX FRAMES, one beat each, under 60 visible words per state. The ground
+     is one stage (#stage) that app.js moves into the open screen; every word
+     on the terrain is SVG text drawn by app.js. Customer actions (what the
+     household or the community does) are paper buttons marked "customer";
+     presenter controls (step, replay, finish, season) are the ink buttons.
+     The chrome's Next completes the open beat before it advances, so
+     ordinary forward navigation reaches every payoff. -->
 <main class="deck" id="deck">
 
-<!-- ══════ 1 · THE PROBLEM ══════
-     Two states, Earlier / Now (default Now). Only the availability layer
-     and its labels change; the terrain, vegetation and buildings do not. -->
-<section class="screen" data-screen="1" data-label="The problem" data-state="now">
-  <div class="xhead" style="grid-area:1/1/5/9">
+<!-- ══════ 1 · THE PROBLEM ══════ -->
+<section class="screen" data-screen="1" data-label="The problem">
+  <div class="xhead" style="grid-area:1/1/4/8">
     <p class="xeyebrow">01 / Alder County · 2036</p>
-    <h1 class="xd" tabindex="-1"><span>The homes remain.</span><span>Insurance retreats.</span></h1>
+    <h1 class="xd" tabindex="-1"><span>Their homes are still here.</span><span>Their insurance isn't.</span></h1>
   </div>
-  <div class="compare" role="group" aria-label="Insurance availability, earlier or now" style="grid-area:1/9/2/13">
-    <button type="button" id="st-earlier" data-set="earlier" aria-pressed="false">Earlier</button>
-    <button type="button" id="st-now" data-set="now" aria-pressed="true">Now</button>
-  </div>
-  <p class="sr-only">An elevated view of Alder County: a forested ridge, the Mill Creek canyon cut into it, three communities on the slope and valley — Alder, Mill Creek and Rim — and the valley road across the front. A cool field marks where insurance is still offered. Earlier, its limit reached the foot of the slope. Now, the current limit runs through the three communities, and the band between the two limits is where availability has retreated. The homes have not moved. Better prediction prices the risk precisely; it does not keep the market open.</p>
+  <p class="sr-only" id="sr-1">An elevated view of Alder County: a forested ridge, the Mill Creek canyon, three communities, the valley road. A cool field marks where standard insurance is still offered; its limit runs below Mill Creek. One home in Mill Creek, number 12, is ringed. Its non-renewal notice sits on the right. The homeowner asks Muse, their assistant, to find another insurer; Muse searches and returns no standard-market offer.</p>
   <div class="gw">
     <div class="stage" id="stage">
       <svg id="plan" role="img" aria-label="Alder County: a forested ridge above a canyon, three communities on the slope and valley floor, one road across the front."></svg>
     </div>
   </div>
-</section>
-
-<!-- ══════ 2 · AN OPERATING BUSINESS ══════
-     Four parts of the operation on the terrain as physical things (the
-     managed corridor, the ridge camera, the Mill Creek pad, the station
-     the contracted crews work from), one hub — "The operation" — and
-     THREE PAYER MARKS converging on it (app.js, drawS2): Public agencies,
-     Property owners, Insurers, with one line under the hub, "Fund it, or
-     buy its services." No network diagram: nothing joins the parts to
-     the hub and no link is typed. The scene's unlabelled sensors,
-     stations and pads are hidden on this screen (style.css). No shares,
-     amounts or returns anywhere. No availability layer on this screen. -->
-<section class="screen" data-screen="2" data-label="The business">
-  <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">02 / The business</p>
-    <h2 class="xd" tabindex="-1"><span>Prevention as a service,</span><span>paid for by everyone it protects.</span></h2>
-    <p class="xlede xlede--line">Paid before any fire — not from losses avoided.</p>
+  <div class="plate plate--notice" id="notice" style="grid-area:1/9/5/13">
+    <p class="pl-k">Non-renewal notice · No. 12, Mill Creek</p>
+    <p class="pl-v">Cover ends 30 June 2036.<br>Regional wildfire exposure.</p>
+    <!-- the household's action: a customer button, not a presenter control -->
+    <button type="button" class="cust" id="ask" aria-describedby="cust-note-1">Ask Muse to find another insurer</button>
+    <p class="cust-note" id="cust-note-1">Customer action</p>
+    <div class="muse" id="muse-1" hidden>
+      <p class="muse-n"><svg class="lens" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Muse</p>
+      <p class="muse-say">Nine insurers searched. No standard-market offer.</p>
+    </div>
   </div>
-  <p class="sr-only">The county with four parts of the operation marked on the terrain as physical things: a managed vegetation corridor on the slope below the ridge; the ridge camera that detects; the equipment on the Mill Creek suppression pad; and the fire station the contracted response crews work from. One hub on the slope, the operation. Three payer marks converge on it from the open ground to its west: public agencies, property owners and insurers, who fund it, or buy its services. The operation is paid before any fire, for the work it runs, not from losses avoided.</p>
-  <div class="gw"></div>
+  <p class="xlede xlede--take" id="take-1" style="grid-area:7/1/9/8" hidden>Shopping can't fix a place too risky to insure.</p>
 </section>
 
-<!-- ══════ 3 · COORDINATED RESPONSE, HUMAN AUTHORITY ══════
-     The eight events are DATA in app.js (S3_EVENTS). The scene zooms on
-     the canyon and Mill Creek. "Next step" (#tl-step, primary) walks
-     Detect → Coordinate → Act → Decision on the same landscape, one press
-     at a time; the marks accumulate, the words are per step and name the
-     actor acting within its own authority: the operation detects and
-     forecasts and holds its aircraft; the utility de-energises; Fire
-     District 3 holds the road; the duty chief decides. Default: Detect.
-     Replay walks the eight events on a clock through the same words;
-     Show all marks every step at once. "Mill Creek · 320 homes" stays on
-     every step; the drop target and the evacuation footprint are drawn
-     without words. The insurer never appears here. The decision at 14:47
-     stays pending; nothing on the screen executes it or claims a loss was
-     avoided. -->
+<!-- ══════ 2 · THE PROPOSITION ══════ -->
+<section class="screen" data-screen="2" data-label="The proposition">
+  <div class="xhead" style="grid-area:1/1/4/8">
+    <p class="xeyebrow">02 / The proposition</p>
+    <h2 class="xd" tabindex="-1"><span>What if they could</span><span>buy a safer region?</span></h2>
+  </div>
+  <p class="sr-only" id="sr-2">The county with the service's parts marked as physical things: a maintained vegetation corridor on the slope below the ridge, a contracted ridge camera, contracted aircraft on the Mill Creek pad, contracted crews at the fire station. Resilience Grid is a regional prevention company backed by an investment from Kestrel Mutual; it maintains vegetation corridors, contracts detection and response capacity, and verifies performance and shares it with participating insurers. It contracts existing providers and coordinates their work. The community commissions the service.</p>
+  <div class="gw"></div>
+  <div class="plate plate--offer plate--left" id="prop" style="grid-area:4/1/9/7">
+    <p class="pl-k">Resilience Grid</p>
+    <p class="pl-v">Regional prevention company, backed by Kestrel Mutual's investment.</p>
+    <ul class="commit">
+      <li>Maintain vegetation corridors</li>
+      <li>Contract detection and response</li>
+      <li>Verify performance for insurers</li>
+    </ul>
+    <p class="pl-s">Contracts and coordinates existing providers.</p>
+    <button type="button" class="cust" id="commission" aria-describedby="cust-note-2">Commission the service</button>
+    <p class="cust-note" id="cust-note-2">Customer action</p>
+    <p class="done" id="commissioned" hidden><svg class="seal" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10.5 16.5 L14.5 20.5 L22 11.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Commissioned · 3-year contract</p>
+  </div>
+</section>
+
+<!-- ══════ 3 · THE MOMENT ══════ three beats, presenter-stepped; the incident completes -->
 <section class="screen" data-screen="3" data-label="The moment">
   <div class="xhead" style="grid-area:1/1/4/6">
     <p class="xeyebrow">03 / The moment</p>
-    <h2 class="xd" tabindex="-1"><span>Detection is not</span><span>the product.</span><span>Coordination is.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>Before the fire</span><span>reaches the homes.</span></h2>
   </div>
-  <p class="sr-only">The event, 14:31 to 14:47, on the canyon above Mill Creek, in four steps. Detect: the operation's line sensor on the Mill Creek lateral flags a fault at 14:31; its Alder Peak ridge camera sees smoke at the same span at 14:33; a thermal satellite pass confirms heat at the same coordinates at 14:34. Coordinate: the utility de-energises its lateral at 14:36, within its own authority; the operation's spread model runs the canyon corridor at 14:38 — a forecast, not a decision. Act: Fire District 3 sends two engines to the canyon mouth and holds the one road out, the Mill Creek spur, open at 14:41; the operation's four contracted aircraft launch from the Mill Creek pad at 14:43 and hold. Decision: the evacuation of 320 homes and the suppression drop over occupied parcels wait on the duty chief's approval. The operation cannot make either call. Next step advances one step; Replay plays the eight events in order; Show all marks all four steps at once.</p>
+  <p class="sr-only" id="sr-3">The canyon above Mill Creek, close. Three beats. Detect: an ignition at the canyon head and its likely path toward the 320 homes. Coordinate: Resilience Grid coordinates the utility, which de-energises its line, and the contracted aircraft, which launch and hold; Fire District 3 approves the drop and the road closure, the interventions that need its authority. Act: crews work the prepared corridor above the homes while the evacuation route stays open. The fire is contained at the corridor; no homes are reached.</p>
   <div class="gw"></div>
-  <div class="s3-ctl" style="grid-area:8/1/9/6">
-    <p class="tl-now" id="tl-now"><b>1 of 4</b> · Detect</p>
-    <div class="tl-controls" role="group" aria-label="The moment, step by step">
+  <div class="s3-ctl" style="grid-area:7/1/9/7">
+    <p class="tl-now" id="tl-now"><b>Ready</b> · press Next step</p>
+    <div class="tl-controls" role="group" aria-label="The moment, step by step (presenter)">
       <button class="tl-play tl-step" type="button" id="tl-step">Next step</button>
       <button class="tl-play" type="button" id="tl-play">Replay</button>
-      <button class="tl-play" type="button" id="tl-all">Show all</button>
+      <button class="tl-play" type="button" id="tl-all">Finish</button>
     </div>
+    <button type="button" class="tl-play tl-play--more" id="more-3" aria-expanded="false" aria-controls="more-panel">Operational detail</button>
+    <ol class="more-l" id="more-panel" hidden>
+      <li>15:02 ignition flagged: camera, line sensor, satellite</li>
+      <li>15:07 utility de-energises its lateral</li>
+      <li>15:11 district approves drop, road closure</li>
+      <li>15:14 crews at the corridor; spur open</li>
+      <li>15:41 held at the corridor</li>
+    </ol>
   </div>
+  <p class="xlede xlede--take" id="take-3" style="grid-area:7/8/9/13" hidden>Preparation, coordination and contracted action, together.</p>
 </section>
 
-<!-- ══════ 4 · EVIDENCE, NOT ASSUMED SUCCESS ══════
-     Three plates left to right as one arrow toward screen 5, the third
-     dashed, over the subdued county with the moment's marks faint
-     beneath. "Done" is derived from S3_EVENTS by app.js. No percentages,
-     no results. -->
+<!-- ══════ 4 · THE EVIDENCE ══════ seasons advance under presenter control -->
 <section class="screen" data-screen="4" data-label="The evidence">
-  <div class="xhead" style="grid-area:1/1/4/9">
+  <div class="xhead" style="grid-area:1/1/4/7">
     <p class="xeyebrow">04 / The evidence</p>
-    <h2 class="xd" tabindex="-1"><span>The road out</span><span>stayed open.</span></h2>
+    <h2 class="xd" tabindex="-1"><span>A season of performance</span><span>changes the assessment.</span></h2>
   </div>
-  <p class="sr-only">The county with the moment's marks faint on the terrain and the one road out of Mill Creek drawn at full strength: it stayed open. Three plates, joined left to right by arrows. Observed: the road out stayed open; the drop and the decision are pending. Recorded: eight actions and their timing, 14:31 to 14:47. Not yet established: whether risk or losses fell; independent evaluation comes first. The record is what happened; it is not a result.</p>
+  <p class="sr-only" id="sr-4">The county, subdued, with the corridor maintained across the slope. Time advances across three seasons. The record grows: prevention work completed, response commitments met, including the Mill Creek fire contained at the corridor and one late response, and an updated assessment of the exposure that remains. An independent reviewer verifies the record; Kestrel Mutual, a participating insurer, uses it in a new underwriting assessment.</p>
   <div class="gw"></div>
-  <ul class="ev" style="grid-area:4/1/7/10" aria-label="The evidence, left to right">
-    <li class="ev-col ev-col--hero">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>Observed</span>
-      <span class="ev-v">the road out stayed open; drop and decision pending</span>
-    </li>
-    <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
-    <li class="ev-col">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Recorded</span>
-      <span class="ev-v" id="ev-recorded">8 actions and their timing, 14:31–14:47</span>
-    </li>
-    <li class="ev-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
-    <li class="ev-col ev-col--open">
-      <span class="ev-k"><svg class="ev-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.6"/></svg>Not yet established</span>
-      <span class="ev-v ev-v--open">risk reduction · independent evaluation first</span>
-    </li>
+  <div class="s3-ctl" style="grid-area:5/1/9/6">
+    <p class="tl-now" id="season-now"><b>Season 1</b> of 3</p>
+    <div class="tl-controls" role="group" aria-label="The seasons (presenter)">
+      <button class="tl-play tl-step" type="button" id="season-next">Next season</button>
+    </div>
+  </div>
+  <ul class="ev" id="ev" style="grid-area:1/7/7/13" aria-label="The record">
+    <li class="ev-col"><span class="ev-k">Prevention</span><span class="ev-v" id="ev-prev"></span></li>
+    <li class="ev-col"><span class="ev-k">Response</span><span class="ev-v" id="ev-resp"></span></li>
+    <li class="ev-col ev-col--open" id="ev-exp-col"><span class="ev-k">Exposure</span><span class="ev-v" id="ev-exp"></span></li>
+    <li class="ev-col ev-col--ver" id="ev-ver" hidden><span class="ev-v"><b>Verified</b> · independent review</span><span class="ev-v">Kestrel Mutual · reassessing</span></li>
   </ul>
 </section>
 
-<!-- ══════ 5 · MARKET CREATION ══════
-     The current availability limit, solid, as on screen 1 — it has not
-     moved — and ONE potential frontier upslope, dashed and sage, drawn as
-     a possibility: "Potential frontier · with evidence and capital". Three
-     small sage arrows point upslope between the two: the counter-movement
-     to screen 1's retreat. Nothing is filled or restored because the
-     viewer arrived; the lede names the conditions. No Earlier/Now control
-     here. -->
-<section class="screen" data-screen="5" data-label="Market creation">
-  <div class="xhead" style="grid-area:1/1/5/9">
-    <p class="xeyebrow">05 / Market creation</p>
-    <h2 class="xd" tabindex="-1"><span>Prevention can</span><span>move the line.</span></h2>
-    <p class="xlede">With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes.</p>
+<!-- ══════ 5 · THE CUSTOMER PAYOFF ══════ -->
+<section class="screen" data-screen="5" data-label="The offer">
+  <div class="xhead" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">05 / The offer</p>
+    <h2 class="xd" tabindex="-1"><span>Now there is</span><span>an offer.</span></h2>
   </div>
-  <p class="sr-only">The same county as screen one, with the current availability limit drawn solid through the three communities, where it was, and one dashed sage line a little upslope of it, labelled potential frontier, with evidence and capital: a possibility, distinct from the confirmed limit. Three small arrows between the two lines point upslope, the opposite direction to the retreat on screen one. Nothing between them is filled. With credible evidence, acceptable remaining risk and willing capital, coverage could reach more homes; none of it has happened on this screen.</p>
+  <p class="sr-only" id="sr-5">The county with the offer area drawn above Mill Creek: standard cover is offered again where the prevention service is active, and number 12 sits inside it. Before: no standard-market offer. After: an offer from Kestrel Mutual, 3,900 a year, conditional on the regional prevention service staying active. Muse explains the premium and the condition. The homeowner can accept or decline.</p>
   <div class="gw"></div>
+  <div class="plate plate--offer" id="offer" style="grid-area:1/8/8/13">
+    <p class="pl-k pl-k--before">Before · no standard-market offer</p>
+    <p class="pl-k">After · Kestrel Mutual</p>
+    <p class="pl-big">3,900<span> a year</span></p>
+    <div class="muse">
+      <p class="muse-n"><svg class="lens" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Muse</p>
+      <p class="muse-say">3,900 a year, while Resilience Grid's service stays active in Alder County.</p>
+    </div>
+    <div class="acts" role="group" aria-label="The household's decision (customer)">
+      <button type="button" class="cust" id="accept" aria-pressed="false">Accept</button>
+      <button type="button" class="cust cust--quiet" id="decline" aria-pressed="false">Decline</button>
+    </div>
+    <p class="cust-note">Customer action</p>
+    <p class="done" id="decided" hidden></p>
+  </div>
+</section>
+
+<!-- ══════ 6 · THE VENTURE ══════ -->
+<section class="screen" data-screen="6" data-label="The venture">
+  <div class="xhead" style="grid-area:1/1/4/7">
+    <p class="xeyebrow">06 / The venture</p>
+    <h2 class="xd" tabindex="-1"><span>Three customers</span><span>keep prevention running.</span></h2>
+  </div>
+  <p class="sr-only" id="sr-6">The county with Mill Creek protected and the corridor maintained. Three recurring payment lines run to Resilience Grid: the municipality pays for regional readiness and response coordination; residents pay for local prevention and protection services; insurers pay for verified risk services supporting underwriting. Kestrel Mutual has two roles: an investor in Resilience Grid, and a participating insurer that buys its verified risk services. Investment is distinct from service revenue. Annual service contracts fund the next season's prevention work.</p>
+  <div class="gw"></div>
+  <div class="plate plate--roles" id="roles" style="grid-area:5/8/9/13">
+    <p class="pl-k">Kestrel Mutual · two roles</p>
+    <p class="pl-v"><b>Investor</b> · equity, once.<br><b>Participating insurer</b> · buys verified risk services.</p>
+    <div class="acts">
+      <button type="button" class="tl-play" id="restart">Restart</button>
+      <a class="tl-play tl-link" href="../../workshop/">Back to workshop</a>
+    </div>
+  </div>
 </section>
 
 </main>
 
 <!-- ═══════════════ CHROME ═══════════════ -->
 <div class="chrome">
+  <a class="wslink" href="../../workshop/" id="wslink">Workshop</a>
   <div class="chrome-r">
     <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
       <span aria-hidden="true">&larr;</span>
@@ -164,7 +178,7 @@
       <select id="picker"></select>
     </label>
     <button class="cta" type="button" id="next">
-      <span id="next-label">See the business</span> <span aria-hidden="true">&rarr;</span>
+      <span id="next-label">Ask Muse</span> <span aria-hidden="true">&rarr;</span>
     </button>
   </div>
 </div>

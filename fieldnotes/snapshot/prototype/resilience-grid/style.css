@@ -129,10 +129,12 @@ body.rg {
 .rg #rg-veil { opacity: 0; }
 .rg svg[data-screen="2"] #rg-veil { opacity: .28; }
 .rg svg[data-screen="3"] #rg-veil { opacity: .14; }
-.rg svg[data-screen="4"] #rg-veil { opacity: .62; }
+.rg svg[data-screen="4"] #rg-veil { opacity: .5; }
 .rg svg[data-screen="5"] #rg-veil { opacity: .06; }
+.rg svg[data-screen="6"] #rg-veil { opacity: .3; }
 .rg svg[data-screen="1"] .rg-util, .rg svg[data-screen="5"] .rg-util,
-.rg svg[data-screen="1"] .rg-nodes, .rg svg[data-screen="5"] .rg-nodes, .rg svg[data-screen="4"] .rg-nodes { opacity: 0; }
+.rg svg[data-screen="1"] .rg-nodes, .rg svg[data-screen="5"] .rg-nodes, .rg svg[data-screen="4"] .rg-nodes, .rg svg[data-screen="6"] .rg-nodes { opacity: 0; }
+.rg svg[data-screen="6"] .rg-util { opacity: 0; }
 /* screen 2 names its four parts itself; the unlabelled sensors, stations
    and pads would only compete with them */
 .rg svg[data-screen="2"] .rg-nodes { opacity: 0; }
@@ -170,7 +172,7 @@ body.rg {
 }
 .rg .screen > * { min-width: 0; }
 
-.rg .xhead, .rg .compare, .rg .xask, .rg .s3-ctl, .rg .ev, .rg .tl-play, .rg .cta, .rg .iconbtn, .rg .picker, .rg select {
+.rg .xhead, .rg .plate, .rg .xask, .rg .s3-ctl, .rg .ev, .rg .tl-play, .rg .cta, .rg .iconbtn, .rg .picker, .rg select, .rg .wslink, .rg .xlede--take {
   pointer-events: auto;
 }
 
@@ -463,3 +465,59 @@ body.rg {
   .rg .deck { inset: 0 0 calc(var(--chrome-h) + var(--gesture-safe)) 0; }
   .rg .screen { padding-bottom: 8px; }
 }
+
+
+/* ══ THE SIX-FRAME STORY ═══ paper plates for the household and the community; ink for the presenter ══ */
+.rg .plate { z-index: 3; justify-self: end; align-self: start; width: 100%; max-width: 380px;
+  display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px;
+  background: var(--paper); border-radius: var(--r-m); box-shadow: var(--plate-shadow); border-top: 4px solid var(--edition-ink); }
+.rg .plate--notice { border-top-color: var(--alarm); }
+.rg .plate--roles { align-self: end; border-top-color: var(--carrier); }
+.rg .pl-k { margin: 0; font: 700 var(--x-label)/1.3 var(--sans); color: var(--edition-ink); }
+.rg .pl-k--before { color: var(--ink-soft); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.rg .pl-v { margin: 0; font: 400 var(--x-lede)/1.35 var(--sans); color: var(--edition-ink); }
+.rg .pl-s { margin: 0; font: 400 var(--x-label)/1.35 var(--sans); color: var(--ink-soft); }
+.rg .pl-big { margin: 0; font: 700 clamp(30px, 2.4vw + 1.6vh, 44px)/1 var(--sans); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.rg .pl-big span { font: 400 var(--x-lede)/1 var(--sans); letter-spacing: 0; margin-left: 6px; }
+.rg .commit { margin: 0; padding: 0 0 0 1.2em; font: 400 var(--x-lede)/1.35 var(--sans); display: grid; gap: 3px; }
+.rg .commit li::marker { color: var(--public); }
+/* customer actions: paper buttons with a thick ink edge, named as the customer's */
+.rg .cust { min-height: 46px; padding: 0 16px; background: var(--paper); color: var(--edition-ink);
+  border: 2px solid var(--edition-ink); border-radius: var(--r-m); font: 700 var(--x-label)/1.2 var(--sans); cursor: pointer; text-align: left; }
+.rg .cust:hover { background: var(--edition-wash); }
+.rg .cust[aria-pressed="true"] { background: var(--edition-ink); color: var(--paper); }
+.rg .cust--quiet { border-color: var(--rule); }
+.rg .cust-note { margin: -4px 0 0; font: 700 12px/1.2 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.rg .cust-note[hidden], .rg .cust[hidden], .rg .done[hidden], .rg .muse[hidden], .rg .xlede--take[hidden] { display: none !important; }
+.rg .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.rg .done { margin: 0; display: flex; align-items: center; gap: 8px; font: 700 var(--x-label)/1.3 var(--sans); color: var(--public); }
+.rg .done .seal { width: 20px; height: 20px; flex: 0 0 auto; }
+/* Muse's small plate inside a paper plate */
+.rg .muse { margin-top: 2px; padding: 9px 12px; background: #262E36; color: #F3EBD7; border-left: 3px solid #8A3450; border-radius: 0 var(--r-m) var(--r-m) 0; }
+.rg .muse-n { margin: 0 0 3px; display: flex; align-items: center; gap: 6px; font: 700 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #D9A3B8; }
+.rg .muse-n .lens { width: 14px; height: 14px; color: #D9A3B8; }
+.rg .muse-say { margin: 0; font: 400 var(--x-label)/1.35 var(--sans); }
+/* the takeaway line under the headline, on paper */
+.rg .xlede--take { z-index: 3; align-self: end; justify-self: start; max-width: 36ch; font-weight: 700; }
+/* the record's columns on screen 4: stacked on the right */
+.rg .ev { grid-template-columns: 1fr; align-self: start; justify-self: end; max-width: 380px; width: 100%; gap: 8px; }
+.rg .ev-col--ver { border-top-color: var(--carrier); }
+.rg .ev-col--ver .ev-v + .ev-v { color: var(--carrier); font-weight: 700; }
+/* optional operational detail */
+.rg .tl-play--more { min-height: 38px; font-size: 14px; font-weight: 400; }
+.rg .more-l { margin: 0; max-width: 46ch; padding: 8px 10px 8px 26px; background: rgba(243,235,215,.94); border-radius: 3px; display: grid; gap: 4px; font: 400 15px/1.35 var(--sans); color: var(--edition-ink); }
+.rg .more-l[hidden] { display: none !important; }
+/* the chrome's way back */
+.rg .wslink { position: fixed; left: var(--gutter); bottom: calc(var(--gutter) + var(--gesture-safe)); z-index: 5; display: inline-flex; align-items: center; min-height: 46px; padding: 0 14px;
+  background: var(--paper); color: var(--edition-ink); border: 1px solid var(--rule); border-radius: var(--r-m); box-shadow: var(--plate-shadow); font: 700 15px/1 var(--sans); text-decoration: none; }
+.rg .wslink:hover { background: var(--edition-wash); }
+.rg .tl-link { text-decoration: none; }
+@media (max-width: 899px) {
+  .rg .plate, .rg .ev { max-width: none; justify-self: stretch; }
+  .rg .xlede--take { max-width: none; }
+  .rg .wslink { position: static; align-self: flex-start; }
+  .rg .chrome { gap: 8px; }
+}
+@media (max-width: 599px) { .rg .wslink { display: none; } }
+
+.rg .plate--left { justify-self: start; align-self: end; }
