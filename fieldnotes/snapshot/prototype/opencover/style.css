@@ -1476,3 +1476,24 @@ body { background: var(--paper); color: var(--edition-ink); }
 .whybtn--watch:hover { background: #fff; }
 .whybtn--watch[hidden] { display: none; }
 .compare--cap dt { font-weight: 700; color: var(--plum-lt); } .compare--cap dd { display: none; }
+
+/* ── the year that plays itself: search beat, month result, quiet controls ── */
+.year-row { flex-wrap: wrap; row-gap: calc(8px * var(--k)); }
+.year-ctl { display: flex; gap: 8px; flex: 0 0 auto; }
+.ctlbtn {
+  min-height: 44px; padding: 0 14px;
+  background: transparent; color: var(--edition-ink); border: 1.5px solid var(--edition-ink); border-radius: 3px;
+  font: 700 max(15px, calc(16px * var(--k)))/1 var(--sans); cursor: pointer; opacity: .85;
+}
+.ctlbtn:hover { background: var(--edition-wash); opacity: 1; }
+.ctlbtn[hidden] { display: none; }
+.search { margin: 0; display: flex; align-items: center; gap: .55em; font: 400 clamp(17px, calc((.5vw + .9vh) * var(--k)), 20px)/1.3 var(--sans); color: var(--plate-t); opacity: .85; }
+.search[hidden] { display: none; }
+.lens-sm { width: .9em; height: .9em; border: 2px solid var(--plum-lt); border-radius: 50%; position: relative; flex: 0 0 auto; animation: lens-pulse 1s ease-in-out infinite; }
+.lens-sm::after { content: ""; position: absolute; left: 80%; top: 80%; width: .45em; height: 2px; background: var(--plum-lt); transform: rotate(45deg); transform-origin: 0 50%; }
+@keyframes lens-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.bubble--month[hidden] { display: none; }
+/* the month the replacement first appears: the one message the room must notice */
+.bubble--month[data-found="1"] { background: color-mix(in srgb, var(--plum-lt) 24%, transparent); box-shadow: inset 3px 0 0 var(--plum-lt); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .lens-sm { animation: none; } }
+@media (max-width: 899px) { .year-ctl { flex: 1 1 100%; } }

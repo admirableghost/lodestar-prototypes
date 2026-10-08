@@ -91,7 +91,7 @@
             <line x1="50" y1="26" x2="86" y2="26"/><line x1="50" y1="38" x2="78" y2="38"/><line x1="50" y1="50" x2="84" y2="50"/><line x1="50" y1="62" x2="72" y2="62"/>
           </g></g>
       </svg>
-      <p class="human-q"><span class="human-mark" aria-hidden="true">“</span>Find the one that actually covers us.<span class="human-mark" aria-hidden="true">”</span></p>
+      <p class="human-q"><span class="human-mark" aria-hidden="true">“</span>Find the one that covers us.<span class="human-mark" aria-hidden="true">”</span></p>
       <div class="sign" id="sign">
         <button class="accept" type="button" id="rules-accept">Authorise Muse</button>
         <p class="signed" id="signed" role="status" hidden>
@@ -110,8 +110,8 @@
     <!-- MUSE: the dark plate, the lens, the rules it will hold to -->
     <article class="muse muse--s1" aria-label="Muse, her agent">
       <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg>Muse</p>
-      <p class="bubble bubble--notice">Renewal's due. I found four quotes.</p>
-      <p class="bubble" id="muse-ask">Can I act within these?</p>
+      <p class="bubble bubble--notice">Your car insurance renews soon. Four quotes in. The cheapest doesn't cover Rosa.</p>
+      <p class="bubble" id="muse-ask">Act within these?</p>
       <ul class="rules" id="rules">
         <li class="rule">Never lapse</li>
         <li class="rule">Rosa, nineteen, stays covered</li>
@@ -122,7 +122,7 @@
             <button type="button" data-delta="200" aria-pressed="true">200 USD</button>
             <button type="button" data-delta="100" aria-pressed="false">100 USD</button>
           </span>
-          <span class="rule-t">above the cheapest</span>
+          <span class="rule-t">above cheapest</span>
           <span class="rule-note" id="delta-note" hidden>applies to the next purchase</span>
         </li>
       </ul>
@@ -248,12 +248,19 @@
       <div class="year-row">
         <label class="year-l" for="year"><span class="year-m">Month <b id="year-m">1</b></span></label>
         <input class="year-r" type="range" id="year" min="1" max="12" step="1" value="1" aria-valuemin="1" aria-valuemax="12">
+        <!-- presentation controls: the year plays itself; these hold or
+             restart the playback, never the policy -->
+        <div class="year-ctl" id="year-ctl">
+          <button class="ctlbtn" type="button" id="year-pause" aria-pressed="false">Pause</button>
+          <button class="ctlbtn" type="button" id="year-replay">Replay timeline</button>
+        </div>
       </div>
       <svg class="yearbar" id="yearbar" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
 
       <!-- Muse's check for the shown month, re-run on the thread -->
       <article class="muse muse--s4" aria-label="Muse's check this month">
         <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
+        <p class="search" id="year-search" hidden><span class="lens-sm" aria-hidden="true"></span>Searching available auto insurance offers…</p>
         <p class="bubble bubble--month" id="year-say"></p>
         <!-- the installment comparison, only at the boundary: the next six
              months of the policy on risk against the replacement's -->
@@ -287,17 +294,6 @@
 
       </article>
 
-      <!-- the leaving work, prepared and grey: five steps Muse would run, none run -->
-      <div class="prep" id="year-prep" aria-label="The switch Muse has prepared, not run">
-        <p class="prep-h">Prepared · not needed yet</p>
-        <ol class="prep-steps">
-          <li>Evaluate replacement</li>
-          <li>Establish replacement cover</li>
-          <li>Obtain confirmation</li>
-          <li>Cancel the old policy</li>
-          <li>Preserve continuity</li>
-        </ol>
-      </div>
 
     </div>
 

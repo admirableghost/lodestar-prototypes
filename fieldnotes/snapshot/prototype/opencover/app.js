@@ -168,7 +168,7 @@
   function say(msg) { if (statusEl) { statusEl.textContent = msg; } }
 
   /* one timer list per sequence, so a repaint never races an older run */
-  var timers = { offer: [], act: [], claim: [], sw: [] };
+  var timers = { offer: [], act: [], claim: [], sw: [], month: [] };
   function clearSeq(k) { timers[k].forEach(clearTimeout); timers[k] = []; }
   function seq(k, fns, gapMs, animate) {
     clearSeq(k);
@@ -228,7 +228,7 @@
     var sn = document.getElementById("sign-note");
     if (sn) { sn.hidden = !(S.revoked && !S.signed); }
     var ask = document.getElementById("muse-ask");
-    if (ask) { ask.textContent = S.signed ? "I'll act within these." : "Can I act within these?"; }
+    if (ask) { ask.textContent = S.signed ? "Acting within these." : "Act within these?"; }
     var corner = document.getElementById("paper-corner");
     if (corner) { corner.dataset.signed = S.signed ? "1" : "0"; }
   }
@@ -485,15 +485,28 @@
     var auth = document.getElementById("year-auth"); if (auth) { auth.textContent = String(p.within); }
 
     paintYearBar();
-    paintSwitch(m, false);
-    /* Muse says what it found, in one message. The six checks behind it are
-       there when someone asks for them, not read out every month. */
-    var sayEl = document.getElementById("year-say");
-    if (sayEl && !atBoundary(m)) { sayEl.textContent = "Checked the market. Nothing eligible improves your position. I'll keep watching."; }
+    paintPlayCtl();
+    /* the month's search, then its result: a visible beat each month so the
+       room sees Muse working, then what it found in one message */
+    var sayEl = document.getElementById("year-say"), srch = document.getElementById("year-search");
+    var story = monthStory(m), run = animate && !reduce();
+    clearSeq("month");
+    var boundary = atBoundary(m);
+    var showResult = function () {
+      if (srch) { srch.hidden = true; }
+      if (boundary) { paintSwitch(m, false); return; }
+      if (sayEl) { sayEl.hidden = false; sayEl.textContent = story || ""; sayEl.dataset.found = (m === FOUND_AT && foundYet(m)) ? "1" : "0"; }
+    };
+    if (run) {
+      if (srch) { srch.hidden = false; srch.textContent = boundary ? "Rechecking " + LATER.name + "…" : "Searching available auto insurance offers…"; }
+      if (sayEl) { sayEl.hidden = true; }
+      if (boundary) { paintSwitch(m, false, true); }
+      plan("month", [[boundary ? 700 : 480, showResult]], true);
+    } else { showResult(); }
     var ul = document.getElementById("ychecks");
     if (ul) { ul.hidden = !yearWhy; if (!ul.hidden) { ul.classList.remove("is-run"); void ul.offsetWidth; ul.classList.add("is-run"); } }
     var wb = document.getElementById("year-why");
-    if (wb) { wb.setAttribute("aria-expanded", yearWhy ? "true" : "false"); wb.textContent = yearWhy ? "Hide" : "Why?"; }
+    if (wb) { wb.hidden = atBoundary(m); wb.setAttribute("aria-expanded", yearWhy ? "true" : "false"); wb.textContent = yearWhy ? "Hide" : "Why?"; }
   }
 
   /* ── the switch, at the installment boundary ──────────────────────────
@@ -503,7 +516,52 @@
      only then cancels. Nothing about the policy on risk changes until the
      confirmation lands. */
   function atBoundary(m) { return m >= SWITCH_AT && !!S.purchase; }
-  function paintSwitch(m, animate) {
+  var FOUND_AT = 3;   /* the month the replacement first appears on the market */
+  function foundYet(m) { return m >= FOUND_AT && offerAvailable(); }
+  /* the result of each month's search, said once. Finding a cheaper annual
+     price in month three is not a reason to switch: the first six months
+     are prepaid and non-refundable, so Muse keeps watching and rechecks
+     before the boundary. */
+  function monthStory(m) {
+    if (m >= SWITCH_AT) { return null; }                  /* paintSwitch owns the boundary */
+    if (!foundYet(m)) { return "No better eligible offer."; }
+    if (m === FOUND_AT) { return "Found " + LATER.name + " at " + grp(LATER.num) + " USD a year, eligible. Switching now would waste prepaid cover. I'll keep watching."; }
+    if (m === SWITCH_AT - 1) { return "Replacement eligible. Ready for the next billing period."; }
+    return LATER.name.split(" ")[0] + " still available. Not worth switching before the paid-through boundary."; 
+  }
+  /* ── the year plays itself: one month a second, a longer hold where the
+     replacement first appears, a full stop at the boundary. Scrubbing or
+     pausing is always possible; reduced motion never autoplays. ── */
+  var play = { on: false, timer: null };
+  function playing() { return play.on; }
+  function setMonth(n, animate) { S.month = Math.max(1, Math.min(12, n)); persist(); paintYear(animate !== false); }
+  function playStop() { play.on = false; clearTimeout(play.timer); play.timer = null; paintPlayCtl(); }
+  function playTick() {
+    clearTimeout(play.timer);
+    if (!play.on) { return; }
+    var m = shownMonth();
+    if (m >= SWITCH_AT || S.switch) { playStop(); return; }
+    var hold = (m === FOUND_AT) ? 3200 : 1150;
+    play.timer = setTimeout(function () { setMonth(m + 1, true); playTick(); }, hold);
+  }
+  function playStart() {
+    if (reduce() || !S.purchase || S.switch || shownMonth() >= SWITCH_AT) { playStop(); return; }
+    play.on = true; paintPlayCtl(); playTick();
+  }
+  function paintPlayCtl() {
+    var pb = document.getElementById("year-pause"), rb = document.getElementById("year-replay");
+    var canPlay = !!S.purchase && !S.switch && shownMonth() < SWITCH_AT && !reduce();
+    if (pb) { pb.hidden = !canPlay; pb.textContent = play.on ? "Pause" : "Resume"; pb.setAttribute("aria-pressed", play.on ? "false" : "true"); }
+    if (rb) { rb.hidden = !S.purchase || shownMonth() <= 1; }
+  }
+  var pauseBtn = document.getElementById("year-pause"), replayBtn = document.getElementById("year-replay");
+  if (pauseBtn) { pauseBtn.addEventListener("click", function () { if (play.on) { playStop(); say("Paused at month " + shownMonth() + "."); } else { playStart(); say("Resumed."); } }); }
+  if (replayBtn) {
+    /* replays the year's SEARCH, from month one. A completed switch is a
+       transaction and stays; the timeline simply plays back up to it. */
+    replayBtn.addEventListener("click", function () { playStop(); setMonth(1, true); playStart(); say("Replaying the year from month one. Nothing is bought or cancelled again."); });
+  }
+  function paintSwitch(m, animate, hold) {
     var cmp = document.getElementById("year-compare"), list = document.getElementById("sw-steps");
     var status = document.getElementById("sw-status"), statusT = document.getElementById("sw-status-t");
     var sayEl = document.getElementById("year-say"), watch = document.getElementById("sw-watch");
@@ -511,10 +569,11 @@
     var steps = Array.prototype.slice.call(document.querySelectorAll("#sw-steps .astep"));
     clearSeq("sw");
     var boundary = atBoundary(m);
-    var show = boundary && (S.switch || switchPermitted());
-    var prep = document.getElementById("year-prep");
-    if (prep) { prep.hidden = show; }
+    var show = boundary && !hold && (S.switch || switchPermitted());
     if (cmp) { cmp.hidden = !show; }
+    var sayB = document.getElementById("year-say");
+    if (hold) { if (sayB) { sayB.hidden = true; } if (list) { list.hidden = true; } if (status) { status.hidden = true; } if (watch) { watch.hidden = true; } if (why) { why.hidden = true; } return; }
+    if (sayB) { sayB.hidden = false; sayB.dataset.found = "0"; }
     if (why) { why.hidden = show; }               /* at the boundary the comparison is the why */
     if (!show) {
       if (list) { list.hidden = true; }
@@ -537,7 +596,7 @@
     set("cmp-save", grp(a - b) + " USD");
     set("sw-apply", "Applied to " + short(repl.name));
     set("sw-confirm", short(repl.name) + " confirms"); set("sw-cancel", short(old.name) + " cancelled");
-    if (sayEl) { sayEl.textContent = "Equivalent cover, " + grp(a - b) + " USD less. Prepaid six months end now. Switching, no gap."; }
+    if (sayEl) { sayEl.textContent = "Switching makes sense now. " + grp(a - b) + " USD saved, no coverage gap."; }
     var mark = function () {
       var n = S.switch; if (!n) { return; }
       if (statusT) { statusT.textContent = "Switched · " + n.name; }
@@ -603,9 +662,11 @@
   if (yearRange) {
     var onYear = function () {
       var v = parseInt(yearRange.value, 10);
+      if (play.on) { play.on = false; clearTimeout(play.timer); }
       S.month = (v >= 1 && v <= 12) ? v : 1;
       persist(); paintYear(true);
-      say("Month " + S.month + ". Checked the market. No eligible alternative improves your position. Muse checks: eligible alternatives, none; coverage requirements met; prepaid, " + (12 - S.month) + " months; switching conditions prepared; authority " + (bought() ? bought().within : "") + " USD; continuity, replacement first. Stay: nothing eligible is cheaper.");
+      var st = monthStory(S.month);
+      say("Month " + S.month + ". " + (st || "At the boundary: Muse rechecks the replacement and compares the next six months."));
     };
     yearRange.addEventListener("input", onYear);
     yearRange.addEventListener("change", onYear);
@@ -737,7 +798,7 @@
     if (n === 1) { paintRules(); }
     if (n === 2) { paintOffer(true); }
     if (n === 3) { paintAct(true); }
-    if (n === 4) { paintYear(true); }
+    if (n === 4) { if (S.purchase && S.month === 0) { S.month = 1; persist(); } paintYear(true); playStart(); } else { playStop(); }
     if (n === 5) { paintClaim(false); }
   }
 
