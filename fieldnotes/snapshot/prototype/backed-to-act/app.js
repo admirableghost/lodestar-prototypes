@@ -18,11 +18,11 @@
   var S = { screen: 1, intro: "article", choice: null, beat: 0, paid: null };
   function test() { try { return sessionStorage.getItem("bta-test") || ""; } catch (e) { return ""; } }
   function load() { try { var o = JSON.parse(sessionStorage.getItem(KEY) || "null"); if (o && typeof o === "object") {
-    S.intro = o.intro === "muse" ? "muse" : "article";
+    S.intro = "article";   /* the announcement opens every load; the in-session turn to Muse is not remembered */
     S.choice = ["self", "book", "protect"].indexOf(o.choice) >= 0 ? o.choice : null;
     S.beat = (S.choice && o.beat >= 0 && o.beat <= 5) ? Math.round(o.beat) : 0;
     S.paid = (S.choice === "protect" && typeof o.paid === "number") ? o.paid : null; } } catch (e) {} }
-  function save() { try { sessionStorage.setItem(KEY, JSON.stringify({ intro: S.intro, choice: S.choice, beat: S.beat, paid: S.paid })); } catch (e) {} }
+  function save() { try { sessionStorage.setItem(KEY, JSON.stringify({ choice: S.choice, beat: S.beat, paid: S.paid })); } catch (e) {} }
   function reset() { S = { screen: 1, intro: "article", choice: null, beat: 0, paid: null }; try { sessionStorage.removeItem(KEY); } catch (e) {} }
   load();
 
