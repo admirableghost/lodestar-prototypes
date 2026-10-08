@@ -887,6 +887,26 @@ body { background: var(--paper); }
 .agent-log li[data-k="ans"] { color: var(--green); }
 @media (prefers-reduced-motion: reduce) { .agent-log li { transition: none; } }
 
+/* the carrier's terms: a ledger-blue record, sealed, and her one acceptance */
+.plate--terms { border-top: 4px solid #2F5E7C; gap: 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 3; }
+.plate--terms[hidden] { display: none; }
+.terms-h { margin: 0; display: flex; align-items: center; gap: .45em; font: 700 16px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #2F5E7C; }
+.terms-h .seal { width: 20px; height: 20px; }
+.terms-h .seal circle { fill: none; stroke: #2F5E7C; stroke-width: 2; }
+.terms-h .seal path { fill: none; stroke: #2F5E7C; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.terms-dl { margin: 0; display: grid; gap: 5px 16px; font: 400 clamp(16px, .45vw + .9vh, 19px)/1.3 var(--sans); width: 100%; }
+.terms-dl div { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; }
+.terms-dl dt { color: var(--ink-soft); }
+.terms-dl dd { margin: 0; text-align: right; }
+.terms-dl b { font-variant-numeric: tabular-nums; }
+.abtn[hidden] { display: none; }
+.agent-log--acc[hidden] { display: none; }
+.agent-log--acc li { color: var(--ink-soft); }
+.agent-log--acc li::before { color: #2F5E7C; }
+.agent-log--acc li:last-child[data-on="1"] { color: #2F5E7C; font-weight: 700; }
+.screen--arr[data-state="covered"] .xcons--arr { color: var(--green); font-weight: 700; max-width: 36ch; text-wrap: balance; }
+.screen--arr[data-state="covered"] .xtab--together { border-color: #2F5E7C; color: #2F5E7C; }
+
 /* while a round runs, the state line and the button wait for the count */
 #ctl[data-busy="1"] .offer { opacity: .35; transition: opacity .2s ease; }
 #ctl[data-busy="1"] .ibtn { opacity: .5; pointer-events: none; }
@@ -1448,3 +1468,5 @@ body { background: var(--paper); }
 @media (min-width: 600px) and (max-width: 899px) {
   .plate--ctl.plate--agent .offer-line, .ibtn { font-size: 18px; }
 }
+
+.steps--terms[hidden] { display: none; }

@@ -218,17 +218,37 @@
       <svg class="vbtn-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
       <span>Surveyor verifies the work</span>
     </button>
-    <ol class="steps steps--terms" aria-label="The carrier's conditions and your terms">
+    <ol class="steps steps--terms" id="pre-terms" aria-label="The carrier's conditions and your terms">
       <li class="step step--carrier" data-state="met">
         <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
         <p class="step-name">Carrier conditions</p>
         <p class="step-val">coverage for participating homes, three years, while 48 stay in</p>
       </li>
-      <li class="step" data-state="pending">
+      <li class="step" id="step-share" data-state="pending">
         <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
         <p class="step-name">Your share and premium</p>
-        <p class="step-val">set before you accept</p>
+        <p class="step-val" id="step-share-val">set before you accept</p>
       </li>
+    </ol>
+  </div>
+
+  <!-- The carrier's terms, issued once participation and verification are
+       met, and the one explicit acceptance Maggie makes herself. The twelve
+       year repayment and the three year programme are both on the card
+       because the repayment outlives the cover. Next never accepts. -->
+  <div class="plate plate--terms" id="terms" style="grid-area:5/8/8/13" hidden>
+    <p class="terms-h"><svg class="seal" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>Your terms</p>
+    <dl class="terms-dl">
+      <div><dt>Premium</dt><dd><b id="t-prem">2,400</b> a year</dd></div>
+      <div><dt>Wildfire deductible</dt><dd><b id="t-ded">2,500</b></dd></div>
+      <div><dt>Work repayment</dt><dd><b id="t-pay">99.90</b> a month · <b id="t-term">12</b> years</dd></div>
+      <div><dt>Cover</dt><dd><b id="t-prog">3</b> years, while <b id="t-need">48</b> stay in</dd></div>
+    </dl>
+    <button type="button" class="vbtn abtn" id="accept">Accept these terms</button>
+    <ol class="agent-log agent-log--acc" id="acc-log" aria-label="Acceptance" hidden>
+      <li>You accepted</li>
+      <li id="acc-others">47 others accepted</li>
+      <li>Carrier confirms cover</li>
     </ol>
   </div>
 
@@ -294,10 +314,10 @@
         <p class="step-name">Verification</p>
         <p class="step-val">complete</p>
       </li>
-      <li class="step" data-state="pending">
+      <li class="step" id="arr-terms" data-state="pending">
         <svg class="step-mark" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="9"/><path d="M6.5 11.5 L9.8 14.6 L15.6 8.2"/></svg>
-        <p class="step-name">Terms and acceptance</p>
-        <p class="step-val">pending</p>
+        <p class="step-name" id="arr-terms-name">Terms and acceptance</p>
+        <p class="step-val" id="arr-terms-val">pending</p>
       </li>
     </ol>
     <p class="leg leg--chip">

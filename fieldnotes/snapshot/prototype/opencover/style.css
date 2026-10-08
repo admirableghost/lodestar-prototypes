@@ -1459,3 +1459,14 @@ body { background: var(--paper); color: var(--edition-ink); }
   .astep, .check, .of-seal, .record-lens, .ychecks.is-run .ycheck .tick, .sig.is-drawn .sig-path { transition: none !important; animation: none !important; }
   .sig.is-drawn .sig-path { stroke-dashoffset: 0; }
 }
+
+/* the installment comparison at the boundary: two figures and the difference */
+.compare { margin: 0; display: grid; gap: calc(4px * var(--k)); }
+.compare[hidden] { display: none; }
+.compare div { display: flex; align-items: baseline; justify-content: space-between; gap: 1.2em; }
+.compare dt { margin: 0; font: 400 clamp(17px, calc((.5vw + .9vh) * var(--k)), 20px)/1.3 var(--sans); }
+.compare dd { margin: 0; font: 700 clamp(17px, calc((.5vw + .9vh) * var(--k)), 20px)/1.3 var(--sans); font-variant-numeric: tabular-nums; }
+.compare--save { border-top: 1.5px solid var(--plum-lt); padding-top: calc(4px * var(--k)); }
+.compare--save dt, .compare--save dd { font-weight: 700; color: var(--plum-lt); }
+
+.prep[hidden] { display: none; }

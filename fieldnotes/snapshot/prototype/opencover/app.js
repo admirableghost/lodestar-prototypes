@@ -43,6 +43,28 @@
      promised and observed are working days counted from AGREED LIABILITY */
   var LEDGER = { key: "settlement.days", observed: 9 };
 
+  /* ── the year's commercial model (approved workshop scenario) ──────────
+     Cover is paid in six-month installments. The first six months of the
+     bought policy are already paid and are NOT refundable; the next
+     installment falls due at the start of month seven, which is also the
+     only point the policy can be left without a penalty. The replacement
+     is compared on the NEXT SIX MONTHS only — never a six-month figure
+     against an annual one. */
+  var TERM = 6;                       /* months in an installment        */
+  var SWITCH_AT = 7;                  /* the installment boundary        */
+  function installOf(annual) { return Math.round(annual / 2); }   /* 1340 → 670 · 950 → 475 */
+  /* the replacement: eligible on every hard requirement, agent-serviceable */
+  var LATER = { id: "lantern", name: "Lantern Mutual", num: 950, excessNum: 450,
+                settleDays: 5, remedyPerDay: 50, eligible: true, available: true };
+  function saving(p) { return installOf(p.premium) - installOf(LATER.num); }   /* 670 − 475 = 195 */
+
+  /* QA-only hooks. Not reachable from any control, route or query string;
+     set by the test harness in sessionStorage to exercise the two failure
+     paths the scenario must survive. Documented in the private notes. */
+  function testHook() { try { return sessionStorage.getItem("oc-test") || ""; } catch (e) { return ""; } }
+  function offerAvailable() { return LATER.available && testHook() !== "no-offer"; }
+  function confirmsReplacement() { return testHook() !== "no-confirm"; }
+
 
   /* ══════════════════════════════════════════════════════════════════════
      STATE  S = { delta: 200|100, signed, purchase: null|snapshot, month, claim }
@@ -56,7 +78,7 @@
      All of it survives a reload (sessionStorage oc-s as JSON). Restarting
      from screen 5 clears it. The only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
+  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
 
   function snapshotOf(raw) {
     if (!raw || typeof raw !== "object") { return null; }
@@ -76,6 +98,8 @@
       S.revoked = raw.revoked === true && !S.signed;
       S.purchase = snapshotOf(raw.purchase);
       S.month = (raw.month >= 1 && raw.month <= 12) ? Math.round(raw.month) : 0;
+      /* a switch only exists on top of a purchase it replaced */
+      S.switch = S.purchase ? snapshotOf(raw.switch) : null;
       /* the switch exists only in the development scenario and only after a purchase */
       S.claim = (raw.claim && typeof raw.claim === "object" && raw.claim.agreed === true)
                 ? { agreed: true, settled: LEDGER.observed } : null;
@@ -95,6 +119,26 @@
   function cheapest() { return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; }); }
   function gap() { return recommended().num - cheapest().num; }   /* 1340 − 1185 = 155 */
   function bought() { return S.purchase; }
+  /* the policy on risk now: the replacement once it has CONFIRMED, else the
+     original purchase. Screens 4 and 5 both read this and nothing else. */
+  function active() { return S.switch || S.purchase; }
+  /* Muse may replace the policy when: something was bought, nothing has
+     replaced it yet, the offer is eligible and available, her authority
+     still stands, and the price sits inside the allowance she set. */
+  function switchPermitted() {
+    if (!S.purchase || S.switch || !S.signed) { return false; }
+    if (!LATER.eligible || !offerAvailable()) { return false; }
+    return (LATER.num - cheapest().num) <= S.delta;
+  }
+  /* the ONE writer of S.switch, called only by the confirmation step: the
+     replacement is on risk from the moment it confirms, never before */
+  function confirmSwitch() {
+    if (!switchPermitted() || !confirmsReplacement()) { return false; }
+    S.switch = { id: LATER.id, name: LATER.name, premium: LATER.num, excess: LATER.excessNum,
+                 settleDays: LATER.settleDays, remedyPerDay: LATER.remedyPerDay, within: S.delta };
+    persist();
+    return true;
+  }
 
   /* the one test Muse runs before it buys: the eligible offer sits inside
      her allowance, and she has signed */
@@ -419,7 +463,7 @@
     host.setAttribute("viewBox", "0 0 " + W + " " + (H = 104));
   }
   function paintYear(animate) {
-    var p = bought();
+    var p = active();
     var held = document.getElementById("year-held");
     var boughtBox = document.getElementById("year-bought"), pending = document.getElementById("year-pending");
     if (!p) {
@@ -431,7 +475,7 @@
     }
     if (pending) { pending.hidden = true; }
     if (boughtBox) { boughtBox.hidden = false; }
-    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">' + (S.switch ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
     var m = shownMonth();
     var r = document.getElementById("year"); if (r) { r.value = String(m); r.setAttribute("aria-valuenow", String(m)); r.setAttribute("aria-valuetext", "Month " + m + " of 12"); }
     var mEl = document.getElementById("year-m"); if (mEl) { mEl.textContent = String(m); }
@@ -439,14 +483,88 @@
     var auth = document.getElementById("year-auth"); if (auth) { auth.textContent = String(p.within); }
 
     paintYearBar();
+    paintSwitch(m, animate !== false);
     /* Muse says what it found, in one message. The six checks behind it are
        there when someone asks for them, not read out every month. */
     var sayEl = document.getElementById("year-say");
-    if (sayEl) { sayEl.textContent = "Checked the market. No eligible alternative improves your position. I'll keep watching."; }
+    if (sayEl && !atBoundary(m)) { sayEl.textContent = "Checked the market. Nothing eligible improves your position. I'll keep watching."; }
     var ul = document.getElementById("ychecks");
     if (ul) { ul.hidden = !yearWhy; if (!ul.hidden) { ul.classList.remove("is-run"); void ul.offsetWidth; ul.classList.add("is-run"); } }
     var wb = document.getElementById("year-why");
     if (wb) { wb.setAttribute("aria-expanded", yearWhy ? "true" : "false"); wb.textContent = yearWhy ? "Hide" : "Why?"; }
+  }
+
+  /* ── the switch, at the installment boundary ──────────────────────────
+     Before month seven there is nothing worth moving for. At the boundary
+     Muse compares the NEXT SIX MONTHS of each, says what it found, then
+     applies, waits for the replacement to CONFIRM, aligns the dates and
+     only then cancels. Nothing about the policy on risk changes until the
+     confirmation lands. */
+  function atBoundary(m) { return m >= SWITCH_AT && !!S.purchase; }
+  function paintSwitch(m, animate) {
+    var cmp = document.getElementById("year-compare"), list = document.getElementById("sw-steps");
+    var status = document.getElementById("sw-status"), statusT = document.getElementById("sw-status-t");
+    var sayEl = document.getElementById("year-say");
+    var steps = Array.prototype.slice.call(document.querySelectorAll("#sw-steps .astep"));
+    clearSeq("sw");
+    var show = atBoundary(m) && (S.switch || switchPermitted());
+    /* the prepared leaving steps describe work not yet needed; once the
+       switch is under way or done they would contradict it */
+    var prep = document.getElementById("year-prep");
+    if (prep) { prep.hidden = show; }
+    if (cmp) { cmp.hidden = !show; }
+    if (list) { list.hidden = !show; }
+    if (status) { status.hidden = !S.switch; }
+    if (!show) {
+      steps.forEach(function (li) { li.dataset.on = "0"; });
+      if (atBoundary(m) && sayEl) {
+        sayEl.textContent = !offerAvailable()
+          ? "Nothing eligible on the market this month. Staying, no gap."
+          : "Checked the market. Nothing eligible improves your position. I'll keep watching.";
+      }
+      return;
+    }
+    var old = S.purchase, repl = S.switch || LATER;
+    var a = installOf(old.premium), b = installOf(repl.premium || repl.num);
+    var set = function (id, t) { var e = document.getElementById(id); if (e) { e.textContent = t; } };
+    set("cmp-a-name", old.name.split(" ")[0] + " next six months"); set("cmp-a", grp(a) + " USD");
+    set("cmp-b-name", repl.name.split(" ")[0] + " next six months"); set("cmp-b", grp(b) + " USD");
+    set("cmp-save", grp(a - b) + " USD");
+    set("sw-confirm", repl.name.split(" ")[0] + " confirms");
+    set("sw-cancel", old.name.split(" ")[0] + " cancelled");
+    if (sayEl) {
+      sayEl.textContent = "Equivalent cover for " + grp(a - b) + " USD less over the next six months. Your prepaid six months end now. Switching, no gap.";
+    }
+    var mark = function () {
+      var n = S.switch; if (!n) { return; }
+      if (statusT) { statusT.textContent = "Switched · " + n.name; }
+      if (status) { status.hidden = false; }
+      var held = document.getElementById("year-held");
+      if (held) { held.innerHTML = '<span class="held-k">Switched</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(n.name) + "</b>"; }
+      paintYearBar();
+    };
+    /* step 1 is the confirmation: it writes the state, and the two steps
+       after it exist only because it did */
+    var reveal = steps.map(function (li, i) {
+      return function () {
+        if (i === 1 && !S.switch && !confirmSwitch()) {
+          li.innerHTML = '<span class="astep-a" aria-hidden="true">→</span>Not confirmed · staying, no gap';
+          li.dataset.on = "1";
+          clearSeq("sw");
+          return;
+        }
+        li.dataset.on = "1";
+        if (i === 1) { mark(); }
+      };
+    });
+    if (!S.switch && animate && !reduce()) {
+      steps.forEach(function (li) { li.dataset.on = "0"; });
+      plan("sw", reveal.map(function (f, i) { return [700 + i * 750, f]; }), true);
+      say("Equivalent cover for " + (a - b) + " USD less over the next six months. Applying; " + repl.name + " confirms; dates aligned, no gap; " + old.name + " cancelled.");
+    } else {
+      reveal.forEach(function (f) { f(); });
+      mark();
+    }
   }
 
   /* the checks are a detail the facilitator can open, not a monthly recital */
@@ -495,7 +613,7 @@
     host.style.setProperty("--cells", String(n));
   }
   function paintClaim(animate) {
-    var p = bought();
+    var p = active();
     var head = document.getElementById("oc5-headline");
     var held = document.getElementById("claim-held");
     var boughtBox = document.getElementById("claim-bought"), pending = document.getElementById("claim-pending");
@@ -513,7 +631,7 @@
     }
     if (pending) { pending.hidden = true; }
     if (boughtBox) { boughtBox.hidden = false; }
-    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">' + (S.switch ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
     if (!S.claim) {
       if (head) { head.textContent = "A promise her agent can enforce."; }
       if (promise) {
@@ -570,7 +688,7 @@
       persist();
       paintClaim(true);
       var e = document.getElementById("enforce"); if (e) { e.setAttribute("tabindex", "-1"); e.focus(); }
-      var a = bought();
+      var a = active();
       say("Claim reported. Liability agreed, clock starts. " + a.settleDays + " working days promised. Settled on day nine. " + (LEDGER.observed - a.settleDays) + " late times " + a.remedyPerDay + " USD. Muse: settled; " + a.name + " missed its promise; I applied your remedy. No separate claim needed.");
     });
   }
@@ -578,7 +696,7 @@
   /* starting over: nothing signed, nothing bought — the state the first
      screen describes. Called when the deck wraps from screen 5 to screen 1. */
   function restart() {
-    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
+    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
     persist();
     var sig = document.querySelector("#signed .sig"); if (sig) { sig.classList.remove("is-drawn"); }
     paintAll(false);
