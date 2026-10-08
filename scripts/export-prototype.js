@@ -20,7 +20,7 @@ const DIR = path.join(SNAP, "prototype", slug);
 const LIVE = "https://fieldnotes-khaki-three.vercel.app";
 const MIME = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp", ".ttf": "font/ttf", ".woff": "font/woff", ".woff2": "font/woff2" };
 const dataUri = (file) => { const ext = path.extname(file).toLowerCase(); const mime = MIME[ext]; if (!mime) throw new Error("no mime for " + file); return `data:${mime};base64,${fs.readFileSync(file).toString("base64")}`; };
-const isLocal = (u) => u && !/^(data:|https?:|\/\/|#)/.test(u);
+const isLocal = (u) => u && !/^(data:|https?:|\/\/|#|%23)/.test(u);
 
 let html = fs.readFileSync(path.join(DIR, "index.html"), "utf8");
 const inlined = [];
