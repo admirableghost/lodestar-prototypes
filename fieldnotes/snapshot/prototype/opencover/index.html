@@ -258,17 +258,23 @@
         <!-- the installment comparison, only at the boundary: the next six
              months of the policy on risk against the replacement's -->
         <dl class="compare" id="year-compare" hidden>
-          <div><dt id="cmp-a-name">Meridian next six months</dt><dd id="cmp-a">670 USD</dd></div>
-          <div><dt id="cmp-b-name">Lantern next six months</dt><dd id="cmp-b">475 USD</dd></div>
-          <div class="compare--save"><dt>You save</dt><dd id="cmp-save">195 USD</dd></div>
+          <div class="compare--cap"><dt>Next six months</dt><dd></dd></div>
+          <div><dt id="cmp-a-name">Meridian</dt><dd id="cmp-a">670 USD</dd></div>
+          <div><dt id="cmp-b-name">Lantern</dt><dd id="cmp-b">475 USD</dd></div>
+          <div class="compare--save"><dt>Saving</dt><dd id="cmp-save">195 USD</dd></div>
         </dl>
         <ol class="steps" id="sw-steps" hidden>
-          <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Applied · agent to agent</li>
+          <li class="astep"><span class="astep-a" aria-hidden="true">→</span><span id="sw-apply">Applied to Lantern</span></li>
           <li class="astep"><span class="astep-a" aria-hidden="true">→</span><span id="sw-confirm">Lantern confirms</span></li>
           <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Dates aligned · no gap</li>
           <li class="astep"><span class="astep-a" aria-hidden="true">→</span><span id="sw-cancel">Meridian cancelled</span></li>
         </ol>
         <p class="status" id="sw-status" hidden><svg class="status-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg><span id="sw-status-t"></span></p>
+        <!-- a PRESENTATION control, not an authorisation: she authorised Muse on
+             screen 1 and this transaction sits inside those rules. The button
+             reveals the agent's work at a pace a room can follow; Replay shows it
+             again from the record without running anything twice. -->
+        <button class="whybtn whybtn--watch" type="button" id="sw-watch" hidden>Watch Muse switch</button>
         <button class="whybtn" type="button" id="year-why" aria-expanded="false">Why?</button>
         <ul class="ychecks" id="ychecks" hidden>
           <li class="ycheck"><span class="tick" aria-hidden="true">✓</span><span>Eligible alternatives · none</span></li>

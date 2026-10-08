@@ -1470,3 +1470,9 @@ body { background: var(--paper); color: var(--edition-ink); }
 .compare--save dt, .compare--save dd { font-weight: 700; color: var(--plum-lt); }
 
 .prep[hidden] { display: none; }
+
+/* the presentation control for the switch: the agent's work, revealed at a readable pace */
+.whybtn--watch { background: var(--plate-t); color: var(--plate); border-color: var(--plate-t); font-weight: 700; }
+.whybtn--watch:hover { background: #fff; }
+.whybtn--watch[hidden] { display: none; }
+.compare--cap dt { font-weight: 700; color: var(--plum-lt); } .compare--cap dd { display: none; }

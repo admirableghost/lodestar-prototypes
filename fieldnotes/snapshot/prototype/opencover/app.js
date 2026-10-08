@@ -78,7 +78,7 @@
      All of it survives a reload (sessionStorage oc-s as JSON). Restarting
      from screen 5 clears it. The only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
+  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null, watched: false };
 
   function snapshotOf(raw) {
     if (!raw || typeof raw !== "object") { return null; }
@@ -100,6 +100,7 @@
       S.month = (raw.month >= 1 && raw.month <= 12) ? Math.round(raw.month) : 0;
       /* a switch only exists on top of a purchase it replaced */
       S.switch = S.purchase ? snapshotOf(raw.switch) : null;
+      S.watched = !!S.purchase && raw.watched === true;
       /* the switch exists only in the development scenario and only after a purchase */
       S.claim = (raw.claim && typeof raw.claim === "object" && raw.claim.agreed === true)
                 ? { agreed: true, settled: LEDGER.observed } : null;
@@ -122,6 +123,7 @@
   /* the policy on risk now: the replacement once it has CONFIRMED, else the
      original purchase. Screens 4 and 5 both read this and nothing else. */
   function active() { return S.switch || S.purchase; }
+  function insurerAt(m) { return (S.switch && m >= SWITCH_AT) ? S.switch : S.purchase; }
   /* Muse may replace the policy when: something was bought, nothing has
      replaced it yet, the offer is eligible and available, her authority
      still stands, and the price sits inside the allowance she set. */
@@ -475,15 +477,15 @@
     }
     if (pending) { pending.hidden = true; }
     if (boughtBox) { boughtBox.hidden = false; }
-    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">' + (S.switch ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
-    var m = shownMonth();
+    var m = shownMonth(), onRisk = insurerAt(m);
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">' + (onRisk === S.switch && S.switch ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(onRisk.name) + "</b>"; }
     var r = document.getElementById("year"); if (r) { r.value = String(m); r.setAttribute("aria-valuenow", String(m)); r.setAttribute("aria-valuetext", "Month " + m + " of 12"); }
     var mEl = document.getElementById("year-m"); if (mEl) { mEl.textContent = String(m); }
     var left = document.getElementById("year-left"); if (left) { left.textContent = String(12 - m); }
     var auth = document.getElementById("year-auth"); if (auth) { auth.textContent = String(p.within); }
 
     paintYearBar();
-    paintSwitch(m, animate !== false);
+    paintSwitch(m, false);
     /* Muse says what it found, in one message. The six checks behind it are
        there when someone asks for them, not read out every month. */
     var sayEl = document.getElementById("year-say");
@@ -504,20 +506,22 @@
   function paintSwitch(m, animate) {
     var cmp = document.getElementById("year-compare"), list = document.getElementById("sw-steps");
     var status = document.getElementById("sw-status"), statusT = document.getElementById("sw-status-t");
-    var sayEl = document.getElementById("year-say");
+    var sayEl = document.getElementById("year-say"), watch = document.getElementById("sw-watch");
+    var why = document.getElementById("year-why");
     var steps = Array.prototype.slice.call(document.querySelectorAll("#sw-steps .astep"));
     clearSeq("sw");
-    var show = atBoundary(m) && (S.switch || switchPermitted());
-    /* the prepared leaving steps describe work not yet needed; once the
-       switch is under way or done they would contradict it */
+    var boundary = atBoundary(m);
+    var show = boundary && (S.switch || switchPermitted());
     var prep = document.getElementById("year-prep");
     if (prep) { prep.hidden = show; }
     if (cmp) { cmp.hidden = !show; }
-    if (list) { list.hidden = !show; }
-    if (status) { status.hidden = !S.switch; }
+    if (why) { why.hidden = show; }               /* at the boundary the comparison is the why */
     if (!show) {
+      if (list) { list.hidden = true; }
+      if (status) { status.hidden = true; }
+      if (watch) { watch.hidden = true; }
       steps.forEach(function (li) { li.dataset.on = "0"; });
-      if (atBoundary(m) && sayEl) {
+      if (boundary && sayEl) {
         sayEl.textContent = !offerAvailable()
           ? "Nothing eligible on the market this month. Staying, no gap."
           : "Checked the market. Nothing eligible improves your position. I'll keep watching.";
@@ -527,14 +531,13 @@
     var old = S.purchase, repl = S.switch || LATER;
     var a = installOf(old.premium), b = installOf(repl.premium || repl.num);
     var set = function (id, t) { var e = document.getElementById(id); if (e) { e.textContent = t; } };
-    set("cmp-a-name", old.name.split(" ")[0] + " next six months"); set("cmp-a", grp(a) + " USD");
-    set("cmp-b-name", repl.name.split(" ")[0] + " next six months"); set("cmp-b", grp(b) + " USD");
+    var short = function (n) { return n.split(" ")[0]; };
+    set("cmp-a-name", short(old.name)); set("cmp-a", grp(a) + " USD");
+    set("cmp-b-name", short(repl.name)); set("cmp-b", grp(b) + " USD");
     set("cmp-save", grp(a - b) + " USD");
-    set("sw-confirm", repl.name.split(" ")[0] + " confirms");
-    set("sw-cancel", old.name.split(" ")[0] + " cancelled");
-    if (sayEl) {
-      sayEl.textContent = "Equivalent cover for " + grp(a - b) + " USD less over the next six months. Your prepaid six months end now. Switching, no gap.";
-    }
+    set("sw-apply", "Applied to " + short(repl.name));
+    set("sw-confirm", short(repl.name) + " confirms"); set("sw-cancel", short(old.name) + " cancelled");
+    if (sayEl) { sayEl.textContent = "Equivalent cover, " + grp(a - b) + " USD less. Prepaid six months end now. Switching, no gap."; }
     var mark = function () {
       var n = S.switch; if (!n) { return; }
       if (statusT) { statusT.textContent = "Switched · " + n.name; }
@@ -543,28 +546,47 @@
       if (held) { held.innerHTML = '<span class="held-k">Switched</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(n.name) + "</b>"; }
       paintYearBar();
     };
-    /* step 1 is the confirmation: it writes the state, and the two steps
-       after it exist only because it did */
+    /* the confirmation step is the only one that writes state; a replay
+       finds S.switch already set and simply re-reveals the record */
     var reveal = steps.map(function (li, i) {
       return function () {
         if (i === 1 && !S.switch && !confirmSwitch()) {
           li.innerHTML = '<span class="astep-a" aria-hidden="true">→</span>Not confirmed · staying, no gap';
-          li.dataset.on = "1";
-          clearSeq("sw");
+          li.dataset.on = "1"; clearSeq("sw");
+          if (watch) { watch.textContent = "Replay"; watch.hidden = false; }
           return;
         }
         li.dataset.on = "1";
         if (i === 1) { mark(); }
+        if (i === steps.length - 1 && watch) { watch.textContent = "Replay"; watch.hidden = false; }
       };
     });
-    if (!S.switch && animate && !reduce()) {
+    var started = S.watched || !!S.switch;
+    if (list) { list.hidden = !started; }
+    if (status) { status.hidden = !S.switch; }
+    if (watch) { watch.hidden = false; watch.textContent = started ? "Replay" : "Watch Muse switch"; }
+    if (!started) { steps.forEach(function (li) { li.dataset.on = "0"; }); return; }
+    if (animate && !reduce()) {
       steps.forEach(function (li) { li.dataset.on = "0"; });
-      plan("sw", reveal.map(function (f, i) { return [700 + i * 750, f]; }), true);
-      say("Equivalent cover for " + (a - b) + " USD less over the next six months. Applying; " + repl.name + " confirms; dates aligned, no gap; " + old.name + " cancelled.");
+      if (status) { status.hidden = true; }
+      if (watch) { watch.hidden = true; }
+      plan("sw", reveal.map(function (f, i) { return [500 + i * 1400, f]; }), true);
     } else {
-      reveal.forEach(function (f) { f(); });
-      mark();
+      reveal.forEach(function (f) { f(); }); mark();
     }
+  }
+  /* the presentation control: reveals the work once at a readable pace,
+     then replays it from the record. It is never the customer's consent. */
+  var watchBtn = document.getElementById("sw-watch");
+  if (watchBtn) {
+    watchBtn.addEventListener("click", function () {
+      if (!atBoundary(shownMonth())) { return; }
+      var first = !S.watched;
+      S.watched = true; persist();
+      paintSwitch(shownMonth(), true);
+      say(first ? "Muse applies to " + LATER.name + "; it confirms; dates aligned, no gap; the old policy is cancelled; " + LATER.name + " is on risk."
+                : "Showing the switch again. Nothing is run twice.");
+    });
   }
 
   /* the checks are a detail the facilitator can open, not a monthly recital */
@@ -696,7 +718,7 @@
   /* starting over: nothing signed, nothing bought — the state the first
      screen describes. Called when the deck wraps from screen 5 to screen 1. */
   function restart() {
-    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
+    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null, watched: false };
     persist();
     var sig = document.querySelector("#signed .sig"); if (sig) { sig.classList.remove("is-drawn"); }
     paintAll(false);
