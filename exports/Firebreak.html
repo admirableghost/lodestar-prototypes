@@ -1,0 +1,975 @@
+<!-- Exported 2026-10-08 from https://fieldnotes-khaki-three.vercel.app/prototype/resilience-grid/ as a single self-contained file. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Firebreak — regional risk operations</title>
+<meta name="description" content="Firebreak coordinates regional wildfire protection. Five screens from the company's own console: the region and its zones, one coordinated intervention (exposure analysis, completed brush clearing, a dispatch), who funds the company, what changes for one homeowner, and how the insurer now sees a previously excluded area. Fictional concept demonstration; invented region, figures and insurer.">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzI5NGE0MiIvPjxwYXRoIGQ9Ik03IDhoN2wyIDIgMi0yaDd2MTdoLTdsLTIgMS0yLTFIN3oiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y4ZmFmMyIgc3Ryb2tlLXdpZHRoPSIxLjciLz48cGF0aCBkPSJNMTYgMTB2MTYiIHN0cm9rZT0iI2Y4ZmFmMyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48L3N2Zz4K">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   Firebreak · regional risk operations
+   Route-scoped. The reference prototype's night-operations console is the
+   base: one deliberate dark theme, mono eyebrows, the orange accent. No
+   webfont, no external request.
+
+   REGISTERS ON THE MAP. Three things must never be confused: completed
+   prevention work (green hatch, "completed"), current conditions (the red
+   flag and the wind glyph), and response deployment (the orange crew and its
+   trail). Each has its own colour, its own mark and its own word.
+
+   THE COORDINATING COMPANY, IN THE SHARED GRAMMAR. Firebreak speaks from a
+   plate with a plum rule and the lens mark, in short messages (.say), the
+   same signal the other prototypes give their agents.
+
+   STATE IS NEVER A FADE. A done beat has a filled numeral and a tick; an
+   active beat a bright border; a lit funding chip a filled ground. Every
+   state survives greyscale.
+
+   Measured on #242019: ink #f3ece1 15.4:1 · dim #a89d8a 7.3:1 · faint #8a8070
+   4.9:1 · accent #EF6820 5.6:1 · protected #5fb597 7.4:1.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+  --ground: #1a1712; --ground-2: #242019; --ground-3: #2d271d;
+  --line: #3c3527; --line-soft: rgba(243,236,225,.08);
+  --ink: #f3ece1; --ink-dim: #a89d8a; --ink-faint: #8a8070;
+  --accent: #EF6820; --accent-soft: rgba(239,104,32,.16);
+  --protected: #5fb597; --protected-soft: rgba(95,181,151,.16);
+  --sensor: #6fa0c2; --sensor-soft: rgba(111,160,194,.16);
+  --plum: #B0577A; --plum-soft: rgba(176,87,122,.18);
+  --risk-low: #7f9f6a; --risk-low-soft: rgba(111,143,92,.18);
+  --risk-moderate: #c9a227; --risk-moderate-soft: rgba(201,162,39,.18);
+  --risk-elevated: #d9792f; --risk-elevated-soft: rgba(217,121,47,.18);
+  --risk-extreme: #e0523a; --risk-extreme-soft: rgba(199,57,28,.22);
+  --radius: 4px;
+  --ease: 220ms cubic-bezier(.3,.1,.2,1);
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--ground); color: var(--ink); font: 15px/1.45 var(--sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+h1, h2, h3, p, dl, dd { margin: 0; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: 8px; top: -60px; z-index: 40; padding: 10px 14px; background: var(--ink); color: var(--ground); border: 0; border-radius: var(--radius); font-weight: 700; }
+.skip:focus { top: 8px; }
+
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-dim); display: block; margin-bottom: 6px; }
+.footnote { font-family: var(--mono); font-size: 12px; line-height: 1.4; color: var(--ink-faint); }
+
+/* ── the console frame ─────────────────────────────────────────────────── */
+#app { display: grid; grid-template-columns: 96px 1fr; grid-template-rows: 56px 1fr 30px; grid-template-areas: "topbar topbar" "rail main" "status status"; height: 100vh; width: 100vw; }
+.topbar { grid-area: topbar; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; border-bottom: 1px solid var(--line); background: var(--ground-2); gap: 12px; }
+.wordmark { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.wordmark .mark { font-family: var(--mono); font-weight: 700; font-size: 17px; letter-spacing: .04em; color: var(--ink); white-space: nowrap; }
+.wordmark .dot { color: var(--accent); }
+.wordmark .sub { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: .04em; white-space: nowrap; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.region-pill { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink-dim); border: 1px solid var(--line); border-radius: 100px; padding: 5px 12px; text-transform: uppercase; white-space: nowrap; }
+.step-dots { display: flex; gap: 7px; align-items: center; }
+.step-dot { width: 24px; height: 24px; border-radius: 50%; background: none; border: none; padding: 0; display: grid; place-items: center; }
+.step-dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: background var(--ease), transform var(--ease); }
+.step-dot[aria-current="step"]::before { background: var(--accent); transform: scale(1.3); }
+.nav-arrows { display: flex; gap: 6px; }
+.arrow-btn { width: 34px; height: 34px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--ground-3); color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; }
+.arrow-btn svg { width: 18px; height: 18px; }
+.arrow-btn:hover { border-color: var(--accent); }
+.arrow-btn:disabled { opacity: .3; cursor: default; }
+
+.rail { grid-area: rail; border-right: 1px solid var(--line); background: var(--ground-2); display: flex; flex-direction: column; padding: 10px 0; gap: 2px; overflow-y: auto; }
+.rail-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: none; border: none; color: var(--ink-faint); border-left: 2px solid transparent; min-height: 44px; }
+.rail-btn svg { width: 20px; height: 20px; }
+.rail-btn span { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; text-align: center; line-height: 1.25; }
+.rail-btn:hover { color: var(--ink-dim); background: var(--line-soft); }
+.rail-btn[aria-current="step"] { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+
+main { grid-area: main; overflow-y: auto; padding: 14px 28px 18px; }
+.screen { max-width: 1220px; margin: 0 auto; }
+.screen[hidden] { display: none; }
+.statusbar { grid-area: status; display: flex; align-items: center; padding: 0 18px; border-top: 1px solid var(--line); background: var(--ground-2); font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: .02em; white-space: nowrap; overflow: hidden; }
+.statusbar p { overflow: hidden; text-overflow: ellipsis; }
+
+.screen-head { margin-bottom: 10px; }
+.screen-head h1, .screen-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; max-width: 60ch; }
+.xd:focus { outline: none; }
+.xd:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.panel { background: var(--ground-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.take { font-size: 14px; color: var(--ink-dim); max-width: 60ch; }
+.btn-primary { display: inline-flex; align-items: center; gap: .4em; background: var(--accent); color: #1a1712; border: none; border-radius: var(--radius); padding: 0 16px; font-weight: 700; font-size: 14px; min-height: 44px; text-decoration: none; }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary.done { background: var(--protected); color: #13241d; }
+.btn-primary:disabled { cursor: default; opacity: .6; }
+.ctl { min-height: 40px; padding: 0 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--ground-3); color: var(--ink); font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.ctl:hover { border-color: var(--accent); }
+.ctl[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.controls { display: flex; gap: 6px; flex-wrap: wrap; }
+.end-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── badges ────────────────────────────────────────────────────────────── */
+.badge { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; font-weight: 600; }
+.badge.risk-low { color: var(--risk-low); background: var(--risk-low-soft); }
+.badge.risk-moderate { color: var(--risk-moderate); background: var(--risk-moderate-soft); }
+.badge.risk-elevated { color: var(--risk-elevated); background: var(--risk-elevated-soft); }
+.badge.risk-extreme { color: var(--risk-extreme); background: var(--risk-extreme-soft); }
+.badge.status-bad { color: var(--risk-extreme); background: var(--risk-extreme-soft); }
+.badge.status-good { color: var(--protected); background: var(--protected-soft); }
+
+/* ── Firebreak speaks: the shared agent plate ──────────────────────────── */
+.plate { background: var(--ground-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 14px 14px 16px; box-shadow: inset 3px 0 0 var(--plum); }
+.agent-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-family: var(--mono); }
+.agent-head b { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+.agent-head span { font-size: 11px; color: var(--ink-dim); letter-spacing: .06em; text-transform: uppercase; }
+.lens { width: 18px; height: 18px; color: var(--plum); flex: 0 0 auto; }
+.say { display: block; padding: 7px 12px 8px; background: var(--line-soft); border-left: 2px solid var(--plum); font-size: 14.5px; line-height: 1.45; }
+
+/* ── the layouts ───────────────────────────────────────────────────────── */
+.layout--map { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; align-items: start; }
+#screen-insurer .layout--map { grid-template-columns: minmax(0, 1fr) 400px; }
+.map-panel { padding: 10px; }
+.side { display: grid; gap: 8px; align-content: start; }
+.map { position: relative; }
+.map svg { width: 100%; height: auto; display: block; border-radius: 2px; }
+.map-cap { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--ink-dim); }
+
+/* the map: zones, the ridge, the cluster, and the three registers */
+.zone { stroke: var(--ground); stroke-width: 3; cursor: pointer; transition: filter var(--ease); }
+.zone[data-risk="low"] { fill: var(--risk-low-soft); }
+.zone[data-risk="moderate"] { fill: var(--risk-moderate-soft); }
+.zone[data-risk="elevated"] { fill: var(--risk-elevated-soft); }
+.zone[data-risk="extreme"] { fill: var(--risk-extreme-soft); }
+.zone:hover { filter: brightness(1.3); }
+.map[data-view="zone"] .zone, .map[data-view="home"] .zone { cursor: default; }
+.zone-outline { fill: none; stroke: var(--ink); stroke-width: 4; stroke-opacity: 0; pointer-events: none; transition: stroke-opacity var(--ease); }
+.zone-outline.selected { stroke-opacity: 1; }
+.map[data-view="region"] .zone-outline[data-zone="4"].selected { animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .45; } }
+.zone-label { font-family: var(--mono); font-size: 16px; fill: var(--ink); font-weight: 700; letter-spacing: .04em; }
+.zone-risk-label { font-family: var(--mono); font-size: 13px; letter-spacing: .07em; text-transform: uppercase; }
+.zone-risk-label[data-risk="low"] { fill: var(--risk-low); }
+.zone-risk-label[data-risk="moderate"] { fill: var(--risk-moderate); }
+.zone-risk-label[data-risk="elevated"] { fill: var(--risk-elevated); }
+.zone-risk-label[data-risk="extreme"] { fill: var(--risk-extreme); }
+.ridge { fill: none; stroke: var(--risk-extreme); stroke-width: 12; stroke-opacity: .45; stroke-linecap: round; }
+.ridge-line { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 6 5; stroke-opacity: .7; }
+.ridge-label { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; fill: var(--risk-extreme); text-transform: uppercase; font-weight: 700; }
+.home { fill: var(--ground-3); stroke: var(--ink); stroke-width: 1.2; }
+.cluster-label { font-family: var(--mono); font-size: 14px; letter-spacing: .08em; fill: var(--ink-dim); text-transform: uppercase; }
+.util { stroke: var(--sensor); stroke-width: 2; stroke-dasharray: 1 10; stroke-linecap: round; }
+.tower { fill: var(--sensor); opacity: .9; }
+.sensor { fill: var(--sensor); opacity: .85; }
+.crew { fill: var(--ground); stroke: var(--accent); stroke-width: 2; }
+.crew-label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; fill: var(--accent); text-transform: uppercase; }
+.map[data-detail="0"] .sensors, .map[data-detail="0"] .crews { display: none; }
+.map[data-detail="crews"] .sensors { display: none; }
+/* the small map texts scale with the zoom; the zoomed views shrink them back */
+.map[data-view="zone"] .zone-label { font-size: 11px; } .map[data-view="zone"] .zone-risk-label { font-size: 9.5px; }
+.map[data-view="zone"] .ridge-label, .map[data-view="zone"] .cluster-label { font-size: 9.5px; }
+.map[data-view="zone"] .crew-label, .map[data-view="zone"] .wind-text { font-size: 9.5px; }
+.map[data-view="zone"] .crew-other { display: none; }
+.map[data-view="home"] .zone-label, .map[data-view="home"] .zone-risk-label, .map[data-view="home"] .windg { display: none; }
+.map[data-view="home"] .ridge-label, .map[data-view="home"] .cluster-label, .map[data-view="home"] .cleared-label, .map[data-view="home"] .focus-label { font-size: 7px; }
+.map[data-view="home"] .home { stroke-width: .8; }
+/* current conditions: the wind */
+.wind { fill: none; stroke: var(--risk-extreme); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.wind-text { font-family: var(--mono); font-size: 14px; letter-spacing: .06em; fill: var(--risk-extreme); font-weight: 700; }
+/* beat 1: exposure analysis is drawn, not faded */
+.exposure { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 5; }
+.exposure-ring { stroke-dasharray: 640; stroke-dashoffset: 640; }
+.exposure-corridor { stroke-dasharray: 720; stroke-dashoffset: 720; }
+.exposure-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; fill: var(--accent); text-transform: uppercase; font-weight: 700; opacity: 0; }
+.map[data-exposure="1"] .exposure-ring, .map[data-exposure="1"] .exposure-corridor { stroke-dashoffset: 0; transition: stroke-dashoffset 1.3s ease-out; }
+.map[data-exposure="1"] .exposure-corridor { transition-delay: .6s; }
+.map[data-exposure="1"] .exposure-label { opacity: 1; transition: opacity .3s 1.4s; }
+.map:not([data-exposure="1"]) .exposure, .map:not([data-exposure="1"]) .exposure-label { visibility: hidden; }
+/* beat 2: completed prevention work, revealed along the corridor */
+.cleared { fill: url(#hatch); stroke: var(--protected); stroke-width: 1.5; transform: scaleX(0); transform-origin: 0 50%; transform-box: fill-box; transition: transform 1.4s ease-out; }
+.map[data-cleared="1"] .cleared { transform: none; }
+.cleared-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; fill: var(--protected); text-transform: uppercase; font-weight: 700; }
+.map:not([data-cleared="1"]) .cleared-label { visibility: hidden; }
+.map[data-cleared="1"] .cleared-label { visibility: visible; transition: visibility 0s 1.2s; }
+/* beat 3: response deployment */
+.trail { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 5; stroke-dashoffset: 300; visibility: hidden; }
+.crew6 { transition: transform 1.8s ease-in-out; }
+.map[data-dispatched="1"] .trail { visibility: visible; stroke-dashoffset: 0; transition: stroke-dashoffset 1.8s ease-in-out; }
+.map[data-dispatched="1"] .crew6 { transform: translate(-230px, -92px); }
+.map[data-dispatched="1"] .crew6 .crew-label { visibility: hidden; }
+.dispatch-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; fill: var(--accent); text-transform: uppercase; font-weight: 700; visibility: hidden; }
+.map[data-dispatched="1"] .dispatch-label { visibility: visible; transition: visibility 0s 1.6s; }
+/* screen 4: one home ringed */
+.focus-ring { fill: none; stroke: var(--risk-extreme); stroke-width: 1.4; visibility: hidden; }
+.map[data-focus="home"] .focus-ring { visibility: visible; }
+.map[data-cleared="1"] .focus-ring { stroke: var(--protected); }
+.focus-label { font-family: var(--mono); font-size: 7px; letter-spacing: .08em; fill: var(--ink); text-transform: uppercase; font-weight: 700; visibility: hidden; }
+.map[data-focus="home"] .focus-label { visibility: visible; }
+/* screen 5: the insurer's boundary */
+.excluded { fill: url(#hatch-red); stroke: var(--risk-extreme); stroke-width: 2; stroke-dasharray: 8 6; visibility: hidden; }
+.map[data-insurer="before"] .excluded { visibility: visible; }
+.considered { fill: none; stroke: var(--protected); stroke-width: 3; visibility: hidden; }
+.map[data-insurer="after"] .considered { visibility: visible; }
+.insurer-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; visibility: hidden; }
+.insurer-label.excluded-label { fill: var(--risk-extreme); } .insurer-label.considered-label { fill: var(--protected); }
+.map[data-insurer="before"] .excluded-label, .map[data-insurer="after"] .considered-label { visibility: visible; }
+
+.map-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); align-items: center; }
+.map-legend span, .map-legend label { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: .04em; }
+.legend-toggle { margin-left: auto; cursor: pointer; min-height: 32px; }
+.legend-toggle input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.swatch.risk-low { background: var(--risk-low); } .swatch.risk-moderate { background: var(--risk-moderate); } .swatch.risk-elevated { background: var(--risk-elevated); } .swatch.risk-extreme { background: var(--risk-extreme); }
+.swatch.cleared { background: repeating-linear-gradient(135deg, var(--protected) 0 2px, transparent 2px 5px); border: 1px solid var(--protected); width: 14px; }
+.swatch.condmark { background: var(--risk-extreme); border-radius: 50%; }
+.swatch.respmark { width: 0; height: 0; border-radius: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid var(--accent); }
+.swatch.excluded { background: repeating-linear-gradient(135deg, var(--risk-extreme) 0 2px, transparent 2px 5px); border: 1px dashed var(--risk-extreme); width: 14px; }
+.swatch.considered { border: 2px solid var(--protected); width: 14px; }
+.ridgemark { width: 16px; height: 4px; border-radius: 2px; background: var(--risk-extreme); opacity: .6; display: inline-block; }
+.homemark { width: 10px; height: 9px; display: inline-block; background: var(--ground-3); border: 1px solid var(--ink); clip-path: polygon(50% 0, 100% 45%, 100% 100%, 0 100%, 0 45%); }
+.legend-sep { width: 1px; background: var(--line); align-self: stretch; }
+
+/* ── screen 1 · the side ───────────────────────────────────────────────── */
+.cond .badge { margin-bottom: 8px; }
+.readings { display: grid; gap: 6px; }
+.readings div { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line-soft); padding-bottom: 5px; }
+.readings dt, .detail-list dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
+.readings dd, .detail-list dd { font-family: var(--mono); font-size: 15px; font-variant-numeric: tabular-nums; }
+.readings .dir { font-size: 12px; color: var(--ink-dim); }
+.zone-card { display: grid; gap: 6px; }
+.zone-card h3 { font-size: 17px; font-weight: 600; }
+.zone-card .badge { justify-self: start; }
+.zone-card p { font-size: 13.5px; color: var(--ink-dim); }
+.disclosure { border: 1px solid var(--line); border-radius: var(--radius); padding: 0 14px; background: var(--ground-2); }
+.disclosure summary { cursor: pointer; font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-dim); min-height: 40px; display: flex; align-items: center; list-style: none; }
+.disclosure summary::-webkit-details-marker { display: none; }
+.disclosure summary::before { content: "+ "; color: var(--accent); margin-right: 4px; }
+.disclosure[open] summary::before { content: "– "; }
+.disclosure .detail-list { display: grid; gap: 8px; padding: 2px 0 12px; }
+.disclosure .detail-list div { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line-soft); padding-bottom: 6px; }
+.disclosure .footnote { padding-bottom: 12px; }
+
+/* ── screen 2 · the beats ──────────────────────────────────────────────── */
+.beats { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.beat { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--ground-2); }
+.beat-n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); }
+.beat-body { display: grid; gap: 4px; }
+.beat-body b { font-size: 14.5px; }
+.beat-body > span { font-size: 13px; color: var(--ink-dim); line-height: 1.4; }
+.beat[data-state="active"] { border-color: var(--accent); background: var(--accent-soft); }
+.beat[data-state="active"] .beat-n { border-color: var(--accent); color: var(--accent); }
+.beat[data-state="done"] .beat-n { background: var(--protected); border-color: var(--protected); color: #13241d; }
+.beat[data-state="done"] .beat-n { font-weight: 700; font-size: 13px; }
+.beat[data-state="pending"] .btn-dispatch, .beat[data-state="pending"] .coverage-meter { display: none; }
+.btn-dispatch { margin-top: 6px; justify-self: start; }
+.dispatch-confirm { font-family: var(--mono); font-size: 12px; color: var(--protected); margin-top: 4px; }
+.coverage-meter { display: grid; gap: 6px; margin-top: 8px; }
+.meter-row { display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-dim); }
+.meter-value { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.meter-track { height: 8px; background: var(--line); border-radius: 100px; overflow: hidden; }
+.meter-fill { height: 100%; background: var(--sensor); border-radius: 100px; transition: width 700ms var(--ease), background 700ms var(--ease); }
+.meter-fill.up { background: var(--protected); }
+
+/* ── screen 3 · funding ────────────────────────────────────────────────── */
+.partner-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.partner-card { display: grid; gap: 8px; align-content: start; transition: border-color var(--ease), background var(--ease); }
+.partner-card[data-on="1"] { border-color: var(--accent); }
+.partner-card.featured[data-on="1"] { border-color: var(--protected); }
+.partner-funds { font-size: 14.5px; line-height: 1.45; }
+.partner-divider { height: 1px; background: var(--line); }
+.partner-gets { font-size: 13.5px; color: var(--protected); font-weight: 600; line-height: 1.4; }
+.flow { display: flex; align-items: center; justify-content: center; gap: 0; padding: 14px 16px; }
+.flow-group { display: grid; gap: 10px; }
+.flow-chip { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 100px; padding: 7px 12px; color: var(--ink-dim); white-space: nowrap; text-align: center; transition: border-color var(--ease), color var(--ease), background var(--ease); }
+.flow-chip.core { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); font-weight: 700; padding: 10px 14px; }
+.flow-chip.featured { border-color: var(--protected); color: var(--protected); }
+.flow-chip[data-on="1"] { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 700; }
+.flow-chip.featured[data-on="1"] { background: var(--protected); border-color: var(--protected); color: #13241d; }
+.flow-lines { width: 110px; height: 121px; flex: 0 0 auto; }
+.flow-lines path { fill: none; stroke: var(--line); stroke-width: 2; }
+.flow-lines path[data-on="1"] { stroke: var(--accent); stroke-dasharray: 160; stroke-dashoffset: 0; }
+.flow[data-stage="0"] .flow-lines path { stroke-dasharray: 160; stroke-dashoffset: 160; }
+.flow-lines path.drawn { stroke: var(--accent); stroke-dasharray: 160; stroke-dashoffset: 0; transition: stroke-dashoffset .8s ease-out; }
+.flow-lines path.undrawn { stroke-dasharray: 160; stroke-dashoffset: 160; }
+.flow-arrow { display: none; color: var(--ink-faint); font-size: 18px; }
+.funding-note { margin-top: 10px; }
+#screen-funding .controls { margin-top: 10px; }
+#screen-funding .footnote { margin-top: 10px; }
+
+/* ── screens 4 and 5 · the switch and the outcomes ─────────────────────── */
+.toggle-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toggle-label { font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); transition: color var(--ease); }
+.toggle-label.on { color: var(--ink); font-weight: 700; }
+.switch { width: 56px; height: 30px; border-radius: 100px; border: 1px solid var(--line); background: var(--ground-3); position: relative; padding: 0; flex: 0 0 auto; transition: background var(--ease), border-color var(--ease); }
+.switch-thumb { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--ink-dim); transition: transform 260ms var(--ease), background var(--ease); }
+.switch[aria-checked="true"] { background: var(--protected-soft); border-color: var(--protected); }
+.switch[aria-checked="true"] .switch-thumb { transform: translateX(26px); background: var(--protected); }
+.outcome { display: grid; gap: 8px; }
+.outcome .badge { justify-self: start; }
+.outcome[data-state="before"] .outcome-with, .outcome[data-state="with"] .outcome-before { display: none; }
+.outcome-before, .outcome-with { display: grid; gap: 8px; }
+.outcome-line { font-size: 14px; line-height: 1.45; }
+.score-line { display: flex; align-items: baseline; gap: 10px; border-top: 1px solid var(--line-soft); padding-top: 8px; }
+.stat-value { font-family: var(--mono); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.outcome-with .stat-value { color: var(--protected); }
+.outcome-before .stat-value { color: var(--risk-extreme); }
+.quote-big { font-family: var(--mono); font-size: 36px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); line-height: 1; }
+.quote-big span { font-size: 14px; color: var(--ink-dim); letter-spacing: 0; margin-left: 4px; }
+.assess { display: grid; gap: 8px; }
+.assess-list { display: grid; gap: 0; }
+.arow { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-top: 1px solid var(--line-soft); }
+.arow dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); line-height: 1.4; }
+.arow dd { font-size: 13.5px; line-height: 1.4; }
+.assess[data-state="before"] .a-after, .assess[data-state="after"] .a-before { display: none; }
+/* after Firebreak the rows are revealed one by one; an unrevealed row keeps its heading and a waiting mark, never a faded text */
+.assess[data-state="after"] .arow[data-on="0"] .a-after { visibility: hidden; height: 0; overflow: hidden; }
+.assess[data-state="after"] .arow[data-on="0"]::after { content: "Assessing…"; grid-column: 2; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+.assess[data-state="after"] .arow[data-on="1"] dt { color: var(--protected); }
+.disclosure--chart { margin-top: 8px; }
+.chart { width: 100%; height: auto; display: block; margin: 4px 0 8px; }
+.chart line { stroke: var(--line); stroke-width: 1; }
+.chart .base { fill: none; stroke: var(--ink-faint); stroke-width: 2; stroke-dasharray: 4 6; }
+.chart rect { fill: var(--protected); }
+.chart text { font-family: var(--mono); font-size: 14px; fill: var(--ink-faint); letter-spacing: .07em; }
+
+/* ── narrower stages ───────────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .layout--map { grid-template-columns: minmax(0, 1fr) 290px; }
+}
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  #app { grid-template-columns: 1fr; grid-template-rows: 56px 52px 1fr auto; grid-template-areas: "topbar" "rail" "main" "status"; height: auto; min-height: 100vh; }
+  .rail { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 0 8px; gap: 0; }
+  .rail-btn { flex-direction: row; padding: 8px 12px; border-left: none; border-bottom: 2px solid transparent; flex: 0 0 auto; }
+  .rail-btn[aria-current="step"] { border-left-color: transparent; border-bottom-color: var(--accent); }
+  main { overflow: visible; padding: 16px 16px 24px; }
+  .layout--map, #screen-insurer .layout--map, .partner-grid { grid-template-columns: 1fr; }
+  .wordmark .sub, .region-pill { display: none; }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .step-dot { width: 18px; }
+  .flow { flex-direction: column; align-items: stretch; gap: 10px; }
+  .flow-lines { display: none; }
+  .flow-arrow { display: block; text-align: center; }
+  .flow-group { grid-template-columns: 1fr; }
+  .statusbar { white-space: normal; height: auto; padding: 8px 16px; line-height: 1.4; }
+  .statusbar p { white-space: normal; overflow: visible; }
+  .screen-head h1, .screen-head h2 { font-size: 22px; }
+  .arow { grid-template-columns: 1fr; gap: 4px; }
+  .assess[data-state="after"] .arow[data-on="0"]::after { grid-column: 1; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .btn-primary { justify-content: center; }
+}
+@media (max-width: 600px) {
+  .step-dots { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+</style>
+</head>
+<body data-screen="region">
+
+<svg hidden aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <!-- the coordinating company's mark, shared with the other prototypes: a lens -->
+  <symbol id="lens" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+  <symbol id="house" viewBox="0 0 16 14"><path d="M1 7 8 1 15 7v6H1z"/></symbol>
+</svg>
+
+<button class="skip" type="button" id="skip">Skip to this screen's heading</button>
+
+<div id="app">
+  <header class="topbar">
+    <div class="wordmark">
+      <span class="mark">FIREBREAK<span class="dot">.</span></span>
+      <span class="sub">Regional risk operations</span>
+    </div>
+    <div class="topbar-right">
+      <span class="region-pill">Ridgeline Division</span>
+      <div class="step-dots" id="stepDots" role="group" aria-label="Screens"></div>
+      <div class="nav-arrows">
+        <button class="arrow-btn" type="button" id="prevBtn" aria-label="Previous screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="arrow-btn" type="button" id="nextBtn" aria-label="Next screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Screens">
+    <button class="rail-btn" type="button" data-go="region"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Region</span></button>
+    <button class="rail-btn" type="button" data-go="intervention"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,13 8,13 10,6 14,19 16,11 21,11"/></svg><span>Intervention</span></button>
+    <button class="rail-btn" type="button" data-go="funding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="10" r="4.2"/><circle cx="16" cy="10" r="4.2"/><circle cx="12" cy="16" r="4.2"/></svg><span>Funding</span></button>
+    <button class="rail-btn" type="button" data-go="homeowner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg><span>Homeowner</span></button>
+    <button class="rail-btn" type="button" data-go="insurer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg><span>Insurer</span></button>
+  </nav>
+
+  <main id="main">
+
+  <!-- ══ 1 · FIREBREAK'S REGIONAL VIEW ═══════════════════════════════════ -->
+  <section class="screen" id="screen-region" data-screen="region" data-label="The region">
+    <div class="screen-head">
+      <span class="eyebrow">01 · Firebreak · Ridgeline Division</span>
+      <h1 class="xd" id="h-region" tabindex="-1">Firebreak coordinates protection across this region.</h1>
+    </div>
+    <div class="layout layout--map">
+      <div class="panel map-panel">
+        <div class="map" id="map-region" data-view="region" data-detail="0"></div>
+        <div class="map-legend">
+          <span><i class="swatch risk-low"></i>Low</span>
+          <span><i class="swatch risk-moderate"></i>Moderate</span>
+          <span><i class="swatch risk-elevated"></i>Elevated</span>
+          <span><i class="swatch risk-extreme"></i>Extreme</span>
+          <span class="legend-sep"></span>
+          <span><i class="ridgemark"></i>Ridgeline</span>
+          <span><i class="homemark"></i>Homes</span>
+          <label class="legend-toggle"><input type="checkbox" id="detailToggle"> Sensors &amp; crews</label>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="plate plate--agent">
+          <p class="agent-head"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><b>Firebreak</b><span>operations</span></p>
+          <p class="say">Six zones, one coordinated operation: detection, vegetation work and contracted response. Zone 4 is today's priority.</p>
+        </div>
+        <div class="panel cond">
+          <span class="eyebrow">Conditions now · Zone 4</span>
+          <span class="badge risk-extreme">Red flag · extreme risk</span>
+          <dl class="readings">
+            <div><dt>Wind</dt><dd>34 mph <span class="dir" aria-label="from the north-east">↙ NE</span></dd></div>
+            <div><dt>Humidity</dt><dd>11%</dd></div>
+            <div><dt>Fuel moisture</dt><dd>Low</dd></div>
+          </dl>
+        </div>
+        <div class="panel zone-card" id="zoneCard" aria-live="polite"></div>
+        <details class="disclosure" id="opsDetail">
+          <summary>Operations detail</summary>
+          <dl class="detail-list">
+            <div><dt>Sensors online</dt><dd>128</dd></div>
+            <div><dt>Crews deployed</dt><dd>6</dd></div>
+            <div><dt>Acres under management</dt><dd>3,100</dd></div>
+          </dl>
+          <p class="footnote">Illustrative counts.</p>
+        </details>
+      </aside>
+    </div>
+    <div class="actions"><p class="take">Regional protection, coordinated, rather than each property on its own.</p><button class="btn-primary" type="button" data-forward id="fwd-region">See the intervention <span aria-hidden="true">→</span></button></div>
+  </section>
+
+  <!-- ══ 2 · THE COORDINATED INTERVENTION ════════════════════════════════ -->
+  <section class="screen" id="screen-intervention" data-screen="intervention" data-label="The intervention" hidden>
+    <div class="screen-head">
+      <span class="eyebrow">02 · Zone 4 · Canyon Ridge</span>
+      <h2 class="xd" id="h-intervention" tabindex="-1">One zone. A coordinated prevention plan.</h2>
+    </div>
+    <div class="layout layout--map">
+      <div class="panel map-panel">
+        <div class="map" id="map-intervention" data-view="zone" data-detail="crews" data-exposure="0" data-cleared="0" data-dispatched="0"></div>
+        <div class="map-legend">
+          <span><i class="swatch cleared"></i>Completed prevention work</span>
+          <span><i class="swatch condmark"></i>Current conditions</span>
+          <span><i class="swatch respmark"></i>Response deployment</span>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="plate plate--agent">
+          <p class="agent-head"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><b>Firebreak</b><span>operations</span></p>
+          <p class="say" id="say-intervention">Ready.</p>
+        </div>
+        <ol class="beats" id="beats">
+          <li class="beat" data-beat="exposure" data-state="pending"><span class="beat-n" aria-hidden="true">1</span><div class="beat-body"><b>Exposure analysis</b><span>Canyon Ridge: 14 homes below the ridgeline. The corridor between them is the priority.</span></div></li>
+          <li class="beat" data-beat="clearing" data-state="pending"><span class="beat-n" aria-hidden="true">2</span><div class="beat-body"><b>Brush clearing</b><span>Targeted vegetation work on the corridor, completed before the season. It changed the exposure around the cluster.</span></div></li>
+          <li class="beat" data-beat="dispatch" data-state="pending"><span class="beat-n" aria-hidden="true">3</span><div class="beat-body"><b>Dispatch</b><span>Under today's red flag, Firebreak repositions contracted Crew 6 to the corridor.</span>
+            <button class="btn-primary btn-dispatch" type="button" id="dispatchBtn">Dispatch Crew 6 · ETA 18 min</button>
+            <p class="dispatch-confirm" id="dispatchConfirm" hidden>Crew 6 dispatched · ETA 18 min</p>
+            <div class="coverage-meter"><div class="meter-row"><span class="stat-label">Zone 4 coverage</span><span class="meter-value" id="meterValue">62%</span></div><div class="meter-track"><div class="meter-fill" id="meterFill" style="width:62%"></div></div></div>
+          </div></li>
+        </ol>
+        <div class="controls" role="group" aria-label="Intervention playback (presenter)">
+          <button class="ctl" type="button" id="playBtn">Pause</button>
+          <button class="ctl" type="button" id="replayBtn">Replay</button>
+          <button class="ctl" type="button" id="finishBtn">Finish</button>
+        </div>
+      </aside>
+    </div>
+    <div class="actions"><p class="take">Analysis, prevention and response, brought together around one region.</p><button class="btn-primary" type="button" data-forward id="fwd-intervention">Who funds this? <span aria-hidden="true">→</span></button></div>
+  </section>
+
+  <!-- ══ 3 · FUNDING THE COMPANY ═════════════════════════════════════════ -->
+  <section class="screen" id="screen-funding" data-screen="funding" data-label="Funding" hidden>
+    <div class="screen-head">
+      <span class="eyebrow">03 · The business model</span>
+      <h2 class="xd" id="h-funding" tabindex="-1">Utility, insurer, and community fund Firebreak.</h2>
+    </div>
+    <div class="partner-grid" id="partners">
+      <div class="panel partner-card" data-on="0"><span class="eyebrow">Utility</span><p class="partner-funds">Supports prevention and coordination.</p><div class="partner-divider"></div><p class="partner-gets">Less ignition exposure. Its infrastructure protected.</p></div>
+      <div class="panel partner-card featured" data-on="0"><span class="eyebrow">Insurer</span><p class="partner-funds">Funds or invests in regional risk mitigation.</p><div class="partner-divider"></div><p class="partner-gets">Mitigation that supports underwriting.</p></div>
+      <div class="panel partner-card" data-on="0"><span class="eyebrow">Community · local government</span><p class="partner-funds">Supports protection for the area.</p><div class="partner-divider"></div><p class="partner-gets">The area stays insurable.</p></div>
+    </div>
+    <div class="flow panel" id="flow" data-stage="0">
+      <div class="flow-group flow-group--in">
+        <span class="flow-chip" data-k="utility">Utility</span>
+        <span class="flow-chip featured" data-k="insurer">Insurer</span>
+        <span class="flow-chip" data-k="community">Community</span>
+      </div>
+      <svg class="flow-lines" viewBox="0 0 120 132" aria-hidden="true"><path d="M0 18 C60 18 60 66 120 66"/><path d="M0 66 L120 66"/><path d="M0 114 C60 114 60 66 120 66"/></svg>
+      <span class="flow-chip core">Firebreak · coordinated operation</span>
+      <svg class="flow-lines flow-lines--out" viewBox="0 0 120 132" aria-hidden="true"><path d="M0 66 C60 66 60 18 120 18"/><path d="M0 66 L120 66"/><path d="M0 66 C60 66 60 114 120 114"/></svg>
+      <div class="flow-group flow-group--out">
+        <span class="flow-chip">Detection</span>
+        <span class="flow-chip">Vegetation work</span>
+        <span class="flow-chip">Response</span>
+      </div>
+    </div>
+    <div class="controls" role="group" aria-label="Funding flow (presenter)">
+      <button class="ctl" type="button" id="flowReplay">Replay</button>
+      <button class="ctl" type="button" id="flowFinish">Finish</button>
+    </div>
+    <p class="footnote">Business-model level. Investment and recurring service funding are different commitments; no fee, total or return is stated here.</p>
+    <div class="actions"><p class="take">Several stakeholders support the company because regional protection benefits each of them.</p><button class="btn-primary" type="button" data-forward id="fwd-funding">What changes for a homeowner? <span aria-hidden="true">→</span></button></div>
+  </section>
+
+  <!-- ══ 4 · HOMEOWNER OUTCOME ═══════════════════════════════════════════ -->
+  <section class="screen" id="screen-homeowner" data-screen="homeowner" data-label="Homeowner" hidden>
+    <div class="screen-head">
+      <span class="eyebrow">04 · One home in Canyon Ridge</span>
+      <h2 class="xd" id="h-homeowner" tabindex="-1">From FAIR Plan-only to an insurance offer.</h2>
+    </div>
+    <div class="layout layout--map">
+      <div class="panel map-panel">
+        <div class="map" id="map-homeowner" data-view="home" data-detail="0" data-cleared="0" data-focus="home"></div>
+        <p class="map-cap" id="homeCap">One home, ringed. Its neighbours are assessed individually.</p>
+      </div>
+      <aside class="side">
+        <div class="toggle-row">
+          <span class="toggle-label on" id="labelBefore">Before Firebreak</span>
+          <button class="switch" type="button" id="homeToggle" role="switch" aria-checked="false" aria-label="Show the outcome with Firebreak"><span class="switch-thumb"></span></button>
+          <span class="toggle-label" id="labelWith">With Firebreak</span>
+        </div>
+        <div class="panel outcome" id="outcome" data-state="before">
+          <div class="outcome-before">
+            <span class="eyebrow">Standard market</span>
+            <span class="badge status-bad">FAIR Plan only</span>
+            <p class="outcome-line">Declined in the standard market. No insurance-company offer.</p>
+            <p class="score-line"><span class="stat-label">Risk score</span><span class="stat-value" id="riskScore">87</span><span class="footnote">illustrative</span></p>
+          </div>
+          <div class="outcome-with">
+            <span class="eyebrow">A participating insurer · offer</span>
+            <span class="badge status-good">Insurable · subject to underwriting</span>
+            <p class="quote-big">$4,200<span>/year</span></p>
+            <p class="outcome-line">Homeowners policy, offered after the Zone 4 corridor work and Firebreak's coordinated protection were assessed.</p>
+            <p class="score-line"><span class="stat-label">Risk score</span><span class="stat-value" id="riskScoreWith">34</span><span class="footnote">illustrative</span></p>
+          </div>
+        </div>
+        <p class="footnote">One home, one assessment. Mitigation does not guarantee acceptance; each home in Canyon Ridge is assessed on its own.</p>
+      </aside>
+    </div>
+    <div class="actions"><p class="take">An offer that was not available before.</p><button class="btn-primary" type="button" data-forward id="fwd-homeowner">Show the offer <span aria-hidden="true">→</span></button></div>
+  </section>
+
+  <!-- ══ 5 · INSURER OUTCOME ═════════════════════════════════════════════ -->
+  <section class="screen" id="screen-insurer" data-screen="insurer" data-label="Insurer" hidden>
+    <div class="screen-head">
+      <span class="eyebrow">05 · The insurer's view · Zone 4</span>
+      <h2 class="xd" id="h-insurer" tabindex="-1">A previously excluded area becomes a risk worth considering.</h2>
+    </div>
+    <div class="layout layout--map">
+      <div class="panel map-panel">
+        <div class="map" id="map-insurer" data-view="zone" data-detail="0" data-cleared="0" data-insurer="before"></div>
+        <div class="map-legend">
+          <span><i class="swatch excluded"></i>Excluded</span>
+          <span><i class="swatch considered"></i>Under consideration</span>
+          <span><i class="swatch cleared"></i>Completed prevention work</span>
+          <span><i class="homemark"></i>Homes</span>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="toggle-row">
+          <span class="toggle-label on" id="labelExcluded">Before</span>
+          <button class="switch" type="button" id="insurerToggle" role="switch" aria-checked="false" aria-label="Show the assessment after Firebreak"><span class="switch-thumb"></span></button>
+          <span class="toggle-label" id="labelAfter">After Firebreak</span>
+        </div>
+        <div class="panel assess" id="assess" data-state="before">
+          <span class="eyebrow">Assessment · Zone 4 · Canyon Ridge</span>
+          <dl class="assess-list">
+            <div class="arow" data-row="mitigation" data-on="0"><dt>Verified mitigation</dt><dd class="a-before">None on record.</dd><dd class="a-after">Corridor vegetation work completed and documented. Coordinated protection in place.</dd></div>
+            <div class="arow" data-row="evidence" data-on="0"><dt>Performance evidence</dt><dd class="a-before">None available.</dd><dd class="a-after">One dispatch on record: Crew 6 to the corridor in 18 minutes under red flag conditions. Not a loss record.<details class="disclosure disclosure--chart"><summary>Illustrative record</summary><svg class="chart" viewBox="0 0 560 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Illustrative chart: acres burned by year, actual bars falling against a flat baseline line."><line x1="0" y1="20" x2="560" y2="20"/><line x1="0" y1="100" x2="560" y2="100"/><line x1="0" y1="180" x2="560" y2="180"/><polyline class="base" points="40,34 180,30 320,26 460,22"/><rect x="20" y="40" width="40" height="140" opacity=".5"/><rect x="160" y="96" width="40" height="84" opacity=".7"/><rect x="300" y="138" width="40" height="42" opacity=".85"/><rect x="440" y="160" width="40" height="20"/><text x="40" y="200" text-anchor="middle">YR 1</text><text x="180" y="200" text-anchor="middle">YR 2</text><text x="320" y="200" text-anchor="middle">YR 3</text><text x="460" y="200" text-anchor="middle">YR 4</text></svg><p class="footnote">Acres burned, actual against a no-Firebreak baseline, with a 14-minute average response time. Reference-prototype content; illustrative, not measured results.</p></details></dd></div>
+            <div class="arow" data-row="exposure" data-on="0"><dt>Remaining exposure</dt><dd class="a-before">Outside appetite: ridgeline, wind-driven fire, nothing mitigated on record.</dd><dd class="a-after">Elevated, not eliminated: the ridgeline and wind-driven events remain, now better understood.</dd></div>
+            <div class="arow" data-row="decision" data-on="0"><dt>Coverage decision</dt><dd class="a-before">Zone 4 excluded. Declined.</dd><dd class="a-after">Zone 4 open for consideration, home by home, subject to underwriting. The screen-04 home has an offer; its neighbours are not automatically accepted.</dd></div>
+          </dl>
+        </div>
+        <div class="controls" role="group" aria-label="Assessment reveal (presenter)">
+          <button class="ctl" type="button" id="assessReplay">Replay</button>
+          <button class="ctl" type="button" id="assessFinish">Finish</button>
+        </div>
+      </aside>
+    </div>
+    <div class="actions">
+      <p class="take">Firebreak changes the conditions and the information behind underwriting.</p>
+      <button class="btn-primary" type="button" data-forward id="fwd-insurer">Reassess with Firebreak <span aria-hidden="true">→</span></button>
+      <div class="end-actions" id="endActions" hidden><a class="btn-primary btn-link" id="workshopLink" href="https://fieldnotes-khaki-three.vercel.app/workshop/">Back to workshop</a><button class="ctl" type="button" id="restartBtn">Restart</button></div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="statusbar"><p>Fictional concept demonstration. Ridgeline Division, its zones, conditions, homes, figures and the insurer are invented. No real region, company, policy or offer.</p></footer>
+</div>
+
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+<script>
+window.__PHOTOS = {};
+(function(){function fill(){var m=window.__PHOTOS,i,els=document.querySelectorAll("img[data-photo]");for(i=0;i<els.length;i++){if(m[els[i].getAttribute("data-photo")]){els[i].src=m[els[i].getAttribute("data-photo")];}}}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",fill);}else{fill();}})();
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   Firebreak · regional risk operations
+   No framework, no build step, no external request. Three files.
+
+   THE SEQUENCE (five screens, one takeaway each)
+     1 region        Firebreak coordinates protection across the region
+     2 intervention  three beats on the same map: exposure analysis, the
+                     brush clearing completed before the season, one dispatch
+     3 funding       utility, insurer and community fund the company
+     4 homeowner     one home: FAIR Plan-only → an illustrative offer
+     5 insurer       the zone from the insurer's side: excluded → considered
+
+   THE MAP is one drawing (mapSVG) in world units 960 × 600, printed four
+   times with different windows: the region, Zone 4 with its ridge, and the
+   cluster close up. Every overlay is a group whose visibility is a data-
+   attribute on the map's container, so the beats are CSS transitions driven
+   by state, never by hand-animated numbers.
+
+   ONE STATE { screen, detail, zone, beat, dispatched, flow, home, insurer,
+   assess } is the only source of truth, kept in sessionStorage for the tab.
+   Backward navigation keeps it; restart clears it. The forward action on a
+   screen completes that screen's beat before it advances, so ordinary
+   forward navigation reaches every payoff.
+
+   WHAT IS INVENTED. Ridgeline Division, its zones, Canyon Ridge, every
+   reading, score, count, time and figure, and the insurer. All of it is
+   the reference prototype's illustrative content; the status bar says so.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+
+  /* ── content ──────────────────────────────────────────────────────────── */
+  var SCREENS = ["region", "intervention", "funding", "homeowner", "insurer"];
+  var LABELS = { region: "The region", intervention: "The intervention", funding: "Funding", homeowner: "Homeowner", insurer: "Insurer" };
+  var ZONES = {
+    1: { risk: "moderate", label: "Moderate", sensors: 22, crews: 1, acres: "480" },
+    2: { risk: "low", label: "Low", sensors: 14, crews: 0, acres: "310" },
+    3: { risk: "moderate", label: "Moderate", sensors: 19, crews: 1, acres: "540" },
+    4: { risk: "extreme", label: "Extreme", sensors: 31, crews: 2, acres: "720", note: "Canyon Ridge · 14 homes below the ridgeline. Red flag conditions." },
+    5: { risk: "elevated", label: "Elevated", sensors: 26, crews: 1, acres: "650", note: "Adjacent to the ridgeline. Crew 6 is stationed here." },
+    6: { risk: "low", label: "Low", sensors: 16, crews: 1, acres: "400" }
+  };
+  var SAY = {
+    ready: "Zone 4, under red flag conditions. Three things, in order.",
+    exposure: "Exposure: 14 homes below the ridgeline. The corridor between the ridge and the cluster is the priority.",
+    clearing: "The corridor was cleared before the season. That work is done; it is why today's exposure is lower.",
+    decide: "Red flag now. Reposition contracted Crew 6 to the corridor?",
+    dispatched: "Crew 6 is moving to the corridor. ETA 18 minutes. Zone 4 coverage rises as it arrives.",
+    finished: "Exposure analysed, corridor cleared before the season, Crew 6 at the corridor. Analysis, prevention and response, together."
+  };
+  var STORE = "firebreak.v1";
+  var VIEWS = { region: "0 0 960 600", zone: "0 250 600 330", home: "0 296 440 280" };
+
+  /* ── state ────────────────────────────────────────────────────────────── */
+  function fresh() { return { screen: "region", detail: false, zone: "4", beat: 0, dispatched: false, flow: false, home: "before", insurer: "before", assess: 0 }; }
+  var S = fresh();
+  function persist() { try { sessionStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { /* private mode */ } }
+  function restore() {
+    var v = null; try { v = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (e) { v = null; }
+    if (!v || typeof v !== "object") { return; }
+    var n = fresh();
+    if (SCREENS.indexOf(v.screen) >= 0) { n.screen = v.screen; }
+    n.detail = v.detail === true; if (ZONES[v.zone]) { n.zone = String(v.zone); }
+    n.beat = Math.max(0, Math.min(3, v.beat | 0)); n.dispatched = v.dispatched === true; if (n.dispatched) { n.beat = 3; }
+    n.flow = v.flow === true; n.home = v.home === "with" ? "with" : "before"; n.insurer = v.insurer === "after" ? "after" : "before";
+    n.assess = Math.max(0, Math.min(4, v.assess | 0));
+    S = n;
+  }
+
+  /* ── dom ──────────────────────────────────────────────────────────────── */
+  var $ = function (id) { return document.getElementById(id); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var announceEl = $("announce");
+  function announce(msg) { announceEl.textContent = ""; setTimeout(function () { announceEl.textContent = msg; }, 30); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ── the map ──────────────────────────────────────────────────────────── */
+  var HOMES = [[104, 428], [140, 428], [176, 428], [212, 428], [248, 428], [122, 466], [158, 466], [194, 466], [230, 466], [266, 466], [104, 504], [140, 504], [176, 504], [212, 504]];
+  var FOCUS = [176, 466];
+  var CREWS = [[130, 460, "Crew 1"], [230, 440, "Crew 2"], [100, 160, "Crew 3"], [760, 180, "Crew 4"], [780, 520, "Crew 5"]];
+  var CREW6 = [430, 470];
+  var SENSORS = [[90, 70], [210, 190], [420, 90], [780, 110], [880, 200], [70, 400], [180, 520], [260, 370], [460, 520], [820, 470]];
+  var CORRIDOR = "48,346 312,354 312,402 48,396";
+  function tri(x, y) { return (x) + "," + (y - 10) + " " + (x + 9) + "," + (y + 8) + " " + (x - 9) + "," + (y + 8); }
+  function mapSVG(view) {
+    var s = '<svg viewBox="' + VIEWS[view] + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + (view === "region" ? "Ridgeline Division: six zones, a high-risk ridgeline across the middle, Canyon Ridge, a cluster of fourteen homes, below it in Zone 4, and a utility corridor crossing the eastern zones." : view === "zone" ? "Zone 4 close up: the ridgeline across the top, the corridor below it, and the Canyon Ridge cluster of fourteen homes." : "Canyon Ridge close up: fourteen homes below the cleared corridor, one of them ringed.") + '">';
+    s += '<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="rgba(95,181,151,.2)"/><line x1="0" y1="0" x2="0" y2="8" stroke="#5fb597" stroke-width="2.6"/></pattern><pattern id="hatch-red" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(224,82,58,.55)" stroke-width="2"/></pattern></defs>';
+    var Z = [[1, "0,0 320,0 320,300 0,300"], [2, "320,0 640,0 640,300 320,300"], [3, "640,0 960,0 960,300 640,300"], [4, "0,300 320,300 320,600 0,600"], [5, "320,300 640,300 640,600 320,600"], [6, "640,300 960,300 960,600 640,600"]];
+    s += '<g class="zones">' + Z.map(function (z) { return '<polygon class="zone" data-zone="' + z[0] + '" data-risk="' + ZONES[z[0]].risk + '" points="' + z[1] + '"><title>Zone ' + z[0] + ' · ' + ZONES[z[0]].label + '</title></polygon>'; }).join("") + '</g>';
+    /* the ridgeline: a high-risk band along the top of zones 4 and 5 */
+    s += '<g class="ridgeg"><path class="ridge" d="M0 318 C80 290 160 340 240 312 S400 322 480 300 S600 335 640 315"/><path class="ridge-line" d="M0 318 C80 290 160 340 240 312 S400 322 480 300 S600 335 640 315"/><text class="ridge-label" x="24" y="292">Ridgeline · high risk</text></g>';
+    /* the utility corridor */
+    s += '<g class="utilg"><line class="util" x1="480" y1="0" x2="860" y2="600"/>' + [[536, 80], [590, 210], [645, 340], [700, 470]].map(function (t) { return '<circle class="tower" cx="' + t[0] + '" cy="' + t[1] + '" r="5"/>'; }).join("") + '</g>';
+    /* the insurer's boundary on zone 4 (screen 5) */
+    s += '<polygon class="excluded" points="0,300 320,300 320,600 0,600"/><text class="insurer-label excluded-label" x="24" y="562">Zone 4 · excluded</text>';
+    s += '<polygon class="considered" points="0,300 320,300 320,600 0,600"/><text class="insurer-label considered-label" x="24" y="562">Zone 4 · under consideration</text>';
+    /* beat 2: the cleared corridor; beat 1: the exposure drawing */
+    s += '<polygon class="cleared" points="' + CORRIDOR + '"/><text class="cleared-label" x="52" y="414">Corridor cleared · completed before the season</text>';
+    s += '<polygon class="exposure exposure-corridor" points="' + CORRIDOR + '"/><ellipse class="exposure exposure-ring" cx="186" cy="470" rx="128" ry="70"/><text class="exposure-label" x="52" y="338">Priority corridor</text><text class="exposure-label" x="112" y="556">Threatened cluster</text>';
+    /* the cluster */
+    s += '<g class="homes">' + HOMES.map(function (h) { return '<use class="home" href="#house" x="' + (h[0] - 8) + '" y="' + (h[1] - 7) + '" width="16" height="14"/>'; }).join("") + '</g>';
+    s += '<text class="cluster-label" x="104" y="536">Canyon Ridge · 14 homes</text>';
+    s += '<circle class="focus-ring" cx="' + FOCUS[0] + '" cy="' + FOCUS[1] + '" r="14"/><text class="focus-label" x="' + (FOCUS[0] - 18) + '" y="' + (FOCUS[1] - 20) + '">This home</text>';
+    /* current conditions: the wind */
+    s += '<g class="windg"><path class="wind" d="M500 350 L446 404 M446 404 L448 386 M446 404 L464 402"/><text class="wind-text" x="452" y="424">Wind 34 mph</text></g>';
+    /* detection and crews */
+    s += '<g class="sensors">' + SENSORS.map(function (p) { return '<circle class="sensor" cx="' + p[0] + '" cy="' + p[1] + '" r="4"/>'; }).join("") + '</g>';
+    s += '<g class="crews">' + CREWS.map(function (c) { return '<polygon class="crew crew-other" points="' + tri(c[0], c[1]) + '"><title>' + c[2] + '</title></polygon>'; }).join("");
+    s += '<line class="trail" x1="' + CREW6[0] + '" y1="' + CREW6[1] + '" x2="' + (CREW6[0] - 230) + '" y2="' + (CREW6[1] - 92) + '"/>';
+    s += '<g class="crew6"><polygon class="crew" points="' + tri(CREW6[0], CREW6[1]) + '"><title>Crew 6</title></polygon><text class="crew-label" x="' + (CREW6[0] + 12) + '" y="' + (CREW6[1] + 4) + '">Crew 6</text></g>';
+    s += '<text class="dispatch-label" x="216" y="386">Crew 6 · contracted · ETA 18 min</text></g>';
+    /* labels and the selectable outlines */
+    s += '<g class="labels">' + Z.map(function (z) { var x = [30, 350, 670][(z[0] - 1) % 3], y = z[0] <= 3 ? 40 : 360; return '<text class="zone-label" x="' + x + '" y="' + y + '">Zone ' + z[0] + '</text><text class="zone-risk-label" data-risk="' + ZONES[z[0]].risk + '" x="' + x + '" y="' + (y + 18) + '">' + ZONES[z[0]].label + '</text>'; }).join("") + '</g>';
+    s += '<g class="outlines">' + Z.map(function (z) { return '<polygon class="zone-outline" data-zone="' + z[0] + '" points="' + z[1] + '"/>'; }).join("") + '</g>';
+    return s + '</svg>';
+  }
+  var MAPS = { region: $("map-region"), intervention: $("map-intervention"), homeowner: $("map-homeowner"), insurer: $("map-insurer") };
+  MAPS.region.innerHTML = mapSVG("region");
+  MAPS.intervention.innerHTML = mapSVG("zone");
+  MAPS.homeowner.innerHTML = mapSVG("home");
+  MAPS.insurer.innerHTML = mapSVG("zone");
+
+  /* ── screen 1 · the region ────────────────────────────────────────────── */
+  function selectZone(n, quiet) {
+    S.zone = String(n); persist();
+    $$("#map-region .zone-outline").forEach(function (o) { o.classList.toggle("selected", o.getAttribute("data-zone") === S.zone); });
+    var z = ZONES[S.zone];
+    $("zoneCard").innerHTML = '<span class="eyebrow">Selected zone</span><h3>Zone ' + S.zone + '</h3><span class="badge risk-' + z.risk + '">' + z.label + ' risk</span>' + (z.note ? '<p>' + esc(z.note) + '</p>' : '<p>' + z.acres + ' acres managed.</p>');
+    var d = $("opsDetail").querySelector(".detail-list");
+    d.innerHTML = '<div><dt>Zone ' + S.zone + ' sensors</dt><dd>' + z.sensors + '</dd></div><div><dt>Zone ' + S.zone + ' crews</dt><dd>' + z.crews + '</dd></div><div><dt>Zone ' + S.zone + ' acres</dt><dd>' + z.acres + '</dd></div><div><dt>Division sensors online</dt><dd>128</dd></div><div><dt>Division crews deployed</dt><dd>6</dd></div><div><dt>Division acres managed</dt><dd>3,100</dd></div>';
+    if (!quiet) { announce("Zone " + S.zone + " selected. " + z.label + " risk."); }
+  }
+  $$("#map-region .zone").forEach(function (z) { z.addEventListener("click", function () { selectZone(z.getAttribute("data-zone")); }); });
+  $("detailToggle").addEventListener("change", function () { S.detail = this.checked; persist(); paintRegion(); announce(S.detail ? "Sensors and crews shown." : "Sensors and crews hidden."); });
+  function paintRegion() { MAPS.region.setAttribute("data-detail", S.detail ? "1" : "0"); $("detailToggle").checked = S.detail; }
+
+  /* ── screen 2 · the beats ─────────────────────────────────────────────── */
+  var beats = $$("#beats .beat");
+  var timer = null, playing = false;
+  function say(k) { $("say-intervention").textContent = SAY[k]; }
+  function paintBeats() {
+    var m = MAPS.intervention;
+    m.setAttribute("data-exposure", S.beat >= 1 ? "1" : "0");
+    m.setAttribute("data-cleared", S.beat >= 2 ? "1" : "0");
+    m.setAttribute("data-dispatched", S.dispatched ? "1" : "0");
+    beats.forEach(function (b, i) {
+      var n = i + 1, st = "pending";
+      if (S.dispatched) { st = "done"; } else if (S.beat > n) { st = "done"; } else if (S.beat === n) { st = "active"; } else if (n === 3 && S.beat === 3) { st = "active"; }
+      if (n === 3 && !S.dispatched && S.beat >= 3) { st = "active"; }
+      b.setAttribute("data-state", st);
+      b.querySelector(".beat-n").textContent = st === "done" ? "✓" : String(n);
+    });
+    var db = $("dispatchBtn");
+    db.disabled = S.dispatched; db.textContent = S.dispatched ? "Dispatched" : "Dispatch Crew 6 · ETA 18 min"; db.classList.toggle("done", S.dispatched);
+    $("dispatchConfirm").hidden = !S.dispatched;
+    $("meterFill").style.width = S.dispatched ? "89%" : "62%"; $("meterFill").classList.toggle("up", S.dispatched); $("meterValue").textContent = S.dispatched ? "89%" : "62%";
+    var pb = $("playBtn");
+    pb.textContent = playing ? "Pause" : (S.dispatched ? "Done" : (S.beat >= 3 ? "Decide" : (S.beat === 0 ? "Play" : "Resume")));
+    pb.disabled = S.dispatched || (S.beat >= 3 && !playing);
+    pb.setAttribute("aria-pressed", playing ? "true" : "false");
+    var fwd = $("fwd-intervention");
+    fwd.innerHTML = S.dispatched ? 'Who funds this? <span aria-hidden="true">→</span>' : 'Finish the intervention <span aria-hidden="true">→</span>';
+    $("nextBtn").disabled = false;
+  }
+  function stopTimer() { clearTimeout(timer); timer = null; playing = false; }
+  function runBeat(n) {
+    /* beat n becomes active now; beats 1 and 2 complete on a timer, beat 3 waits for the decision */
+    stopTimer();
+    S.beat = n; persist();
+    if (n >= 3) { say("decide"); paintBeats(); announce("Beat three, dispatch. Red flag now. Reposition contracted Crew 6 to the corridor? Press Dispatch."); try { $("dispatchBtn").focus({ preventScroll: true }); } catch (e) { /* ignore */ } return; }
+    playing = true;
+    say(n === 1 ? "exposure" : "clearing"); paintBeats();
+    announce(n === 1 ? "Beat one, exposure analysis. Canyon Ridge, fourteen homes below the ridgeline; the corridor is the priority." : "Beat two, brush clearing. The corridor was cleared before the season.");
+    timer = setTimeout(function () { runBeat(n + 1); }, reduced ? 60 : 2600);
+  }
+  function play() { if (S.dispatched) { return; } if (S.beat === 0) { runBeat(1); } else if (S.beat < 3) { runBeat(S.beat); } else { runBeat(3); } }
+  function pause() { stopTimer(); paintBeats(); announce("Paused at beat " + S.beat + "."); }
+  function dispatch() {
+    if (S.dispatched) { return; }
+    stopTimer(); S.beat = 3; S.dispatched = true; persist();
+    say("dispatched"); paintBeats();
+    announce("Crew 6 dispatched. ETA 18 minutes. Zone 4 coverage 89 percent. The intervention is complete.");
+  }
+  function finishIntervention(quiet) {
+    stopTimer(); S.beat = 3; S.dispatched = true; persist();
+    say("finished"); paintBeats();
+    if (!quiet) { announce("Finished: exposure analysed, corridor cleared before the season, Crew 6 at the corridor, coverage 89 percent."); }
+  }
+  function replayIntervention() {
+    stopTimer(); S.beat = 0; S.dispatched = false; persist();
+    say("ready"); paintBeats();
+    /* let the transitions reset before they run again */
+    setTimeout(function () { runBeat(1); }, 80);
+  }
+  function enterIntervention(restored) {
+    if (S.dispatched) { say("finished"); paintBeats(); return; }
+    if (restored && S.beat > 0) { say(S.beat >= 3 ? "decide" : (S.beat === 2 ? "clearing" : "exposure")); paintBeats(); return; }
+    if (reduced) { finishIntervention(true); return; }
+    S.beat = 0; say("ready"); paintBeats();
+    setTimeout(function () { if (S.screen === "intervention" && S.beat === 0 && !S.dispatched) { runBeat(1); } }, 500);
+  }
+
+  /* ── screen 3 · the flow ──────────────────────────────────────────────── */
+  var flowTimers = [];
+  function flowClear() { flowTimers.forEach(clearTimeout); flowTimers = []; }
+  function flowSet(stage) {
+    /* 0 nothing · 1–3 contributors lit and drawn · 4 Firebreak lit · 5 the operation's three outputs lit */
+    var cards = $$("#partners .partner-card"), inChips = $$("#flow .flow-group--in .flow-chip"), inLines = $$("#flow .flow-lines:not(.flow-lines--out) path"), core = $("flow").querySelector(".core"), outLines = $$("#flow .flow-lines--out path"), outChips = $$("#flow .flow-group--out .flow-chip");
+    $("flow").setAttribute("data-stage", String(stage));
+    cards.forEach(function (c, i) { c.setAttribute("data-on", stage > i ? "1" : "0"); });
+    inChips.forEach(function (c, i) { c.setAttribute("data-on", stage > i ? "1" : "0"); });
+    inLines.forEach(function (p, i) { p.classList.toggle("drawn", stage > i); p.classList.toggle("undrawn", stage <= i); });
+    core.setAttribute("data-on", stage >= 4 ? "1" : "0");
+    outLines.forEach(function (p) { p.classList.toggle("drawn", stage >= 5); p.classList.toggle("undrawn", stage < 5); });
+    outChips.forEach(function (c) { c.setAttribute("data-on", stage >= 5 ? "1" : "0"); });
+    S.flow = stage >= 5; persist();
+    $("fwd-funding").innerHTML = S.flow ? 'What changes for a homeowner? <span aria-hidden="true">→</span>' : 'Finish the flow <span aria-hidden="true">→</span>';
+  }
+  function flowPlay() {
+    flowClear(); flowSet(0);
+    if (reduced) { flowSet(5); return; }
+    [1, 2, 3, 4, 5].forEach(function (st, i) { flowTimers.push(setTimeout(function () { flowSet(st); if (st === 5) { announce("Utility, insurer and community fund Firebreak's coordinated operation: detection, vegetation work and response."); } }, 400 + i * 700)); });
+  }
+  function flowFinish(quiet) { flowClear(); flowSet(5); if (!quiet) { announce("Utility, insurer and community fund Firebreak's coordinated operation: detection, vegetation work and response."); } }
+  function enterFunding(restored) { if (S.flow || (restored && S.flow)) { flowSet(5); return; } flowPlay(); }
+
+  /* ── screen 4 · the homeowner ─────────────────────────────────────────── */
+  function paintHome() {
+    var withFb = S.home === "with";
+    $("homeToggle").setAttribute("aria-checked", withFb ? "true" : "false");
+    $("labelBefore").classList.toggle("on", !withFb); $("labelWith").classList.toggle("on", withFb);
+    $("outcome").setAttribute("data-state", withFb ? "with" : "before");
+    MAPS.homeowner.setAttribute("data-cleared", withFb ? "1" : "0");
+    $("homeCap").textContent = withFb ? "The same home after the corridor work and Firebreak's coordinated protection. Its neighbours are assessed individually." : "One home, ringed, below an uncleared corridor. FAIR Plan only.";
+    $("fwd-homeowner").innerHTML = withFb ? 'See the insurer\'s view <span aria-hidden="true">→</span>' : 'Show the offer <span aria-hidden="true">→</span>';
+  }
+  function setHome(state) {
+    S.home = state; persist(); paintHome();
+    announce(state === "with" ? "With Firebreak: a participating insurer offers a homeowners policy at 4,200 dollars a year, illustrative, subject to underwriting. Risk score 34, illustrative." : "Before Firebreak: FAIR Plan only, declined in the standard market. Risk score 87, illustrative.");
+  }
+
+  /* ── screen 5 · the insurer ───────────────────────────────────────────── */
+  var rows = $$("#assess .arow");
+  var assessTimers = [];
+  function assessClear() { assessTimers.forEach(clearTimeout); assessTimers = []; }
+  function paintInsurer() {
+    var after = S.insurer === "after";
+    $("insurerToggle").setAttribute("aria-checked", after ? "true" : "false");
+    $("labelExcluded").classList.toggle("on", !after); $("labelAfter").classList.toggle("on", after);
+    $("assess").setAttribute("data-state", after ? "after" : "before");
+    MAPS.insurer.setAttribute("data-insurer", after ? "after" : "before");
+    MAPS.insurer.setAttribute("data-cleared", after ? "1" : "0");
+    rows.forEach(function (r, i) { r.setAttribute("data-on", after && S.assess > i ? "1" : "0"); });
+    var done = after && S.assess >= rows.length;
+    $("fwd-insurer").hidden = done; $("endActions").hidden = !done;
+    $("nextBtn").disabled = done;
+  }
+  function assessRun() {
+    assessClear(); S.assess = 0; persist(); paintInsurer();
+    if (reduced) { assessFinish(true); return; }
+    rows.forEach(function (r, i) { assessTimers.push(setTimeout(function () { S.assess = i + 1; persist(); paintInsurer(); if (i === rows.length - 1) { announce("Assessment complete: mitigation verified, one dispatch on record, exposure elevated but better understood, Zone 4 open for consideration home by home."); } }, 350 + i * 800)); });
+  }
+  function assessFinish(quiet) { assessClear(); S.assess = rows.length; persist(); paintInsurer(); if (!quiet) { announce("Assessment complete: mitigation verified, one dispatch on record, exposure elevated but better understood, Zone 4 open for consideration home by home."); } }
+  function setInsurer(state) {
+    S.insurer = state; persist();
+    if (state === "after") { announce("After Firebreak. Assessing Zone 4."); assessRun(); }
+    else { assessClear(); S.assess = 0; persist(); paintInsurer(); announce("Before: Zone 4 excluded, exposure outside appetite."); }
+  }
+
+  /* ── navigation ───────────────────────────────────────────────────────── */
+  var screens = $$(".screen");
+  var dots = $("stepDots");
+  SCREENS.forEach(function (id, i) { var d = document.createElement("button"); d.type = "button"; d.className = "step-dot"; d.setAttribute("aria-label", "Screen " + (i + 1) + ": " + LABELS[id]); d.addEventListener("click", function () { show(id); }); dots.appendChild(d); });
+  function show(id, opts) {
+    opts = opts || {};
+    if (SCREENS.indexOf(id) < 0) { id = "region"; }
+    stopTimer(); flowClear(); assessClear();
+    S.screen = id; persist();
+    document.body.setAttribute("data-screen", id);
+    screens.forEach(function (sc) { sc.hidden = sc.getAttribute("data-screen") !== id; });
+    var idx = SCREENS.indexOf(id);
+    $$(".rail-btn").forEach(function (b) { if (b.getAttribute("data-go") === id) { b.setAttribute("aria-current", "step"); } else { b.removeAttribute("aria-current"); } });
+    Array.prototype.forEach.call(dots.children, function (d, i) { if (i === idx) { d.setAttribute("aria-current", "step"); } else { d.removeAttribute("aria-current"); } });
+    $("prevBtn").disabled = idx === 0;
+    $("nextBtn").disabled = false;
+    if (id === "region") { paintRegion(); selectZone(S.zone, true); }
+    if (id === "intervention") { enterIntervention(opts.restored); }
+    if (id === "funding") { enterFunding(opts.restored); }
+    if (id === "homeowner") { paintHome(); }
+    if (id === "insurer") { paintInsurer(); if (S.insurer === "after" && S.assess < rows.length && !opts.restored) { assessRun(); } }
+    try { history.replaceState(null, "", "#" + id); } catch (e) { /* file:// */ }
+    $("main").scrollTop = 0; window.scrollTo(0, 0);
+    var h = $("h-" + id);
+    if (h && !opts.silent) { try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }
+    if (!opts.silent) { announce("Screen " + (idx + 1) + " of 5, " + LABELS[id] + ". " + (h ? h.textContent.trim() : "")); }
+  }
+  /* the forward action completes the open beat first, then advances */
+  function forward() {
+    var idx = SCREENS.indexOf(S.screen);
+    if (S.screen === "intervention" && !S.dispatched) { finishIntervention(false); return; }
+    if (S.screen === "funding" && !S.flow) { flowFinish(false); return; }
+    if (S.screen === "homeowner" && S.home !== "with") { setHome("with"); return; }
+    if (S.screen === "insurer") { if (S.insurer !== "after") { setInsurer("after"); } else if (S.assess < rows.length) { assessFinish(false); } return; }
+    if (idx < SCREENS.length - 1) { show(SCREENS[idx + 1]); }
+  }
+  function back() { var idx = SCREENS.indexOf(S.screen); if (idx > 0) { show(SCREENS[idx - 1]); } }
+  function restart() {
+    stopTimer(); flowClear(); assessClear();
+    S = fresh(); try { sessionStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+    paintBeats(); flowSet(0); S.flow = false; paintHome(); paintInsurer(); $("detailToggle").checked = false;
+    show("region"); announce("Restarted. Nothing is kept.");
+  }
+
+  /* ── wiring ───────────────────────────────────────────────────────────── */
+  var on = function (id, fn) { var el = $(id); if (el) { el.addEventListener("click", fn); } };
+  $$("[data-forward]").forEach(function (b) { b.addEventListener("click", forward); });
+  on("nextBtn", forward); on("prevBtn", back);
+  $$(".rail-btn").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-go")); }); });
+  on("playBtn", function () { if (playing) { pause(); } else { play(); } });
+  on("replayBtn", replayIntervention); on("finishBtn", function () { finishIntervention(false); });
+  on("dispatchBtn", dispatch);
+  on("flowReplay", flowPlay); on("flowFinish", function () { flowFinish(false); });
+  on("homeToggle", function () { setHome(S.home === "with" ? "before" : "with"); });
+  on("insurerToggle", function () { setInsurer(S.insurer === "after" ? "before" : "after"); });
+  on("assessReplay", function () { S.insurer = "after"; persist(); assessRun(); announce("Replaying the assessment."); });
+  on("assessFinish", function () { S.insurer = "after"; persist(); assessFinish(false); });
+  on("restartBtn", restart);
+  on("skip", function () { var h = $("h-" + S.screen); if (h) { h.focus(); } });
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) { return; }
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "select" || tag === "input" || tag === "button" || tag === "a" || tag === "summary" || tag === "textarea") { return; }
+    if (e.key === "ArrowRight") { forward(); }
+    if (e.key === "ArrowLeft") { back(); }
+  });
+
+  /* ── boot ─────────────────────────────────────────────────────────────── */
+  restore();
+  var want = (location.hash || "").replace(/^#/, "");
+  if (SCREENS.indexOf(want) < 0) { want = S.screen; }
+  paintBeats(); flowSet(S.flow ? 5 : 0); paintHome(); paintInsurer();
+  show(want, { silent: true, restored: true });
+})();
+
+</script>
+</body>
+</html>

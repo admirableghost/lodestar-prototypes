@@ -118,6 +118,17 @@ a street, a region.
   utilities / public actors / communities purchasing *defined value*.
 - **Do not rebuild.** Screen 4 is where the change lands.
 - **Priority:** 6.
+- **Revised 2026-10-09 (Becca's brief, `Firebreak — Regional Risk Operations_V3.html` as the base):**
+  the homeowner-first Alder County story is superseded. The route (still
+  `/prototype/resilience-grid/`, with `/prototype/firebreak/` forwarding to
+  it) is now Firebreak's own console, five screens: the region and its zones
+  with the ridgeline and the Canyon Ridge cluster → one intervention in three
+  animated beats (exposure analysis, brush clearing completed before the
+  season, one dispatch) → utility, insurer and community funding → one home,
+  FAIR Plan-only to an illustrative offer → the insurer's assessment of a
+  previously excluded zone. All figures are the reference prototype's
+  illustrative content; the investment-return figure is dropped. The
+  client's name in the source draft is kept out per the build contract.
 
 ### E — Backed to Act (`/prototype/backed-to-act/`)
 - **Purpose:** protection raises the authority a business will delegate.

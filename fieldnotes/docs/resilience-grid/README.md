@@ -1,5 +1,16 @@
 # Resilience Grid — how this is built
 
+> **Revised 2026-10-09 — this route now carries Firebreak.** Becca's
+> reference prototype (`Firebreak — Regional Risk Operations_V3.html`) is the
+> structural and visual base: a dark operations console, five screens, one
+> map printed four times. The six-frame Alder County story, Muse, Kestrel
+> Mutual and the research-notes evidence contract described below are
+> superseded for this route; the homes are now a visible cluster and one home
+> is ringed, by brief. Every figure on the glass is the reference prototype's
+> illustrative content and the status bar says so on every screen. The route
+> keeps its URL; `/prototype/firebreak/` forwards to it. The rest of this file
+> and its siblings are kept as the record of the earlier build.
+
 Speculative prototype for the client futures discussion.
 A regional wildfire protection network in 2036, told from the region rather
 than from one house.
