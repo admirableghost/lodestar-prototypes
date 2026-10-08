@@ -132,14 +132,19 @@
        privately. -->
   <div class="plate plate--agree" id="deal-card" style="grid-area:1/8/9/13">
     <ul class="opts" id="opts" aria-label="Improvements for no. 31"></ul>
-    <div class="fin" id="fin">
-      <p class="fin-l" id="fin-line"></p>
-      <div class="fin-ctl"><button type="button" class="pick" id="fin-yes" aria-pressed="false">Finance</button><button type="button" class="pick" id="fin-no" aria-pressed="true">Upfront</button></div>
-    </div>
-    <p class="proj" id="proj"></p>
-    <div class="sheet-act">
+    <!-- her choice, summed as she makes it: nothing here authorises anything -->
+    <p class="hint" id="pick-hint">Pick one, several, or no new work.</p>
+    <dl class="sum" id="sum" hidden>
+      <div id="sum-cost-row"><dt>Work</dt><dd id="sum-cost"></dd></div>
+      <div><dt>Premium</dt><dd id="sum-prem"></dd></div>
+      <div><dt>Saves</dt><dd id="sum-save"></dd></div>
+      <div id="sum-fin-row"><dt id="sum-fin-t">Finance</dt><dd><span id="fin-line"></span><span class="fin-ctl" id="fin-ctl"><button type="button" class="pick" id="fin-yes" aria-pressed="false">Finance</button><button type="button" class="pick" id="fin-no" aria-pressed="true">Upfront</button></span></dd></div>
+      <div><dt>Risk</dt><dd id="sum-risk"></dd></div>
+    </dl>
+    <p class="proj" id="proj" hidden></p>
+    <div class="sheet-act" id="sheet-act" hidden>
       <button type="button" class="jbtn" id="join">Authorise</button>
-      <p class="joined" id="joined" hidden><svg class="sig" viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path pathLength="100" d="M2 15 C 9 3, 15 21, 23 11 S 38 5, 45 13 S 56 19, 62 7"/></svg><span>Authorised · <span class="nb"><span id="joined-n">42</span></span></span></p>
+      <p class="joined" id="joined" hidden><svg class="sig" viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path pathLength="100" d="M2 15 C 9 3, 15 21, 23 11 S 38 5, 45 13 S 56 19, 62 7"/></svg><span>Authorised · <span class="nb">no. 31</span></span></p>
     </div>
   </div>
 
@@ -176,6 +181,7 @@
       <p class="thr-fig"><span id="thr-count">41</span><span class="thr-of"> of 60 · 48 needed</span></p>
       <!-- her agent's work, one round at a time: written by paint() from the
            state, revealed line by line as the thread reaches each lot -->
+      <p class="eyebrow step-ind" id="step-ind" hidden></p>
       <ol class="agent-log" id="agent-log" aria-label="Her agent's work"></ol>
       <div class="offer" id="offer" data-state="closed">
         <p class="offer-line" id="offer-line">
@@ -186,7 +192,9 @@
       </div>
       <!-- the label and aria-disabled are written by paint(): "Invite the
            street" while a round remains, "Street assembled" at 48 -->
-      <button type="button" class="ibtn" id="invite" aria-describedby="offer-line">Invite the street</button>
+      <!-- the facilitator steps the coordination: outreach, choices, coordination, threshold.
+           Replay re-shows it from the record; nothing is committed twice. -->
+      <div class="ctl-row"><button type="button" class="ibtn" id="invite" aria-describedby="offer-line">Next step</button><button type="button" class="ibtn ibtn--quiet" id="replay3" hidden>Replay</button></div>
     </div>
     <p class="leg leg--chip">
       <span class="leg-i leg-i--in"><svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><polygon points="1,9 8,2 15,9 15,21 1,21"/></svg>Joined</span>

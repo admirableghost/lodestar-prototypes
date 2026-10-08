@@ -100,7 +100,8 @@
   var STOPS = [START + 1, START + 1 + ROUND, NEED];
 
   /* ── THE STATE ───────────────────────────────────────────────────────── */
-  var S = { screen: 1, joined: false, committed: START, verified: false, accepted: false, bound: false,
+  var V = null;   /* screen 3 replay: the step being shown, or null when the view is the record */
+  var S = { screen: 1, joined: false, committed: START, verified: false, accepted: false, bound: false, none: false, withdrawn: false, step: 0,
             sel: [], fin: false, stage: 0 };
 
   /* ── THE ILLUSTRATIVE MODEL (hypothetical, auditable; documented privately
@@ -118,6 +119,13 @@
   var EFF_CAP = 0.35;        /* the most any one lot's verified work can move its premium */
   var APR_FIN = 0.031, DEDUCT = 2500, PROGRAMME = 3;
   function selOpts() { return OPTIONS.filter(function (o) { return S.sel.indexOf(o.id) >= 0; }); }
+  function chosen() { return S.none || S.sel.length > 0; }   /* an explicit choice, including no new work */
+  /* screen 3's four facilitator steps: 1 outreach · 2 choices (three join) ·
+     3 coordination (three more) · 4 threshold. The count follows the step;
+     nothing else moves it. */
+  function committedFor(step) { return START + (S.joined ? 1 : 0) + (step >= 2 ? ROUND : 0) + (step >= 3 ? ROUND : 0); }
+  function vstep() { return V !== null ? V : S.step; }
+  function vcommitted() { return committedFor(vstep()); }
   function selEff() { return Math.min(EFF_CAP, selOpts().reduce(function (a, o) { return a + o.eff; }, 0)); }
   function selCost() { return selOpts().reduce(function (a, o) { return a + o.cost; }, 0); }
   function premiumFor(eff) { return Math.round(BASE_PREMIUM * (1 - eff)); }
@@ -193,21 +201,26 @@
     if (!o || typeof o !== "object") { return; }
     S.joined = o.joined === true;
     S.committed = S.joined && STOPS.indexOf(o.committed) !== -1 ? o.committed : START;
+    /* the coordination step; an older record without one is read from its count */
+    S.step = !S.joined ? 0 : (typeof o.step === "number" && o.step >= 0 && o.step <= 4) ? Math.round(o.step) : (S.committed >= NEED ? 4 : S.committed > START + 1 ? 2 : 0);
+    S.committed = committedFor(S.step);
     S.verified = o.verified === true;
     S.sel = Array.isArray(o.sel) ? o.sel.filter(function (id) { return OPTIONS.some(function (x) { return x.id === id; }); }) : [];
     S.fin = o.fin === true && S.sel.length > 0;
+    S.none = o.none === true && S.sel.length === 0;
+    S.withdrawn = o.withdrawn === true && !S.joined;
     S.stage = (S.committed >= NEED && o.stage >= 0 && o.stage <= STAGES.length) ? Math.round(o.stage) : 0;
     S.verified = S.stage >= 4;
     S.accepted = o.accepted === true;
     S.bound = S.accepted && o.bound === true;
     /* a street that was assembled before the reload has already had its
        boundary drawn; it must not draw itself again on screen 3 */
-    bndShown = S.committed >= NEED;
+    bndShown = S.joined && S.step >= 4;
   }
   function save() {
     try {
-      if (!S.joined && !S.verified && !S.accepted) { sessionStorage.removeItem(KEY); }
-      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified, accepted: S.accepted, bound: S.bound, sel: S.sel, fin: S.fin, stage: S.stage })); }
+      if (!S.joined && !S.verified && !S.accepted && !S.sel.length && !S.none && !S.withdrawn) { sessionStorage.removeItem(KEY); }
+      else { sessionStorage.setItem(KEY, JSON.stringify({ joined: S.joined, committed: S.committed, verified: S.verified, accepted: S.accepted, bound: S.bound, sel: S.sel, fin: S.fin, none: S.none, withdrawn: S.withdrawn, step: S.step, stage: S.stage })); }
     } catch (e) { /* storage off: the state still lives for this page */ }
   }
   /* is household i in the committed set? The order grows out from no. 31
@@ -547,8 +560,8 @@
     opts = opts || {};
     var mode = opts.mode || "commit";
     var alone = mode === "alone";
-    var C = alone ? 0 : S.committed;
-    var crossed = !alone && C >= NEED;
+    var C = alone ? 0 : (S.screen === 3 ? vcommitted() : S.committed);
+    var crossed = !alone && (S.screen === 3 ? (S.joined && vstep() >= 4) : C >= NEED);
     var verified = !alone && !!opts.verified, installed = !alone && !!opts.installed;
     function hasWork(i) { var k = kindOf(RANK[i]); return k === "big" || k === "small" || (k === "mine" && S.sel.length > 0); }
     var ringed = alone || !!opts.ring;
@@ -875,7 +888,6 @@
 
   var joinBtn = document.getElementById("join");
   var joinedEl = document.getElementById("joined");
-  var joinedN = document.getElementById("joined-n");
   var inviteBtn = document.getElementById("invite");
   var ctlEl = document.getElementById("ctl");
   var countEl = document.getElementById("thr-count");
@@ -901,10 +913,11 @@
   /* Screen 3's ONE state line, verbatim from the copy contract. Below the
      threshold: "Not yet. {k} more households needed." with k = 48 − count,
      as a word up to twelve and a number above; k = 1 takes the singular. */
-  function conditionLine(open) {
-    if (open) { return "Participation reached. Verified risk reduction still required."; }
-    var short = NEED - S.committed;
-    return "Not yet. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed.";
+  function conditionLine(st) {
+    var short = NEED - (S.joined ? committedFor(st) : START);
+    if (short > 0) { return "Not yet. " + cap(few(short)) + " more household" + (short === 1 ? "" : "s") + " needed."; }
+    if (st < 4) { return "48 reached. Next: the threshold."; }
+    return "Participation reached. Verified risk reduction still required.";
   }
 
   /* Screen 5's words, derived. The pending line names what is missing. */
@@ -940,58 +953,93 @@
   /* her agent's work for the round that brought the street to its count:
      nothing before the first press; then the three lines of that round */
   var logEl = document.getElementById("agent-log");
-  function logLines() {
-    if (!S.joined || S.committed <= START + 1) { return []; }
-    /* the first round meets an objection her agent can actually answer: the
-       repayment mechanism is already in the deal (screen 2, Financing). No
-       new institution, subsidy or concession is invented. */
-    if (S.committed < NEED) {
-      return [{ t: "Coordinating hardening across Thorn Lane" },
-              { t: "No. 52's agent: declined the financing offer", k: "obj" },
-              { t: "No. 17: vents only · No. 40: existing hardening" },
-              { t: "Three join · " + S.committed + " of 60" }];
-    }
-    return [{ t: "No. 9's agent: declined the proposal", k: "obj" },
-            { t: "No. 22: full package, financed · No. 36: clearance only" },
-            { t: "Three join · 48. Verified risk reduction still required" }];
+  /* each step's messages: her agent and the other households' agents, short
+     enough to read aloud. Households decide differently; one declines; one
+     asks about financing and is not treated as having consented. */
+  var STEP_NAMES = ["", "Outreach", "Choices", "Coordination", "Threshold"];
+  function stepLines(st) {
+    if (!S.joined) { return [{ t: "Her agent needs no. 31's authorisation first." }]; }
+    if (st <= 0) { return [{ t: "Her agent has her authorisation. Ready to coordinate the street." }]; }
+    if (st === 1) { return [{ t: "Her agent: checking who wants to take part." },
+                            { t: "No. 9's agent: no new work wanted.", k: "obj" },
+                            { t: "No. 52's agent: asks about financing." }]; }
+    if (st === 2) { return [{ t: "No. 17's agent: vents only." },
+                            { t: "No. 22's agent: full package, financed." },
+                            { t: "No. 40's agent: existing hardening, verified." },
+                            { t: "Three join · 45 of 60" }]; }
+    if (st === 3) { return [{ t: "No. 9's agent: declined the proposal.", k: "obj" },
+                            { t: "No. 52: declined financing, still deciding.", k: "obj" },
+                            { t: "Three more: clearance, vents, hardening." },
+                            { t: "48 of 60 · nothing scheduled yet" }]; }
+    return [{ t: "Threshold reached: 48 of 60 participating." },
+            { t: "Commitments, not verified work. Contractors and verification next." }];
   }
 
   function inviteState() {
     if (!S.joined) { return "none"; }
-    return S.committed >= NEED ? "done" : "ready";
+    return vstep() >= 4 ? "done" : "ready";
   }
 
-  /* ── screen 2: paint the choice from the model ── */
+  /* ── screen 2: paint the choice from the model. Every option stays
+     selectable; "No new work" is its own, exclusive choice; nothing is
+     preselected and nothing here authorises. The summary follows the
+     selection live: cost, projected premium, saving, financing, and the
+     lot's modelled contribution to the street's risk reduction. ── */
   function paintChoice() {
     var ul = document.getElementById("opts"); if (!ul) { return; }
     ul.innerHTML = OPTIONS.map(function (o) {
       var on = S.sel.indexOf(o.id) >= 0, delta = premiumFor(Math.min(EFF_CAP, o.eff)) - BASE_PREMIUM;
-      return '<li><button type="button" class="opt" data-opt="' + o.id + '" aria-pressed="' + on + '"' + (S.joined ? ' disabled' : '') + '>' +
+      return '<li><button type="button" class="opt" data-opt="' + o.id + '" aria-pressed="' + on + '">' +
         '<span class="opt-n">' + o.name + '</span><span class="opt-c">' + money(o.cost) + '</span><span class="opt-d">' + money(delta) + '/yr</span></button></li>';
-    }).join("") + '<li><button type="button" class="opt opt--none" data-opt="none" aria-pressed="' + (S.sel.length === 0) + '"' + (S.joined ? ' disabled' : '') + '><span class="opt-n">No new work</span><span class="opt-d">' + money(BASE_PREMIUM) + '/yr if eligible</span></button></li>';
-    var fl = document.getElementById("fin-line"), fy = document.getElementById("fin-yes"), fn = document.getElementById("fin-no"), fin = document.getElementById("fin");
-    var cost = selCost();
-    if (fin) { fin.hidden = !cost; }
-    if (fl && cost) { fl.textContent = "Finance " + money(cost) + " USD · " + finYears() + " years · 3.1% · " + money(finMonthly()) + "/month"; }
-    if (fy) { fy.setAttribute("aria-pressed", S.fin ? "true" : "false"); fy.hidden = S.joined; }
-    if (fn) { fn.setAttribute("aria-pressed", S.fin ? "false" : "true"); fn.hidden = S.joined; }
-    if (fl && cost && S.joined) { fl.textContent = (S.fin ? "Financed · " : "Upfront · ") + fl.textContent.replace(/^Finance /, ""); }
-    var pr = document.getElementById("proj");
-    if (pr) {
-      var benefit = BASE_PREMIUM - myPremium();
-      pr.innerHTML = "Projected <b>" + money(myPremium()) + " USD/yr</b> in a completed programme. Renewals can change.";
-    }
+    }).join("") + '<li><button type="button" class="opt opt--none" data-opt="none" aria-pressed="' + S.none + '"><span class="opt-n">No new work</span></button></li>';
+    var has = chosen(), cost = selCost();
+    var hint = document.getElementById("pick-hint"), sum = document.getElementById("sum"), act = document.getElementById("sheet-act"), pr = document.getElementById("proj");
+    if (hint) { hint.hidden = has; }
+    if (sum) { sum.hidden = !has; }
+    if (act) { act.hidden = !has; }
+    if (joinBtn) { joinBtn.hidden = S.joined || !has; }
+    if (joinedEl) { joinedEl.hidden = !S.joined; }
+    var costRow = document.getElementById("sum-cost-row"), finRow = document.getElementById("sum-fin-row");
+    if (costRow) { costRow.hidden = !cost; }
+    if (finRow) { finRow.hidden = !cost; }
+    var el;
+    if ((el = document.getElementById("sum-cost"))) { el.textContent = money(cost); }
+    if ((el = document.getElementById("sum-prem"))) { el.textContent = money(myPremium()) + "/yr"; }
+    if ((el = document.getElementById("sum-save"))) { el.textContent = money(BASE_PREMIUM - myPremium()) + "/yr"; }
+    if ((el = document.getElementById("fin-line"))) { el.textContent = cost ? money(finMonthly()) + "/mo · " + finYears() + " yrs" : ""; }
+    if ((el = document.getElementById("sum-fin-t"))) { el.textContent = S.joined ? (S.fin ? "Financed" : "Upfront") : "Finance"; }
+    if ((el = document.getElementById("fin-ctl"))) { el.hidden = S.joined; }
+    var fy = document.getElementById("fin-yes"), fn = document.getElementById("fin-no");
+    if (fy) { fy.setAttribute("aria-pressed", S.fin ? "true" : "false"); }
+    if (fn) { fn.setAttribute("aria-pressed", S.fin ? "false" : "true"); }
+    if ((el = document.getElementById("sum-risk"))) { el.textContent = cost ? "\u2212" + Math.round(selEff() * 100) + "% at no. 31" : "\u2212" + Math.round(KIND_EFF.existing * 100) + "% existing"; }
+    if (pr) { pr.hidden = !has; pr.textContent = S.withdrawn && !S.joined ? "Authorisation withdrawn \u00b7 confirm again" : "If the programme completes."; pr.dataset.state = S.withdrawn && !S.joined ? "withdrawn" : ""; }
+  }
+  /* a change to a confirmed choice withdraws the authorisation: her agent
+     coordinates nothing on a basis she has not confirmed. Everything the
+     authorisation led to is cleared with it; nothing is rewritten in place. */
+  function withdraw() {
+    if (!S.joined) { return false; }
+    roundTimers.forEach(clearTimeout); roundTimers = [];
+    S.joined = false; S.committed = START; S.verified = false; S.accepted = false; S.bound = false; S.stage = 0; S.step = 0; S.withdrawn = true; V = null;
+    round = null; bndShown = false;
+    return true;
+  }
+  function choiceSaid() {
+    return S.none ? "No new work. Projected premium " + money(BASE_PREMIUM) + " a year, if eligible; existing hardening counts " + Math.round(KIND_EFF.existing * 100) + " percent."
+      : "Selected: " + selOpts().map(function (o) { return o.name; }).join(", ") + ". Work " + money(selCost()) + "; projected premium " + money(myPremium()) + " a year, saving " + money(BASE_PREMIUM - myPremium()) + "; financing " + money(finMonthly()) + " a month over " + finYears() + " years; " + Math.round(selEff() * 100) + " percent modelled risk reduction at no. 31 added to the street's average. Nothing is authorised yet.";
   }
   Array.prototype.forEach.call(document.querySelectorAll("#opts"), function (ul) {
     ul.addEventListener("click", function (e) {
-      var b = e.target.closest("button.opt"); if (!b || S.joined) { return; }
-      var id = b.dataset.opt;
-      if (id === "none") { S.sel = []; S.fin = false; }
-      else { var i = S.sel.indexOf(id); if (i >= 0) { S.sel.splice(i, 1); } else { S.sel.push(id); } if (!S.sel.length) { S.fin = false; } }
-      save(); paintChoice(); say(S.sel.length ? "Selected: " + selOpts().map(function (o) { return o.name; }).join(", ") + ". Projected premium " + money(myPremium()) + " USD a year inside a completed programme." : "No additional work. Projected premium " + money(BASE_PREMIUM) + " USD a year, if eligible.");
+      var b = e.target.closest("button.opt"); if (!b) { return; }
+      var id = b.dataset.opt, was = withdraw();
+      if (id === "none") { if (S.none) { S.none = false; } else { S.sel = []; S.fin = false; S.none = true; } }
+      else { var i = S.sel.indexOf(id); if (i >= 0) { S.sel.splice(i, 1); } else { S.sel.push(id); } S.none = false; if (!S.sel.length) { S.fin = false; } }
+      save(); if (was) { repaint(); } else { paintChoice(); }
+      say((was ? "Authorisation withdrawn; confirm the new choice. " : "") + (chosen() ? choiceSaid() : "Nothing chosen yet."));
     });
   });
-  ["fin-yes", "fin-no"].forEach(function (id) { var b = document.getElementById(id); if (b) { b.addEventListener("click", function () { if (S.joined) { return; } S.fin = id === "fin-yes"; save(); paintChoice(); say(S.fin ? "Financing accepted, subject to the lender's confirmation: " + money(finMonthly()) + " a month." : "Paying upfront."); }); } });
+  ["fin-yes", "fin-no"].forEach(function (id) { var b = document.getElementById(id); if (b) { b.addEventListener("click", function () { var was = withdraw(); S.fin = id === "fin-yes"; save(); if (was) { repaint(); } else { paintChoice(); } say((was ? "Authorisation withdrawn; confirm the new choice. " : "") + (S.fin ? "Financing accepted, subject to the lender's confirmation: " + money(finMonthly()) + " a month." : "Paying upfront.")); }); } });
 
   function paint() {
     paintChoice();
@@ -999,20 +1047,22 @@
     var busy = !!(ctlEl && ctlEl.dataset.busy === "1");
 
     /* screen 2 — the one action, or its result (with the live count) */
-    if (joinBtn) { joinBtn.hidden = S.joined; }
-    if (joinedEl) { joinedEl.hidden = !S.joined; }
-    if (joinedN) { joinedN.textContent = String(S.committed); }
 
     /* screen 3 — the count, the agent's one line, the invite button */
-    if (countEl) { countEl.textContent = String(S.committed); }
-    if (ctlEl && !busy) { ctlEl.dataset.state = open ? "open" : "closed"; }
+    var vs = vstep(), open3 = S.joined && vs >= 4;
+    if (countEl) { countEl.textContent = String(vcommitted()); }
+    if (ctlEl && !busy) { ctlEl.dataset.state = open3 ? "open" : "closed"; }
     if (ctlEl) { ctlEl.dataset.agent = S.joined ? "on" : "off"; }
-    if (offerEl && !busy) { offerEl.dataset.state = open ? "open" : "closed"; }
-    if (offerText && !busy) { offerText.textContent = conditionLine(open); }
-    if (logEl) { logEl.innerHTML = logLines().map(function (l) { return '<li data-on="1"' + (l.k ? ' data-k="' + l.k + '"' : "") + ">" + l.t + "</li>"; }).join(""); }
+    if (offerEl && !busy) { offerEl.dataset.state = open3 ? "open" : "closed"; }
+    if (offerText && !busy) { offerText.textContent = conditionLine(vs); }
+    if (logEl) { logEl.innerHTML = stepLines(vs).map(function (l) { return '<li data-on="1"' + (l.k ? ' data-k="' + l.k + '"' : "") + ">" + l.t + "</li>"; }).join(""); }
+    var ind = document.getElementById("step-ind");
+    if (ind) { ind.hidden = !(S.joined && vs >= 1); ind.textContent = "Step " + vs + " of 4 \u00b7 " + (STEP_NAMES[vs] || ""); }
+    var rp = document.getElementById("replay3");
+    if (rp) { rp.hidden = !(S.joined && S.step >= 1); }
     if (inviteBtn) {
       var st = inviteState();
-      if (!busy) { inviteBtn.textContent = st === "done" ? "Street assembled" : "Invite the street"; }
+      if (!busy) { inviteBtn.textContent = st === "done" ? "Street assembled" : st === "none" ? "Authorise no. 31 first" : "Next step"; }
       /* not `disabled` and not aria-disabled: the button stays readable
          and pressable in every state, and the press is simply answered
          (below) when there is nothing to invite */
@@ -1109,8 +1159,8 @@
      acceptance is not modelled because nothing exists to accept. */
   if (joinBtn) {
     joinBtn.addEventListener("click", function () {
-      if (S.joined) { return; }
-      S.joined = true;
+      if (S.joined || !chosen()) { return; }
+      S.joined = true; S.withdrawn = false; S.step = 0; V = null;
       S.committed = START + 1;
       repaint();
       say("Authorised. " + (S.sel.length ? selOpts().map(function (o) { return o.name; }).join(", ") + (S.fin ? ", financed" : ", paid upfront") : "No additional work") + ". Your agent coordinates the street; nothing is accepted yet.");
@@ -1126,46 +1176,50 @@
   if (inviteBtn) {
     inviteBtn.addEventListener("click", function () {
       var st = inviteState();
-      if (st === "done") { say("The street is assembled: " + S.committed + " of 60. Nothing more to invite."); return; }
-      if (st === "none") { say("Her agent has no authority yet. Authorise it on the deal, screen 2."); return; }
-      var from = S.committed, to = Math.min(NEED, S.committed + ROUND);
-      S.committed = to;
-      round = { from: from, to: to };
+      if (st === "none") { show(2); say("Her agent has no authority yet. Choose and authorise on the deal."); return; }
+      if (st === "done") { say("The street is assembled: 48 of 60. Replay shows the coordination again; nothing is recorded twice."); return; }
+      var before = vcommitted(), replaying = V !== null;
+      if (replaying) { V += 1; if (V >= S.step) { V = null; } }   /* re-showing the record, step by step, until the view meets it */
+      else { S.step += 1; S.committed = committedFor(S.step); }  /* the record moves only here */
+      var vs = vstep(), after = vcommitted(), hasRound = after > before;
+      if (hasRound) { round = { from: before, to: after }; }
+      if (vs >= 4) { bndShown = false; }
       repaint();
-      /* the work, in step with the street: the count ticks up as each home
-         fills, the log's lines land as the thread sends, is answered, and
-         confirms — instant under reduced motion */
+      /* the words land in step with the street: the count ticks up as each
+         home fills, the log's lines land as the thread sends, is answered,
+         and confirms — instant under reduced motion. A step without a round
+         reveals its lines at a reading pace. */
       roundTimers.forEach(clearTimeout); roundTimers = [];
-      if (!reducedMotion() && lastRound.total > 0) {
+      if (!reducedMotion()) {
         var items = logEl ? Array.prototype.slice.call(logEl.children) : [];
         items.forEach(function (li) { li.dataset.on = "0"; });
-        if (countEl) { countEl.textContent = String(from); }
-        var r, at;
-        var stretch = (to - from === 3 && lastRound.total > 0) ? Math.max(1, 2500 / (lastRound.total * 1000)) : 1;
-        for (r = from; r < to; r++) {
-          at = (lastRound.arrive[r] || 0) * stretch;
-          (function (n, at) { roundTimers.push(setTimeout(function () { if (countEl) { countEl.textContent = String(n); } }, Math.round(at * 1000))); })(r + 1, at);
+        var end = hasRound ? lastRound.total * 1000 : 0, r, at, beats = [];
+        if (hasRound && lastRound.total > 0) {
+          if (countEl) { countEl.textContent = String(before); }
+          var stretch = Math.max(1, 2500 / (lastRound.total * 1000));
+          for (r = before; r < after; r++) {
+            at = (lastRound.arrive[r] || 0) * stretch;
+            (function (n, at) { roundTimers.push(setTimeout(function () { if (countEl) { countEl.textContent = String(n); } }, Math.round(at * 1000))); })(r + 1, at);
+          }
+          items.forEach(function (li, k) { beats.push([k === items.length - 1 ? Math.max(end, 2500) + 250 : 60 + k * Math.max(850, end / Math.max(1, items.length - 1)), k]); });
+        } else {
+          items.forEach(function (li, k) { beats.push([60 + k * 800, k]); });
         }
-        /* the beats are paced to be read, not just to match the thread: the
-           objection and the agent's answer each get their own moment, and the
-           confirmation lands only once the count has finished arriving */
-        var end = lastRound.total * 1000;
-        var beats = items.length === 4
-          ? [[60, 0], [850, 1], [1750, 2], [Math.max(end, 2500) + 250, 3]]
-          : [[60, 0], [Math.max(300, end / 2), 1], [end + 250, 2]];
-        var lastAt = beats[beats.length - 1][0];
-        beats.forEach(function (it) {
-          roundTimers.push(setTimeout(function () { if (items[it[1]]) { items[it[1]].dataset.on = "1"; } }, Math.round(it[0])));
-        });
-        /* while the round runs the state line and the button wait for it:
-           the words change only when the count has arrived */
+        var lastAt = beats.length ? beats[beats.length - 1][0] : 0;
+        beats.forEach(function (it) { roundTimers.push(setTimeout(function () { if (items[it[1]]) { items[it[1]].dataset.on = "1"; } }, Math.round(it[0]))); });
         if (ctlEl) { ctlEl.dataset.busy = "1"; }
         roundTimers.push(setTimeout(function () { if (ctlEl) { delete ctlEl.dataset.busy; } paint(); }, Math.round(lastAt + 150)));
       }
-      var open = S.committed >= NEED;
-      say(open
-        ? "Street assembled: " + S.committed + " of 60. Participation reached; improvements and verification still required."
-        : S.committed + " of 60 joined. " + (NEED - S.committed) + " more households needed.");
+      say((replaying ? "Replaying. " : "") + "Step " + vs + " of 4, " + STEP_NAMES[vs] + ". " + stepLines(vs).map(function (l) { return l.t; }).join(" ") + (vs >= 4 ? " Participation reached; improvements and verification still required." : " " + vcommitted() + " of 60."));
+    });
+  }
+  var replayBtn3 = document.getElementById("replay3");
+  if (replayBtn3) {
+    replayBtn3.addEventListener("click", function () {
+      if (!S.joined || S.step < 1) { return; }
+      roundTimers.forEach(clearTimeout); roundTimers = []; if (ctlEl) { delete ctlEl.dataset.busy; }
+      V = 0; bndShown = false; repaint();
+      say("Replaying the coordination from the start. Nothing is recorded twice; the street stays at " + S.committed + " of 60.");
     });
   }
 
@@ -1401,6 +1455,7 @@
 
   function show(n, push) {
     n = Math.max(1, Math.min(total, n));
+    if (n !== 3) { V = null; }
     S.screen = n;
     var sc = screens[n - 1];
     screens.forEach(function (s, i) { s.hidden = (i + 1 !== n); s.scrollTop = 0; });
@@ -1432,7 +1487,7 @@
           : h.textContent)
       : sc.dataset.label;
     if (n === 3) {
-      said += " Proposal participants " + S.committed + " of 60, 48 needed. " + conditionLine(S.committed >= NEED) +
+      said += " Proposal participants " + vcommitted() + " of 60, 48 needed. " + conditionLine(vstep()) +
         (S.joined ? "" : " Her agent has no authority yet: authorise it on the deal.");
     }
     if (n === 5) {
@@ -1457,7 +1512,9 @@
     S.joined = false;
     S.committed = START;
     S.verified = false;
-    round = null;
+    S.accepted = false; S.bound = false; S.stage = 0;
+    S.sel = []; S.fin = false; S.none = false; S.withdrawn = false; S.step = 0; V = null;
+    round = null; bndShown = false;
     save();
     show(1);
     say("Back to the start. Not joined; 41 of 60 joined; verification pending.");
