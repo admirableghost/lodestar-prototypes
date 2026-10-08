@@ -57,6 +57,39 @@
                     b: "A smaller, panel-built house, sooner",
                     c: "The footprint, with a seamed roof, ember-resistant edges, screened vents and a cleared edge" };
   var BUILDER = "Ardren &amp; Sons";
+
+  /* ── CAPACITY-BACKED RECOVERY: the operating model behind the promise ──
+     The insurer does not wait for a catastrophe to buy rebuilding. It pays
+     participating modular builders a recurring reservation fee for defined
+     catastrophe-response production starts, and sells no more recovery
+     commitments than that contracted pool can credibly support when a whole
+     region claims at once. Figures are hypothetical and documented privately
+     (HOME-AGAIN-CAPACITY-REVIEW.md). What the pool secures is a production
+     START from a managed allocation — never a factory slot idling for one
+     household, and never the date a family can move in: site clearance,
+     permits, foundations, utilities and installation keep their own
+     dependencies. */
+  var CAPACITY = {
+    builders: 3,            /* contracted modular builders in the network    */
+    startsPerMonth: 40,     /* contracted catastrophe-response starts, pooled */
+    poolMonths: 12,         /* the allocation horizon the contracts cover     */
+    modelledEvent: 320,     /* qualifying losses the regional event produces  */
+    position: 118           /* this household's place in the event's sequence */
+  };
+  function poolSize() { return CAPACITY.startsPerMonth * CAPACITY.poolMonths; }   /* 480 */
+  /* QA-only hook: not reachable from any control, route or query string */
+  function capTest() { try { return sessionStorage.getItem("ha-test") || ""; } catch (e) { return ""; } }
+  function eventClaims() { return capTest() === "pool-exhausted" ? poolSize() + 160 : CAPACITY.modelledEvent; }
+  /* the allocation this household holds in a regional event: a production
+     start inside the contracted pool, or — if the modelled demand exceeds
+     the pool — an honest pending state. Nothing is ever assigned beyond the
+     pool, and nothing here is an occupancy date. */
+  function allocation() {
+    var claims = eventClaims(), pool = poolSize();
+    var inPool = CAPACITY.position <= pool && claims <= pool;
+    return { inPool: inPool, claims: claims, pool: pool, position: CAPACITY.position,
+             startMonth: inPool ? Math.ceil(CAPACITY.position / CAPACITY.startsPerMonth) : null };
+  }
   var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", begun: "Begun", holds: "Holds", honoured: "Honoured",
                      constrained: "Constrained", falls: "Queued" };
 
@@ -256,6 +289,18 @@
     s.push("</g>");
     return s.join("");
   }
+  /* the reserved pool as a thing on the ground: eight module outlines, the
+     contracted share filled, one picked out when it is allocated to this home */
+  function pool(x, y, o) {
+    o = o || {}; var s = [], k = o.k || 1, n = 8, w = 22, h = 14, g = 5, i;
+    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')">');
+    for (i = 0; i < n; i++) {
+      var filled = i < (o.on == null ? 5 : o.on), hot = o.hot === i;
+      s.push(rect(i * (w + g), 0, w, h, hot ? AMBER : (filled ? INK : "none"), { stroke: filled ? INK : MUTED, sw: 1.4, rx: 1.5, op: filled || hot ? 1 : .8 }));
+    }
+    s.push("</g>");
+    return s.join("");
+  }
   function timber(x, y, o) {
     o = o || {}; var s = [], c = o.off ? MUTED : INK;
     s.push('<g opacity="' + (o.off ? .5 : 1) + '">');
@@ -338,7 +383,9 @@
     s.push(figure(586, 598, { board: true, k: 1.2 }));
     s.push(callout({ x: 430, y: 620, title: "Marta coordinates", state: state, note: notes ? ["Named now, not at the loss."] : [] }));
     s.push(timber(830, 540));
-    s.push(callout({ x: 800, y: 620, title: "The chosen plan", state: state, note: [HOME_NAME[S.home] + " · " + BUILDER] }));
+    s.push(pool(846, 584, { on: 5, k: .9 }));
+    s.push(callout({ x: 800, y: 620, title: "The chosen plan", state: state,
+      note: [HOME_NAME[S.home] + " · " + BUILDER, "Production capacity reserved before the loss"] }));
     return s.join("");
   }
   function scene2() {
@@ -351,6 +398,7 @@
     var s = [sky({ sun: false, dusk: true })];
     var slab = EXTENT.a;
     s.push(rect(427 + slab[0] * .58 + 8, 416, (slab[1] - slab[0]) * .58 - 16, 8, SLAB, { stroke: INK, sw: 1.2 }));
+    s.push('<g opacity=".38">' + outline({ tx: 150, ty: 150, k: .32 }) + outline({ tx: 980, ty: 160, k: .3 }) + "</g>");
     s.push(commitments(outline({ tx: 427, ty: 70, k: .58 }), "holds", false));
     /* the family, before what is left of the house: an adult and a child,
        hand in hand, facing it */
@@ -386,11 +434,12 @@
        right-hand path arrives at the slab's near edge, never into the caption */
     var L = "M560 304 Q430 352 318 304", R = "M620 304 Q740 346 826 288";
     s.push('<path d="' + L + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"/>');
-    s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (ev ? ' opacity=".55"' : "") + '/>');
+    var al = ev ? allocation() : null, pathOn = !ev || al.inPool;
+    s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (pathOn ? "" : ' opacity=".55"') + '/>');
     s.push('<path d="' + L + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"/>');
-    s.push('<path d="' + R + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"' + (ev ? ' opacity=".45"' : "") + '/>');
+    s.push('<path d="' + R + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"' + (pathOn ? "" : ' opacity=".45"') + '/>');
     s.push('<polygon points="318,296 304,304 318,312" fill="' + AMBER + '"/>');
-    if (!ev) { s.push('<polygon points="824,278 840,290 822,298" fill="' + AMBER + '"/>'); }
+    if (pathOn) { s.push('<polygon points="824,278 840,290 822,298" fill="' + AMBER + '"/>'); }
     /* the temporary home, lit */
     s.push('<g id="s4-subj-temp">' + smallHome(185, 196, { k: .48, lit: true }) + "</g>");
     /* the recovery lead */
@@ -402,9 +451,20 @@
     s.push(plan({ tx: 597, ty: 40, k: .42, ticks: false, edge: false, openings: true }).split("url(#hatch)").join("url(#hatch4)"));
     s.push("</g>");
     if (ev) {
-      /* the barred path: the reserved start waits in the queue before it */
-      s.push(rect(728, 312, 11, 40, "url(#warnhatch4)", { stroke: WARN, sw: 1.6 }));
-      s.push('<g transform="translate(610,330) scale(.55)">' + timber(0, 0, { off: true }) + "</g>");
+      /* the open market: households that arranged nothing queue at a barred
+         gate, in the foreground, where the region's demand is felt */
+      s.push(rect(574, 372, 11, 40, "url(#warnhatch4)", { stroke: WARN, sw: 1.6 }));
+      [478, 506, 534].forEach(function (x, i) { s.push(figure(x, 412 + (i % 2) * 2, { k: .5, op: .8 })); });
+      if (al.inPool) {
+        /* the family's start is assigned from the pool bought before the loss */
+        s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0) + "</g>");
+        s.push(pool(846, 293, { on: 5, hot: 2, k: .72 }));
+      } else {
+        /* the modelled demand exceeds the pool: nothing is assigned that does
+           not exist; the place in the sequence is shown pending */
+        s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0, { off: true }) + "</g>");
+        s.push(pool(846, 293, { on: 8, k: .72 }));
+      }
     } else {
       s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0) + "</g>");
     }
@@ -412,8 +472,16 @@
     /* labels and states, from the one state */
     var det = document.getElementById("s4-site-detail"), st = document.getElementById("s4-site-state"), cap = document.getElementById("s4-cap");
     if (det) { det.textContent = HOME_NAME[S.home] + " · Ardren & Sons"; }
-    if (st) { st.dataset.kind = ev ? "queued" : "released"; st.textContent = ev ? "Reserved start queued" : "Reserved start released"; }
-    if (cap) { cap.dataset.kind = ev ? "constrained" : "available"; cap.textContent = ev ? "Constrained" : "Available"; }
+    if (st) {
+      var a2 = ev ? allocation() : null;
+      st.dataset.kind = !ev ? "released" : a2.inPool ? "allocated" : "queued";
+      st.textContent = !ev ? "Reserved start released" : a2.inPool ? "Start allocated · reserved pool" : "Allocation pending · pool full";
+    }
+    if (cap) { cap.dataset.kind = ev ? "constrained" : "available"; cap.textContent = ev ? "Overwhelmed" : "Available"; }
+    var capL = document.getElementById("s4-cap-label"); if (capL) { capL.textContent = ev ? "Open market" : "Regional capacity"; }
+    var cont = document.querySelector(".s4-continue"), cons = document.querySelector(".s4-cons");
+    if (ev && cont) { cont.textContent = allocation().inPool ? "Others compete for builders. Yours was reserved before the loss." : "The reserved pool is fully allocated. Your place follows its sequence."; }
+    if (ev && cons) { cons.textContent = "Site, permits, foundations · separate timelines."; }
     /* the bounded scene frames the artwork band only (design y 140–430), so
        it never carries an empty sky above the subjects */
     if (!portrait) {
@@ -591,7 +659,7 @@
   if (evBtn) {
     evBtn.addEventListener("click", function () {
       S.event = !S.event; save(); paintControls(); draw();
-      say(S.event ? "Regional event shown. Capacity constrained; the reserved start is queued, and extra payment does not buy priority. Temporary living, Marta and your plan continue."
+      say(S.event ? "Regional event shown. The open market is overwhelmed and others queue for builders; this family's production start is allocated from capacity the insurer reserved before the loss. Site, permits and foundations keep their own timelines. Temporary living, Marta and your plan continue."
                   : "Normal conditions restored. Capacity available; the reserved start released.");
     });
   }

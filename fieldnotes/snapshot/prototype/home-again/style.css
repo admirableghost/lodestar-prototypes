@@ -143,6 +143,8 @@ body:not(.portrait)[data-screen="4"] .head--flow, body:not(.portrait)[data-scree
 .s4-state::before { content: "● "; }
 .s4-state[data-kind="available"]::before { content: "○ "; }
 .s4-state[data-kind="constrained"], .s4-state[data-kind="queued"] { color: #A8502A; }
+.s4-state[data-kind="allocated"] { color: #2E2C24; }
+.s4-state[data-kind="allocated"]::before { content: "■ "; color: #C98D1C; }
 .s4-state[data-kind="constrained"]::before, .s4-state[data-kind="queued"]::before { content: "▧ "; }
 .s4-foot { display: grid; gap: 8px; padding-bottom: 12px; }
 body:not(.portrait) .screen--4 .s4-foot { padding-right: 360px; }   /* the navigation's corner stays clear; outranks the generic .copy reset below */
