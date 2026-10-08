@@ -385,7 +385,8 @@
     var ctl = document.getElementById("day-ctl");
     if (ctl) { ctl.hidden = !r; }
     if (!r) { return; }
-    runDay(0);
+    s4Timers.forEach(clearTimeout); s4Timers = [];
+    applyBeat(0);
   }
 
   function renderS4() {
