@@ -492,6 +492,11 @@
     var story = monthStory(m), run = animate && !reduce();
     clearSeq("month");
     var boundary = atBoundary(m);
+    /* before the boundary none of the switch furniture belongs on screen,
+       whatever happened later in the year: history reads as it was */
+    if (!boundary) {
+      ["year-compare", "sw-steps", "sw-status", "sw-watch"].forEach(function (id) { var e = document.getElementById(id); if (e) { e.hidden = true; } });
+    }
     var showResult = function () {
       if (srch) { srch.hidden = true; }
       if (boundary) { paintSwitch(m, false); return; }
