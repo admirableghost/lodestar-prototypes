@@ -341,4 +341,6 @@
   if (SCREENS.indexOf(want) < 0) { want = S.screen; }
   paintBeats(); flowSet(S.flow ? 5 : 0); paintHome(); paintInsurer();
   show(want, { silent: true, restored: true });
+  /* a deep link pasted into an open tab changes only the hash: follow it */
+  window.addEventListener("hashchange", function () { var h = (location.hash || "").replace(/^#/, ""); if (SCREENS.indexOf(h) >= 0 && h !== S.screen) { show(h); } });
 })();
