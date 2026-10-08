@@ -2,18 +2,19 @@
    A fictional announcement establishes the partnership: Muse distributes
    protection and shares the risk; Kestrel Mutual underwrites specified
    errors and pays eligible losses. Then one application. The customer
-   decides how much to delegate; if she buys the $1 protection it attaches
-   BEFORE Muse books; Muse books the wrong dates; the hotel declines a
+   decides how much to delegate; if the agency buys the $15 protection it attaches
+   BEFORE Muse books; Muse books the wrong dates; the venue declines a
    refund; the insurer verifies a covered, unrecovered loss and pays it;
    Muse rebooks inside the same authorisation. Everything derives from S;
    nothing happy is hardcoded past its conditions. */
 (function () {
   "use strict";
   var KEY = "bta2";
-  var HOTEL = { name: "Casa Ferrer", total: 400, ok: "20–22 November", wrong: "27–29 November" };
+  var HOTEL = { name: "Sala Ferrer", total: 4000, ok: "21–22 November", wrong: "27–28 November" };
   var INSURER = "Kestrel Mutual";
-  var LIMIT = 400, DEDUCT = 0;
-  var WHO = { muse: "Muse", hotel: "Hotel", insurer: INSURER, none: "" };
+  var PREMIUM = 15, LIMIT = 4000, DEDUCT = 0;
+  function usd(n) { return "$" + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  var WHO = { muse: "Muse", hotel: "Venue", insurer: INSURER, none: "" };
   var S = { screen: 1, intro: "article", choice: null, beat: 0, paid: null };
   function test() { try { return sessionStorage.getItem("bta-test") || ""; } catch (e) { return ""; } }
   function load() { try { var o = JSON.parse(sessionStorage.getItem(KEY) || "null"); if (o && typeof o === "object") {
@@ -30,23 +31,23 @@
   function protectedB() { return S.choice === "protect"; }                             /* protection in force before booking */
   function wrongDates() { return booked() && test() !== "correct"; }                   /* the mistake happened */
   function datesChanged() { return test() === "dates-changed"; }                       /* she changed dates after authorising: not an AI error */
-  function refund() { return test() === "refund-full" ? 400 : test() === "refund-partial" ? 150 : 0; }   /* what the hotel gave back */
+  function refund() { return test() === "refund-full" ? 4000 : test() === "refund-partial" ? 1500 : 0; }   /* what the venue gave back */
   function unrecovered() { return wrongDates() ? Math.max(0, HOTEL.total - refund()) : 0; }
   function coveredError() { return protectedB() && wrongDates() && !datesChanged(); }
   function verified() { return coveredError() && unrecovered() > 0 && test() !== "verify-fails"; }
   function payable() { return verified() ? Math.min(LIMIT, unrecovered()) - DEDUCT : 0; }
   function roomAvailable() { return test() !== "no-room"; }
-  /* each step names who acts: Muse detects and coordinates, the hotel answers, the insurer verifies and pays */
+  /* each step names who acts: Muse detects and coordinates, the venue answers, the insurer verifies and pays */
   function BEATS() {
     if (!booked()) { return []; }
-    if (!wrongDates()) { return [B("muse", "booked " + HOTEL.ok + ", $400, nonrefundable"), B("muse", "checked against your authorisation, matches"), B("none", "No claim")]; }
-    var b = [B("muse", "booked " + HOTEL.wrong + ", $400, nonrefundable", "err"), B("muse", "wrong dates, authorised " + HOTEL.ok.replace(" November", ""), "err")];
-    b.push(refund() === 400 ? B("hotel", "refunded $400") : refund() ? B("hotel", "refunded $" + refund() + " only", "warn") : B("hotel", "refund declined", "warn"));
-    if (!protectedB()) { b.push(B("none", "No protection · $" + unrecovered() + " is your loss", "warn")); return b; }
+    if (!wrongDates()) { return [B("muse", "booked " + HOTEL.ok + ", " + usd(HOTEL.total) + ", nonrefundable"), B("muse", "checked against your authorisation, matches"), B("none", "No claim")]; }
+    var b = [B("muse", "booked " + HOTEL.wrong + ", " + usd(HOTEL.total) + ", nonrefundable", "err"), B("muse", "wrong dates, authorised " + HOTEL.ok.replace(" November", ""), "err")];
+    b.push(refund() === HOTEL.total ? B("hotel", "refunded " + usd(refund())) : refund() ? B("hotel", "refunded " + usd(refund()) + " only", "warn") : B("hotel", "refund declined", "warn"));
+    if (!protectedB()) { b.push(B("none", "No protection · " + usd(unrecovered()) + " is your loss", "warn")); return b; }
     if (datesChanged()) { b.push(B("insurer", "dates changed after authorising, not covered", "warn")); return b; }
     if (unrecovered() === 0) { b.push(B("insurer", "nothing unrecovered, no claim")); return b; }
-    b.push(verified() ? B("insurer", "verified against your instructions, $" + unrecovered() + " unrecovered") : B("insurer", "not verified, no payout", "warn"));
-    if (verified()) { b.push(B("insurer", "claim approved, +$" + payable() + " to your bank", "pay")); }
+    b.push(verified() ? B("insurer", "verified against your instructions, " + usd(unrecovered()) + " unrecovered") : B("insurer", "not verified, no payout", "warn"));
+    if (verified()) { b.push(B("insurer", "claim approved, +" + usd(payable()) + " to your bank", "pay")); }
     return b;
   }
   function B(who, t, k) { return { who: who, t: t, k: k || "", text: (WHO[who] ? WHO[who] + " · " : "") + t }; }
@@ -71,7 +72,7 @@
     if (S.choice === c) { return; }
     /* a different choice is a new day: the earlier day's record is cleared with it, never rewritten in place */
     S.choice = c; S.beat = 0; S.paid = null; save(); paint();
-    say(c === "self" ? "You'll book it yourself. Muse books nothing." : c === "book" ? "Book for me, $400. No protection." : "Book with protection, $401: $400 for the hotel, $1 for cover against covered AI booking errors, backed by " + INSURER + ". Protection attaches before Muse books.");
+    say(c === "self" ? "You'll book it yourself. Muse books nothing." : c === "book" ? "Book for me, " + usd(HOTEL.total) + ". No protection." : "Book with protection, " + usd(HOTEL.total + PREMIUM) + ": " + usd(HOTEL.total) + " for the venue, " + usd(PREMIUM) + " for cover against covered AI booking errors, backed by " + INSURER + ". Protection attaches before Muse books.");
   }); });
   var whyBtn = document.getElementById("cover-why"), coverEl = document.getElementById("cover");
   if (whyBtn) { whyBtn.addEventListener("click", function () { var open = coverEl.hidden; coverEl.hidden = !open; whyBtn.setAttribute("aria-expanded", open ? "true" : "false"); whyBtn.textContent = open ? "×" : "What's covered?"; if (open) { whyBtn.setAttribute("aria-label", "Hide what's covered"); } else { whyBtn.removeAttribute("aria-label"); } }); }
@@ -115,11 +116,11 @@
     /* screen 4 */
     var h4 = document.getElementById("s4-h"), s4 = document.getElementById("s4-say"), ol = document.getElementById("beats"), ctl = document.getElementById("day-ctl");
     var beats = BEATS(), done = S.beat >= beats.length;
-    if (h4) { h4.innerHTML = !booked() ? "<span>Nothing booked</span><span>by Muse.</span>" : S.beat < 2 ? "<span>Muse books</span><span>the hotel.</span>" : !wrongDates() ? "<span>Muse booked it</span><span>correctly.</span>" : "<span>Muse booked</span><span>the wrong dates.</span>"; }
-    if (s4) { s4.textContent = !booked() ? "You chose to book it yourself. I'll keep the recommendation ready." : S.beat < 2 ? "Booking the Casa Ferrer." : !wrongDates() ? "Checked the confirmation against your authorisation. It matches." : !protectedB() ? "My mistake, and no protection. I'm asking the hotel for a refund." : datesChanged() ? "The dates changed after you authorised me. That isn't a covered error." : S.beat < 4 ? "My mistake. I'm asking the hotel first, then your protection." : verified() ? INSURER + " is settling it. I'm rebooking the right dates." : "My mistake. I'm asking the hotel first, then your protection."; }
+    if (h4) { h4.innerHTML = !booked() ? "<span>Nothing booked</span><span>by Muse.</span>" : S.beat < 2 ? "<span>Muse books</span><span>the venue.</span>" : !wrongDates() ? "<span>Muse booked it</span><span>correctly.</span>" : "<span>Muse booked</span><span>the wrong dates.</span>"; }
+    if (s4) { s4.textContent = !booked() ? "You chose to book it yourself. I'll keep the recommendation ready." : S.beat < 2 ? "Booking Sala Ferrer for the workshop." : !wrongDates() ? "Checked the confirmation against your authorisation. It matches." : !protectedB() ? "My mistake, and no protection. I'm asking the venue for a refund." : datesChanged() ? "The dates changed after you authorised me. That isn't a covered error." : S.beat < 4 ? "My mistake. I'm asking the venue first, then your protection." : verified() ? INSURER + " is settling it. I'm rebooking the right dates." : "My mistake. I'm asking the venue first, then your protection."; }
     if (ol) { ol.innerHTML = beats.map(function (b, i) {
       var on = S.beat > i ? "1" : "0";
-      if (b.k === "pay") { return '<li data-on="' + on + '" data-k="pay" data-who="insurer"><div class="payout"><p class="pay-h">' + esc(INSURER) + ' · claim approved</p><p class="pay-a"><b>+$' + (S.paid === null ? payable() : S.paid) + '</b><span>to your bank</span></p></div></li>'; }
+      if (b.k === "pay") { return '<li data-on="' + on + '" data-k="pay" data-who="insurer"><div class="payout"><p class="pay-h">' + esc(INSURER) + ' · claim approved</p><p class="pay-a"><b>+' + usd(S.paid === null ? payable() : S.paid) + '</b><span>to your bank</span></p></div></li>'; }
       return '<li data-on="' + on + '" data-k="' + b.k + '" data-who="' + b.who + '">' + (WHO[b.who] ? '<b class="who">' + esc(WHO[b.who]) + '</b> · ' : '') + esc(b.t) + '</li>'; }).join(""); }
     if (ctl) { ctl.hidden = !booked(); }
     if (stepBtn) { stepBtn.disabled = done; }
@@ -132,21 +133,21 @@
       if (s5) { s5.textContent = "The recommendation stands. Muse charged nothing."; }
     } else if (!wrongDates()) {
       if (h5) { h5.innerHTML = "<span>Booked right,</span><span>first time.</span>"; }
-      if (s5) { s5.textContent = "Casa Ferrer, 20–22 November, confirmed. Nothing to fix."; }
-      rows = [["Booking", "−$400"], protectedB() ? ["Protection", "−$1"] : null, ["Net", protectedB() ? "$401" : "$400"]];
+      if (s5) { s5.textContent = "Sala Ferrer, 21–22 November, confirmed. Nothing to fix."; }
+      rows = [["Booking", "−" + usd(HOTEL.total)], protectedB() ? ["Protection", "−" + usd(PREMIUM)] : null, ["Net", usd(HOTEL.total + (protectedB() ? PREMIUM : 0))]];
     } else if (!done) {
       if (h5) { h5.innerHTML = "<span>Not yet</span><span>resolved.</span>"; }
       if (s5) { s5.textContent = "The day on the previous screen hasn't finished."; }
     } else if (!roomAvailable()) {
       if (h5) { h5.innerHTML = "<span>Still looking.</span>"; }
-      if (s5) { s5.textContent = "The correct dates aren't available at Casa Ferrer. I'm holding your authorisation and searching the other two."; }
-      rows = [["Wrong booking", "−$400"], protectedB() ? ["Protection", "−$1"] : null, S.paid ? ["Reimbursed by " + INSURER, "+$" + S.paid] : null];
+      if (s5) { s5.textContent = "The correct dates aren't available at Sala Ferrer. I'm holding your authorisation and searching the other two."; }
+      rows = [["Wrong booking", "−" + usd(HOTEL.total)], protectedB() ? ["Protection", "−" + usd(PREMIUM)] : null, S.paid ? ["Reimbursed by " + INSURER, "+" + usd(S.paid)] : null];
     } else {
-      var net = 400 + (protectedB() ? 1 : 0) + 400 - (S.paid || 0) - refund();
-      if (h5) { h5.innerHTML = protectedB() && S.paid ? "<span>$1 protected</span><span>a $400 decision.</span>" : "<span>A $400 mistake,</span><span>uncovered.</span>"; }
-      if (s5) { s5.textContent = "Rebooked Casa Ferrer, 20–22 November, inside your authorisation."; }
-      if (slip) { slip.hidden = false; slip.innerHTML = "Casa Ferrer · 20–22 November · <b>confirmed</b> · $400"; }
-      rows = [["Wrong booking", "−$400"], protectedB() ? ["Protection", "−$1"] : null, refund() ? ["Hotel refund", "+$" + refund()] : null, S.paid ? ["Reimbursed by " + INSURER, "+$" + S.paid] : null, ["Correct booking", "−$400"], ["Net", "$" + net]];
+      var net = HOTEL.total + (protectedB() ? PREMIUM : 0) + HOTEL.total - (S.paid || 0) - refund();
+      if (h5) { h5.innerHTML = protectedB() && S.paid ? "<span>$15 protected</span><span>a $4,000 decision.</span>" : "<span>A $4,000 mistake,</span><span>uncovered.</span>"; }
+      if (s5) { s5.textContent = "Rebooked Sala Ferrer, 21–22 November. The workshop goes ahead."; }
+      if (slip) { slip.hidden = false; slip.innerHTML = "Sala Ferrer · 21–22 November · <b>confirmed</b> · " + usd(HOTEL.total); }
+      rows = [["Wrong booking", "−" + usd(HOTEL.total)], protectedB() ? ["Protection", "−" + usd(PREMIUM)] : null, refund() ? ["Venue refund", "+" + usd(refund())] : null, S.paid ? ["Reimbursed by " + INSURER, "+" + usd(S.paid)] : null, ["Correct booking", "−" + usd(HOTEL.total)], ["Net", usd(net)]];
     }
     if (slip && !fixed) { slip.hidden = true; }
     if (led) { rows = rows.filter(Boolean); led.hidden = !rows.length; led.innerHTML = rows.map(function (r) { return "<div" + (r[0] === "Net" ? ' class="net"' : "") + "><dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd></div>"; }).join(""); }
