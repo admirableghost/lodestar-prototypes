@@ -5,352 +5,140 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Backed to Act — acting inside an assistant's workspace</title>
-<meta name="description" content="An invented AI assistant's workspace, Halden, in which an invented distributor decides what its purchasing agent may do alone because a mistake is covered. Wholly hypothetical: no real provider, customer or insurer.">
+<title>Backed to Act — insurance for autonomous AI actions</title>
+<meta name="description" content="A traveller lets her assistant, Muse, book a nonrefundable hotel for a business trip and pays one dollar to protect the four hundred. Muse books the wrong dates; the hotel declines a refund; the protection pays the verified loss; Muse rebooks. Fictional itinerary, no real inventory, bank or insurer.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- A button, not an anchor: an anchor to #deck rewrites the hash and the
-     router reads that as "no screen". Visually hidden until focused, so it
-     is never a visible word on the glass. -->
 <button class="skip sr-only" type="button" id="skip">Skip to this screen's content</button>
-
-<!-- ═══════════════ THE GROUND ═══════════════
-     A dark field: a faint dot grid, a few long verticals and one trace of
-     the agent's work. Nothing on it is readable and nothing needs to be. -->
-<div class="world" id="world">
-  <svg id="field" preserveAspectRatio="xMidYMid slice" role="img"
-       aria-label="A quiet dark field: a faint dot grid and a trace of the agent's work running left to right. The left of the field is lit cool, the right warm."></svg>
-</div>
 <div class="veil" id="veil" aria-hidden="true"></div>
+<svg class="bta-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#C98D1C" stroke-width="1.4"/></pattern>
+  <symbol id="lens" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+  <symbol id="seal" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10.5 16.5 L14.5 20.5 L22 11.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
 
-<!-- artwork defs shared by every cut-paper object. Kept outside the screens
-     so a hidden screen can never take the filter with it. -->
-<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
-  <defs>
-    <filter id="rough" x="-4%" y="-6%" width="108%" height="112%">
-      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/>
-      <feDisplacementMap in="SourceGraphic" in2="w" scale="6" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <line x1="0" y1="0" x2="0" y2="7" stroke="#F3977A" stroke-width="1.4"/>
-    </pattern>
-  </defs>
-</svg>
+<!-- Five screens. One scenario: a business trip, a nonrefundable hotel, one
+     dollar of protection on a four-hundred-dollar decision, an AI mistake,
+     a verified loss paid, the trip put right. State lives in sessionStorage;
+     Next never books, buys or claims; the payout exists only when every
+     condition has been met. All data is local and fictional. -->
+<main class="deck" id="deck">
 
-<!-- ONE WORKSPACE, FIVE BEATS — in the shared agent grammar.
-     HUMAN  her request on warm paper (#F3EBD7), first person, a hand-set
-            quote; on screens 2–5 a wordless paper stub stands for the same
-            note. Authority is given by a SIGNATURE DASH drawn on the paper
-            when she authorises on screen 3 (data-auth on the deck).
-     AGENT  Halden's dark plate (#262E36) with the plum rule; the LENS mark
-            (circle + handle) at the head of a continuous plum THREAD that
-            begins under her paper and runs through everything the agent
-            touches; activity is a pulse along the thread. Halden speaks in
-            short messages (.say), never paragraphs.
-     AUTHORITY AS GEOMETRY  on screen 3 the boundary (.inside) is drawn
-            around the thread — dashed until she decides, solid amber once
-            authorised; on screen 4 the thread and the placed orders stay
-            inside it and the returned control boards cross back over it to
-            her as a warm-paper slip.
-       1 · the request and the drafted work; authority is missing
-       2 · the arrangement, as an offer card with the three roles
-       3 · the authorisation card: two buttons, nothing preselected
-       4 · the day that follows — read from the mode set on 3
-       5 · the next boundary: a choice about future authority only -->
-<main class="deck" id="deck" data-auth="">
-
-<!-- ══════ 1 · THE TASK ══════ -->
-<section class="screen screen--s1" data-screen="1" data-label="The task" data-cam="queue" data-veil="soft">
-
-  <div class="top">
-    <div class="xhead">
-      <h1 class="xd" tabindex="-1"><span>The work is ready.</span><span>Authority is not.</span></h1>
-    </div>
-  </div>
-
+<section class="screen screen--s1" data-screen="1" data-label="The trip" data-veil="soft">
+  <div class="top"><div class="xhead"><h1 class="xd" tabindex="-1"><span>You haven't booked</span><span>Barcelona yet.</span></h1></div></div>
   <div class="stage">
-    <div class="ws" role="region" aria-label="Halden workspace">
-      <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
+    <div class="ws" role="region" aria-label="Muse">
+      <p class="strip"><b>Muse</b><span>your assistant</span></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
-        <!-- her request: warm paper, her words -->
-        <div class="paper">
-          <p>&ldquo;Restock what's short across the branches. Approved suppliers only.&rdquo;</p>
+        <div class="paper paper--mail" aria-label="The email Muse read">
+          <p class="mail-h">Meetings in Barcelona · 21–22 November</p>
+          <p>Accommodation covered up to $200 a night.</p>
         </div>
         <div class="msg msg--ai msg--lead">
-          <!-- the reply and the rows are derived from ORDERS in app.js:
-               count, total and one row per order with its amount -->
-          <p class="say" id="s1-reply"></p>
-          <p class="say">It's done the work. Every purchase still waits for you.</p>
-          <ul class="rows rows--parts" id="s1-rows"></ul>
+          <p class="say">No hotel booked for this trip. I've found three options.</p>
+          <p class="search"><span class="lens-sm" aria-hidden="true"></span>Searched · 20–22 November · one adult · under $200 a night</p>
         </div>
       </div>
     </div>
   </div>
-
 </section>
 
-<!-- ══════ 2 · THE ARRANGEMENT ══════
-     A contextual assistant message, then the arrangement as a dashed card —
-     dashed because it is proposed. The three roles are three lines, each
-     with its mark (plate, seal, paper); the covered mistakes sit on the
-     card under the insurer's seal. No three-party drawing. No premium,
-     share or limit is drawn. -->
-<section class="screen screen--s2" data-screen="2" data-label="The arrangement" data-cam="boundary" data-veil="">
-
-  <div class="top">
-    <div class="xhead">
-      <h2 class="xd" tabindex="-1"><span>Protection comes</span><span>with the capability.</span></h2>
-    </div>
-  </div>
-
+<section class="screen screen--s2" data-screen="2" data-label="The options" data-veil="">
+  <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1"><span>Three within</span><span>the allowance.</span></h2></div></div>
   <div class="stage">
-    <div class="ws" role="region" aria-label="Halden workspace">
-      <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
+    <div class="ws" role="region" aria-label="Muse">
+      <p class="strip"><b>Muse</b><span>your assistant</span></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
-        <!-- her question, on her paper: the moment the capability matters -->
-        <div class="paper">
-          <p>&ldquo;What if it orders the wrong part?&rdquo;</p>
-        </div>
         <div class="msg msg--ai msg--lead">
-          <p class="say">Specified mistakes are covered. You decide what I may order and where I must ask.</p>
-          <div class="card card--offer">
-            <p class="card-h">Act within cover</p>
-            <!-- the arrangement, compact and secondary -->
-            <p class="roles-line"><span data-role="agent">Halden distributes</span><span data-role="insurer">an insurer underwrites</span><span data-role="you">you set the authority</span></p>
-            <p class="covers">
-              <svg class="seal" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#2F5E7C" stroke-width="2.4"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#2F5E7C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>wrong part</span><span>wrong quantity</span><span>duplicate order</span>
-            </p>
-          </div>
+          <p class="say">I recommend Casa Ferrer: two minutes from your meeting, inside your allowance.</p>
+          <ol class="hotels" id="hotels" aria-label="Three hotels">
+            <li class="hotel hotel--rec" data-hotel="ferrer"><span class="h-n">Casa Ferrer<em class="h-rec"> · recommended</em></span><span class="h-p"><b>$200</b>/night · $400 total</span><span class="h-w">2 min walk</span><span class="h-r h-r--nr">Nonrefundable</span></li>
+            <li class="hotel" data-hotel="diagonal"><span class="h-n">Hotel Diagonal</span><span class="h-p"><b>$185</b>/night · $370 total</span><span class="h-w">12 min walk</span><span class="h-r">Refundable</span></li>
+            <li class="hotel" data-hotel="mar"><span class="h-n">Pensió del Mar</span><span class="h-p"><b>$160</b>/night · $320 total</span><span class="h-w">25 min walk</span><span class="h-r h-r--nr">Nonrefundable</span></li>
+          </ol>
         </div>
       </div>
     </div>
   </div>
-
 </section>
 
-<!-- ══════ 3 · AUTHORISE ══════
-     ONE card, framed as applying to this task ("For this restock"). Two
-     buttons, nothing preselected; Next is never consent. Authorise is the
-     primary control — filled, wider, taller — so a fresh participant finds
-     it before Next; Keep draft-only is the secondary outline. The boundary
-     (.inside) is drawn around the thread: dashed until she decides, solid
-     once she authorises, when the signature dash is drawn on her paper.
-     Beside the card, a wordless support band: the permitted tray and its
-     line, a small order, the hatched exception. After a press the line
-     moves (or stays). The exception never moves. The card stays. -->
-<section class="screen screen--s3" data-screen="3" data-label="Authorise" data-cam="boundary" data-veil="">
-
-  <div class="top">
-    <div class="xhead">
-      <h2 class="xd" tabindex="-1"><span>Where it</span><span>may act.</span></h2>
-    </div>
-  </div>
-
+<section class="screen screen--s3" data-screen="3" data-label="The decision" data-veil="">
+  <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1"><span>The $1</span><span>decision.</span></h2></div></div>
   <div class="stage">
-    <div class="ws" role="region" aria-label="Halden workspace">
-      <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
+    <div class="ws" role="region" aria-label="Muse">
+      <p class="strip"><b>Muse</b><span>your assistant</span></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
-        <div class="paper paper--stub" aria-hidden="true">
-          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
-          <span class="q">&ldquo;</span>
-          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </div>
         <div class="msg msg--ai msg--lead">
-          <div class="inside" id="bound3">
-            <div class="card card--auth" id="auth-card" data-decided="">
-              <p class="card-h">For this restock</p>
-              <dl class="terms">
-                <div><dt>Permitted</dt><dd>reorder stocked parts from approved suppliers</dd></div>
-                <div><dt>Limit</dt><dd>25,000 USD per order, 180,000 weekly</dd></div>
-                <div><dt>Covered</dt><dd>wrong part, wrong quantity, duplicate order</dd></div>
-                <div><dt>Yours</dt><dd>the demand forecast you supplied</dd></div>
-                <div class="hard"><dt>Always you</dt><dd>new supplier, over the limit</dd></div>
-              </dl>
-              <div class="acts acts--auth" role="group" aria-label="Your decision">
-                <button type="button" id="authorise" class="primary" aria-pressed="false">Authorise within these limits</button>
-                <button type="button" id="draft-only" aria-pressed="false">Keep draft-only</button>
-              </div>
-            </div>
+          <p class="say">$1 protects your $400 nonrefundable booking against covered AI booking mistakes.</p>
+          <!-- three real choices; nothing is preselected and Next never chooses -->
+          <div class="acts acts--choice" role="group" aria-label="How much to delegate">
+            <button type="button" data-choice="self" aria-pressed="false">Book myself</button>
+            <button type="button" data-choice="book" aria-pressed="false">Book for me · $400</button>
+            <button type="button" class="primary" data-choice="protect" aria-pressed="false">Book with protection · $401</button>
+          </div>
+          <p class="note" id="choice-note" hidden></p>
+          <button type="button" class="whybtn" id="cover-why" aria-expanded="false">What's covered?</button>
+          <div class="cover" id="cover" hidden>
+            <p><b>Covered:</b> wrong dates, wrong hotel, duplicate booking, guest-detail errors. Up to $400, no deductible.</p>
+            <p><b>Not covered:</b> change of mind, wrong instructions, hotel cancellations.</p>
           </div>
         </div>
       </div>
     </div>
-
-    <aside class="support">
-      <div class="band" id="band3" data-level="none" role="img"
-           aria-label="A small desk: the agent's permitted zone on the left, a line, and on the right a hatched exception sheet that never moves.">
-        <div class="tray"></div>
-        <div class="line line--ghost"></div>
-        <div class="line line--now"></div>
-        <span class="sheet sheet--mini sheet--mini-o">
-          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".5"><line x1="0" y1="10" x2="100" y2="10"/><line x1="0" y1="28" x2="100" y2="28"/><line x1="0" y1="46" x2="64" y2="46"/></g></svg>
-          <svg class="tick" viewBox="0 0 24 24"><path d="M4 13l5 5L20 7" fill="none" stroke="#2E7D5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <span class="sheet sheet--mini sheet--mini-x">
-          <svg class="hatchband" viewBox="0 0 100 10" preserveAspectRatio="none"><rect width="100" height="10" fill="url(#hatch)"/></svg>
-          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".5"><line x1="0" y1="14" x2="100" y2="14"/><line x1="0" y1="32" x2="100" y2="32"/><line x1="0" y1="50" x2="60" y2="50"/></g></svg>
-          <span class="sign"><svg viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="8" x2="100" y2="8" stroke="#16150F" stroke-width="1.5"/></svg></span>
-        </span>
-      </div>
-    </aside>
   </div>
-
 </section>
 
-<!-- ══════ 4 · THE DAY ══════
-     Read from ORDERS under the mode set on screen 3; every row, count and
-     total is rendered by app.js. Authorised: the headline carries the
-     benefit ("… placed without a buyer."); inside the boundary the three
-     placed rows and the covered mistake — the hero slip on its own paper,
-     tied to the order it remedied by data-order; the returned control
-     boards cross back over the boundary to her as a warm-paper slip; one
-     totals line beneath. Draft-only: nothing placed, one waiting row, one
-     authority row, one way back. No simulation. -->
-<section class="screen screen--s4" data-screen="4" data-label="The day" data-cam="run" data-veil="soft">
-
-  <div class="top">
-    <div class="xhead">
-      <h2 class="xd" tabindex="-1" id="s4-h"><span>Nothing placed.</span><span>Everything waits for you.</span></h2>
-    </div>
-  </div>
-
+<section class="screen screen--s4" data-screen="4" data-label="What happens" data-veil="">
+  <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1" id="s4-h"><span>Muse books</span><span>the hotel.</span></h2></div></div>
   <div class="stage">
-    <div class="ws" role="region" aria-label="Halden workspace">
-      <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
+    <div class="ws" role="region" aria-label="Muse">
+      <p class="strip"><b>Muse</b><span>your assistant</span></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
-        <div class="paper paper--stub" aria-hidden="true">
-          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
-          <span class="q">&ldquo;</span>
-          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </div>
-
-        <div class="msg msg--ai msg--lead" id="day-auth" hidden>
-          <div class="inside inside--day">
-            <!-- placed orders: quiet evidence, inside the authority -->
-            <ul class="done" id="day-rows"></ul>
-            <!-- the hero: the cover's slip, its own paper, tied to the order it
-                 remedied (data-order); revealed when the screen opens -->
-            <p class="slip" id="day-slip" hidden></p>
-            <!-- the one that needed a person: a warm-paper slip crossing back
-                 over the boundary to her -->
-            <ul class="done done--ask" id="day-ask"></ul>
-          </div>
-          <!-- the day summed: placed, and what awaits approval -->
-          <p class="sum" id="day-sum"></p>
-          <!-- the facilitator's controls for the day: step it, or show it
-               again. Replay re-runs the REVEAL only; the orders, the covered
-               mistake and the totals are already settled and never change. -->
-          <div class="day-ctl" id="day-ctl">
-            <button class="daybtn" type="button" id="day-step">Next step</button>
-            <button class="daybtn" type="button" id="day-replay">Replay</button>
-          </div>
-        </div>
-
-        <div class="msg msg--ai msg--lead" id="day-draft">
-          <ul class="done">
-            <li class="done-row done-row--ask done-row--wait" id="day-wait"></li>
-            <li class="done-row done-row--mute"><span class="st">Authority</span><span class="what">draft only</span></li>
-          </ul>
-          <div class="acts">
-            <button type="button" id="to-authorise">Back to authorise</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-</section>
-
-<!-- ══════ 5 · WHAT NEXT ══════
-     The choice is the object. The context line reads the day that actually
-     happened. Beside it the support band shows FUTURE authority relative to
-     today's: Keep holds the line; Narrow moves it back and leaves a trace;
-     Expand only PROPOSES — a hatched sliver that never reaches the
-     exception. Nothing on screen 4 is edited by anything here. -->
-<section class="screen screen--s5" data-screen="5" data-label="What next" data-cam="run" data-veil="soft">
-
-  <div class="top">
-    <div class="xhead">
-      <h2 class="xd" tabindex="-1" id="s5-h"><span>What would you</span><span>delegate next?</span></h2>
-    </div>
-  </div>
-
-  <div class="stage">
-    <div class="ws" role="region" aria-label="Halden workspace">
-      <p class="strip"><b>Halden</b><span>replenishment assistant</span></p>
-      <div class="thread">
-        <i class="tline" aria-hidden="true"></i>
-        <div class="paper paper--stub" aria-hidden="true">
-          <svg class="ruled" viewBox="0 0 150 52" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".4"><line x1="38" y1="15" x2="138" y2="15"/><line x1="38" y1="28" x2="138" y2="28"/><line x1="38" y1="41" x2="104" y2="41"/></g></svg>
-          <span class="q">&ldquo;</span>
-          <svg class="sig" viewBox="0 0 84 20"><path d="M3 13c9-9 15 4 24-2s12-8 22-1 14-6 32-4" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </div>
         <div class="msg msg--ai msg--lead">
-          <p class="say" id="s5-ctx"></p>
-          <div class="acts acts--dec" role="group" aria-labelledby="s5-h">
-            <button type="button" data-choice="keep"   aria-pressed="false">Keep</button>
-            <button type="button" data-choice="narrow" aria-pressed="false">Narrow</button>
-            <button type="button" data-choice="expand" aria-pressed="false">Expand</button>
-          </div>
-          <p class="dec-said" id="dec-said" hidden>Proposed expansion. Approval and protection review required.</p>
-          <p class="note">Future authority only. Today's results stand.</p>
+          <p class="say" id="s4-say"></p>
+          <!-- the facilitator steps the day; each beat is a real state, and Replay re-reveals it without a second booking, claim or credit -->
+          <ol class="beats" id="beats"></ol>
+          <div class="payout" id="payout" hidden><p class="pay-h">AI booking protection</p><p class="pay-a"><b id="pay-amt">+$400</b><span id="pay-t">Claim approved</span></p></div>
+          <div class="day-ctl" id="day-ctl"><button class="daybtn" type="button" id="day-step">Next step</button><button class="daybtn" type="button" id="day-replay">Replay</button></div>
         </div>
       </div>
     </div>
-
-    <aside class="support">
-      <div class="band band--z" id="band5" data-level="none" data-decided="" role="img"
-           aria-label="A small desk showing future authority: the agent's permitted zone, a line, and on the right the hatched exception sheet that never moves.">
-        <div class="tray"></div>
-        <div class="prop"></div>
-        <p class="zlab zlab--may">Agent may act</p>
-        <p class="zlab zlab--ask">Needs your approval</p>
-        <div class="line line--ghost"></div>
-        <div class="line line--now"></div>
-        <span class="sheet sheet--mini sheet--mini-o">
-          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".5"><line x1="0" y1="10" x2="100" y2="10"/><line x1="0" y1="28" x2="100" y2="28"/><line x1="0" y1="46" x2="64" y2="46"/></g></svg>
-        </span>
-        <span class="sheet sheet--mini sheet--mini-x">
-          <svg class="hatchband" viewBox="0 0 100 10" preserveAspectRatio="none"><rect width="100" height="10" fill="url(#hatch)"/></svg>
-          <svg viewBox="0 0 100 60" preserveAspectRatio="none"><g stroke="#16150F" stroke-width="1.4" opacity=".5"><line x1="0" y1="14" x2="100" y2="14"/><line x1="0" y1="32" x2="100" y2="32"/><line x1="0" y1="50" x2="60" y2="50"/></g></svg>
-          <span class="sign"><svg viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="8" x2="100" y2="8" stroke="#16150F" stroke-width="1.5"/></svg></span>
-        </span>
-      </div>
-    </aside>
   </div>
+</section>
 
+<section class="screen screen--s5" data-screen="5" data-label="Back on track" data-veil="soft">
+  <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1" id="s5-h"><span>$1 protected</span><span>a $400 decision.</span></h2></div></div>
+  <div class="stage">
+    <div class="ws" role="region" aria-label="Muse">
+      <p class="strip"><b>Muse</b><span>your assistant</span></p>
+      <div class="thread">
+        <i class="tline" aria-hidden="true"></i>
+        <div class="msg msg--ai msg--lead">
+          <p class="say" id="s5-say"></p>
+          <p class="slip slip--ok" id="s5-slip" hidden></p>
+          <dl class="ledger" id="ledger" hidden></dl>
+          <p class="ask" id="s5-ask">What else would you delegate?</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 </main>
 
-<!-- ═══════════════ CHROME ═══════════════ -->
-<div class="chrome">
-  <div class="chrome-r">
-    <button class="iconbtn" type="button" id="prev" aria-label="Previous screen">
-      <span aria-hidden="true">&larr;</span>
-    </button>
-    <label class="picker">
-      <span class="sr-only">Choose a screen</span>
-      <select id="picker"></select>
-    </label>
-    <button class="cta" type="button" id="next">
-      <span id="next-label">The arrangement</span> <span aria-hidden="true">&rarr;</span>
-    </button>
-  </div>
-</div>
-
+<div class="chrome"><div class="chrome-r">
+  <button class="iconbtn" type="button" id="prev" aria-label="Previous screen"><span aria-hidden="true">&larr;</span></button>
+  <label class="picker"><span class="sr-only">Choose a screen</span><select id="picker"></select></label>
+  <button class="cta" type="button" id="next"><span id="next-label">The options</span> <span aria-hidden="true">&rarr;</span></button>
+</div></div>
 <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
 <p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
-
 <script src="app.js"></script>
 </body>
 </html>

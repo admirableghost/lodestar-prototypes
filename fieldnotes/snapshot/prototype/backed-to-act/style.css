@@ -7,11 +7,11 @@
            set quote; on screens 2–5 a wordless paper stub stands for the
            note. Authority is a SIGNATURE DASH drawn on the paper when she
            authorises (the deck's data-auth="bounded").
-   AGENT   Halden's dark plate (#262E36) under a plum rule (#8A3450); the
+   AGENT   Muse's dark plate (#262E36) under a plum rule (#8A3450); the
            LENS mark (circle + handle) at the head of a continuous plum
            THREAD (2px, 42%) that begins under her paper and runs down
            through everything the agent touches; activity is a pulse along
-           it. Halden speaks in short messages (.say) on the plate; the
+           it. Muse speaks in short messages (.say) on the plate; the
            cards it holds up are paper (#FBF9F1) with ink.
    AUTHORITY AS GEOMETRY   the boundary (.inside) drawn around the thread
            — dashed until she decides, solid amber once authorised; on
@@ -28,7 +28,7 @@
    Contrast, measured:
      #F3EBD7 cream on #0C1218 field        16.9 : 1   headline, zone labels
      #F3EBD7 cream on #6B675E block         4.6 : 1   headline on its backing
-     #F3EBD7 cream on #262E36 plate        11.8 : 1   Halden's words
+     #F3EBD7 cream on #262E36 plate        11.8 : 1   Muse's words
      #B9B2A0 mute  on #262E36 plate         6.4 : 1   quiet rows, totals, note
      #74C79A ok    on #262E36 plate         6.9 : 1   "Placed"
      #E2A75C hold  on #262E36 plate         6.6 : 1   "Returned", waiting
@@ -192,7 +192,7 @@ body {
 .support { grid-column: 2; justify-self: start; width: 100%; max-width: 440px;
   margin: 0; display: flex; align-items: center; justify-content: flex-start; }
 
-/* ══ THE WORKSPACE · Halden's plate ═════════════════════════════════════ */
+/* ══ THE WORKSPACE · Muse's plate ═════════════════════════════════════ */
 .ws {
   position: relative; color: var(--cream);
   background: var(--plate) var(--grain-soft);
@@ -243,7 +243,7 @@ body {
 .deck[data-auth="bounded"] .sig { opacity: 1; }
 .deck[data-auth="bounded"] .sig path { stroke-dashoffset: 0; }
 
-/* HALDEN'S MESSAGES: on the plate, beside the thread; a node where each
+/* MUSE'S MESSAGES: on the plate, beside the thread; a node where each
    touches the thread, the lens at the head of the agent's work */
 .msg { max-width: 100%; }
 .msg p { margin: 0; font: 400 var(--body)/1.42 var(--sans); }
@@ -252,7 +252,7 @@ body {
   border-radius: 50%; background: var(--plum); box-shadow: 0 0 0 2px var(--plate); }
 .msg--lead::before { left: 0; top: 0; width: 22px; height: 22px; border-radius: 0; box-shadow: none;
   background: var(--plate) var(--lens) center/contain no-repeat; }
-/* what Halden says: a short message on the plate, a plum rule at its edge */
+/* what Muse says: a short message on the plate, a plum rule at its edge */
 .say { display: inline-block; max-width: 100%; padding: 9px 14px 10px;
   background: rgba(243,235,215,.06); border-left: 2px solid var(--plum); }
 .say + .say { margin-top: 8px; }
@@ -647,3 +647,43 @@ body {
 .daybtn:hover:not(:disabled) { background: rgba(255,255,255,.08); border-color: var(--paper); }
 .daybtn:disabled { opacity: .4; cursor: default; }
 #day-slip[hidden] { display: none; }
+
+/* ══ BACKED TO ACT 2.0 ═══ the trip, the options, the decision, the day, back on track ══ */
+.paper--mail { max-width: min(100%, 40ch); }
+.mail-h { margin: 0 0 4px !important; font-weight: 700 !important; }
+.search { margin: 8px 0 0; display: flex; align-items: center; gap: .5em; font: 400 14px/1.3 var(--sans); color: var(--line-2, #9aa3ad); }
+.lens-sm { width: .85em; height: .85em; border: 2px solid var(--plum, #8A3450); border-radius: 50%; position: relative; flex: 0 0 auto; }
+.lens-sm::after { content: ""; position: absolute; left: 80%; top: 80%; width: .45em; height: 2px; background: var(--plum, #8A3450); transform: rotate(45deg); transform-origin: 0 50%; }
+.hotels { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.hotel { display: grid; grid-template-columns: 1.3fr 1.2fr .8fr auto; gap: 4px 14px; align-items: baseline; padding: 10px 14px; background: var(--hpaper, #F3EBD7); color: #16150F; border-radius: var(--r-m, 6px); border: 1.5px solid transparent; font: 400 15px/1.3 var(--sans); }
+.hotel--rec { border-color: var(--plum, #8A3450); box-shadow: 0 0 0 2px rgba(138,52,80,.25); }
+.h-rec { font-style: normal; color: var(--plum, #8A3450); font-weight: 700; }
+.h-n { font-weight: 700; } .h-p b { font-weight: 700; font-variant-numeric: tabular-nums; } .h-w { color: #5A554A; }
+.h-r { justify-self: end; font: 700 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #3B6E4B; }
+.h-r--nr { color: #B8541F; }
+.acts--choice { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.acts--choice button { min-height: 46px; }
+.whybtn { margin-top: 10px; min-height: 44px; padding: 0 14px; background: transparent; color: var(--paper); border: 1.5px solid var(--line-2, #9aa3ad); border-radius: var(--r-m, 6px); font: 700 15px/1 var(--sans); cursor: pointer; }
+.cover { margin-top: 10px; padding: 10px 14px; background: rgba(255,255,255,.06); border-left: 3px solid #2F5E7C; border-radius: 0 var(--r-m, 6px) var(--r-m, 6px) 0; max-width: 60ch; }
+.cover[hidden] { display: none; }
+.cover p { margin: 0 0 6px; font: 400 15px/1.4 var(--sans); } .cover p:last-child { margin: 0; }
+.beats { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.beats li { position: relative; padding-left: 1.3em; font: 700 16px/1.3 var(--sans); opacity: 0; transform: translateX(-6px); transition: opacity .3s ease, transform .3s ease; }
+.beats li::before { content: "→"; position: absolute; left: 0; color: var(--plum, #8A3450); }
+.beats li[data-on="1"] { opacity: 1; transform: none; }
+.beats li[data-k="err"] { color: #E2A28B; } .beats li[data-k="warn"] { color: #E2C28B; } .beats li[data-k="pay"] { color: #9FD3B0; }
+.payout { margin-top: 12px; padding: 12px 16px; background: var(--hpaper, #F3EBD7); color: #16150F; border-radius: var(--r-m, 6px); border-left: 5px solid #2F5E7C; max-width: 36ch; }
+.payout[hidden] { display: none; }
+.pay-h { margin: 0 0 4px; font: 700 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #2F5E7C; }
+.pay-a { margin: 0; display: flex; align-items: baseline; gap: 12px; } .pay-a b { font: 700 32px/1 var(--sans); font-variant-numeric: tabular-nums; color: #2F5E7C; } .pay-a span { font: 700 15px/1 var(--sans); }
+.day-ctl[hidden] { display: none; }
+.slip--ok[hidden] { display: none; }
+.ledger { margin: 18px 0 0; display: grid; gap: 4px; max-width: 30ch; }
+.ledger[hidden] { display: none; }
+.ledger div { display: flex; justify-content: space-between; gap: 1em; font: 400 15px/1.3 var(--sans); }
+.ledger dt { margin: 0; color: var(--line-2, #9aa3ad); } .ledger dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 700; }
+.ledger .net { border-top: 1.5px solid var(--line-2, #9aa3ad); padding-top: 4px; margin-top: 2px; } .ledger .net dt { color: var(--paper); }
+.ask { margin: 14px 0 0; font: 700 clamp(18px, 1.6vw, 22px)/1.3 var(--sans); }
+.ask[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .beats li { transition: none; } }
+@media (max-width: 899px) { .hotel { grid-template-columns: 1fr auto; } .h-w { grid-column: 1; } .h-r { grid-column: 2; } }
