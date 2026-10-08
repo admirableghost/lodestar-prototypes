@@ -6,7 +6,7 @@
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Backed to Act — insurance for autonomous AI actions</title>
-<meta name="description" content="A traveller lets her assistant, Muse, book a nonrefundable hotel for a business trip and pays one dollar to protect the four hundred. Muse books the wrong dates; the hotel declines a refund; the protection pays the verified loss; Muse rebooks. Fictional itinerary, no real inventory, bank or insurer.">
+<meta name="description" content="A fictional announcement: an insurer partners with Muse, an AI assistant, to protect delegated transactions. Then one application: a small-business owner lets Muse book a nonrefundable hotel for a client meeting and pays one dollar to protect the four hundred. Muse books the wrong dates; the hotel declines a refund; the insurer verifies and pays the loss; Muse rebooks. Fictional publication, itinerary, hotels, bank and insurer.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -14,34 +14,45 @@
 <button class="skip sr-only" type="button" id="skip">Skip to this screen's content</button>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <svg class="bta-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>
-  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#C98D1C" stroke-width="1.4"/></pattern>
   <symbol id="lens" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
   <symbol id="seal" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10.5 16.5 L14.5 20.5 L22 11.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </defs></svg>
 
-<!-- Five screens. One scenario: a business trip, a nonrefundable hotel, one
-     dollar of protection on a four-hundred-dollar decision, an AI mistake,
-     a verified loss paid, the trip put right. State lives in sessionStorage;
-     Next never books, buys or claims; the payout exists only when every
-     condition has been met. All data is local and fictional. -->
+<!-- Five screens. A fictional announcement establishes the partnership (why);
+     the booking shows what it makes possible (what). State lives in
+     sessionStorage; Next never books, buys or claims; the payout exists only
+     when every condition has been met. Publication, hotels, bank and insurer
+     are fictional. -->
 <main class="deck" id="deck">
 
-<section class="screen screen--s1" data-screen="1" data-label="The trip" data-veil="soft">
-  <div class="top"><div class="xhead"><h1 class="xd" tabindex="-1"><span>You haven't booked</span><span>Barcelona yet.</span></h1></div></div>
+<section class="screen screen--s1" data-screen="1" data-label="The announcement" data-veil="soft" data-intro="article">
+  <div class="top" id="s1-top"><div class="xhead"><h1 class="xd" tabindex="-1"><span>You haven't booked</span><span>Barcelona yet.</span></h1></div></div>
   <div class="stage">
-    <div class="ws" role="region" aria-label="Muse">
+    <!-- the opening: a fictional business-news announcement, read in about five seconds -->
+    <article class="news" id="news" aria-label="A fictional business-news announcement">
+      <header class="news-head"><p class="news-mast">The Commerce Ledger</p><p class="news-rule" aria-hidden="true"></p></header>
+      <h1 class="news-h" id="news-h" tabindex="-1">Insurer Backs Muse to Make Autonomous AI Work Insurable</h1>
+      <p class="news-sub">New partnership shares the risk of AI execution errors, helping small businesses delegate consequential transactions.</p>
+      <div class="news-cols">
+        <p class="news-body">Even reliable AI errs. Muse distributes protection as customers delegate, sharing the risk; Kestrel Mutual underwrites specified errors and pays eligible losses.</p>
+        <div class="news-ghost" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </article>
+    <!-- then, on the same screen: Muse at work on a real task -->
+    <div class="ws" role="region" aria-label="Muse" id="s1-ws" hidden>
       <p class="strip"><b>Muse</b><span>your assistant</span></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
         <div class="paper paper--mail" aria-label="The email Muse read">
-          <p class="mail-h">Meetings in Barcelona · 21–22 November</p>
-          <p>Accommodation covered up to $200 a night.</p>
+          <p class="mail-h">Client meeting · Barcelona · 21–22 November</p>
+          <p>Accommodation allowance $200 a night.</p>
         </div>
         <div class="msg msg--ai msg--lead">
-          <p class="say">No hotel booked for this trip. I've found three options.</p>
+          <p class="say">No hotel booked for your client meeting. I've found three options.</p>
           <p class="search"><span class="lens-sm" aria-hidden="true"></span>Searched · 20–22 November · one adult · under $200 a night</p>
         </div>
       </div>
+      <button type="button" class="linkbtn" id="intro-back">Show the article</button>
     </div>
   </div>
 </section>
@@ -50,7 +61,7 @@
   <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1"><span>Three within</span><span>the allowance.</span></h2></div></div>
   <div class="stage">
     <div class="ws" role="region" aria-label="Muse">
-      <p class="strip"><b>Muse</b><span>your assistant</span></p>
+      <p class="strip"><b>Muse</b></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
         <div class="msg msg--ai msg--lead">
@@ -70,22 +81,23 @@
   <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1"><span>The $1</span><span>decision.</span></h2></div></div>
   <div class="stage">
     <div class="ws" role="region" aria-label="Muse">
-      <p class="strip"><b>Muse</b><span>your assistant</span></p>
+      <p class="strip"><b>Muse</b></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
         <div class="msg msg--ai msg--lead">
-          <p class="say">$1 protects your $400 nonrefundable booking against covered AI booking mistakes.</p>
+          <p class="say">$1 protects against up to $400 in eligible, unrecovered losses caused by covered AI booking errors.</p>
           <!-- three real choices; nothing is preselected and Next never chooses -->
           <div class="acts acts--choice" role="group" aria-label="How much to delegate">
             <button type="button" data-choice="self" aria-pressed="false">Book myself</button>
             <button type="button" data-choice="book" aria-pressed="false">Book for me · $400</button>
             <button type="button" class="primary" data-choice="protect" aria-pressed="false">Book with protection · $401</button>
           </div>
+          <p class="partner"><svg class="seal-sm" aria-hidden="true"><use href="#seal"/></svg>Backed by Kestrel Mutual</p>
           <p class="note" id="choice-note" hidden></p>
           <button type="button" class="whybtn" id="cover-why" aria-expanded="false">What's covered?</button>
           <div class="cover" id="cover" hidden>
-            <p><b>Covered:</b> wrong dates, wrong hotel, duplicate booking, guest-detail errors. Up to $400, no deductible.</p>
-            <p><b>Not covered:</b> change of mind, wrong instructions, hotel cancellations.</p>
+            <p>Covers wrong dates, wrong hotel, duplicate booking, guest details. No deductible.</p>
+            <p>Excludes change of mind, wrong instructions, hotel cancellations.</p>
           </div>
         </div>
       </div>
@@ -97,15 +109,14 @@
   <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1" id="s4-h"><span>Muse books</span><span>the hotel.</span></h2></div></div>
   <div class="stage">
     <div class="ws" role="region" aria-label="Muse">
-      <p class="strip"><b>Muse</b><span>your assistant</span></p>
+      <p class="strip"><b>Muse</b></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
         <div class="msg msg--ai msg--lead">
           <p class="say" id="s4-say"></p>
-          <!-- the facilitator steps the day; each beat is a real state, and Replay re-reveals it without a second booking, claim or credit -->
+          <!-- the day plays itself, one step a second; Next step takes over by hand, Pause holds it, and Replay re-reveals it without a second booking, claim or credit. Each step names who acts: Muse, the hotel, the insurer. -->
           <ol class="beats" id="beats"></ol>
-          <div class="payout" id="payout" hidden><p class="pay-h">AI booking protection</p><p class="pay-a"><b id="pay-amt">+$400</b><span id="pay-t">Claim approved</span></p></div>
-          <div class="day-ctl" id="day-ctl"><button class="daybtn" type="button" id="day-step">Next step</button><button class="daybtn" type="button" id="day-replay">Replay</button></div>
+          <div class="day-ctl" id="day-ctl"><button class="daybtn" type="button" id="day-step">Next step</button><button class="daybtn" type="button" id="day-pause" aria-pressed="false">Pause</button><button class="daybtn" type="button" id="day-replay">Replay</button></div>
         </div>
       </div>
     </div>
@@ -116,14 +127,14 @@
   <div class="top"><div class="xhead"><h2 class="xd" tabindex="-1" id="s5-h"><span>$1 protected</span><span>a $400 decision.</span></h2></div></div>
   <div class="stage">
     <div class="ws" role="region" aria-label="Muse">
-      <p class="strip"><b>Muse</b><span>your assistant</span></p>
+      <p class="strip"><b>Muse</b></p>
       <div class="thread">
         <i class="tline" aria-hidden="true"></i>
         <div class="msg msg--ai msg--lead">
           <p class="say" id="s5-say"></p>
           <p class="slip slip--ok" id="s5-slip" hidden></p>
           <dl class="ledger" id="ledger" hidden></dl>
-          <p class="ask" id="s5-ask">What else would you delegate?</p>
+          <p class="ask" id="s5-ask">What else would you trust your AI to do?</p>
         </div>
       </div>
     </div>
@@ -135,7 +146,7 @@
 <div class="chrome"><div class="chrome-r">
   <button class="iconbtn" type="button" id="prev" aria-label="Previous screen"><span aria-hidden="true">&larr;</span></button>
   <label class="picker"><span class="sr-only">Choose a screen</span><select id="picker"></select></label>
-  <button class="cta" type="button" id="next"><span id="next-label">The options</span> <span aria-hidden="true">&rarr;</span></button>
+  <button class="cta" type="button" id="next"><span id="next-label">See what this makes possible</span> <span aria-hidden="true">&rarr;</span></button>
 </div></div>
 <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
 <p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
