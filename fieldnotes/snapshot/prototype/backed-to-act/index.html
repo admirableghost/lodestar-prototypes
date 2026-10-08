@@ -245,6 +245,13 @@
           </div>
           <!-- the day summed: placed, and what awaits approval -->
           <p class="sum" id="day-sum"></p>
+          <!-- the facilitator's controls for the day: step it, or show it
+               again. Replay re-runs the REVEAL only; the orders, the covered
+               mistake and the totals are already settled and never change. -->
+          <div class="day-ctl" id="day-ctl">
+            <button class="daybtn" type="button" id="day-step">Next step</button>
+            <button class="daybtn" type="button" id="day-replay">Replay</button>
+          </div>
         </div>
 
         <div class="msg msg--ai msg--lead" id="day-draft">

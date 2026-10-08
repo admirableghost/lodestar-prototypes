@@ -43,20 +43,6 @@
      promised and observed are working days counted from AGREED LIABILITY */
   var LEDGER = { key: "settlement.days", observed: 9 };
 
-  /* ── DEVELOPMENT-ONLY SCENARIO · the completed switch ──────────────────
-     Reached only with ?dev=switch in the URL. Nothing here is approved: the
-     later offer, its price, the prepaid rule and the cancellation rule are
-     proposed workshop assumptions awaiting human approval (see
-     EXPERIENCE-OUTCOMES-REVIEW.md). Without the flag the approved "stay"
-     year runs unchanged and S.switch is never written. */
-  var DEV = (function () { try { return new URLSearchParams(location.search).get("dev") === "switch"; } catch (e) { return false; } })();
-  /* DEVELOPMENT-ONLY · ?dev=feedback. The one thing an insurer cannot see
-     today: why an agent rejected its offer. Customer-permitted, one reason,
-     no integration, no carrier response and no new offer. Unapproved. */
-  var DEVFB = (function () { try { return new URLSearchParams(location.search).get("dev") === "feedback"; } catch (e) { return false; } })();
-  var LATER = { id: "lantern", name: "Lantern Mutual", num: 950, excessNum: 450, settleDays: 5, remedyPerDay: 50,
-                eligible: true, from: 7, prepaidMonths: 6 };   /* proposed · unapproved */
-  function switchSaving(p) { return Math.round((p.premium - LATER.num) * (12 - LATER.from) / 12 * 100) / 100; }   /* (1340 − 950) × 5/12 = 162.50 */
 
   /* ══════════════════════════════════════════════════════════════════════
      STATE  S = { delta: 200|100, signed, purchase: null|snapshot, month, claim }
@@ -70,7 +56,7 @@
      All of it survives a reload (sessionStorage oc-s as JSON). Restarting
      from screen 5 clears it. The only writer of S.purchase is buy().
      ══════════════════════════════════════════════════════════════════════ */
-  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
+  var S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
 
   function snapshotOf(raw) {
     if (!raw || typeof raw !== "object") { return null; }
@@ -91,8 +77,6 @@
       S.purchase = snapshotOf(raw.purchase);
       S.month = (raw.month >= 1 && raw.month <= 12) ? Math.round(raw.month) : 0;
       /* the switch exists only in the development scenario and only after a purchase */
-      S.switch = (DEV && S.purchase) ? snapshotOf(raw.switch) : null;
-      if (S.switch && !(raw.switch.month >= 1)) { S.switch = null; } else if (S.switch) { S.switch.month = Math.round(raw.switch.month); }
       S.claim = (raw.claim && typeof raw.claim === "object" && raw.claim.agreed === true)
                 ? { agreed: true, settled: LEDGER.observed } : null;
     }
@@ -111,22 +95,6 @@
   function cheapest() { return OC.reduce(function (a, b) { return a.num <= b.num ? a : b; }); }
   function gap() { return recommended().num - cheapest().num; }   /* 1340 − 1185 = 155 */
   function bought() { return S.purchase; }
-  /* the insurer on risk now: the replacement once Muse has switched, else the purchase */
-  function active() { return S.switch || S.purchase; }
-  /* Muse may switch: a purchase exists, no switch yet, the later offer is
-     eligible and inside her allowance, and her authority still stands */
-  function switchPermitted() {
-    return DEV && !!S.purchase && !S.switch && LATER.eligible && S.signed === true &&
-           (LATER.num - Math.min(LATER.num, cheapest().num)) <= S.delta;
-  }
-  /* the ONE writer of S.switch: called by paintYear on reaching month seven */
-  function doSwitch() {
-    if (!switchPermitted()) { return false; }
-    S.switch = { id: LATER.id, name: LATER.name, premium: LATER.num, excess: LATER.excessNum,
-                 settleDays: LATER.settleDays, remedyPerDay: LATER.remedyPerDay, within: S.delta, month: LATER.from };
-    persist();
-    return true;
-  }
 
   /* the one test Muse runs before it buys: the eligible offer sits inside
      her allowance, and she has signed */
@@ -191,8 +159,8 @@
   function paintWhy() {
     var btn = document.getElementById("tell-why"), out = document.getElementById("told-why");
     var judged = !!document.querySelector('#shortlist .of[data-judged="1"]');
-    if (btn) { btn.hidden = !DEVFB || told || !judged; }
-    if (out) { out.hidden = !DEVFB || !told; }
+    if (btn) { btn.hidden = true; }
+    if (out) { out.hidden = true; }
   }
   var whyBtn = document.getElementById("tell-why");
   if (whyBtn) {
@@ -437,16 +405,11 @@
     /* the thread runs along the bar; the check sits on it at the shown month */
     s.push('<line x1="' + x0 + '" y1="40" x2="' + x1 + '" y2="40" stroke="#8A3450" stroke-width="2" opacity=".42" vector-effect="non-scaling-stroke"/>');
     /* the bar: months passed in grey hatch, prepaid value remaining in ledger blue */
-    var sw = S.switch ? S.switch.month : 0;
     for (i = 0; i < 12; i++) {
-      var x = x0 + i * seg, spent = i < m, onNew = sw && i >= sw - 1;
+      var x = x0 + i * seg, spent = i < m;
       s.push('<rect x="' + (x + 2).toFixed(1) + '" y="58" width="' + (seg - 4).toFixed(1) + '" height="34" rx="2" fill="' +
-             (spent ? (onNew ? "url(#oc-hatch-sage)" : "url(#oc-hatch-grey)") : (onNew ? "rgba(74,110,84,.22)" : "rgba(47,94,124,.18)")) + '" stroke="' + (spent ? (onNew ? "#4A6E54" : "#8C8574") : (onNew ? "#4A6E54" : "#2F5E7C")) +
+             (spent ? "url(#oc-hatch-grey)" : "rgba(47,94,124,.18)") + '" stroke="' + (spent ? "#8C8574" : "#2F5E7C") +
              '" stroke-width="' + (spent ? 1.2 : 2) + '" vector-effect="non-scaling-stroke"/>');
-    }
-    if (sw) {
-      var dx = x0 + (sw - 1) * seg;
-      s.push('<line x1="' + dx.toFixed(1) + '" y1="50" x2="' + dx.toFixed(1) + '" y2="100" stroke="#4A6E54" stroke-width="2.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>');
     }
     /* the marker: the lens' centre on the thread at the shown month */
     var mx = x0 + (m - 0.5) * seg;
@@ -475,91 +438,34 @@
     var left = document.getElementById("year-left"); if (left) { left.textContent = String(12 - m); }
     var auth = document.getElementById("year-auth"); if (auth) { auth.textContent = String(p.within); }
 
-    /* development scenario: from month seven the year is Muse's switch */
-    var stay = document.getElementById("year-stay"), swBox = document.getElementById("year-switch");
-    var atSwitch = DEV && m >= LATER.from;
-    if (stay) { stay.hidden = atSwitch; }
-    if (swBox) { swBox.hidden = !atSwitch; }
-    if (atSwitch) { paintSwitch(p, animate !== false); paintYearBar(); return; }
-    if (held && S.switch && m < S.switch.month) { /* before the switch month the record is still the purchase */ }
     paintYearBar();
-    /* the check re-runs: the ticks land again for the shown month */
+    /* Muse says what it found, in one message. The six checks behind it are
+       there when someone asks for them, not read out every month. */
+    var sayEl = document.getElementById("year-say");
+    if (sayEl) { sayEl.textContent = "Checked the market. No eligible alternative improves your position. I'll keep watching."; }
     var ul = document.getElementById("ychecks");
-    if (ul) { ul.classList.remove("is-run"); void ul.offsetWidth; ul.classList.add("is-run"); }
+    if (ul) { ul.hidden = !yearWhy; if (!ul.hidden) { ul.classList.remove("is-run"); void ul.offsetWidth; ul.classList.add("is-run"); } }
+    var wb = document.getElementById("year-why");
+    if (wb) { wb.setAttribute("aria-expanded", yearWhy ? "true" : "false"); wb.textContent = yearWhy ? "Hide" : "Why?"; }
   }
 
-  /* the switch panel (development scenario only). On first reaching month
-     seven with authority, Muse switches NOW: the snapshot is written first,
-     then the discovery, the checks and the steps land in sequence. Later
-     paints show the same, done. Without authority Muse finds the offer and
-     holds; the decision returns to her. */
-  function paintSwitch(p, animate) {
-    var find = document.getElementById("sw-find"), checks = document.getElementById("swchecks");
-    var steps = Array.prototype.slice.call(document.querySelectorAll("#sw-steps .astep"));
-    var status = document.getElementById("sw-status"), statusT = document.getElementById("sw-status-t");
-    var hold = document.getElementById("sw-hold"), held = document.getElementById("year-held");
-    var ex = document.getElementById("sw-excess"); if (ex) { ex.textContent = String(LATER.excessNum); }
-    var buyT = document.getElementById("sw-step-buy"), cancelT = document.getElementById("sw-step-cancel");
-    if (buyT) { buyT.textContent = "Bought · " + LATER.name + " confirms"; }
-    if (cancelT) { cancelT.textContent = p.name.split(" ")[0] + " cancellation completed"; }
-    clearSeq("sw");
-    /* the switch is performed only while the year is on screen: never from
-       a repaint triggered elsewhere */
-    var open4 = (function () { var sc = document.querySelector(".screen:not([hidden])"); return !!sc && sc.dataset.screen === "4"; })();
-    /* the discovery runs first and changes nothing: Muse finds the offer and
-       checks it. The switch itself is written by the confirmation step below. */
-    var running = switchPermitted() && animate && open4 && !reduce();
-    if (switchPermitted() && animate && open4 && reduce()) { doSwitch(); }
-    var sw = S.switch;
-    if (find) { find.textContent = LATER.name + " · " + grp(LATER.num) + " USD · eligible. Switching saves " + switchSaving(p).toFixed(2) + " USD."; }
-    var list = document.getElementById("sw-steps");
-    if (running) { if (checks) { checks.hidden = false; } }
-    if (sw || running) {
-      if (hold) { hold.hidden = true; } placeToRules(null);
-      if (checks) { checks.hidden = false; }
-      if (list) { list.hidden = false; }
-      /* until the replacement confirms, the chip still names the policy on risk */
-      if (held) { held.innerHTML = '<span class="held-k">' + (sw ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc((sw || p).name) + "</b>"; }
-      var mark = function () {
-        var n = S.switch; if (!n) { return; }
-        if (statusT) { statusT.textContent = "Switched · " + n.name; }
-        if (status) { status.hidden = false; }
-        if (held) { held.innerHTML = '<span class="held-k">Switched</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(n.name) + "</b>"; }
-        paintYearBar();
-      };
-      var reveal = steps.map(function (li, i) { return function () { li.dataset.on = "1"; if (i === 0) { doSwitch(); mark(); } }; });
-      if (running) {
-        steps.forEach(function (li) { li.dataset.on = "0"; });
-        if (status) { status.hidden = true; }
-        if (held) { held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
-        if (checks) { checks.hidden = false; checks.classList.remove("is-run"); void checks.offsetWidth; checks.classList.add("is-run"); }
-        if (list) { list.hidden = false; }
-        plan("sw", reveal.map(function (f, i) { return [1600 + i * 700, f]; }), true);
-        say("Month " + LATER.from + ". Muse finds " + LATER.name + ", " + LATER.num + " USD, eligible; switching saves " + switchSaving(p).toFixed(2) + " USD. Rosa covered; excess " + LATER.excessNum + "; same remedy; no prepaid value left; no cancellation penalty; within your authority. Bought, " + LATER.name + " confirms; effective date confirmed; " + p.name + " cancellation completed; no lapse.");
-      } else {
-        reveal.forEach(function (f) { f(); });
-        mark();
-        if (checks) { checks.classList.add("is-run"); }
-      }
-      return;
-    }
-    /* no switch: the offer is found; the decision returns to her */
-    steps.forEach(function (li) { li.dataset.on = "0"; });
-    if (list) { list.hidden = true; }
-    if (status) { status.hidden = true; }
-    if (checks) { checks.hidden = true; }
-    if (held) { held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
-    if (hold) { hold.hidden = false; hold.textContent = S.signed ? "Over your allowance. Your call." : "No authority to switch. Your call."; }
-    placeToRules("sw-slot", S.signed ? "Revise the allowance" : "Back to her rules");
+  /* the checks are a detail the facilitator can open, not a monthly recital */
+  var yearWhy = false;
+  var yearWhyBtn = document.getElementById("year-why");
+  if (yearWhyBtn) {
+    yearWhyBtn.addEventListener("click", function () {
+      yearWhy = !yearWhy; paintYear(false);
+      say(yearWhy ? "Eligible alternatives, none. Coverage requirements met. Prepaid value remaining. Switching conditions prepared. Authority unchanged. Continuity: replacement first." : "Checks hidden.");
+    });
   }
+
   var yearRange = document.getElementById("year");
   if (yearRange) {
     var onYear = function () {
       var v = parseInt(yearRange.value, 10);
       S.month = (v >= 1 && v <= 12) ? v : 1;
       persist(); paintYear(true);
-      if (DEV && S.month >= LATER.from) { return; }
-      say("Month " + S.month + ". Muse checks: eligible alternatives, none; coverage requirements met; prepaid, " + (12 - S.month) + " months; switching conditions prepared; authority " + (bought() ? bought().within : "") + " USD; continuity, replacement first. Stay: nothing eligible is cheaper.");
+      say("Month " + S.month + ". Checked the market. No eligible alternative improves your position. Muse checks: eligible alternatives, none; coverage requirements met; prepaid, " + (12 - S.month) + " months; switching conditions prepared; authority " + (bought() ? bought().within : "") + " USD; continuity, replacement first. Stay: nothing eligible is cheaper.");
     };
     yearRange.addEventListener("input", onYear);
     yearRange.addEventListener("change", onYear);
@@ -589,7 +495,7 @@
     host.style.setProperty("--cells", String(n));
   }
   function paintClaim(animate) {
-    var p = active();
+    var p = bought();
     var head = document.getElementById("oc5-headline");
     var held = document.getElementById("claim-held");
     var boughtBox = document.getElementById("claim-bought"), pending = document.getElementById("claim-pending");
@@ -607,7 +513,7 @@
     }
     if (pending) { pending.hidden = true; }
     if (boughtBox) { boughtBox.hidden = false; }
-    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">' + (S.switch ? "Switched" : "Bought") + '</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
+    if (held) { held.hidden = false; held.innerHTML = '<span class="held-k">Bought</span><span class="held-sep" aria-hidden="true"> · </span><b>' + esc(p.name) + "</b>"; }
     if (!S.claim) {
       if (head) { head.textContent = "A promise her agent can enforce."; }
       if (promise) {
@@ -664,7 +570,7 @@
       persist();
       paintClaim(true);
       var e = document.getElementById("enforce"); if (e) { e.setAttribute("tabindex", "-1"); e.focus(); }
-      var a = active();
+      var a = bought();
       say("Claim reported. Liability agreed, clock starts. " + a.settleDays + " working days promised. Settled on day nine. " + (LEDGER.observed - a.settleDays) + " late times " + a.remedyPerDay + " USD. Muse: settled; " + a.name + " missed its promise; I applied your remedy. No separate claim needed.");
     });
   }
@@ -672,7 +578,7 @@
   /* starting over: nothing signed, nothing bought — the state the first
      screen describes. Called when the deck wraps from screen 5 to screen 1. */
   function restart() {
-    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null, switch: null };
+    S = { delta: 200, signed: false, revoked: false, purchase: null, month: 0, claim: null };
     persist();
     var sig = document.querySelector("#signed .sig"); if (sig) { sig.classList.remove("is-drawn"); }
     paintAll(false);

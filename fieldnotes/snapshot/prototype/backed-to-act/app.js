@@ -339,6 +339,38 @@
      cancels the animation). Nothing but the class is touched. */
   var s4Timers = [];
   function reduced4() { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+
+  /* ── the day, as four beats the facilitator controls ──────────────────
+     0 orders placed · 1 the wrong part named · 2 the cover answers it ·
+     3 the exception returns and the totals stand. The beats are a VIEW of
+     a day that has already happened: stepping or replaying re-reveals it
+     and never re-runs an order, a remedy or a total. */
+  var s4Beat = 0, S4_BEATS = 4;
+  function applyBeat(n) {
+    var d = day(S.mode), r = d.remedied[0];
+    if (!daySlip || !r) { return; }
+    s4Beat = Math.max(0, Math.min(S4_BEATS - 1, n));
+    var rows = dayRows ? Array.prototype.slice.call(dayRows.children) : [];
+    rows.forEach(function (li, i) { li.dataset.on = (s4Beat >= 0 && (s4Beat > 0 || i < rows.length)) ? "1" : "0"; });
+    daySlip.dataset.stage = s4Beat === 0 ? "0" : s4Beat === 1 ? "1" : "2";
+    daySlip.innerHTML = s4Beat >= 2 ? slipHTML(r) : slipMistake(r);
+    daySlip.hidden = s4Beat < 1;
+    if (dayAsk) { dayAsk.dataset.on = s4Beat >= 3 ? "1" : "0"; }
+    if (daySum) { daySum.dataset.on = s4Beat >= 3 ? "1" : "0"; }
+    var step = document.getElementById("day-step");
+    if (step) { step.disabled = s4Beat >= S4_BEATS - 1; }
+  }
+  function runDay(from) {
+    s4Timers.forEach(clearTimeout); s4Timers = [];
+    applyBeat(from);
+    if (reduced4()) { applyBeat(S4_BEATS - 1); return; }
+    for (var n = from + 1; n < S4_BEATS; n++) {
+      (function (n) { s4Timers.push(setTimeout(function () { applyBeat(n); }, (n - from) * 900)); })(n);
+    }
+  }
+  var dayStep = document.getElementById("day-step"), dayReplay = document.getElementById("day-replay");
+  if (dayStep) { dayStep.addEventListener("click", function () { s4Timers.forEach(clearTimeout); s4Timers = []; applyBeat(s4Beat + 1); }); }
+  if (dayReplay) { dayReplay.addEventListener("click", function () { runDay(0); }); }
   /* the day as a sequence, on entry to screen 4 when orders were placed:
      the placed rows land, then the wrong part is found, then the cover
      takes the restocking, then the exception comes back to her. Under
@@ -350,17 +382,10 @@
     void daySlip.offsetWidth;
     daySlip.classList.add("slip--in");
     var d = day(S.mode), r = d.remedied[0];
-    if (!r || reduced4()) { return; }
-    var rows = dayRows ? Array.prototype.slice.call(dayRows.children) : [];
-    rows.forEach(function (li) { li.dataset.on = "0"; });
-    daySlip.dataset.stage = "0";
-    daySlip.innerHTML = slipMistake(r);
-    if (dayAsk) { dayAsk.dataset.on = "0"; }
-    if (daySum) { daySum.dataset.on = "0"; }
-    rows.forEach(function (li, i) { s4Timers.push(setTimeout(function () { li.dataset.on = "1"; }, 120 + i * 260)); });
-    s4Timers.push(setTimeout(function () { daySlip.dataset.stage = "1"; }, 1100));
-    s4Timers.push(setTimeout(function () { daySlip.dataset.stage = "2"; daySlip.innerHTML = slipHTML(r); }, 1900));
-    s4Timers.push(setTimeout(function () { if (dayAsk) { dayAsk.dataset.on = "1"; } if (daySum) { daySum.dataset.on = "1"; } }, 2600));
+    var ctl = document.getElementById("day-ctl");
+    if (ctl) { ctl.hidden = !r; }
+    if (!r) { return; }
+    runDay(0);
   }
 
   function renderS4() {

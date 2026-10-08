@@ -551,15 +551,18 @@
       S.asked = !S.asked;
       save();
       paintAsk();
-      say(S.asked ? "Marta is searching near the school first. Nothing is promised until a place is found."
+      say(S.asked ? "School recorded as a priority. Marta is arranging the accommodation. The location is not confirmed."
                   : "The question is set aside.");
     });
   }
+  /* Asking records a priority. It does not secure a place, so nothing on the
+     artwork is relabelled "near the school": the commitment that is live
+     (temporary living from the first night) stays as it was, and the part
+     that is not settled (which accommodation) is shown as not confirmed. */
   function paintAsk() {
-    var a = document.getElementById("s4-ask-a"), d = document.getElementById("s4-temp-detail");
-    if (askBtn) { askBtn.setAttribute("aria-pressed", S.asked ? "true" : "false"); }
+    var a = document.getElementById("s4-ask-a");
+    if (askBtn) { askBtn.setAttribute("aria-pressed", S.asked ? "true" : "false"); askBtn.textContent = S.asked ? "Asked" : "Ask"; }
     if (a) { a.hidden = !S.asked; }
-    if (d) { d.textContent = S.asked ? "From the first night · near the school" : "From the first night."; }
   }
 
   function paintControls() {

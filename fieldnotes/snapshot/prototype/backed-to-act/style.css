@@ -635,3 +635,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .done-row, #day-ask, #day-sum { transition: none; opacity: 1 !important; transform: none !important; }
 }
+
+/* the day's controls: the facilitator steps it or shows it again */
+.day-ctl { display: flex; gap: 8px; margin-top: 10px; }
+.day-ctl[hidden] { display: none; }
+.daybtn {
+  min-height: 44px; padding: 0 16px;
+  background: transparent; color: var(--paper); border: 1.5px solid var(--line-2); border-radius: var(--r-m);
+  font: 700 15px/1 var(--sans); cursor: pointer;
+}
+.daybtn:hover:not(:disabled) { background: rgba(255,255,255,.08); border-color: var(--paper); }
+.daybtn:disabled { opacity: .4; cursor: default; }
+#day-slip[hidden] { display: none; }
