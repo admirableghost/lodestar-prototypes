@@ -83,6 +83,17 @@ a street, a region.
   conditions; a three-beat timeline.
 - **Factual status:** wholly hypothetical, invented household, labelled.
 - **Priority:** 2.
+- **Revised 2026-10-09 (Becca's brief, `Home_Again_Default_Plan_Business_View.html` as the base):**
+  the loss-first journey and the drawn houses are superseded. The route is
+  now the policy-renewal moment, five screens: the existing policy and the
+  Harbor offer at +$42 → the arrangement assembling (Harbor, furnished
+  housing, Marta, the 20–24 week estimated window) beside the explicit
+  choice → Harbor large with two alternatives → review and confirm → the
+  confirmation. A simulated covered loss and the stakeholder economics sit
+  behind the presenter menu. Photographs are sourced and recorded in
+  `snapshot/prototype/home-again/photos/PROVENANCE.md`. The client's name,
+  present in the source draft, is kept out per the build contract; the
+  carrier is unnamed on the glass. Export: `scripts/export-prototype.js`.
 
 ### C — Negotiated Neighborhood (`/prototype/negotiated/`)
 - **Purpose:** collective bargaining creates an offer individuals cannot buy.

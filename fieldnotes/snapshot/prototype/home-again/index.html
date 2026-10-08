@@ -5,136 +5,298 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Home Again — choose your way home before you need it</title>
-<meta name="description" content="A household chooses its way home and agrees three commitments before any loss: temporary living from the first night, the chosen plan with a named builder, a named coordinator. Five screens; invented household, town, builder and recovery lead; no real insurer or product is described.">
+<title>Home Again — your home, your way back</title>
+<meta name="description" content="At policy renewal a household sees, before any loss, exactly how it would be cared for: Harbor as the replacement home, a furnished place nearby, a named coordinator and an estimated build window, offered as a priced add-on beside standard coverage and added only on explicit confirmation. Concept demonstration; invented household, homes, prices and coordinator; no real insurer, policy or payment.">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
-<body data-screen="1" data-home="a">
+<body data-route="home">
+
+<svg hidden aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <!-- the coordinating service's mark, shared with the other prototypes: a lens -->
+  <symbol id="lens" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="22" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+  <symbol id="tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
 
 <button class="skip" type="button" id="skip">Skip to this screen's heading</button>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     The scene is one SVG, drawn by app.js from a single state
-     { screen, home, agreed, event }. Every word a person reads is real text:
-     headlines, copy, controls and navigation are HTML; the labels that belong
-     to the drawing are SVG <text>. Nothing is a flattened image.
-     Copy: design-study/brief-align/CONTRACT-IMPL.md § F. ═══════════════════ -->
-<main class="stage" id="stage">
+<div class="app" id="app">
+<header class="header">
+  <div class="brandstack">
+    <span class="carrier-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.5 4 5.5v6c0 4.6 3.4 8.6 8 10 4.6-1.4 8-5.4 8-10v-6z" fill="currentColor"/></svg></span>
+    <div><div class="carrier-name">Homeowners policy</div><div class="carrier-sub">Renewal review</div></div>
+    <div class="header-rule" aria-hidden="true"></div>
+    <div><div class="product-name">Home Again</div><div class="product-sub">Recovery coordination</div></div>
+  </div>
+  <div class="account-links"><span class="hide-xs">My account</span><span class="avatar" aria-hidden="true">A</span></div>
+</header>
 
-  <!-- ══════ 1 · CHOOSE YOUR WAY HOME ══════ -->
-  <section class="screen" data-screen="1" data-label="Choose">
-    <header class="head">
-      <p class="eyebrow">HOME AGAIN · BEFORE A LOSS</p>
-      <h1 class="headline" id="h1" tabindex="-1"><span>Choose your way</span><span>home before</span><span>you need it.</span></h1>
-    </header>
-    <section class="copy copy--controls copy--options">
-      <div class="options" role="group" aria-labelledby="h1">
-        <button type="button" data-home="a" aria-pressed="true"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Like-for-like</span></button>
-        <button type="button" data-home="b" aria-pressed="false"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Faster and smaller</span></button>
-        <button type="button" data-home="c" aria-pressed="false"><span class="opt-art" aria-hidden="true"></span><span class="opt-name">Hardened to a higher standard</span></button>
+<nav class="stepline" aria-label="Coverage review steps">
+  <button class="stepnav" type="button" data-go="home"><span class="stepnum" aria-hidden="true">1</span><span class="steplabel">Your home</span></button><div class="stepconnector" aria-hidden="true"></div>
+  <button class="stepnav" type="button" data-go="plan"><span class="stepnum" aria-hidden="true">2</span><span class="steplabel">Your recovery plan</span></button><div class="stepconnector" aria-hidden="true"></div>
+  <button class="stepnav" type="button" data-go="homes"><span class="stepnum" aria-hidden="true">3</span><span class="steplabel">Choose your home</span></button><div class="stepconnector" aria-hidden="true"></div>
+  <button class="stepnav" type="button" data-go="review"><span class="stepnum" aria-hidden="true">4</span><span class="steplabel">Confirm coverage</span></button>
+</nav>
+
+<main class="shell" id="main">
+
+<!-- ══ 1 · EXISTING POLICY AND THE HARBOR OFFER ═══════════════════════════ -->
+<section class="screen" id="screen-home" data-route="home" data-label="Your home">
+  <div class="twocol twocol--home">
+    <div class="card pad">
+      <p class="eyebrow">Your homeowners policy</p>
+      <h1 class="page-title" id="h-home" tabindex="-1">Your home. Your way back.</h1>
+      <p class="lead">You already protect your home. Here's how you would get back if you ever had to rebuild.</p>
+      <div class="field"><label for="homeAddress">Your home address</label><input id="homeAddress" value="1248 Maple Grove Lane, Bloomington, IL 61704" autocomplete="off" spellcheck="false"></div>
+      <dl class="metric-grid">
+        <div class="metric"><dt>Dwelling protection</dt><dd>$650,000</dd></div>
+        <div class="metric"><dt>Deductible</dt><dd>$5,000</dd></div>
+        <div class="metric"><dt>Your premium</dt><dd>$240/mo</dd></div>
+        <div class="metric"><dt>Additional living expenses</dt><dd>Included</dd></div>
+      </dl>
+      <div class="offer">
+        <div class="offer-photo"><img src="photos/harbor.jpg" width="1600" height="1066" alt="A compact modern home with its windows lit at dusk, standing in for Harbor."><span class="photo-tag">Harbor · illustrative</span></div>
+        <div class="offer-body">
+          <p class="eyebrow">Home Again · ready for you to review</p>
+          <h2 class="offer-title">There's already a plan for getting you home.</h2>
+          <p class="offer-copy">A furnished place nearby, Harbor as your replacement home, and someone coordinating your recovery through move-in.</p>
+          <p class="offer-price"><strong>+$42</strong> a month if you add it to your policy</p>
+        </div>
       </div>
-    </section>
-    <section class="copy copy--legend"><ul class="legend" hidden></ul></section>
+      <div class="actions"><button class="primary" type="button" id="homeNext">See my recovery plan <span aria-hidden="true">→</span></button></div>
+      <p class="beneath">Looking changes nothing. Your policy stays as it is unless you choose and confirm a change.</p>
+    </div>
+    <figure class="photo-frame">
+      <img src="photos/your-home.jpg" width="1600" height="1062" alt="A white two-storey house with blue shutters on a green lawn, standing in for the household's home.">
+      <figcaption class="photo-label">Your home <span id="addrShort">· Bloomington, IL</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ 2 · CONCRETE CARE, ASSEMBLED, AND THE EXPLICIT CHOICE ══════════════ -->
+<section class="screen" id="screen-plan" data-route="plan" data-label="Your recovery plan" hidden>
+  <p class="eyebrow">Your Home Again plan</p>
+  <h1 class="page-title" id="h-plan" tabindex="-1">We've already mapped a way home.</h1>
+  <p class="lead">What Home Again would add to the coverage you have. Nothing changes until you choose and confirm.</p>
+
+  <div class="plan-grid">
+  <section class="assemble" id="assemble" aria-labelledby="asmTitle">
+    <div class="assemble-head">
+      <h2 class="small-label" id="asmTitle">Your recovery arrangement <span class="asm-status" id="asmStatus">Arranging…</span></h2>
+      <div class="asm-controls"><button class="quiet" type="button" id="asmReplay">Replay</button><button class="quiet" type="button" id="asmAll">Show all</button></div>
+    </div>
+    <ol class="slots">
+      <li class="slot" data-slot="home" data-on="0">
+        <p class="slot-wait">Replacement home</p>
+        <div class="slot-body">
+          <div class="slot-photo"><img src="photos/harbor.jpg" width="1600" height="1066" alt="A compact modern home with its windows lit at dusk, standing in for Harbor."><span class="photo-tag">Illustrative</span></div>
+          <div class="slot-cap"><b>Harbor, your replacement home</b><span>3 bed · 1,650 sq ft · built at $482K</span></div>
+          <em class="arranged">Arranged</em>
+        </div>
+      </li>
+      <li class="slot" data-slot="housing" data-on="0">
+        <p class="slot-wait">Furnished housing</p>
+        <div class="slot-body">
+          <div class="slot-photo"><img src="photos/furnished.jpg" width="1600" height="1066" alt="A bright furnished open-plan living room with a sofa and a dining table, standing in for temporary housing."><span class="photo-tag">Illustrative</span></div>
+          <div class="slot-cap"><b>A furnished place nearby</b><span>Up to 12 months, pet-friendly, near your neighborhood</span></div>
+          <em class="arranged">Arranged</em>
+        </div>
+      </li>
+      <li class="slot slot--coord" data-slot="coord" data-on="0">
+        <p class="slot-wait">Recovery coordinator</p>
+        <div class="slot-body plate">
+          <p class="plate-head"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><b>Marta</b><span>your recovery coordinator</span></p>
+          <p class="say">From the first call to the day you move in, I arrange the housing, the builder and the permits. You call one person.</p>
+          <em class="arranged arranged--plate">Arranged</em>
+        </div>
+      </li>
+      <li class="slot slot--timing" data-slot="timing" data-on="0">
+        <p class="slot-wait">Build window</p>
+        <div class="slot-body timing">
+          <b class="timing-big">20–24 weeks</b><span class="timing-sub">Estimated build window</span>
+          <details class="depends"><summary>What this depends on</summary><p>Site clearance and permits depend on the county and the site. Home Again coordinates both; the county sets the timing.</p></details>
+          <em class="arranged">Arranged</em>
+        </div>
+      </li>
+    </ol>
   </section>
 
-  <!-- ══════ 2 · THREE COMMITMENTS, MADE NOW ══════ -->
-  <section class="screen" data-screen="2" data-label="Commitments" hidden>
-    <header class="head head--2">
-      <p class="eyebrow">HOME AGAIN · BEFORE A LOSS</p>
-      <h2 class="headline headline--s headline--3" tabindex="-1"><span>Three commitments,</span><span>made now.</span></h2>
-    </header>
-    <section class="copy copy--3">
-      <div class="agree-row">
-        <button class="toggle agree" type="button" id="agree" aria-pressed="false">Agree to the three commitments</button>
-        <svg class="sig" id="sig" viewBox="0 0 120 28" aria-hidden="true" hidden><path d="M4 19 C 18 2, 30 28, 48 13 S 78 4, 92 15 S 108 18, 116 10" fill="none" stroke="#16150F" stroke-width="2.4" stroke-linecap="round"/></svg>
-      </div>
-      <ul class="legend" hidden></ul>
-    </section>
+  <section class="choose" aria-labelledby="chooseTitle">
+    <div class="choose-head">
+      <h2 class="choose-title" id="chooseTitle">Choose how you'd recover</h2>
+      <p class="choose-price"><strong>+$42/month</strong> · $282/month total if added</p>
+    </div>
+    <div class="options" role="group" aria-labelledby="chooseTitle">
+      <button class="option" type="button" id="chooseAgain" aria-pressed="false">
+        <span class="option-top"><span class="radio-icon" aria-hidden="true"></span><span class="tag">Add to your policy</span></span>
+        <span class="option-title">Add Home Again</span>
+        <span class="option-price">+$42 <small>/month</small></span>
+        <span class="option-copy">Housing and rebuilding are coordinated for you, with arrangements prepared before a loss.</span>
+      </button>
+      <button class="option option--alt" type="button" id="chooseStandard" aria-pressed="false">
+        <span class="option-top"><span class="radio-icon" aria-hidden="true"></span><span class="tag tag-neutral">Keep what you have</span></span>
+        <span class="option-title">Keep standard coverage</span>
+        <span class="option-price">$0 <small>additional</small></span>
+        <span class="option-copy">Your existing policy helps pay for rebuilding and temporary living expenses after an eligible loss. You organize the housing and the rebuild.</span>
+      </button>
+    </div>
+    <p class="choose-note">Both keep your homeowners policy as it is. The difference is who arranges the recovery.</p>
+    <div class="decision-footer">
+      <p class="decision-meta" id="choiceSummary"><strong>No option chosen yet.</strong><br>Choose Add Home Again or Keep standard coverage.</p>
+      <button class="primary" type="button" id="planNext" data-ready="0">Choose an option to continue</button>
+    </div>
   </section>
+  </div>
+</section>
 
-  <!-- ══════ 3 · THE LOSS ══════ -->
-  <section class="screen" data-screen="3" data-label="The loss" hidden>
-    <header class="head">
-      <p class="eyebrow">HOME AGAIN · AFTER THE LOSS</p>
-      <h2 class="headline headline--one" tabindex="-1"><span>The loss.</span></h2>
-    </header>
-    <section class="copy copy--3">
-      <p class="support">The house is gone, with hundreds across the region. The three commitments hold.</p>
-      <ul class="legend" hidden></ul>
-    </section>
-  </section>
-
-  <!-- ══════ 4 · THE ARRANGEMENT ACTIVATES ══════ -->
-  <!-- Screen 4 is laid out in flow — head, one bounded scene, foot — because
-       a headline backing drawn in the scene at a fixed width cannot promise
-       to contain text sized for reading. Here the backing IS the headline's
-       own box, and each illustrated subject has its own wrapping label area. -->
-  <section class="screen screen--4" data-screen="4" data-label="Activates" hidden>
-    <header class="head head--flow">
-      <p class="eyebrow">HOME AGAIN · AFTER THE LOSS</p>
-      <h2 class="headline headline--fit" tabindex="-1">The arrangement activates.</h2>
-    </header>
-    <div class="scene4-wrap">
-      <div class="scene4" id="scene4-box">
-        <svg id="scene4" viewBox="0 0 1180 430" preserveAspectRatio="xMidYMid meet" role="img"
-             aria-label="The recovery lead stands between two paths: one to a temporary home, one to the rebuild site where the chosen plan stands on the cleared slab. In a regional event the path to the site is barred and the builder's materials wait before it."></svg>
-        <p class="s4-label s4-label--marta" id="s4-marta"><b>Marta coordinates</b></p>
-        <p class="s4-label s4-label--temp" id="s4-temp"><b>Temporary living</b><span>From the first night.</span><em class="s4-state" data-kind="begun">Begun</em></p>
-        <p class="s4-label s4-label--site" id="s4-site"><b>The chosen plan</b><span id="s4-site-detail">Like-for-like · Ardren &amp; Sons</span><em class="s4-state" id="s4-site-state" data-kind="released">Reserved start released</em></p>
+<!-- ══ 3 · REVIEW HARBOR, KEEP THE CHOICE OF HOME ═════════════════════════ -->
+<section class="screen" id="screen-homes" data-route="homes" data-label="Choose your home" hidden>
+  <p class="eyebrow">Your replacement home</p>
+  <h1 class="page-title" id="h-homes" tabindex="-1">Harbor is ready. You can make it yours.</h1>
+  <p class="lead">Choose the home you'd want to return to. Its design, your builder pathway and your housing preferences stay on file.</p>
+  <div class="house-layout">
+    <div class="house-feature" id="houseFeature"></div>
+    <div class="house-side">
+      <div class="house-alts" id="houseAlts" role="group" aria-label="Other replacement homes"></div>
+      <div class="house-bottom">
+        <p>Your homeowners policy already pays to rebuild after a covered loss. Home Again settles what gets built, where you'll stay and who coordinates it, before anyone has to.</p>
+        <button class="primary" type="button" id="homesNext">Continue with Harbor <span aria-hidden="true">→</span></button>
       </div>
     </div>
-    <section class="copy copy--flow s4-foot">
-      <!-- the question a household actually asks on the first night, and the
-           one thing the arrangement does about it. Marta searches near the
-           school first; no school place and no home is promised. -->
-      <div class="s4-ask">
-        <p class="s4-ask-q">&ldquo;Can the kids stay near school?&rdquo;</p>
-        <button class="toggle" type="button" id="ask-marta" aria-pressed="false">Ask</button>
-        <p class="s4-ask-a" id="s4-ask-a" hidden><b>School recorded as a priority.</b> Marta is arranging the accommodation. <em>Location not confirmed.</em></p>
+  </div>
+</section>
+
+<!-- ══ 4 · REVIEW AND CONFIRM ═════════════════════════════════════════════ -->
+<section class="screen" id="screen-review" data-route="review" data-label="Confirm coverage" hidden>
+  <p class="eyebrow" id="reviewEyebrow">Confirm your Home Again plan</p>
+  <h1 class="page-title" id="h-review" tabindex="-1">Everything looks ready.</h1>
+  <p class="lead" id="reviewLead">Here's what we'll put in place when you confirm.</p>
+  <div class="twocol twocol--review">
+    <div>
+      <div class="review-left" id="reviewDetails"></div>
+      <div class="actions"><button class="primary" type="button" id="confirmBtn">Add Home Again to my policy</button><button class="quiet" type="button" id="reviewBack">Go back</button></div>
+      <p class="beneath">Only this confirmation changes anything in this demonstration. No real policy or payment is changed.</p>
+    </div>
+    <div>
+      <div id="reviewVisuals"></div>
+      <div class="quote">
+        <p class="quote-title">Your monthly premium</p>
+        <div class="quote-row"><span class="muted">Homeowners insurance</span><b>$240</b></div>
+        <div class="quote-row"><span class="muted">Home Again</span><b id="quoteAddon">+$42</b></div>
+        <hr>
+        <p class="quote-total" id="quoteTotal">$282 <span>/month</span></p>
+        <p class="fine">Illustrative policy values. Actual coverage, eligibility, pricing and terms would depend on underwriting and availability.</p>
       </div>
-      <div class="s4-cap">
-        <p class="s4-capstate"><span id="s4-cap-label">Regional capacity</span> <em class="s4-state" id="s4-cap" data-kind="available">Available</em></p>
-        <button class="toggle" type="button" id="event-toggle" aria-pressed="false">Regional event</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5 · CONFIRMATION ═══════════════════════════════════════════════════ -->
+<section class="screen" id="screen-done" data-route="done" data-label="Confirmation" hidden>
+  <div class="success">
+    <div class="success-icon" aria-hidden="true"><svg><use href="#tick"/></svg></div>
+    <p class="eyebrow" id="doneKicker">Home Again added</p>
+    <h1 class="page-title success-title" id="h-done" tabindex="-1">Home Again is added to your policy.</h1>
+    <p class="lead" id="doneLead"></p>
+    <div class="success-tiles" id="doneTiles"></div>
+    <p class="coord-line" id="doneCoord"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><span>Marta coordinates your recovery from the first call to move-in.</span></p>
+    <div class="success-actions">
+      <button class="primary" type="button" id="doneReview">Review my coverage</button>
+      <a class="outline" id="workshopLink" href="../../workshop/">Back to workshop</a>
+      <button class="quiet" type="button" id="doneRestart">Start over</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRESENTER · A COVERED LOSS, SIMULATED ══════════════════════════════ -->
+<section class="screen" id="screen-day" data-route="day" data-label="A covered loss" hidden>
+  <p class="eyebrow">Home Again recovery · presenter simulation</p>
+  <h1 class="page-title" id="h-day" tabindex="-1">We're getting you home.</h1>
+  <p class="lead">Your housing, builder and site arrangements are already moving.</p>
+  <div class="day-layout">
+    <div>
+      <div class="plate day-plate">
+        <p class="plate-head"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><b>Marta</b><span>your recovery coordinator</span></p>
+        <p class="say say--long" id="recoveryNote"></p>
       </div>
-      <p class="caveat s4-cons" data-branch="event" hidden>Site, permits, foundations · separate timelines.</p>
-      <p class="support s4-continue" data-branch="event" hidden>Others compete for builders. Yours was reserved before the loss.</p>
-      <ul class="legend" hidden></ul>
-    </section>
-  </section>
+      <div class="assemble-head day-head">
+        <p class="small-label">Today <span class="asm-status" id="dayStatus"></span></p>
+        <div class="asm-controls"><button class="quiet" type="button" id="dayReplay">Replay</button><button class="quiet" type="button" id="dayAll">Show all</button></div>
+      </div>
+      <ol class="timeline" id="timeline">
+        <li class="event" data-on="0"><p class="event-time">9:05 AM</p><p class="event-title">A place to stay, held for you.</p><p class="event-desc" id="eventHousing"></p></li>
+        <li class="event" data-on="0"><p class="event-time">10:20 AM</p><p class="event-title" id="eventBuilder"></p><p class="event-desc">Your design is on file. Your builder is preparing the next steps.</p></li>
+        <li class="event" data-on="0"><p class="event-time">1:35 PM</p><p class="event-title">Site access coordination started.</p><p class="event-desc">Marta is working with the adjuster, the debris team and local officials. Clearance and permits depend on the site and the county, so no dates are promised yet.</p></li>
+        <li class="event" data-on="0"><p class="event-time">4:00 PM</p><p class="event-title">Marta will call with an update.</p><p class="event-desc">She'll walk you through the next step. There's nothing you need to organize today.</p></li>
+      </ol>
+      <p class="promise">The claim isn't complete when the money is paid. It's complete when you're home again.</p>
+    </div>
+    <aside class="day-aside">
+      <figure class="review-media" id="dayHouseImage"></figure>
+      <div class="card pad-s">
+        <p class="aside-title">What's ready</p>
+        <dl class="aside-list">
+          <div class="aside-item"><dt>Home</dt><dd id="dayHome">Harbor</dd></div>
+          <div class="aside-item"><dt>Committed price</dt><dd id="dayPrice">$482K</dd></div>
+          <div class="aside-item"><dt>Builder window</dt><dd id="dayWeeks">20–24 weeks</dd></div>
+          <div class="aside-item"><dt>Temporary living</dt><dd id="dayHousing">Up to 12 months</dd></div>
+        </dl>
+      </div>
+      <div class="actions"><button class="outline" type="button" id="dayBack">Back to my policy</button></div>
+    </aside>
+  </div>
+</section>
 
-  <!-- ══════ 5 · HOME AGAIN ══════ -->
-  <section class="screen" data-screen="5" data-label="Home again" hidden>
-    <header class="head">
-      <p class="eyebrow">HOME AGAIN · AS PROMISED</p>
-      <h2 class="headline headline--one" tabindex="-1"><span>Home again.</span></h2>
-    </header>
-    <section class="copy copy--5">
-      <ul class="honoured" aria-label="Three commitments honoured">
-        <li><span class="hon-mark" aria-hidden="true">●</span>Temporary living · from the first night</li>
-        <li><span class="hon-mark" aria-hidden="true">●</span><span data-home-name>Like-for-like</span> · Ardren &amp; Sons</li>
-        <li><span class="hon-mark" aria-hidden="true">●</span>Marta coordinated throughout</li>
-      </ul>
-      <p class="caveat s5-queue" data-branch="event" hidden>Capacity reserved before the loss, not fought for after.</p>
-      <button class="link" type="button" id="restart">Start the journey again</button>
-      <ul class="legend" hidden></ul>
-    </section>
-  </section>
-
-  <svg class="scene" id="scene" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMid meet" role="img"
-       aria-label="One household's property, drawn as cut paper and construction linework: the home today with the chosen plan behind it, the three commitments, the loss, the arrangement activated, and the household home again."></svg>
-
-  <nav class="nav" aria-label="Screens">
-    <button class="nav-prev" type="button" id="prev" aria-label="Previous screen"><span aria-hidden="true">←</span></button>
-    <label class="picker"><span class="sr-only">Choose a screen</span><select id="picker"></select></label>
-    <button class="nav-next" type="button" id="next"><span id="next-label">Three commitments</span>&nbsp;<span aria-hidden="true">→</span></button>
-  </nav>
+<!-- ══ PRESENTER · STAKEHOLDER ECONOMICS ══════════════════════════════════ -->
+<section class="screen" id="screen-business" data-route="business" data-label="Stakeholder economics" hidden>
+  <p class="eyebrow">Internal scenario · not visible to homeowners</p>
+  <h1 class="page-title" id="h-business" tabindex="-1">Why offer Home Again?</h1>
+  <p class="lead">A working business-model hypothesis. Adjust the assumptions to see the scale of the opportunity. This is not an actuarial forecast or a validated claims estimate.</p>
+  <div class="biz-grid">
+    <div class="card pad">
+      <p class="small-label">Scenario inputs</p>
+      <div class="biz-field"><label for="bizEnrolled">Households enrolled</label><input id="bizEnrolled" type="number" min="0" step="1000" value="10000"></div>
+      <div class="biz-field"><label for="bizFee">Monthly Home Again fee ($)</label><input id="bizFee" type="number" min="0" step="1" value="42"></div>
+      <div class="biz-field"><label for="bizClaims">Total-loss recoveries per year</label><input id="bizClaims" type="number" min="0" step="5" value="50"></div>
+      <div class="biz-field"><label for="bizAvoided">Avoidable cost per loss ($)</label><input id="bizAvoided" type="number" min="0" step="10000" value="150000"></div>
+      <p class="beneath">The $150K input is an unvalidated hypothesis, not a reported average. It bundles possible surge-price, housing-duration and coordination savings that would each need separate measurement.</p>
+    </div>
+    <div class="card pad">
+      <p class="small-label">Illustrative annual scale</p>
+      <div class="biz-results">
+        <div><span>Home Again fees</span><strong id="bizFees">$5,040,000</strong></div>
+        <div><span>Potential avoided claim costs</span><strong id="bizSavings">$7,500,000</strong></div>
+        <div class="biz-total"><span>Combined opportunity before costs</span><strong id="bizGross">$12,540,000</strong></div>
+      </div>
+      <p class="beneath"><strong>Not profit.</strong> Builder-network commitments, temporary housing provision, operating costs, risk transfer, insurer obligations and capital requirements are not modeled here. Not all losses are eligible.</p>
+    </div>
+  </div>
+  <div class="biz-levers">
+    <div class="lineitem"><strong>Lower rebuilding volatility</strong><p>Prearranged designs and production capacity may reduce post-disaster price spikes and contractor search time.</p></div>
+    <div class="lineitem"><strong>Reduce time away from home</strong><p>Preplanned housing and earlier coordination could reduce displacement, uncertainty and covered living expenses.</p></div>
+    <div class="lineitem"><strong>Create a distinct paid proposition</strong><p>Home Again makes the recovery service tangible at purchase and may improve trust and retention; willingness to pay still needs testing.</p></div>
+  </div>
+  <div class="actions"><button class="outline" type="button" id="businessBack">Back to customer experience</button></div>
+</section>
 
 </main>
 
-<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
-<p class="sr-only" id="state-status" role="status" aria-live="polite"></p>
+<footer class="bottom">
+  <p class="note">Home Again · Concept demonstration. No real policy or payment changes. The household, address, homes, prices and coordinator are illustrative.</p>
+  <details class="credits"><summary>Photo credits</summary><p>Real places standing in for illustrative content; none is a Harbor product or available accommodation. Harbor: Clay Banks (Unsplash). Pacific: Zac Gudakov (Unsplash). Cypress: Max Vakhtbovych (Pexels). Your home: I Do Nothing But Love (Unsplash). Furnished housing: Francesca Tosolini (Unsplash).</p></details>
+  <div class="menu-trigger">
+    <button class="dots" type="button" id="moreBtn" aria-expanded="false" aria-controls="moreMenu" aria-label="Presenter options">•••</button>
+    <div class="menu" id="moreMenu" hidden>
+      <button type="button" id="simulateBtn">Simulate covered loss</button>
+      <button type="button" id="businessBtn">Stakeholder economics</button>
+      <button type="button" id="resetBtn">Restart demo</button>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" hidden></div>
+</div>
 
+<p class="sr-only" id="announce" role="status" aria-live="polite"></p>
 <script src="app.js"></script>
 </body>
 </html>

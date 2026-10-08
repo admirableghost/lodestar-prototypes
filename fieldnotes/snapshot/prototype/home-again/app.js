@@ -1,705 +1,380 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   Home Again · the Rennick household · Calder Reach
-   Five screens. No framework, no build step, no external request.
+   Home Again · the renewal moment
+   No framework, no build step, no external request. Three files and photos.
 
-   Built out from the approved opening frame (design-study frame 02) and its
-   browser proof: the same scene vocabulary — a solid cut-paper home, its
-   replacement plan as amber construction linework on the same footprint, one
-   ground plane, one path — carried through five compositions.
-   Copy and state: design-study/brief-align/CONTRACT-IMPL.md § F.
+   THE STORY. At policy renewal a household sees, before any loss, exactly
+   how it would be cared for, and chooses whether to add it.
+     1  home     the policy as it stands, and the Harbor offer at +$42
+     2  plan     the arrangement assembles — home, furnished housing, Marta,
+                 the build window — then the explicit choice
+     3  homes    Harbor, large; two alternatives, small; one chosen
+     4  review   the summary and the premium; confirm or go back
+     5  done     "Home Again is added to your policy" (or the coverage
+                 stays as it is)
+   Behind the presenter menu only: a simulated covered loss, and the
+   stakeholder economics. Neither is in the main flow.
 
-     1  choose your way home       three ways home, drawn; the chosen one
-                                   stands behind the home today as its plan
-     2  three commitments, made now  temporary living · the chosen plan with
-                                   the named builder · Marta coordinates
-     3  the loss                   the home as an outline; the three hold
-     4  the arrangement activates  the approved recovery composition; the
-                                   regional-event branch keeps the queue
-     5  home again                 the chosen house, lived in; three honoured
+   ONE STATE. { route, choice, model, confirmed, confirmedChoice,
+   confirmedModel, played } is the only source of truth, kept in
+   sessionStorage for the tab. Nothing is chosen until a choice button is
+   pressed; nothing is added until #confirmBtn is pressed. Navigation, the
+   step bar, deep links and the forward button never choose or confirm.
 
-   ONE STATE. { screen, home, agreed, event } is the only source of truth,
-   persisted in sessionStorage. Every drawing and label is a function of it:
-   the house chosen on screen 1 is the plan on 2, the site on 4 and the home
-   on 5; a regional event shown on 4 is still the context on 5. Next never
-   agrees to anything: only #agree does, and restart clears all of it.
-
-   THREE WAYS HOME, drawn differently (never told apart by copy alone):
-     a  like-for-like                the same house, same footprint
-     b  faster and smaller           a low, narrow, panel-built house
-     c  hardened to a higher standard  the footprint, with a seamed roof,
-                                     ember ticks, screened vents, masonry
-                                     base and a cleared edge
-
-   CALLOUTS. Labels that belong to things in the drawing are authored once as
-   data. In landscape they are drawn into the scene as SVG text beside the
-   thing they name. In portrait the drawing is small and the labels would
-   fight each other, so the same data reflows into an HTML legend under the
-   scene — the label text never shrinks, and nothing is hidden.
-
-   WHAT IS INVENTED. All of it: the household, the town, the builder, the
-   recovery lead. No real insurer, provider, price, count or date appears.
+   WHAT IS INVENTED. The household, the address, Harbor, Pacific, Cypress,
+   every price and window, and Marta. The footer says so on every screen.
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  var svg = document.getElementById("scene");
-  var root = document.documentElement;
-  var body = document.body;
-
-  var PAPER = "#F3EBD7", INK = "#16150F", AMBER = "#C98D1C", SUN = "#E7A525",
-      SAGE = "#8C9A84", SAGE2 = "#6F7F68", GROUND = "#E3D7BA", PATH = "#EDE2C6",
-      GARAGE = "#3A372F", MUTED = "#5A554A", BLOCK = "#6B675E", WARN = "#A8502A",
-      LIT = "#F2CF7A", SLAB = "#CFC4A6";
-
-  var HOMES = ["a", "b", "c"];
-  var HOME_NAME = { a: "Like-for-like", b: "Faster and smaller", c: "Hardened to a higher standard" };
-  var HOME_LINE = { a: "The same house on the same footprint",
-                    b: "A smaller, panel-built house, sooner",
-                    c: "The footprint, with a seamed roof, ember-resistant edges, screened vents and a cleared edge" };
-  var BUILDER = "Ardren &amp; Sons";
-
-  /* ── CAPACITY-BACKED RECOVERY: the operating model behind the promise ──
-     The insurer does not wait for a catastrophe to buy rebuilding. It pays
-     participating modular builders a recurring reservation fee for defined
-     catastrophe-response production starts, and sells no more recovery
-     commitments than that contracted pool can credibly support when a whole
-     region claims at once. Figures are hypothetical and documented privately
-     (HOME-AGAIN-CAPACITY-REVIEW.md). What the pool secures is a production
-     START from a managed allocation — never a factory slot idling for one
-     household, and never the date a family can move in: site clearance,
-     permits, foundations, utilities and installation keep their own
-     dependencies. */
-  var CAPACITY = {
-    builders: 3,            /* contracted modular builders in the network    */
-    startsPerMonth: 40,     /* contracted catastrophe-response starts, pooled */
-    poolMonths: 12,         /* the allocation horizon the contracts cover     */
-    modelledEvent: 320,     /* qualifying losses the regional event produces  */
-    position: 118           /* this household's place in the event's sequence */
+  /* ── content ──────────────────────────────────────────────────────────── */
+  var BASE = 240;
+  var HOMES = {
+    Harbor:  { name: "Harbor",  beds: "3 bed", sqft: "1,650 sq ft", price: "$482K", weeks: "20–24 weeks", housing: "12 months", fee: 42, photo: "photos/harbor.jpg",  w: 1600, h: 1066, alt: "A compact modern home with its windows lit at dusk, standing in for Harbor." },
+    Pacific: { name: "Pacific", beds: "3 bed", sqft: "1,820 sq ft", price: "$538K", weeks: "22–26 weeks", housing: "14 months", fee: 47, photo: "photos/pacific.jpg", w: 1200, h: 800,  alt: "A single-storey modern home with cedar cladding and a wide drive, standing in for Pacific." },
+    Cypress: { name: "Cypress", beds: "4 bed", sqft: "2,050 sq ft", price: "$612K", weeks: "26–30 weeks", housing: "15 months", fee: 53, photo: "photos/cypress.jpg", w: 1200, h: 801,  alt: "A large two-storey modern home with glass walls and a lawn, standing in for Cypress." }
   };
-  function poolSize() { return CAPACITY.startsPerMonth * CAPACITY.poolMonths; }   /* 480 */
-  /* QA-only hook: not reachable from any control, route or query string */
-  function capTest() { try { return sessionStorage.getItem("ha-test") || ""; } catch (e) { return ""; } }
-  function eventClaims() { return capTest() === "pool-exhausted" ? poolSize() + 160 : CAPACITY.modelledEvent; }
-  /* the allocation this household holds in a regional event: a production
-     start inside the contracted pool, or — if the modelled demand exceeds
-     the pool — an honest pending state. Nothing is ever assigned beyond the
-     pool, and nothing here is an occupancy date. */
-  function allocation() {
-    var claims = eventClaims(), pool = poolSize();
-    var inPool = CAPACITY.position <= pool && claims <= pool;
-    return { inPool: inPool, claims: claims, pool: pool, position: CAPACITY.position,
-             startMonth: inPool ? Math.ceil(CAPACITY.position / CAPACITY.startsPerMonth) : null };
-  }
-  var STATE_WORD = { agreed: "Agreed", reserved: "Reserved", begun: "Begun", holds: "Holds", honoured: "Honoured",
-                     constrained: "Constrained", falls: "Queued" };
+  var ORDER = ["Harbor", "Pacific", "Cypress"];
+  var COORD = "Marta";
+  var FURNISHED = { photo: "photos/furnished.jpg", w: 1600, h: 1066, alt: "A bright furnished open-plan living room with a sofa and a dining table, standing in for temporary housing." };
+  var YOUR_HOME = { photo: "photos/your-home.jpg", w: 1600, h: 1062, alt: "A white two-storey house with blue shutters on a green lawn, standing in for the household's home." };
+  var DEPENDS = "Site clearance and permits depend on the county and the site. Home Again coordinates both; the county sets the timing.";
 
-  /* ── state, persisted ────────────────────────────────────────────────── */
-  var KEY = "ha-state";
-  var S = { screen: 1, home: "a", agreed: false, event: false, asked: false };
-  function load() {
-    try {
-      var o = JSON.parse(sessionStorage.getItem(KEY) || "null");
-      if (o && typeof o === "object") {
-        if (HOMES.indexOf(o.home) >= 0) { S.home = o.home; }
-        S.agreed = o.agreed === true; S.event = o.event === true; S.asked = o.asked === true;
-      }
-    } catch (e) { /* storage unavailable: the state lives for the page */ }
-  }
-  function save() {
-    try { sessionStorage.setItem(KEY, JSON.stringify({ home: S.home, agreed: S.agreed, event: S.event, asked: S.asked })); } catch (e) { /* ignore */ }
-  }
-  function clear() { try { sessionStorage.removeItem(KEY); } catch (e) { /* ignore */ } }
+  var ROUTES = ["home", "plan", "homes", "review", "done", "day", "business"];
+  var STEPS = ["home", "plan", "homes", "review"];
+  var LABELS = { home: "Your home", plan: "Your recovery plan", homes: "Choose your home", review: "Confirm coverage", done: "Confirmation", day: "A covered loss, simulated", business: "Stakeholder economics" };
+  var STORE = "home-again.renewal.v1";
 
-  var scale = 1, portrait = false, legend = [];
-  function px(n) { return n / scale; }
-  function n1(v) { return (Math.round(v * 10) / 10).toString(); }
-
-  /* ── primitives ──────────────────────────────────────────────────────── */
-  function text(x, y, str, size, o) {
-    o = o || {};
-    return '<text x="' + n1(x) + '" y="' + n1(y) + '" font-size="' + n1(px(size)) +
-           '" font-family="Bricolage,Helvetica,Arial,sans-serif" font-weight="' + (o.w || 400) +
-           '" text-anchor="' + (o.anc || "start") + '" fill="' + (o.fill || INK) +
-           (o.ls ? '" letter-spacing="' + n1(px(o.ls)) : "") +
-           (o.op != null ? '" opacity="' + o.op : "") + '">' + str + '</text>';
-  }
-  function line(x1, y1, x2, y2, stroke, w, o) {
-    o = o || {};
-    return '<line x1="' + n1(x1) + '" y1="' + n1(y1) + '" x2="' + n1(x2) + '" y2="' + n1(y2) +
-           '" stroke="' + stroke + '" stroke-width="' + n1(w) +
-           (o.dash ? '" stroke-dasharray="' + o.dash : "") +
-           (o.op != null ? '" opacity="' + o.op : "") + '" stroke-linecap="round"/>';
-  }
-  function rect(x, y, w, h, fill, o) {
-    o = o || {};
-    return '<rect x="' + n1(x) + '" y="' + n1(y) + '" width="' + n1(w) + '" height="' + n1(h) +
-           '" fill="' + fill + '"' + (o.stroke ? ' stroke="' + o.stroke + '" stroke-width="' + (o.sw || 2) + '"' : "") +
-           (o.dash ? ' stroke-dasharray="' + o.dash + '"' : "") +
-           (o.op != null ? ' opacity="' + o.op + '"' : "") + (o.rx ? ' rx="' + o.rx + '"' : "") +
-           (o.filter ? ' filter="' + o.filter + '"' : "") + "/>";
-  }
-  function leader(x1, y1, x2, y2, c, dash) { return line(x1, y1, x2, y2, c || INK, 1.6, { op: .7, dash: dash }); }
-
-  /* a state word drawn as a mark + text, never colour alone */
-  function mark(x, y, kind, anc) {
-    var s = [], w = px(9), c = kind === "constrained" || kind === "falls" ? WARN : INK;
-    var mx = anc === "end" ? x - px(6) - w : x;
-    if (kind === "reserved") { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2 - px(1)) + '" fill="none" stroke="' + c + '" stroke-width="' + n1(px(2)) + '"/>'); }
-    else if (kind === "constrained" || kind === "falls") { s.push(rect(mx, y - px(8.5), w, w, "url(#warnhatch)", { stroke: c, sw: px(1.6) })); }
-    else { s.push('<circle cx="' + n1(mx + w / 2) + '" cy="' + n1(y - px(4)) + '" r="' + n1(w / 2) + '" fill="' + c + '"/>'); }
-    var tx = anc === "end" ? mx - px(6) : mx + w + px(6);
-    s.push(text(tx, y, STATE_WORD[kind].toUpperCase(), 11.5, { w: 700, ls: 1.1, anc: anc || "start", fill: c }));
-    return s.join("");
+  /* ── state ────────────────────────────────────────────────────────────── */
+  var S = fresh();
+  function fresh() { return { route: "home", choice: null, model: "Harbor", confirmed: false, confirmedChoice: null, confirmedModel: null, played: false }; }
+  function persist() { try { sessionStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { /* private mode */ } }
+  function restore() {
+    var v = null;
+    try { v = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (e) { v = null; }
+    if (!v || typeof v !== "object") { return; }
+    var n = fresh();
+    if (v.choice === "homeagain" || v.choice === "standard") { n.choice = v.choice; }
+    if (HOMES[v.model]) { n.model = v.model; }
+    if (v.confirmed === true && (v.confirmedChoice === "homeagain" || v.confirmedChoice === "standard")) { n.confirmed = true; n.confirmedChoice = v.confirmedChoice; n.confirmedModel = HOMES[v.confirmedModel] ? v.confirmedModel : "Harbor"; }
+    n.played = v.played === true;
+    if (ROUTES.indexOf(v.route) >= 0) { n.route = v.route; }
+    S = n;
   }
 
-  /* A callout: { x, y, anc, title, state, note:[...], lead:[x1,y1,x2,y2,colour,dash] }.
-     Landscape draws it; portrait collects it for the legend. */
-  function callout(c) {
-    if (portrait) { legend.push(c); return ""; }
-    var s = [], y = c.y;
-    if (c.lead) { s.push(leader.apply(null, c.lead)); }
-    if (c.eyebrow) { s.push(text(c.x, y, c.eyebrow, 11.5, { w: 700, ls: 1.2, fill: c.ebFill || AMBER, anc: c.anc })); y += px(22); }
-    if (c.title) { s.push(text(c.x, y, c.title, 14, { w: 700, anc: c.anc })); y += px(22); }
-    if (c.state) { s.push(mark(c.x, y, c.state, c.anc)); y += px(20); }
-    (c.note || []).forEach(function (n) { s.push(text(c.x, y, n, 12.5, { fill: MUTED, anc: c.anc })); y += px(17); });
-    return s.join("");
-  }
+  /* ── dom ──────────────────────────────────────────────────────────────── */
+  var $ = function (id) { return document.getElementById(id); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var screens = $$(".screen");
+  var stepBtns = $$(".stepnav");
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ══════════════════════════════════════════════════════════════════════
-     THE PROPERTY — one geometry per way home, drawn solid or as a plan
-     ══════════════════════════════════════════════════════════════════════ */
-  /* hardening features on the footprint of a/c: ember ticks on the roof
-     edge, screened vents, and — on the ground only — the cleared edge */
-  function features(asPlan, edge) {
-    var s = [], i, t, x, y, col = asPlan ? AMBER : PAPER;
-    s.push('<path d="M470 452 L665 338 L860 452" fill="none" stroke="' + col + '" stroke-width="' + (asPlan ? 1.6 : 1.4) +
-           '" opacity="' + (asPlan ? ".9" : ".55") + '"' + (asPlan ? ' stroke-dasharray="6 5"' : "") + '/>');
-    for (i = 1; i <= 6; i++) {
-      t = i / 7;
-      x = 450 + 215 * t; y = 448 - 126 * t; s.push(line(x, y, x + 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
-      x = 665 + 215 * t; y = 322 + 126 * t; s.push(line(x, y, x - 5.4, y + 7.2, col, 2, { op: asPlan ? 1 : .85 }));
-    }
-    [600, 820].forEach(function (vx) {
-      s.push(rect(vx, 566, 26, 16, asPlan ? "none" : INK, { stroke: col, sw: 2 }));
-      s.push(line(vx + 8.5, 566, vx + 8.5, 582, col, 1.3)); s.push(line(vx + 17, 566, vx + 17, 582, col, 1.3));
+  function money(n) { return "$" + n.toLocaleString("en-US"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function img(o, extra) { return '<img src="' + o.photo + '" width="' + o.w + '" height="' + o.h + '" alt="' + esc(o.alt) + '"' + (extra || "") + ">"; }
+  function setPressed(el, on) { el.setAttribute("aria-pressed", on ? "true" : "false"); }
+
+  var announceEl = $("announce");
+  function announce(msg) { announceEl.textContent = ""; setTimeout(function () { announceEl.textContent = msg; }, 30); }
+  var toastTimer;
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2200); }
+
+  /* ── routing ──────────────────────────────────────────────────────────── */
+  function allowed(route) {
+    if (route === "homes") { return S.choice === "homeagain"; }
+    if (route === "review") { return S.choice !== null; }
+    if (route === "done") { return S.confirmed; }
+    if (route === "day") { return S.confirmed && S.confirmedChoice === "homeagain"; }
+    return ROUTES.indexOf(route) >= 0;
+  }
+  var businessReturn = "home";
+
+  function show(route, opts) {
+    opts = opts || {};
+    if (!allowed(route)) { route = "plan"; }
+    S.route = route;
+    document.body.setAttribute("data-route", route);
+    screens.forEach(function (sc) { sc.hidden = sc.getAttribute("data-route") !== route; });
+    var idx = STEPS.indexOf(route);
+    stepBtns.forEach(function (b, i) {
+      b.classList.toggle("active", i === idx);
+      b.classList.toggle("done", idx >= 0 && i < idx);
+      if (i === idx) { b.setAttribute("aria-current", "step"); } else { b.removeAttribute("aria-current"); }
     });
-    if (edge !== false) { s.push('<path d="M400 640 Q665 668 1030 640" fill="none" stroke="' + (asPlan ? AMBER : SAGE2) + '" stroke-width="2.6" stroke-dasharray="11 9" opacity=".85"/>'); }
-    return s.join("");
-  }
-  /* the hardened house's own marks: roof seams and a masonry base band */
-  function hardening(asPlan) {
-    var s = [], col = asPlan ? AMBER : PAPER;
-    [[665, 346, 556, 448], [665, 346, 774, 448], [665, 392, 614, 448], [665, 392, 716, 448]].forEach(function (p) {
-      s.push(line(p[0], p[1], p[2], p[3], col, 1.6, { op: asPlan ? .9 : .5 }));
-    });
-    s.push(rect(470, 582, 390, 18, asPlan ? "none" : BLOCK, { stroke: col, sw: asPlan ? 1.6 : 0, op: asPlan ? .9 : 1 }));
-    if (!asPlan) { s.push(line(470, 591, 860, 591, PAPER, 1, { op: .35 })); }
-    return s.join("");
+    closeMenu();
+    if (route === "plan") { paintPlan(); if (S.played || opts.restored) { asmAll(true); } else { runAssemble(); } }
+    if (route === "homes") { paintHomes(); }
+    if (route === "review") { paintReview(); }
+    if (route === "done") { paintDone(); }
+    if (route === "day") { paintDay(); if (opts.restored) { dayAll(true); } else { runDay(); } }
+    if (route === "business") { calcBusiness(); }
+    persist();
+    try { history.replaceState(null, "", "#" + route); } catch (e) { /* file:// */ }
+    window.scrollTo(0, 0);
+    var h = $("h-" + route);
+    if (h && !opts.silent) { try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }
+    if (!opts.silent) { announce(LABELS[route] + ". " + (h ? h.textContent.replace(/\s+/g, " ").trim() : "")); }
   }
 
-  function home(o) {
-    o = o || {}; var s = [], h = o.home || S.home, win = o.lit ? LIT : PAPER;
-    s.push('<g data-home="' + h + '" transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") + '" opacity="' + (o.op == null ? 1 : o.op) + '">');
-    if (o.tree !== false) {
-      s.push(rect(392, 520, 16, 84, INK));
-      s.push('<circle cx="400" cy="470" r="86" fill="' + SAGE2 + '"/><circle cx="372" cy="492" r="62" fill="' + SAGE + '"/><circle cx="434" cy="455" r="58" fill="' + SAGE + '"/>');
+  /* the forward action on screen 2 refuses until something is chosen */
+  function refuse() {
+    toast("Choose Add Home Again or Keep standard coverage to continue.");
+    announce("Nothing is chosen yet. Choose Add Home Again or Keep standard coverage to continue.");
+    try { $("chooseAgain").focus({ preventScroll: false }); } catch (e) { $("chooseAgain").focus(); }
+  }
+  function goStep(target) {
+    if (target === "homes" && S.choice !== "homeagain") {
+      show("plan");
+      if (S.choice === "standard") { toast("Replacement homes are part of Home Again. Choose Add Home Again to see them."); announce("Replacement homes are part of Home Again. Choose Add Home Again to see them."); }
+      else { refuse(); }
+      return;
     }
-    if (h === "b") {
-      /* faster and smaller: low pitch, narrow, no garage; panel seams */
-      s.push(rect(560, 480, 240, 120, INK));
-      s.push('<polygon points="536,480 680,404 824,480" fill="' + INK + '"/>');
-      s.push('<polyline points="536,480 680,404 824,480" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
-      s.push(line(640, 480, 640, 600, PAPER, 1.4, { op: .35 }) + line(720, 480, 720, 600, PAPER, 1.4, { op: .35 }));
-      s.push(rect(596, 530, 34, 70, o.lit ? LIT : PAPER)); s.push('<circle cx="622" cy="566" r="2.2" fill="' + INK + '"/>');
-      s.push(rect(690, 520, 60, 48, win)); s.push(line(720, 520, 720, 568, INK, 3) + line(690, 544, 750, 544, INK, 3));
-      s.push('<path d="M560 600 L800 600 L830 626 L530 626 Z" fill="' + INK + '" opacity=".12"/>');
-    } else {
-      s.push(rect(470, 448, 390, 152, INK));
-      s.push('<polygon points="450,448 665,322 880,448" fill="' + INK + '"/>');
-      s.push('<polyline points="450,448 665,322 880,448" fill="none" stroke="' + PAPER + '" stroke-width="3" opacity=".55"/>');
-      s.push(rect(770, 352, 30, 70, INK)); s.push(rect(766, 348, 38, 8, INK));
-      s.push(rect(478, 492, 130, 8, PAPER, { op: .9 })); s.push(rect(490, 500, 7, 100, PAPER, { op: .9 })); s.push(rect(596, 500, 7, 100, PAPER, { op: .9 }));
-      s.push(rect(525, 516, 40, 84, o.lit ? LIT : PAPER)); s.push(rect(525, 506, 40, 7, PAPER));
-      s.push('<circle cx="556" cy="560" r="2.4" fill="' + INK + '"/>');
-      s.push(rect(640, 500, 60, 56, win)); s.push(rect(740, 500, 60, 56, win));
-      s.push(line(670, 500, 670, 556, INK, 3) + line(640, 528, 700, 528, INK, 3) + line(770, 500, 770, 556, INK, 3) + line(740, 528, 800, 528, INK, 3));
-      s.push(rect(860, 500, 130, 100, GARAGE));
-      s.push(line(876, 528, 974, 528, PAPER, 2, { op: .5 }) + line(876, 552, 974, 552, PAPER, 2, { op: .5 }) + line(876, 576, 974, 576, PAPER, 2, { op: .5 }));
-      s.push('<path d="M470 600 L1000 600 L1040 626 L430 626 Z" fill="' + INK + '" opacity=".12"/>');
-      if (h === "c") { s.push(hardening(false)); s.push(features(false, o.edge)); }
+    if (target === "review" && S.choice === null) { show("plan"); refuse(); return; }
+    show(target);
+  }
+  function forward() {
+    switch (S.route) {
+      case "home": show("plan"); break;
+      case "plan": if (S.choice === null) { refuse(); } else { show(S.choice === "homeagain" ? "homes" : "review"); } break;
+      case "homes": show("review"); break;
+      case "review": confirmChoice(); break;
+      case "done": show("review"); break;
+      default: break;
     }
-    s.push("</g>");
-    return s.join("");
   }
-
-  function plan(o) {
-    o = o || {}; var s = [], h = o.home || S.home;
-    s.push('<g data-home="' + h + '" transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
-           '" fill="none" stroke="' + AMBER + '" stroke-width="3" stroke-linejoin="round" opacity="' + (o.op == null ? 1 : o.op) + '">');
-    if (h === "b") {
-      s.push('<polygon points="536,480 680,404 824,480" fill="url(#hatch)" stroke="none"/><polygon points="536,480 680,404 824,480"/>');
-      s.push(rect(560, 480, 240, 120, "none", { stroke: AMBER, sw: 3 }));
-      s.push(line(680, 404, 680, 600, AMBER, 2, { dash: "3 7" }) + line(640, 480, 640, 600, AMBER, 1.6, { op: .8 }) + line(720, 480, 720, 600, AMBER, 1.6, { op: .8 }));
-      if (o.ticks !== false) { s.push(line(846, 480, 846, 600, AMBER, 2) + line(838, 480, 854, 480, AMBER, 2) + line(838, 600, 854, 600, AMBER, 2)); }
-      if (o.openings) { s.push(rect(596, 530, 34, 70, "none", { stroke: AMBER, sw: 2 }) + rect(690, 520, 60, 48, "none", { stroke: AMBER, sw: 2 })); }
-    } else {
-      s.push('<polygon points="450,448 665,322 880,448" fill="url(#hatch)" stroke="none"/><polygon points="450,448 665,322 880,448"/>');
-      s.push(rect(470, 448, 390, 152, "none", { stroke: AMBER, sw: 3 }) + rect(860, 500, 130, 100, "none", { stroke: AMBER, sw: 3 }) + rect(770, 352, 30, 70, "none", { stroke: AMBER, sw: 3 }));
-      s.push(line(665, 322, 665, 600, AMBER, 2, { dash: "3 7" }) + line(470, 520, 860, 520, AMBER, 2, { op: .8 }));
-      if (o.ticks !== false) { s.push(line(1012, 448, 1012, 600, AMBER, 2) + line(1004, 448, 1020, 448, AMBER, 2) + line(1004, 600, 1020, 600, AMBER, 2)); }
-      if (o.openings) {
-        s.push(rect(525, 516, 40, 84, "none", { stroke: AMBER, sw: 2 }) + rect(640, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) +
-               rect(740, 500, 60, 56, "none", { stroke: AMBER, sw: 2 }) + rect(478, 492, 130, 8, "none", { stroke: AMBER, sw: 2 }));
-      }
-      if (h === "c") { s.push(hardening(true)); s.push(features(true, o.edge)); }
-    }
-    s.push("</g>");
-    return s.join("");
-  }
-
-  /* the home today, as an outline: what the loss leaves of it */
-  function outline(o) {
-    o = o || {}; var s = [];
-    s.push('<g transform="translate(' + (o.tx || 0) + ',' + (o.ty || 0) + ')' + (o.k && o.k !== 1 ? ' scale(' + o.k + ')' : "") +
-           '" fill="none" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round" opacity=".7">');
-    s.push('<polygon points="450,448 665,322 880,448"/>' + rect(470, 448, 390, 152, "none", { stroke: INK, sw: 2.4 }) +
-           rect(860, 500, 130, 100, "none", { stroke: INK, sw: 2.4 }) + rect(770, 352, 30, 70, "none", { stroke: INK, sw: 2.4 }));
-    s.push("</g>");
-    return s.join("");
-  }
-
-  /* the footprint's extent and the door's position, per way home */
-  var EXTENT = { a: [453, 995], b: [540, 820], c: [453, 995] };
-  var DOOR_TX = { a: 70, b: 125, c: 70 };
-
-  function figure(x, y, o) {
-    o = o || {}; var s = [], k = o.k || 1, c = o.fill || INK;
-    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')" opacity="' + (o.op == null ? 1 : o.op) + '">');
-    s.push('<circle cx="0" cy="-66" r="10" fill="' + c + '"/><path d="M-13 -52 L13 -52 L17 -6 L9 -6 L9 0 L-9 0 L-9 -6 L-17 -6 Z" fill="' + c + '"/>');
-    if (o.case_) { s.push(rect(18, -22, 14, 20, c, { rx: 2 })); }
-    if (o.board) { s.push(rect(-32, -40, 14, 18, PAPER, { stroke: c, sw: 2 })); }
-    s.push("</g>");
-    return s.join("");
-  }
-  function smallHome(x, y, o) {
-    o = o || {}; var s = [], k = o.k || 0.46, c = o.fill || INK;
-    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')">');
-    s.push(rect(0, 100, 240, 120, c) + '<polygon points="-14,100 120,22 254,100" fill="' + c + '"/>' + rect(100, 150, 40, 70, PAPER));
-    s.push(rect(32, 130, 44, 40, o.lit ? LIT : PAPER) + rect(164, 130, 44, 40, o.lit ? LIT : PAPER));
-    s.push("</g>");
-    return s.join("");
-  }
-  /* the reserved pool as a thing on the ground: eight module outlines, the
-     contracted share filled, one picked out when it is allocated to this home */
-  function pool(x, y, o) {
-    o = o || {}; var s = [], k = o.k || 1, n = 8, w = 22, h = 14, g = 5, i;
-    s.push('<g transform="translate(' + x + ',' + y + ') scale(' + k + ')">');
-    for (i = 0; i < n; i++) {
-      var filled = i < (o.on == null ? 5 : o.on), hot = o.hot === i;
-      s.push(rect(i * (w + g), 0, w, h, hot ? AMBER : (filled ? INK : "none"), { stroke: filled ? INK : MUTED, sw: 1.4, rx: 1.5, op: filled || hot ? 1 : .8 }));
-    }
-    s.push("</g>");
-    return s.join("");
-  }
-  function timber(x, y, o) {
-    o = o || {}; var s = [], c = o.off ? MUTED : INK;
-    s.push('<g opacity="' + (o.off ? .5 : 1) + '">');
-    [[0, 36, 220, 22], [14, 12, 192, 22], [28, -12, 164, 22]].forEach(function (b) {
-      s.push(rect(x + b[0], y + b[1], b[2], b[3], PATH, { stroke: c, sw: 2 }));
-      s.push(line(x + b[0] + b[2] * .25, y + b[1], x + b[0] + b[2] * .25, y + b[1] + b[3], c, 1.4, { op: .8 }));
-      s.push(line(x + b[0] + b[2] * .75, y + b[1], x + b[0] + b[2] * .75, y + b[1] + b[3], c, 1.4, { op: .8 }));
-    });
-    s.push("</g>");
-    return s.join("");
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     THE FIVE SCENES
-     ══════════════════════════════════════════════════════════════════════ */
-  function defs() {
-    return '<defs>' +
-      '<filter id="grain" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="g"/><feBlend in="SourceGraphic" in2="g" mode="multiply"/></filter>' +
-      '<filter id="rough" x="-4%" y="-6%" width="108%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>' +
-      '<filter id="speckle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .09  0 0 0 0 .08  0 0 0 0 .06  0 0 0 .18 0" result="s"/><feBlend in="SourceGraphic" in2="s" mode="multiply"/></filter>' +
-      '<pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="' + AMBER + '" stroke-width="1.2" opacity=".55"/></pattern>' +
-      '<pattern id="warnhatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="' + WARN + '" stroke-width="2"/></pattern>' +
-      '<radialGradient id="warm" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="' + SUN + '" stop-opacity=".34"/><stop offset="1" stop-color="' + SUN + '" stop-opacity="0"/></radialGradient>' +
-      '</defs>';
-  }
-  function sky(o) {
-    o = o || {}; var s = ['<g filter="url(#speckle)">'];
-    s.push(rect(-900, -600, 3000, 2100, PAPER));
-    s.push('<polygon points="620,-600 1900,-600 1900,330 740,230" fill="' + SAGE + '" opacity=".20"/><polygon points="300,-600 700,-600 520,250" fill="' + BLOCK + '" opacity=".14"/>');
-    if (o.dusk) { s.push('<polygon points="-900,-600 1900,-600 1900,420 -900,520" fill="' + BLOCK + '" opacity=".16"/>'); }
-    if (o.sun !== false) {
-      var sx = o.sunX || 1120, sy = o.sunY || 100, sr = o.sunR || 162;
-      if (o.warm) { s.push('<ellipse cx="' + sx + '" cy="' + (sy + 80) + '" rx="' + (sr * 3.2) + '" ry="' + (sr * 1.6) + '" fill="url(#warm)"/>'); }
-      s.push('<circle cx="' + sx + '" cy="' + sy + '" r="' + sr + '" fill="' + SUN + '" opacity=".92" filter="url(#grain)"/>');
-      s.push('<polygon points="880,-600 1900,-600 1040,300" fill="' + BLOCK + '" opacity=".12"/>');
-    }
-    if (o.ground !== false) {
-      s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + GROUND + '"/>');
-      if (o.warm) { s.push('<path d="M-900 640 Q590 548 2100 640 L2100 1500 L-900 1500 Z" fill="' + SUN + '" opacity=".10"/>'); }
-      s.push('<path d="M-900 640 Q590 548 2100 640" fill="none" stroke="' + INK + '" stroke-width="1.4" opacity=".35"/>');
-    }
-    s.push("</g>");
-    return s.join("");
-  }
-  function path(tx) { tx = tx || 0; return '<path d="M' + (545 + tx) + ' 600 Q' + (520 + tx) + ' 690 300 820 L440 820 Q' + (560 + tx) + ' 690 ' + (585 + tx) + ' 600 Z" fill="' + PATH + '"/>'; }
-  function block(x, y, w, h) { return '<g class="block-wide" filter="url(#rough)">' + rect(x, y, w, h, BLOCK, { rx: 3, filter: "url(#grain)" }) + "</g>"; }
-  function footprint(x1, x2, y) { return line(x1, y, x2, y, AMBER, 2.4, { dash: "12 9" }); }
-
-  /* ── 1 · the approved frame: the home today, the chosen plan behind it ── */
-  function scene1() {
-    var s = [sky()];
-    s.push(plan({ tx: 100, ty: -180, edge: false }));   /* the plan floats behind the home; its cleared edge is a ground feature */
-    s.push(footprint(484, 1070, 626)); s.push(path(70)); s.push(home({ tx: 70, home: "a" }));
-    /* the smaller plan ends short of the annotation, so its lead runs out
-       along the clear sky above the roof before dropping to the words */
-    if (S.home === "b") { s.push(line(950, 420, 1090, 420, AMBER, 2)); }
-    s.push('<line id="lead-plan" x1="1090" y1="420" x2="1090" y2="446" stroke="' + AMBER + '" stroke-width="2"/>');
-    s.push('<text id="anno-plan-1" class="anno" x="1128" y="468" text-anchor="end" font-size="' + n1(px(15)) + '">Your way home,</text>');
-    s.push('<text id="anno-plan-2" class="anno" x="1128" y="488" text-anchor="end" font-size="' + n1(px(15)) + '">chosen now</text>');
-    s.push(leader(1095, 632, 1095, 652)); s.push(text(1128, 670, "Your home today", 15, { anc: "end" }));
-    s.push(block(56, 82, 600, 304));   /* wide enough for the three lines at the type floor (0.94) when the frame scales to 0.90 */
-    return s.join("");
-  }
-
-  /* ── 2 and 3 · the three commitments around the house ───────────────────
-     The house is reduced and set top-centre: on 2 it is the chosen plan, on
-     3 it is the home today as an outline. Three commitment groups stand on
-     the ground beneath it, each in its own column with its own illustration,
-     label and state, each tied back to the house by a light dashed leader. */
-  function commitments(centre, state, notes) {
-    var s = [], e = EXTENT[S.home];
-    s.push(footprint(427 + e[0] * .58, 427 + e[1] * .58, 420));
-    s.push(centre);
-    s.push(leader(760, 422, 236, 520, AMBER, "5 6"));
-    s.push(leader(846, 422, 586, 492, AMBER, "5 6"));
-    s.push(leader(934, 422, 936, 480, AMBER, "5 6"));
-    /* temporary living · the chosen plan with the named builder · Marta */
-    s.push(smallHome(140, 480, { k: .5, lit: false }));
-    s.push(callout({ x: 58, y: 620, title: "Temporary living", state: state, note: notes ? ["From the first night."] : [] }));
-    s.push(figure(586, 598, { board: true, k: 1.2 }));
-    s.push(callout({ x: 430, y: 620, title: "Marta coordinates", state: state, note: notes ? ["Named now, not at the loss."] : [] }));
-    s.push(timber(830, 540));
-    s.push(pool(846, 584, { on: 5, k: .9 }));
-    s.push(callout({ x: 800, y: 620, title: "The chosen plan", state: state,
-      note: [HOME_NAME[S.home] + " · " + BUILDER, "Production capacity reserved before the loss"] }));
-    return s.join("");
-  }
-  function scene2() {
-    var s = [sky({ sunX: 1120, sunY: 90, sunR: 130 })];
-    s.push(commitments(plan({ tx: 427, ty: 70, k: .58, openings: true, ticks: false, edge: false }), S.agreed ? "agreed" : null, true));
-    s.push(block(56, 82, 520, 196));
-    return s.join("");
-  }
-  function scene3() {
-    var s = [sky({ sun: false, dusk: true })];
-    var slab = EXTENT.a;
-    s.push(rect(427 + slab[0] * .58 + 8, 416, (slab[1] - slab[0]) * .58 - 16, 8, SLAB, { stroke: INK, sw: 1.2 }));
-    s.push('<g opacity=".38">' + outline({ tx: 150, ty: 150, k: .32 }) + outline({ tx: 980, ty: 160, k: .3 }) + "</g>");
-    s.push(commitments(outline({ tx: 427, ty: 70, k: .58 }), "holds", false));
-    /* the family, before what is left of the house: an adult and a child,
-       hand in hand, facing it */
-    s.push(figure(462, 414, { k: .8 }));
-    s.push('<line x1="472" y1="392" x2="492" y2="400" stroke="' + INK + '" stroke-width="3" stroke-linecap="round"/>');
-    s.push(figure(498, 414, { k: .52 }));
-    s.push(block(56, 82, 400, 150));
-    return s.join("");
-  }
-
-  /* ── 4 · the arrangement activates ───────────────────────────────────────
-     The page-wide scene carries only the dusk paper; the recovery scene is
-     its own bounded SVG inside the screen's flow layout (see paintScene4),
-     so its labels can live in wrapping HTML areas beside the artwork. */
-  function scene4() { return sky({ sun: false, dusk: true, ground: false }); }
-
-  function paintScene4() {
-    var box = document.getElementById("scene4-box"), s4 = document.getElementById("scene4");
-    if (!box || !s4) { return; }
-    var ev = S.event, s = [];
-    s.push('<defs><pattern id="hatch4" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="' + AMBER + '" stroke-width="1.2" opacity=".55"/></pattern>' +
-           '<pattern id="warnhatch4" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="' + WARN + '" stroke-width="2"/></pattern></defs>');
-    /* ground */
-    s.push(rect(-400, 300, 2000, 400, GROUND) + line(-400, 300, 1600, 300, INK, 1.2, { op: .35 }));
-    /* in a regional event the neighbouring lots are lost too — secondary context, no captions */
-    if (ev) {
-      [[20], [1050]].forEach(function (p) {
-        s.push(rect(p[0], 250, 110, 50, "none", { stroke: WARN, sw: 2, dash: "8 6" }));
-        s.push(line(p[0] + 18, 300, p[0] + 34, 272, WARN, 2, { op: .8 }) + line(p[0] + 78, 300, p[0] + 92, 276, WARN, 2, { op: .8 }));
-      });
-    }
-    /* the two coordination paths, from the lead to each arrangement; the
-       right-hand path arrives at the slab's near edge, never into the caption */
-    var L = "M560 304 Q430 352 318 304", R = "M620 304 Q740 346 826 288";
-    s.push('<path d="' + L + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"/>');
-    var al = ev ? allocation() : null, pathOn = !ev || al.inPool;
-    s.push('<path d="' + R + '" fill="none" stroke="' + PATH + '" stroke-width="26" stroke-linecap="round"' + (pathOn ? "" : ' opacity=".55"') + '/>');
-    s.push('<path d="' + L + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"/>');
-    s.push('<path d="' + R + '" fill="none" stroke="' + AMBER + '" stroke-width="2" stroke-dasharray="6 6"' + (pathOn ? "" : ' opacity=".45"') + '/>');
-    s.push('<polygon points="318,296 304,304 318,312" fill="' + AMBER + '"/>');
-    if (pathOn) { s.push('<polygon points="824,278 840,290 822,298" fill="' + AMBER + '"/>'); }
-    /* the temporary home, lit */
-    s.push('<g id="s4-subj-temp">' + smallHome(185, 196, { k: .48, lit: true }) + "</g>");
-    /* the recovery lead */
-    s.push('<g id="s4-subj-marta">' + figure(590, 302, { board: true, k: 1.15 }) + "</g>");
-    /* the rebuild site: a cleared slab with the chosen plan standing on it as the instruction */
-    s.push('<g id="s4-subj-site">');
-    s.push(rect(830, 292, 262, 14, SLAB, { stroke: INK, sw: 1.6 }));
-    [850, 905, 975, 1040].forEach(function (x, i) { s.push(line(x, 292, x + 18, 274 - (i % 2) * 8, INK, 1.8, { op: .5 })); });
-    s.push(plan({ tx: 597, ty: 40, k: .42, ticks: false, edge: false, openings: true }).split("url(#hatch)").join("url(#hatch4)"));
-    s.push("</g>");
-    if (ev) {
-      /* the open market: households that arranged nothing queue at a barred
-         gate, in the foreground, where the region's demand is felt */
-      s.push(rect(574, 372, 11, 40, "url(#warnhatch4)", { stroke: WARN, sw: 1.6 }));
-      [478, 506, 534].forEach(function (x, i) { s.push(figure(x, 412 + (i % 2) * 2, { k: .5, op: .8 })); });
-      if (al.inPool) {
-        /* the family's start is assigned from the pool bought before the loss */
-        s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0) + "</g>");
-        s.push(pool(846, 293, { on: 5, hot: 2, k: .72 }));
-      } else {
-        /* the modelled demand exceeds the pool: nothing is assigned that does
-           not exist; the place in the sequence is shown pending */
-        s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0, { off: true }) + "</g>");
-        s.push(pool(846, 293, { on: 8, k: .72 }));
-      }
-    } else {
-      s.push('<g transform="translate(1092,262) scale(.55)">' + timber(0, 0) + "</g>");
-    }
-    s4.innerHTML = s.join("");
-    /* labels and states, from the one state */
-    var det = document.getElementById("s4-site-detail"), st = document.getElementById("s4-site-state"), cap = document.getElementById("s4-cap");
-    if (det) { det.textContent = HOME_NAME[S.home] + " · Ardren & Sons"; }
-    if (st) {
-      var a2 = ev ? allocation() : null;
-      st.dataset.kind = !ev ? "released" : a2.inPool ? "allocated" : "queued";
-      st.textContent = !ev ? "Reserved start released" : a2.inPool ? "Start allocated · reserved pool" : "Allocation pending · pool full";
-    }
-    if (cap) { cap.dataset.kind = ev ? "constrained" : "available"; cap.textContent = ev ? "Overwhelmed" : "Available"; }
-    var capL = document.getElementById("s4-cap-label"); if (capL) { capL.textContent = ev ? "Open market" : "Regional capacity"; }
-    var cont = document.querySelector(".s4-continue"), cons = document.querySelector(".s4-cons");
-    if (ev && cont) { cont.textContent = allocation().inPool ? "Others compete for builders. Yours was reserved before the loss." : "The reserved pool is fully allocated. Your place follows its sequence."; }
-    if (ev && cons) { cons.textContent = "Site, permits, foundations · separate timelines."; }
-    /* the bounded scene frames the artwork band only (design y 140–430), so
-       it never carries an empty sky above the subjects */
-    if (!portrait) {
-      var wrap = box.parentNode, h = wrap.clientHeight, w = wrap.clientWidth;
-      var bw = Math.min(w, h * 1180 / 290), bh = bw * 290 / 1180;
-      box.style.width = bw + "px"; box.style.height = bh + "px";
-      s4.setAttribute("viewBox", "0 140 1180 290");
-    } else {
-      box.style.width = "100%"; box.style.height = (window.innerWidth * 290 / 820) + "px";
-      s4.setAttribute("viewBox", "180 140 820 290");
-      legend = Array.prototype.map.call(document.querySelectorAll(".s4-label"), function (p) {
-        var em = p.querySelector("em"), sp = p.querySelector("span");
-        /* the legend carries the label's own state wording, never a remapped one */
-        return { title: p.querySelector("b").textContent, note: sp ? [sp.textContent] : [],
-                 state: em ? em.dataset.kind : null, stateText: em ? em.textContent : null };
-      });
+  function back() {
+    switch (S.route) {
+      case "plan": show("home"); break;
+      case "homes": show("plan"); break;
+      case "review": show(S.choice === "homeagain" ? "homes" : "plan"); break;
+      case "done": show("review"); break;
+      case "day": show("done"); break;
+      case "business": show(businessReturn); break;
+      default: break;
     }
   }
 
-  /* ── 5 · the chosen plan resolved into the home ──────────────────────── */
-  function scene5() {
-    var s = [sky({ sunX: 1010, sunY: 420, sunR: 170, warm: true })];
-    s.push('<g opacity=".22">' + plan({ tx: 70, ticks: false }) + "</g>");
-    s.push(path(DOOR_TX[S.home])); s.push(home({ tx: 70, lit: true }));
-    /* the family on the path, nearly at the door: an adult with the case
-       and a child, hand in hand */
-    s.push(figure(664, 712, { case_: true, k: .95 }));
-    s.push('<line x1="676" y1="684" x2="700" y2="694" stroke="' + INK + '" stroke-width="3.2" stroke-linecap="round"/>');
-    s.push(figure(708, 712, { k: .62 }));
-    s.push(block(56, 82, 430, 150));
-    return s.join("");
-  }
-  var SCENES = [scene1, scene2, scene3, scene4, scene5];
-
-  /* the three ways home, drawn small inside their buttons */
-  function paintOptions() {
-    Array.prototype.forEach.call(document.querySelectorAll(".options [data-home]"), function (b) {
-      var art = b.querySelector(".opt-art"); if (!art || art.firstChild) { return; }
-      var h = b.dataset.home, k = scale; scale = 1;
-      /* the thumbnail's ink and paper are variables, so a pressed button can
-         swap them and the house stays legible on the dark ground */
-      var art1 = home({ home: h, tree: false }).split(INK).join("var(--art-ink)").split(GARAGE).join("var(--art-ink)").split(PAPER).join("var(--art-paper)");
-      art.innerHTML = '<svg viewBox="430 300 640 380" aria-hidden="true" focusable="false">' + art1 + "</svg>";
-      scale = k;
+  /* ── screen 2 · the arrangement assembles ─────────────────────────────── */
+  var slots = $$("#assemble .slot");
+  var asmTimers = [];
+  function asmClear() { asmTimers.forEach(clearTimeout); asmTimers = []; }
+  function asmSet(n) { slots.forEach(function (s, i) { s.setAttribute("data-on", i < n ? "1" : "0"); }); }
+  function asmStatus(text, done) { var el = $("asmStatus"); el.textContent = text; el.classList.toggle("is-done", !!done); }
+  function runAssemble() {
+    asmClear();
+    if (reduced) { asmAll(false); return; }
+    asmSet(0); asmStatus("Arranging…", false);
+    announce("Arranging your recovery plan.");
+    slots.forEach(function (s, i) {
+      asmTimers.push(setTimeout(function () { asmSet(i + 1); if (i === slots.length - 1) { asmDone(false); } }, 420 + i * 780));
     });
   }
+  function asmAll(quiet) { asmClear(); asmSet(slots.length); asmDone(quiet); }
+  function asmDone(quiet) {
+    S.played = true; persist();
+    asmStatus("Arranged", true);
+    if (!quiet) { announce("Arranged: Harbor as your replacement home, a furnished place nearby for up to 12 months, " + COORD + " coordinating, and a 20 to 24 week estimated build window."); }
+  }
 
-  /* ══════════════════════════════════════════════════════════════════════
-     CAMERA — landscape fits the 1180×820 frame; portrait frames the
-     property per screen and the page stacks and scrolls.
-     ══════════════════════════════════════════════════════════════════════ */
-  var REGION = {
-    1: [{ x: 440, y: 40, w: 740, h: 720 }, { x: 330, y: 40, w: 850, h: 720 }],
-    2: [{ x: 60, y: 230, w: 1120, h: 400 }, { x: 60, y: 220, w: 1120, h: 420 }],
-    3: [{ x: 60, y: 230, w: 1120, h: 400 }, { x: 60, y: 220, w: 1120, h: 420 }],
-    4: [{ x: 300, y: 230, w: 900, h: 560 }, { x: 240, y: 210, w: 960, h: 600 }],
-    5: [{ x: 380, y: 240, w: 780, h: 560 }, { x: 300, y: 220, w: 860, h: 600 }]
-  };
-  function layout() {
-    var W = window.innerWidth, H = window.innerHeight;
-    portrait = W < 900 || W / H < 1.05;
-    body.classList.toggle("portrait", portrait);
-    if (!portrait) {
-      var s = Math.min(W / 1180, H / 820), ox = (W - 1180 * s) / 2, oy = (H - 820 * s) / 2;
-      scale = s;
-      svg.setAttribute("viewBox", n1(-ox / s) + " " + n1(-oy / s) + " " + n1(W / s) + " " + n1(H / s));
-      svg.style.height = "";
-      root.style.setProperty("--s", s.toFixed(4)); root.style.setProperty("--sf", Math.max(s, 0.94).toFixed(4));
-      root.style.setProperty("--ox", ox.toFixed(1) + "px"); root.style.setProperty("--oy", oy.toFixed(1) + "px");
+  /* ── screen 2 · the explicit choice ───────────────────────────────────── */
+  function selectChoice(c) {
+    S.choice = c; persist(); paintPlan();
+    var h = HOMES[S.model];
+    announce(c === "homeagain" ? "Add Home Again chosen. " + money(BASE + h.fee) + " a month if you confirm. Continue to see your replacement homes." : "Keep standard coverage chosen. Your premium stays " + money(BASE) + " a month. Continue to review.");
+  }
+  function paintPlan() {
+    setPressed($("chooseAgain"), S.choice === "homeagain");
+    setPressed($("chooseStandard"), S.choice === "standard");
+    var h = HOMES[S.model], sum = $("choiceSummary"), next = $("planNext");
+    if (S.choice === "homeagain") {
+      sum.innerHTML = "<strong>Home Again, ready to add</strong><br>With " + esc(h.name) + ": " + money(BASE + h.fee) + "/month if you confirm.";
+      next.innerHTML = 'See your replacement homes <span aria-hidden="true">→</span>';
+    } else if (S.choice === "standard") {
+      sum.innerHTML = "<strong>Standard coverage</strong><br>Your premium stays " + money(BASE) + "/month. Nothing is added.";
+      next.innerHTML = 'Continue with standard coverage <span aria-hidden="true">→</span>';
     } else {
-      var r = REGION[S.screen][W < 600 ? 0 : 1];
-      svg.setAttribute("viewBox", r.x + " " + r.y + " " + r.w + " " + r.h);
-      svg.style.height = (W * r.h / r.w).toFixed(1) + "px";
-      scale = W / r.w;
+      sum.innerHTML = "<strong>No option chosen yet.</strong><br>Choose Add Home Again or Keep standard coverage.";
+      next.textContent = "Choose an option to continue";
     }
-  }
-  function annoPlan() {
-    var p1 = document.getElementById("anno-plan-1"), p2 = document.getElementById("anno-plan-2"), ld = document.getElementById("lead-plan");
-    if (!p1 || !portrait) { return; }
-    var u = px(14), cx = 765;
-    p2.setAttribute("x", cx); p2.setAttribute("y", n1(142 - u * 1.4)); p2.setAttribute("text-anchor", "middle");
-    p1.setAttribute("x", cx); p1.setAttribute("y", n1(142 - u * 2.65)); p1.setAttribute("text-anchor", "middle");
-    ld.setAttribute("x1", cx); ld.setAttribute("y1", 142); ld.setAttribute("x2", cx); ld.setAttribute("y2", n1(142 - u));
-  }
-  /* the legend: the same callouts, as readable HTML, under the scene */
-  function paintLegend() {
-    var ul = document.querySelector('.screen[data-screen="' + S.screen + '"] .legend');
-    if (!ul) { return; }
-    ul.innerHTML = "";
-    ul.hidden = !portrait || !legend.length;
-    legend.forEach(function (c) {
-      var li = document.createElement("li");
-      var h = "";
-      if (c.eyebrow) { h += '<span class="lg-eb">' + c.eyebrow + "</span>"; }
-      if (c.title) { h += '<span class="lg-t">' + c.title + "</span>"; }
-      if (c.state) { h += '<span class="lg-s lg-s--' + c.state + '">' + (c.stateText || STATE_WORD[c.state]) + "</span>"; }
-      (c.note || []).forEach(function (n) { h += '<span class="lg-n">' + n + "</span>"; });
-      li.innerHTML = h; ul.appendChild(li);
-    });
-  }
-  function draw() {
-    layout(); legend = [];
-    svg.innerHTML = defs() + SCENES[S.screen - 1]();
-    if (S.screen === 4) { paintScene4(); }
-    annoPlan(); paintLegend();
+    next.setAttribute("data-ready", S.choice ? "1" : "0");
   }
 
-  /* ══════════════════════════════════════════════════════════════════════
-     SCREENS, CONTROLS, NAVIGATION
-     ══════════════════════════════════════════════════════════════════════ */
-  var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
-  var total = screens.length;
-  var NEXT = ["Three commitments", "The loss", "The arrangement", "Home again", "Start again"];
-  var prevBtn = document.getElementById("prev"), nextBtn = document.getElementById("next");
-  var nextLabel = document.getElementById("next-label"), picker = document.getElementById("picker");
-  var announce = document.getElementById("announce"), status = document.getElementById("state-status");
-  function say(m) { if (status) { status.textContent = m; } }
-  var homeBtns = Array.prototype.slice.call(document.querySelectorAll(".options [data-home]"));
-  var homeWord = Array.prototype.slice.call(document.querySelectorAll("[data-home-name]"));
-  var agreeBtn = document.getElementById("agree"), sig = document.getElementById("sig");
-  var evBtn = document.getElementById("event-toggle");
-  var branch = Array.prototype.slice.call(document.querySelectorAll("[data-branch]"));
+  /* ── screen 3 · the chosen home, large; the others, small ─────────────── */
+  function selectModel(name) {
+    if (!HOMES[name]) { return; }
+    S.model = name; persist(); paintHomes(); paintPlan();
+    announce(name + " chosen as your replacement home. " + money(BASE + HOMES[name].fee) + " a month if you confirm.");
+    try { $("h-homes").focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+  }
+  function featureCard(h) {
+    return '<article class="feature-card" aria-labelledby="featName">' +
+      '<div class="feature-photo">' + img(h) + '<span class="photo-tag">Illustrative</span></div>' +
+      '<div class="feature-body">' +
+        '<div class="feature-head"><h2 id="featName">' + esc(h.name) + ' <em class="chosen">Chosen</em></h2><p class="feature-fee">+' + money(h.fee) + '<small>/mo on your policy</small></p></div>' +
+        '<p class="feature-specs">' + esc(h.beds) + ' · ' + esc(h.sqft) + ' · built at ' + esc(h.price) + '</p>' +
+        '<ul class="feature-facts"><li><b>' + esc(h.weeks) + '</b><span>estimated build window</span></li><li><b>Up to ' + esc(h.housing) + '</b><span>furnished housing nearby</span></li><li><b>' + COORD + '</b><span>coordinates through move-in</span></li></ul>' +
+      '</div></article>';
+  }
+  function altCard(h) {
+    return '<button class="alt-card" type="button" data-model="' + esc(h.name) + '">' +
+      '<span class="alt-photo">' + img(h) + '</span>' +
+      '<span class="alt-body"><span class="alt-name">' + esc(h.name) + '</span><span class="alt-specs">' + esc(h.beds) + ' · ' + esc(h.sqft) + ' · built at ' + esc(h.price) + '</span><span class="alt-fee">+' + money(h.fee) + '/mo · ' + esc(h.weeks) + '</span><span class="alt-cta">Choose ' + esc(h.name) + ' instead</span></span>' +
+    '</button>';
+  }
+  function paintHomes() {
+    var cur = HOMES[S.model];
+    $("houseFeature").innerHTML = featureCard(cur);
+    $("houseAlts").innerHTML = ORDER.filter(function (n) { return n !== S.model; }).map(function (n) { return altCard(HOMES[n]); }).join("");
+    $$("#houseAlts .alt-card").forEach(function (b) { b.addEventListener("click", function () { selectModel(b.getAttribute("data-model")); }); });
+    $("homesNext").innerHTML = "Continue with " + esc(cur.name) + ' <span aria-hidden="true">→</span>';
+    $("h-homes").textContent = cur.name === "Harbor" ? "Harbor is ready. You can make it yours." : cur.name + " is your replacement home.";
+  }
 
-  screens.forEach(function (sc, i) {
-    var o = document.createElement("option");
-    o.value = String(i + 1); o.textContent = (i + 1) + " · " + sc.dataset.label;
-    picker.appendChild(o);
+  /* ── screen 4 · review ────────────────────────────────────────────────── */
+  function paintReview() {
+    var again = S.choice === "homeagain", h = HOMES[S.model];
+    $("reviewEyebrow").textContent = again ? "Confirm your Home Again plan" : "Confirm your coverage";
+    $("h-review").textContent = again ? "Here is your Home Again plan." : "Keep the coverage you already have.";
+    $("reviewLead").textContent = again ? "Make sure everything looks right before you add it to your policy." : "Your homeowners policy will stay exactly as it is.";
+    if (again) {
+      $("reviewDetails").innerHTML =
+        '<div class="lineitem"><strong>' + esc(h.name) + ' is your replacement home.</strong><p>' + esc(h.beds) + ' · ' + esc(h.sqft) + ' · built at ' + esc(h.price) + ', checked every year so it stays true. Its design and your builder pathway are on file.</p></div>' +
+        '<div class="lineitem"><strong>A furnished place nearby.</strong><p>Pet-friendly, near your neighborhood, for up to ' + esc(h.housing) + '.</p></div>' +
+        '<div class="lineitem lineitem--coord"><svg class="lens" aria-hidden="true"><use href="#lens"/></svg><div><strong>' + COORD + ' coordinates your recovery through move-in.</strong><p>One person connects the insurer, the builder, the housing and the permits, and keeps you updated.</p></div></div>' +
+        '<div class="lineitem"><strong>Estimated build window: ' + esc(h.weeks) + '.</strong><details class="depends"><summary>What this depends on</summary><p>' + DEPENDS + '</p></details></div>' +
+        '<p class="smallprint">Priority, not a guarantee. After a major event, builder slots are allocated in enrollment order across the network.</p>';
+      $("reviewVisuals").innerHTML = '<div class="review-media--pair">' +
+        '<figure class="review-media">' + img(h) + '<figcaption>' + esc(h.name) + ' · ' + esc(h.beds) + ' · ' + esc(h.sqft) + ' · illustrative</figcaption></figure>' +
+        '<figure class="review-media">' + img(FURNISHED) + '<figcaption>Furnished housing nearby · illustrative</figcaption></figure></div>';
+      $("confirmBtn").textContent = "Add Home Again to my policy";
+    } else {
+      $("reviewDetails").innerHTML =
+        '<div class="lineitem"><strong>Your home stays protected.</strong><p>Dwelling protection $650,000. Deductible $5,000.</p></div>' +
+        '<div class="lineitem"><strong>Additional living expenses stay in your policy.</strong><p>After an eligible loss, your policy helps pay for temporary living under its terms.</p></div>' +
+        '<div class="lineitem"><strong>You organize the rebuild.</strong><p>You choose and coordinate the contractors and the temporary housing yourself.</p></div>' +
+        '<p class="smallprint">Home Again is not added. You can come back to it at any renewal.</p>';
+      $("reviewVisuals").innerHTML = '<figure class="review-media">' + img(YOUR_HOME) + '<figcaption>Your home · illustrative</figcaption></figure>';
+      $("confirmBtn").textContent = "Keep my current coverage";
+    }
+    $("quoteAddon").textContent = again ? "+" + money(h.fee) : "Not added";
+    $("quoteTotal").innerHTML = money(BASE + (again ? h.fee : 0)) + " <span>/month</span>";
+  }
+
+  /* ── confirm: the only action that adds anything ──────────────────────── */
+  function confirmChoice() {
+    if (S.choice === null) { show("plan"); refuse(); return; }
+    S.confirmed = true; S.confirmedChoice = S.choice; S.confirmedModel = S.model; persist();
+    show("done");
+  }
+  function paintDone() {
+    var again = S.confirmedChoice === "homeagain", h = HOMES[S.confirmedModel || "Harbor"];
+    $("doneKicker").textContent = again ? "Home Again added" : "Review complete";
+    $("h-done").textContent = again ? "Home Again is added to your policy." : "Your existing coverage stays in place.";
+    $("doneLead").textContent = again
+      ? "You chose " + h.name + " as your recovery home. Your housing preferences and the recovery pathway are on file, ready if you ever need them."
+      : "Home Again is not added. Your premium remains " + money(BASE) + " a month, and you can explore Home Again at any renewal.";
+    $("doneTiles").innerHTML = again
+      ? '<div class="success-tile"><p class="mini">Recovery home</p><strong>' + esc(h.name) + ' · ' + esc(h.beds) + ' · ' + esc(h.sqft) + '</strong></div>' +
+        '<div class="success-tile"><p class="mini">On file</p><strong>Housing preferences and your recovery pathway</strong></div>' +
+        '<div class="success-tile"><p class="mini">Updated premium (illustrative)</p><strong>' + money(BASE + h.fee) + '/month</strong></div>'
+      : '<div class="success-tile"><p class="mini">Recovery option</p><strong>Standard coverage</strong></div>' +
+        '<div class="success-tile"><p class="mini">Dwelling protection</p><strong>$650,000</strong></div>' +
+        '<div class="success-tile"><p class="mini">Premium (illustrative)</p><strong>' + money(BASE) + '/month</strong></div>';
+    $("doneCoord").hidden = !again;
+    $("doneReview").textContent = again ? "Review my coverage" : "Review my coverage";
+  }
+
+  /* ── presenter · the covered loss, simulated ──────────────────────────── */
+  var events = $$("#timeline .event");
+  var dayTimers = [];
+  function dayClear() { dayTimers.forEach(clearTimeout); dayTimers = []; }
+  function daySet(n) { events.forEach(function (e, i) { e.setAttribute("data-on", i < n ? "1" : "0"); }); }
+  function paintDay() {
+    var h = HOMES[S.confirmedModel || "Harbor"];
+    $("recoveryNote").textContent = "We know this is a difficult day. Here's what's already in motion: housing near your neighborhood is being held for you, " + h.name + "'s build slot is confirmed, and I'm coordinating site access for clearance. There's nothing you need to arrange today. I'll call at 4.";
+    $("eventHousing").textContent = "Furnished, pet-friendly options near your neighborhood for up to " + h.housing + ".";
+    $("eventBuilder").textContent = h.name + "'s builder slot confirmed.";
+    $("dayHouseImage").innerHTML = img(h) + '<figcaption>Your ' + esc(h.name) + ' replacement home · illustrative</figcaption>';
+    $("dayHome").textContent = h.name; $("dayPrice").textContent = h.price; $("dayWeeks").textContent = h.weeks; $("dayHousing").textContent = "Up to " + h.housing;
+  }
+  function runDay() {
+    dayClear();
+    if (reduced) { dayAll(false); return; }
+    daySet(0); var st = $("dayStatus"); st.textContent = "In motion…"; st.classList.remove("is-done");
+    events.forEach(function (e, i) { dayTimers.push(setTimeout(function () { daySet(i + 1); if (i === events.length - 1) { dayDone(false); } }, 500 + i * 900)); });
+  }
+  function dayAll(quiet) { dayClear(); daySet(events.length); dayDone(quiet); }
+  function dayDone(quiet) { var st = $("dayStatus"); st.textContent = "Four things in motion"; st.classList.add("is-done"); if (!quiet) { announce("Four things are in motion today: housing held, the builder slot confirmed, site access coordination started, and a call at four."); } }
+  function showDay() {
+    if (!(S.confirmed && S.confirmedChoice === "homeagain")) { toast("Add and confirm Home Again first to simulate a covered-loss recovery."); announce("Add and confirm Home Again first to simulate a covered-loss recovery."); return; }
+    show("day");
+  }
+
+  /* ── presenter · stakeholder economics ────────────────────────────────── */
+  function calcBusiness() {
+    var val = function (id) { return Math.max(0, Number($(id).value) || 0); };
+    var fees = val("bizEnrolled") * val("bizFee") * 12;
+    var savings = val("bizClaims") * val("bizAvoided");
+    $("bizFees").textContent = money(fees);
+    $("bizSavings").textContent = money(savings);
+    $("bizGross").textContent = money(fees + savings);
+  }
+
+  /* ── the presenter menu ───────────────────────────────────────────────── */
+  function closeMenu() { $("moreMenu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false"); }
+  function toggleMenu() { var m = $("moreMenu"); m.hidden = !m.hidden; $("moreBtn").setAttribute("aria-expanded", String(!m.hidden)); }
+
+  function restart() {
+    S = fresh();
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+    asmClear(); dayClear(); asmSet(0); daySet(0);
+    paintPlan(); paintHomes();
+    show("home");
+    toast("Demo restarted. Nothing is kept.");
+  }
+
+  /* ── wiring ───────────────────────────────────────────────────────────── */
+  var on = function (id, fn) { var el = $(id); if (el) { el.addEventListener("click", fn); } };
+  on("homeNext", function () { show("plan"); });
+  on("chooseAgain", function () { selectChoice("homeagain"); });
+  on("chooseStandard", function () { selectChoice("standard"); });
+  on("planNext", forward);
+  on("homesNext", function () { show("review"); });
+  on("confirmBtn", confirmChoice);
+  on("reviewBack", back);
+  on("doneReview", function () { show("review"); });
+  on("doneRestart", restart);
+  on("dayBack", function () { show("done"); });
+  on("asmReplay", runAssemble);
+  on("asmAll", function () { asmAll(false); });
+  on("dayReplay", runDay);
+  on("dayAll", function () { dayAll(false); });
+  on("moreBtn", toggleMenu);
+  on("simulateBtn", showDay);
+  on("businessBtn", function () { businessReturn = S.route === "business" ? "home" : S.route; show("business"); });
+  on("businessBack", function () { show(businessReturn); });
+  on("resetBtn", restart);
+  on("skip", function () { var h = $("h-" + S.route); if (h) { h.focus(); } });
+  stepBtns.forEach(function (b) { b.addEventListener("click", function () { goStep(b.getAttribute("data-go")); }); });
+  ["bizEnrolled", "bizFee", "bizClaims", "bizAvoided"].forEach(function (id) { $(id).addEventListener("input", calcBusiness); });
+  $("homeAddress").addEventListener("input", function () {
+    var parts = this.value.split(",");
+    $("addrShort").textContent = parts.length > 1 ? "· " + parts.slice(1).join(",").replace(/\s*\d{5}(-\d{4})?\s*$/, "").trim() : "";
   });
-
-  /* the family's question on screen 4: asking it puts Marta's search on the
-     temporary-living label. It records a coordination task, never a place. */
-  var askBtn = document.getElementById("ask-marta");
-  if (askBtn) {
-    askBtn.addEventListener("click", function () {
-      S.asked = !S.asked;
-      save();
-      paintAsk();
-      say(S.asked ? "School recorded as a priority. Marta is arranging the accommodation. The location is not confirmed."
-                  : "The question is set aside.");
-    });
-  }
-  /* Asking records a priority. It does not secure a place, so nothing on the
-     artwork is relabelled "near the school": the commitment that is live
-     (temporary living from the first night) stays as it was, and the part
-     that is not settled (which accommodation) is shown as not confirmed. */
-  function paintAsk() {
-    var a = document.getElementById("s4-ask-a");
-    if (askBtn) { askBtn.setAttribute("aria-pressed", S.asked ? "true" : "false"); askBtn.textContent = S.asked ? "Asked" : "Ask"; }
-    if (a) { a.hidden = !S.asked; }
-  }
-
-  function paintControls() {
-    body.setAttribute("data-home", S.home);
-    homeBtns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.home === S.home ? "true" : "false"); });
-    homeWord.forEach(function (e) { e.textContent = HOME_NAME[S.home]; });
-    if (agreeBtn) { agreeBtn.setAttribute("aria-pressed", S.agreed ? "true" : "false"); agreeBtn.textContent = S.agreed ? "Agreed" : "Agree to the three commitments"; }
-    if (sig) { if (S.agreed) { sig.removeAttribute("hidden"); } else { sig.setAttribute("hidden", ""); } }   /* an <svg> has no .hidden property */
-    if (evBtn) { evBtn.setAttribute("aria-pressed", S.event ? "true" : "false"); }
-    branch.forEach(function (e) { e.hidden = (e.dataset.branch === "event") !== S.event; });
-    paintAsk();
-  }
-  homeBtns.forEach(function (b) {
-    b.addEventListener("click", function () {
-      S.home = b.dataset.home; save(); paintControls(); draw();
-      say(HOME_NAME[S.home] + " chosen. " + HOME_LINE[S.home] + ". It carries through every later screen.");
-    });
-  });
-  if (agreeBtn) {
-    agreeBtn.addEventListener("click", function () {
-      if (S.agreed) { return; }
-      S.agreed = true; save(); paintControls(); draw();
-      say("Agreed. Temporary living from the first night, " + HOME_NAME[S.home] + " with Ardren and Sons, and Marta coordinates.");
-    });
-  }
-  if (evBtn) {
-    evBtn.addEventListener("click", function () {
-      S.event = !S.event; save(); paintControls(); draw();
-      say(S.event ? "Regional event shown. The open market is overwhelmed and others queue for builders; this family's production start is allocated from capacity the insurer reserved before the loss. Site, permits and foundations keep their own timelines. Temporary living, Marta and your plan continue."
-                  : "Normal conditions restored. Capacity available; the reserved start released.");
-    });
-  }
-  function reset() { S.home = "a"; S.agreed = false; S.event = false; S.asked = false; clear(); paintControls(); show(1); say("Journey reset. Nothing chosen or agreed; normal conditions."); }
-  var restart = document.getElementById("restart");
-  if (restart) { restart.addEventListener("click", reset); }
-
-  function show(n, push) {
-    n = Math.max(1, Math.min(total, n));
-    S.screen = n;
-    screens.forEach(function (sc, i) { sc.hidden = (i + 1 !== n); });
-    body.setAttribute("data-screen", String(n));
-    prevBtn.disabled = n === 1; nextLabel.textContent = NEXT[n - 1]; picker.value = String(n);
-    paintControls(); draw(); window.scrollTo(0, 0);
-    var h = screens[n - 1].querySelector("h1, h2");
-    announce.textContent = "Screen " + n + " of " + total + ". " + (h ? h.textContent.replace(/\s+/g, " ").trim() : "");
-    if (push !== false) { try { history.replaceState(null, "", "#b/" + n); } catch (e) { /* file:// */ } }
-  }
-  prevBtn.addEventListener("click", function () { show(S.screen - 1); });
-  nextBtn.addEventListener("click", function () { if (S.screen === total) { reset(); return; } show(S.screen + 1); });
-  picker.addEventListener("change", function () { show(parseInt(picker.value, 10)); });
+  document.addEventListener("click", function (e) { if (!e.target.closest || !e.target.closest(".menu-trigger")) { closeMenu(); } });
   document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeMenu(); return; }
     if (e.metaKey || e.ctrlKey || e.altKey) { return; }
     var tag = (e.target.tagName || "").toLowerCase();
-    if (tag === "select" || tag === "input" || tag === "button" || tag === "a") { return; }
-    if (e.key === "ArrowRight" && S.screen < total) { show(S.screen + 1); }
-    if (e.key === "ArrowLeft") { show(S.screen - 1); }
+    if (tag === "select" || tag === "input" || tag === "button" || tag === "a" || tag === "summary" || tag === "textarea") { return; }
+    if (e.key === "ArrowRight") { forward(); }
+    if (e.key === "ArrowLeft") { back(); }
   });
-  /* #b/1..5 now; the old three-screen #s/1..3 map to the beat with the same
-     idea — 1 before the loss → 1, 2 what is promised → 2, 3 the first days → 4 */
-  function fromHash() {
-    var m = /#b\/(\d)/.exec(location.hash); if (m) { return +m[1]; }
-    var o = /#s\/(\d)/.exec(location.hash); if (o) { return { 1: 1, 2: 2, 3: 4 }[+o[1]] || 1; }
-    return null;
-  }
-  window.addEventListener("hashchange", function () { var n = fromHash(); if (n !== null && n !== S.screen) { show(n, false); } });
-  var pending; window.addEventListener("resize", function () { clearTimeout(pending); pending = setTimeout(draw, 90); });
-  var skip = document.getElementById("skip");
-  if (skip) { skip.addEventListener("click", function () { var h = screens[S.screen - 1].querySelector("h1, h2"); if (h) { h.focus(); } }); }
 
-  load(); paintOptions();
-  show(fromHash() || 1, false);
+  /* ── boot ─────────────────────────────────────────────────────────────── */
+  restore();
+  paintPlan(); paintHomes(); calcBusiness();
+  var want = (location.hash || "").replace(/^#/, "");
+  if (ROUTES.indexOf(want) < 0) { want = S.route; }
+  if (want !== S.route && !allowed(want)) { toast("That step needs a choice first."); }
+  show(allowed(want) ? want : "plan", { silent: true, restored: true });
 })();
