@@ -1497,3 +1497,12 @@ body { background: var(--paper); color: var(--edition-ink); }
 .bubble--month[data-found="1"] { background: color-mix(in srgb, var(--plum-lt) 24%, transparent); box-shadow: inset 3px 0 0 var(--plum-lt); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .lens-sm { animation: none; } }
 @media (max-width: 899px) { .year-ctl { flex: 1 1 100%; } }
+
+/* ══ SCREEN 3 · the checks and the negotiation ═══ lines while they run; a sealed chip once done ══ */
+.steps--dd .astep, .steps--neg .astep { font-size: max(15px, calc(16px * var(--k))); }
+.chip { margin: calc(6px * var(--k)) 0 0; display: inline-flex; align-items: center; gap: .45em; padding: 4px 10px 4px 8px; border: 1.5px solid rgba(255,255,255,.28); border-radius: 999px; font: 700 max(13px, calc(13.5px * var(--k)))/1.2 var(--sans); color: var(--plum-lt); }
+.chip[hidden] { display: none; }
+.chip-seal { width: 1.1em; height: 1.1em; flex: 0 0 auto; }
+.chip + .chip { margin-left: 6px; }
+.ctlbtn--replay { margin-top: calc(10px * var(--k)); align-self: flex-start; }
+.ctlbtn--replay[hidden] { display: none; }

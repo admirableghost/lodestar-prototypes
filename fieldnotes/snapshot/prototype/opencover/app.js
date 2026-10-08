@@ -358,7 +358,7 @@
        permitted   — Muse buys NOW: snapshot first, then the steps in sequence
        blocked 100 — Muse stops; the decision returns to her
        unsigned    — no authority; back to her rules */
-  function paintAct(animate) {
+  function paintAct(animate, replay) {
     var steps = Array.prototype.slice.call(document.querySelectorAll("#act-steps .astep"));
     var list = document.getElementById("act-steps");
     var status = document.getElementById("act-status"), statusT = document.getElementById("act-status-t");
@@ -366,17 +366,26 @@
     var seal = document.getElementById("of-seal");
     var act = document.getElementById("act");
     var cards = Array.prototype.slice.call(document.querySelectorAll("#shortlist .of"));
+    var dd = document.getElementById("dd-steps"), ddChip = document.getElementById("dd-chip"), ddSteps = Array.prototype.slice.call(document.querySelectorAll("#dd-steps .astep"));
+    var neg = document.getElementById("neg-steps"), negChip = document.getElementById("neg-chip"), negSteps = Array.prototype.slice.call(document.querySelectorAll("#neg-steps .astep"));
+    var rp = document.getElementById("act-replay");
     clearSeq("act");
 
     var fresh = false;
-    if (!bought() && permitted() && animate) { fresh = buy(); }
+    if (!bought() && permitted() && animate && !replay) { fresh = buy(); }
     var p = bought();
     var run = animate && !reduce();
+    /* the full sequence — review, checks, negotiation, outcome — on a fresh
+       purchase, on Replay, and whenever nothing has been bought; a return to
+       a bought screen shows the record at once */
+    var seq = run && (fresh || replay || !p);
 
-    /* the review and the shortlist, the same in every branch: the lens
-       reads the offers, three cards rise, two are struck with the reason */
-    var items = [], runL = document.getElementById("act-run");
-    if (run) {
+    var items = [], runL = document.getElementById("act-run"), T0 = 0;
+    if (rp) { rp.hidden = true; }
+    if (dd) { dd.hidden = true; } if (neg) { neg.hidden = true; }
+    if (ddChip) { ddChip.hidden = true; } if (negChip) { negChip.hidden = true; }
+    ddSteps.concat(negSteps).forEach(function (li) { li.dataset.on = "0"; });
+    if (seq) {
       cardsReset();
       told = false; paintWhy();
       if (runL) { runL.hidden = false; }
@@ -386,9 +395,22 @@
       items.push([2000, function () { cards[0].dataset.judged = "1"; }]);
       items.push([2250, function () { cards[2].dataset.judged = "1"; }]);
       items.push([2500, function () { cards[1].dataset.judged = "1"; paintWhy(); }]);
+      /* the checks, through connected sources: one a beat, read before the next */
+      items.push([2650, function () { if (dd) { dd.hidden = false; } }]);
+      ddSteps.forEach(function (li, i) { items.push([2700 + i * 750, function () { li.dataset.on = "1"; }]); });
+      T0 = 2700 + ddSteps.length * 750 + 700;
+      items.push([T0, function () { if (dd) { dd.hidden = true; } if (ddChip) { ddChip.hidden = false; } }]);
+      /* the negotiation: only with her authority; the other agents answer, Meridian's binds its promises */
+      if (S.signed) {
+        items.push([T0 + 100, function () { if (neg) { neg.hidden = false; } }]);
+        negSteps.forEach(function (li, i) { items.push([T0 + 150 + i * 900, function () { li.dataset.on = "1"; }]); });
+        T0 = T0 + 150 + negSteps.length * 900 + 700;
+        items.push([T0, function () { if (neg) { neg.hidden = true; } if (negChip) { negChip.hidden = false; } }]);
+      }
+      T0 += 150;
     } else {
       if (runL) { runL.hidden = true; }
-      items.push([0, cardsFinal]);
+      items.push([0, function () { cardsFinal(); if (ddChip) { ddChip.hidden = false; } if (negChip) { negChip.hidden = !S.signed; } }]);
     }
 
     if (p) {
@@ -396,24 +418,18 @@
       placeToRules(null);
       if (list) { list.hidden = false; }
       if (act) { act.dataset.state = "bought"; }
-      var reveal = steps.map(function (li, i) {
-        return function () {
-          li.dataset.on = "1";
-          if (i === 1) {
-            if (statusT) { statusT.textContent = actStatusText(); }
-            if (status) { status.hidden = false; }
-            if (seal) { seal.dataset.on = "1"; }
-          }
-        };
-      });
-      if (fresh && run) {
+      var showStatus = function () { if (statusT) { statusT.textContent = actStatusText(); } if (status) { status.hidden = false; } if (seal) { seal.dataset.on = "1"; } };
+      if (seq) {
         steps.forEach(function (li) { li.dataset.on = "0"; });
         if (status) { status.hidden = true; }
         if (seal) { seal.dataset.on = "0"; }
-        reveal.forEach(function (f, i) { items.push([2800 + i * 650, f]); });
-        say("Muse reviews hundreds of offers and shortlists three. Candlewick excludes Rosa. Pell and Roe's excess is 900. Meridian, 155 above the cheapest, within your allowance. Bought: " + p.name + " confirms. Old policy ends after confirmation.");
+        items.push([T0, function () { if (steps[0]) { steps[0].dataset.on = "1"; } }]);
+        items.push([T0 + 650, showStatus]);
+        items.push([T0 + 1300, function () { if (steps[1]) { steps[1].dataset.on = "1"; } }]);
+        items.push([T0 + 1500, function () { if (rp) { rp.hidden = false; } }]);
+        if (fresh) { say("Muse reviews hundreds of offers and shortlists three. Candlewick excludes Rosa. Pell and Roe's excess is 900. Through its connected sources it checks Meridian's rating, A minus and stable; complaints data, 3.1 percent of claims denied against a 5.8 percent market rate; and the policy wording: Rosa covered, five-day settlement, fifty a day late. It asks Candlewick's agent to add Rosa: 1,470, above Meridian. Pell and Roe's agent will not lower the 900 excess. Meridian's agent confirms its promises in writing. Meridian, 155 above the cheapest, within your allowance. Bought: " + p.name + " confirms. The old policy ends after confirmation."); }
       } else {
-        items.push([0, function () { reveal.forEach(function (f) { f(); }); if (statusT) { statusT.textContent = actStatusText(); } }]);
+        items.push([0, function () { steps.forEach(function (li) { li.dataset.on = "1"; }); showStatus(); if (rp) { rp.hidden = reduce(); } }]);
       }
       plan("act", items, run);
       return;
@@ -431,13 +447,15 @@
       label = "Back to her rules";
     } else {
       if (act) { act.dataset.state = "blocked"; }
-      holdText = "Meridian · " + gap() + " above the cheapest — over your " + S.delta + " USD allowance. Your call.";
+      holdText = "Meridian · " + gap() + " above cheapest — over your " + S.delta + " USD allowance. Your call.";
       label = "Revise the allowance";
     }
-    var showHold = function () { if (hold) { hold.hidden = false; hold.textContent = holdText; } placeToRules("act-slot", label); };
-    if (run) { if (hold) { hold.hidden = true; } placeToRules(null); items.push([2800, showHold]); } else { items.push([0, showHold]); }
+    var showHold = function () { if (hold) { hold.hidden = false; hold.textContent = holdText; } placeToRules("act-slot", label); if (rp) { rp.hidden = reduce(); } };
+    if (seq) { if (hold) { hold.hidden = true; } placeToRules(null); items.push([T0, showHold]); } else { items.push([0, showHold]); }
     plan("act", items, run);
   }
+  /* Replay re-runs the review, the checks and the negotiation as a presentation; it buys nothing again */
+  (function () { var rp = document.getElementById("act-replay"); if (rp) { rp.addEventListener("click", function () { paintAct(true, true); say("Replaying Muse's review, checks and negotiation. Nothing is bought again."); }); } })();
 
   /* ══════════════════════════════════════════════════════════════════════
      SCREEN 4 · the year — reads the snapshot; the month control
@@ -530,8 +548,8 @@
   function monthStory(m) {
     if (m >= SWITCH_AT) { return null; }                  /* paintSwitch owns the boundary */
     if (!foundYet(m)) { return "No better eligible offer."; }
-    if (m === FOUND_AT) { return "Found " + LATER.name + " at " + grp(LATER.num) + " USD a year, eligible. Switching now would waste prepaid cover. I'll keep watching."; }
-    if (m === SWITCH_AT - 1) { return "Replacement eligible. Ready for the next billing period."; }
+    if (m === FOUND_AT) { return "Found " + LATER.name + ", " + grp(LATER.num) + " USD a year, eligible. Checked: rating A, 2.4% denied, promises in writing. Switching now would waste prepaid cover."; }
+    if (m === SWITCH_AT - 1) { return LATER.name.split(" ")[0] + " rechecked: rating A, 2.4% denied, promises in writing. Ready for the next billing period."; }
     return LATER.name.split(" ")[0] + " still available. Not worth switching before the paid-through boundary."; 
   }
   /* ── the year plays itself: one month a second, a longer hold where the
@@ -601,7 +619,7 @@
     set("cmp-save", grp(a - b) + " USD");
     set("sw-apply", "Applied to " + short(repl.name));
     set("sw-confirm", short(repl.name) + " confirms"); set("sw-cancel", short(old.name) + " cancelled");
-    if (sayEl) { sayEl.textContent = "Switching makes sense now. " + grp(a - b) + " USD saved, no coverage gap."; }
+    if (sayEl) { sayEl.textContent = "Switching makes sense now. " + grp(a - b) + " USD saved, no coverage gap, " + short(repl.name) + " rechecked."; }
     var mark = function () {
       var n = S.switch; if (!n) { return; }
       if (statusT) { statusT.textContent = "Switched · " + n.name; }

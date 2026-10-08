@@ -219,14 +219,28 @@
     <article class="muse muse--s3" id="act" aria-label="Muse acting" aria-live="polite">
       <p class="muse-name"><svg class="lens" aria-hidden="true" focusable="false"><use href="#lens"/></svg><span class="sr-only">Muse</span></p>
       <p class="bubble bubble--run" id="act-run" hidden>Reviewing hundreds of offers<span class="dots" aria-hidden="true"></span></p>
+      <!-- the diligence: three checks through Muse's connected sources, not a price comparison;
+           then the negotiation with the other agents, before anything is bought -->
+      <ol class="steps steps--dd" id="dd-steps" aria-label="Muse's checks" hidden>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Rating feed · Meridian A−, stable</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Complaints data · 3.1% denied, market 5.8%</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Policy wording · Rosa covered, 5-day settlement, 50/day late</li>
+      </ol>
+      <p class="chip" id="dd-chip" hidden><svg class="chip-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg>Checked · 3 sources</p>
+      <ol class="steps steps--neg" id="neg-steps" aria-label="Muse negotiating" hidden>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Candlewick's agent · Rosa added at 1,470, above Meridian</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Pell &amp; Roe's agent · excess stays 900</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Meridian's agent · promises confirmed in writing</li>
+      </ol>
+      <p class="chip" id="neg-chip" hidden><svg class="chip-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg>Negotiated · runners-up declined, promises in writing</p>
       <ol class="steps" id="act-steps" hidden>
-        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Meridian · 155 above the cheapest · within your allowance</li>
-        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Bought · Meridian Mutual confirms</li>
+        <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Meridian · 155 above cheapest, within allowance</li>
         <li class="astep"><span class="astep-a" aria-hidden="true">→</span>Old policy ends after confirmation</li>
       </ol>
       <p class="status" id="act-status" hidden><svg class="status-seal" aria-hidden="true" focusable="false"><use href="#seal"/></svg><span id="act-status-t"></span></p>
       <p class="bubble bubble--hold" id="act-hold" hidden></p>
       <div class="slot" id="act-slot"></div>
+      <button class="ctlbtn ctlbtn--replay" type="button" id="act-replay" hidden>Replay</button>
     </article>
   </div>
 </section>
