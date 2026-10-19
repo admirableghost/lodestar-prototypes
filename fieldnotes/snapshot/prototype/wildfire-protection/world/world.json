@@ -1,0 +1,150 @@
+{
+  "region": {
+    "west": -118.485,
+    "east": -118.355,
+    "south": 34.08,
+    "north": 34.155
+  },
+  "hero": {
+    "west": -118.455,
+    "east": -118.405,
+    "south": 34.103,
+    "north": 34.148
+  },
+  "sizeM": {
+    "width": 11980.879299917016,
+    "depth": 8321.250000000315
+  },
+  "mesh": {
+    "w": 1024,
+    "h": 711
+  },
+  "dem": {
+    "w": 2048,
+    "h": 1182
+  },
+  "heightScale": 0.1,
+  "minHeightM": 52.008756329857505,
+  "maxHeightM": 477.498361475042,
+  "imagery": {
+    "width": 4096,
+    "source": "USDA NAIP 2022 California, 0.6 m, resampled",
+    "captured": "2022-05"
+  },
+  "sources": [
+    {
+      "file": "dem.tif",
+      "source": "USGS 3DEP (The National Map)",
+      "endpoint": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:36:45.860Z"
+    },
+    {
+      "file": "naip_rgb_0_0.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:37:00.177Z"
+    },
+    {
+      "file": "naip_rgb_0_1.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:37:16.535Z"
+    },
+    {
+      "file": "naip_rgb_0_2.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:37:33.869Z"
+    },
+    {
+      "file": "naip_rgb_0_3.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:37:50.569Z"
+    },
+    {
+      "file": "naip_rgb_1_0.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:38:05.628Z"
+    },
+    {
+      "file": "naip_rgb_1_1.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:38:16.706Z"
+    },
+    {
+      "file": "naip_rgb_1_2.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:38:30.551Z"
+    },
+    {
+      "file": "naip_rgb_1_3.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:38:45.752Z"
+    },
+    {
+      "file": "naip_rgb_2_0.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:39:00.488Z"
+    },
+    {
+      "file": "naip_rgb_2_1.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:39:15.168Z"
+    },
+    {
+      "file": "naip_rgb_2_2.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:39:27.435Z"
+    },
+    {
+      "file": "naip_rgb_2_3.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:39:41.574Z"
+    },
+    {
+      "file": "naip_nir.png",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:39:53.535Z"
+    },
+    {
+      "file": "naip_red.png",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:40:06.307Z"
+    },
+    {
+      "file": "hero_rgb_0_0.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:40:17.425Z"
+    },
+    {
+      "file": "hero_rgb_0_1.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:40:29.412Z"
+    },
+    {
+      "file": "hero_rgb_1_0.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:40:44.063Z"
+    },
+    {
+      "file": "hero_rgb_1_1.jpg",
+      "source": "USDA NAIP 2022 California (USGS The National Map)",
+      "endpoint": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage",
+      "retrievedAtUtc": "2026-10-19T05:40:55.711Z"
+    }
+  ]
+}
